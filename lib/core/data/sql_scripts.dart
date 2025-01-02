@@ -30,6 +30,7 @@ class SQLScripts {
   static const String createTableCoalescent = '''
     CREATE TABLE coalescent (
       id INTEGER PRIMARY KEY,
+      statusid INTEGER NOT NULL,
       personcompressorid INT NOT NULL,
       coalescentname TEXT NOT NULL,
       lastupdate INTEGER NOT NULL
@@ -40,6 +41,7 @@ class SQLScripts {
     CREATE TABLE compressor (
       id INTEGER PRIMARY KEY,
       personid INTEGER NOT NULL,
+      statusid INTEGER NOT NULL,
       compressorid INTEGER NOT NULL,
       compressorname TEXT NOT NULL,
       serialnumber TEXT NOT NULL,
@@ -50,6 +52,7 @@ class SQLScripts {
   static const String createTablePerson = '''
     CREATE TABLE person (
       id INTEGER PRIMARY KEY,
+      statusid INTEGER NOT NULL,
       document TEXT NOT NULL,
       shortname TEXT NOT NULL,
       iscustomer INTEGER NOT NULL,

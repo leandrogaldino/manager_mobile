@@ -2,6 +2,7 @@ import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/interfaces/repository.dart';
 import 'package:manager_mobile/interfaces/service.dart';
 import 'package:manager_mobile/models/coalescent_model.dart';
+import 'package:manager_mobile/models/syncronize_result_model.dart';
 
 class CoalescentService implements Service<CoalescentModel> {
   final Repository _repository;
@@ -42,7 +43,7 @@ class CoalescentService implements Service<CoalescentModel> {
   }
 
   @override
-  Future<int> syncronize() async {
+  Future<SyncronizeResultModel> syncronize() async {
     return _repository.syncronize();
   }
 }

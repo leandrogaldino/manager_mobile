@@ -6,6 +6,7 @@ import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
+import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
@@ -26,5 +27,7 @@ class Locator {
 
     getIt.registerLazySingleton(() => CoalescentRepository(remoteDatabase: GetIt.I<RemoteDatabase>(), localDatabase: GetIt.I<LocalDatabase>()));
     getIt.registerLazySingleton(() => CoalescentService(repository: GetIt.I<CoalescentRepository>()));
+
+    getIt.registerLazySingleton(() => CompressorRepository(remoteDatabase: GetIt.I<RemoteDatabase>(), localDatabase: GetIt.I<LocalDatabase>()));
   }
 }

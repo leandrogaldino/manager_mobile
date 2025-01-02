@@ -64,6 +64,7 @@ class SqfliteDatabase implements LocalDatabase {
     }
   }
 
+//TODO: ta recebendo queryresultset, precisa de retorno correto.
   @override
   Future<List<Map<String, Object?>>> query(String table, {bool? distinct, List<String>? columns, String? where, List<Object?>? whereArgs, String? groupBy, String? having, String? orderBy, int? limit, int? offset}) async {
     try {
