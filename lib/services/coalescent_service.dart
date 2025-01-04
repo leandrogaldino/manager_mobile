@@ -1,13 +1,14 @@
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
-import 'package:manager_mobile/interfaces/repository.dart';
 import 'package:manager_mobile/interfaces/service.dart';
+import 'package:manager_mobile/interfaces/service_parent.dart';
 import 'package:manager_mobile/models/coalescent_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
+import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
-class CoalescentService implements Service<CoalescentModel> {
-  final Repository _repository;
+class CoalescentService implements Service<CoalescentModel>, ServiceParent<CoalescentModel> {
+  final CoalescentRepository _repository;
 
-  CoalescentService({required Repository repository}) : _repository = repository;
+  CoalescentService({required CoalescentRepository repository}) : _repository = repository;
 
   @override
   Future<int> delete(int id) async {
@@ -33,6 +34,12 @@ class CoalescentService implements Service<CoalescentModel> {
   @override
   Future<List<CoalescentModel>> getByLastUpdate(DateTime lastUpdate) async {
     final data = await _repository.getByLastUpdate(lastUpdate);
+    return data.map((item) => CoalescentModel.fromMap(item)).toList();
+  }
+
+  @override
+  Future<List<CoalescentModel>> getByParentId(int parentId) async {
+    final data = await _repository.getByParentId(parentId);
     return data.map((item) => CoalescentModel.fromMap(item)).toList();
   }
 

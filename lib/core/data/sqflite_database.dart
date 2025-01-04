@@ -64,12 +64,11 @@ class SqfliteDatabase implements LocalDatabase {
     }
   }
 
-//TODO: ta recebendo queryresultset, precisa de retorno correto.
   @override
   Future<List<Map<String, Object?>>> query(String table, {bool? distinct, List<String>? columns, String? where, List<Object?>? whereArgs, String? groupBy, String? having, String? orderBy, int? limit, int? offset}) async {
     try {
       List<Map<String, Object?>> result = await _database.query(table, distinct: distinct, columns: columns, where: where, whereArgs: whereArgs, groupBy: groupBy, having: having, orderBy: orderBy, limit: limit, offset: offset);
-      return result;
+      return _resultSetToRawResult(result);
     } catch (e) {
       throw LocalDatabaseException('Erro ao consultar: $e');
     }
@@ -99,7 +98,7 @@ class SqfliteDatabase implements LocalDatabase {
   Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) async {
     try {
       List<Map<String, Object?>> result = await _database.rawQuery(sql, arguments);
-      return result;
+      return _resultSetToRawResult(result);
     } catch (e) {
       throw LocalDatabaseException('Erro ao consultar: $e');
     }
@@ -124,5 +123,18 @@ class SqfliteDatabase implements LocalDatabase {
     } catch (e) {
       throw LocalDatabaseException('Erro ao verificar a existencia do registro: $e');
     }
+  }
+
+  List<Map<String, Object?>> _resultSetToRawResult(List<Map<String, Object?>> resultset) {
+    List<Map<String, Object?>> list = [];
+    Map<String, Object?> map = {};
+    for (var row in resultset) {
+      for (var key in row.keys) {
+        map[key] = row[key];
+      }
+      list.add(map);
+      map = {};
+    }
+    return list;
   }
 }

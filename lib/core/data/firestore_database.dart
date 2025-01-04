@@ -10,6 +10,7 @@ class FirestoreDatabase implements RemoteDatabase {
     try {
       Query query = _db.collection(collection);
       query = _proccessFilters(query, filters);
+      query.limit(1000);
       final snapshot = await query.get();
       List<Map<String, dynamic>> result = snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;

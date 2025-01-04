@@ -1,83 +1,99 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
+import 'package:manager_mobile/models/compressor_model.dart';
+
 class PersonModel {
-  final String document;
   final int id;
+  final int statusId;
+  final String document;
   final bool isCustomer;
   final bool isTechnician;
   final int lastUpdate;
   final String shortName;
-
+  final List<CompressorModel> compressors;
   PersonModel({
-    required this.document,
     required this.id,
+    required this.statusId,
+    required this.document,
     required this.isCustomer,
     required this.isTechnician,
     required this.lastUpdate,
     required this.shortName,
+    required this.compressors,
   });
 
   PersonModel copyWith({
-    String? document,
     int? id,
+    int? statusId,
+    String? document,
     bool? isCustomer,
     bool? isTechnician,
     int? lastUpdate,
-    bool? needChangePassword,
-    String? userId,
     String? shortName,
+    List<CompressorModel>? compressors,
   }) {
     return PersonModel(
-      document: document ?? this.document,
       id: id ?? this.id,
+      statusId: statusId ?? this.statusId,
+      document: document ?? this.document,
       isCustomer: isCustomer ?? this.isCustomer,
       isTechnician: isTechnician ?? this.isTechnician,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       shortName: shortName ?? this.shortName,
+      compressors: compressors ?? this.compressors,
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'document': document,
-      'id': id,
-      'iscustomer': isCustomer,
-      'istechnician': isTechnician,
-      'lastupdate': lastUpdate,
-      'shortname': shortName,
-    };
   }
 
   factory PersonModel.fromMap(Map<String, dynamic> map) {
     return PersonModel(
-      document: (map['document'] ?? '') as String,
       id: (map['id'] ?? 0) as int,
-      isCustomer: (map['iscustomer'] == null || map['iscustomer'] == 0 ? false : true),
-      isTechnician: (map['istechnician'] == null || map['istechnician'] == 0 ? false : true),
-      lastUpdate: (map['lastupdate'] ?? 0) as int,
-      shortName: (map['shortname'] ?? '') as String,
+      statusId: (map['statusId'] ?? 0) as int,
+      document: (map['document'] ?? '') as String,
+      isCustomer: (map['isCustomer'] ?? false) as bool,
+      isTechnician: (map['isTechnician'] ?? false) as bool,
+      lastUpdate: (map['lastUpdate'] ?? 0) as int,
+      shortName: (map['shortName'] ?? '') as String,
+      compressors: List<CompressorModel>.from(
+        (map['compressors'] as List<int>).map<CompressorModel>(
+          (x) => CompressorModel.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory PersonModel.fromJson(String source) => PersonModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
   @override
   String toString() {
-    return 'PersonModel(document: $document, id: $id, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName)';
+    return 'PersonModel(id: $id, statusId: $statusId, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName, compressors: $compressors)';
   }
 
   @override
   bool operator ==(covariant PersonModel other) {
     if (identical(this, other)) return true;
 
-    return other.document == document && other.id == id && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName;
+    return other.id == id && other.statusId == statusId && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName && listEquals(other.compressors, compressors);
   }
 
   @override
   int get hashCode {
-    return document.hashCode ^ id.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode;
+    return id.hashCode ^ statusId.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode ^ compressors.hashCode;
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'statusid': statusId,
+      'document': document,
+      'iscustomer': isCustomer == false ? 0 : 1,
+      'istechnician': isTechnician == false ? 0 : 1,
+      'lastupdate': lastUpdate,
+      'shortname': shortName,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory PersonModel.fromJson(String source) => PersonModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
