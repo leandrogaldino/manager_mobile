@@ -81,20 +81,12 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
   Future<String> _saveImage(Uint8List imageData, String fileName) async {
     try {
-      // Obtém o diretório apropriado para salvar o arquivo
       final directory = await getApplicationDocumentsDirectory();
-
-      // Cria o caminho completo para o arquivo
       final filePath = '${directory.path}/$fileName';
-
-      // Cria e escreve os dados no arquivo
       final file = File(filePath);
       await file.writeAsBytes(imageData);
-
-      print('Imagem salva em: $filePath');
       return filePath;
     } catch (e) {
-      print('Erro ao salvar a imagem: $e');
       throw Exception('Falha ao salvar a imagem no disco.');
     }
   }
