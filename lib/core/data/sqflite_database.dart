@@ -6,13 +6,10 @@ import 'package:sqflite/sqflite.dart';
 
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
-
-  //TODO: Remover o InMemory para persistencia
   @override
   Future<void> init() async {
     try {
       _database = await openDatabase(
-        //inMemoryDatabasePath,
         join(await getDatabasesPath(), 'data.db'),
         version: 1,
         onCreate: (db, version) async {
@@ -29,6 +26,7 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
           await db.execute(SQLScripts.insertSyncronizingPreference);
+          await db.execute(SQLScripts.insertloggedTechnicianIdPreference);
         },
       );
     } on DatabaseException catch (e) {

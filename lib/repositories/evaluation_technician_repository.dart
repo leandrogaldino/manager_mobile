@@ -7,7 +7,7 @@ class EvaluationTechnicianRepository implements Childable {
   EvaluationTechnicianRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
 
   @override
-  Future<List<Map<String, Object?>>> getByParentId(int parentId) async {
+  Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     var evaluationTechnicians = await _localDatabase.query('evaluationtechnician', where: 'evaluationid = ?', whereArgs: [parentId]);
     return evaluationTechnicians;
   }

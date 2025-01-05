@@ -50,15 +50,15 @@ class PersonModel {
   factory PersonModel.fromMap(Map<String, dynamic> map) {
     return PersonModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusId'] ?? 0) as int,
+      statusId: (map['statusid'] ?? 0) as int,
       document: (map['document'] ?? '') as String,
-      isCustomer: (map['isCustomer'] ?? false) as bool,
-      isTechnician: (map['isTechnician'] ?? false) as bool,
-      lastUpdate: (map['lastUpdate'] ?? 0) as int,
-      shortName: (map['shortName'] ?? '') as String,
+      isCustomer: map['iscustomer'] == 0 ? false : true,
+      isTechnician: map['istechnician'] == 0 ? false : true,
+      lastUpdate: (map['lastupdate'] ?? 0) as int,
+      shortName: (map['shortname'] ?? '') as String,
       compressors: List<CompressorModel>.from(
-        (map['compressors'] as List<int>).map<CompressorModel>(
-          (x) => CompressorModel.fromMap(x as Map<String, dynamic>),
+        (map['compressors'] as List<Map<String, dynamic>>).map<CompressorModel>(
+          (x) => CompressorModel.fromMap(x),
         ),
       ),
     );

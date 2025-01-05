@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                                 final valid = formKey.currentState?.validate() ?? false;
                                 if (valid) {
                                   await controller.singIn('${emailEC.text}@manager.com', passwordEC.text).asyncLoader(
-                                        customLoader: const Loader(message: 'ENTRANDO...'),
+                                        customLoader: const Loader(message: 'Entrando'),
                                       );
                                 }
                               },

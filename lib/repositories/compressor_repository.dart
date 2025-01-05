@@ -55,7 +55,7 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<List<Map<String, Object?>>> getByParentId(int parentId) async {
+  Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     var compressors = await _localDatabase.query('compressor', where: 'personid = ?', whereArgs: [parentId]);
     for (var compressor in compressors) {
       var coalescents = await _coalescentRepository.getByParentId(compressor['id'] as int);

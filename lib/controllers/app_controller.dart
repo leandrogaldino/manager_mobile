@@ -5,6 +5,7 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 
 class AppController {
@@ -12,16 +13,19 @@ class AppController {
   final CoalescentService _coalescentService;
   final CompressorService _compressorService;
   final PersonService _personService;
+  final EvaluationService _evaluationService;
 
   AppController({
     required localDatabase,
     required coalescentService,
     required compressorService,
     required personService,
+    required evaluationService,
   })  : _localDatabase = localDatabase,
         _coalescentService = coalescentService,
         _compressorService = compressorService,
-        _personService = personService;
+        _personService = personService,
+        _evaluationService = evaluationService;
 
   final themeMode = ValueNotifier<ThemeMode>(ThemeMode.light);
 
@@ -58,32 +62,32 @@ class AppController {
   Future<SyncronizeResultModel> syncronize() async {
     int downloaded = 0;
     int uploaded = 0;
-    late SyncronizeResultModel SyncResult;
+    late SyncronizeResultModel syncResult;
 
     await _localDatabase.update('preferences', {'value': 1}, where: 'key = ?', whereArgs: ['syncronizing']);
 
     final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
     int lastSync = int.parse(lastSyncResult[0]['value'].toString());
 
-    SyncResult = await _coalescentService.syncronize(lastSync);
-    downloaded += SyncResult.downloaded;
-    uploaded += SyncResult.uploaded;
+    syncResult = await _coalescentService.syncronize(lastSync);
+    downloaded += syncResult.downloaded;
+    uploaded += syncResult.uploaded;
 
-    SyncResult = await _compressorService.syncronize(lastSync);
-    downloaded += SyncResult.downloaded;
-    uploaded += SyncResult.uploaded;
+    syncResult = await _compressorService.syncronize(lastSync);
+    downloaded += syncResult.downloaded;
+    uploaded += syncResult.uploaded;
 
-    SyncResult = await _personService.syncronize(lastSync);
-    downloaded += SyncResult.downloaded;
-    uploaded += SyncResult.uploaded;
+    syncResult = await _personService.syncronize(lastSync);
+    downloaded += syncResult.downloaded;
+    uploaded += syncResult.uploaded;
 
-    SyncResult = await _evaluationService.syncronize(lastSync);
-    downloaded += SyncResult.downloaded;
-    uploaded += SyncResult.uploaded;
+    syncResult = await _evaluationService.syncronize(lastSync);
+    downloaded += syncResult.downloaded;
+    uploaded += syncResult.uploaded;
 
-    // _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
+    _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
 
     await _localDatabase.update('preferences', {'value': 0}, where: 'key = ?', whereArgs: ['syncronizing']);
-    return SyncronizeResultModel(uploaded: 0, downloaded: downloaded);
+    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }
 }

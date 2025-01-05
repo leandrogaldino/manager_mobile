@@ -37,6 +37,16 @@ class SQLScripts {
     );
   ''';
 
+  static const String insertloggedTechnicianIdPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'loggedtechnicianid',
+      0
+    );
+  ''';
+
   static const String createTableCoalescent = '''
     CREATE TABLE coalescent (
       id INTEGER PRIMARY KEY,
@@ -86,7 +96,9 @@ class SQLScripts {
       responsible TEXT NOT NULL,
       advice TEXT,
       signaturepath TEXT NOT NULL,
-      lastupdate INTEGER NOT NULL
+      infoid INTEGER NOT NULL,
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';
 
@@ -95,7 +107,8 @@ class SQLScripts {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       coalescentid INT NOT NULL,
       evaluationid TEXT NOT NULL,
-      nextchange INTEGER NOT NULL
+      nextchange INTEGER NOT NULL,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
 
@@ -103,7 +116,8 @@ class SQLScripts {
     CREATE TABLE evaluationtechnician (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       personid INT NOT NULL,
-      evaluationid TEXT NOT NULL
+      evaluationid TEXT NOT NULL,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
 
@@ -111,7 +125,8 @@ class SQLScripts {
     CREATE TABLE evaluationphoto (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       path TEXT NOT NULL,
-      evaluationid TEXT NOT NULL
+      evaluationid TEXT NOT NULL,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
 
@@ -124,7 +139,8 @@ class SQLScripts {
       importeddate INTEGER,
       importedid INTEGER,
       importingby TEXT,
-      importingdate INTEGER
+      importingdate INTEGER,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
 

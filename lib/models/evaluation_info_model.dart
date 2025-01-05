@@ -55,7 +55,7 @@ class EvaluationInfoModel {
   factory EvaluationInfoModel.fromMap(Map<String, dynamic> map) {
     return EvaluationInfoModel(
       id: (map['id'] ?? 0) as int,
-      imported: (map['imported'] ?? false) as bool,
+      imported: map['imported'] == 0 ? false : true,
       importedBy: (map['importedBy'] ?? '') as String,
       importedDate: DateTime.fromMillisecondsSinceEpoch((map['importedDate'] ?? 0) as int),
       importedId: (map['importedId'] ?? 0) as int,

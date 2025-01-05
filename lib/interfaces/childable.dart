@@ -1,3 +1,3 @@
 abstract class Childable<T> {
-  Future<List<T>> getByParentId(int parentId);
+  Future<List<T>> getByParentId(dynamic parentId);
 }

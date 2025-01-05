@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_info_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
+import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class EvaluationModel {
@@ -21,8 +23,8 @@ class EvaluationModel {
   final int separator;
   final int oil;
   final List<EvaluationCoalescentModel> coalescents;
-  final List<PersonModel> technicians;
-  final List<String> photoPaths;
+  final List<EvaluationTechnicianModel> technicians;
+  final List<EvaluationPhotoModel> photoPaths;
   final String responsible;
   final String signaturePath;
   final EvaluationInfoModel info;
@@ -63,8 +65,8 @@ class EvaluationModel {
     int? separator,
     int? oil,
     List<EvaluationCoalescentModel>? coalescents,
-    List<PersonModel>? technicians,
-    List<String>? photoPaths,
+    List<EvaluationTechnicianModel>? technicians,
+    List<EvaluationPhotoModel>? photoPaths,
     String? responsible,
     String? signaturePath,
     EvaluationInfoModel? info,
@@ -100,8 +102,8 @@ class EvaluationModel {
       compressor: CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
       date: DateTime.fromMillisecondsSinceEpoch((map['date'] ?? 0) as int),
-      startTime: TimeOfDay(hour: map['starttime'].toString().split(':')[0] as int, minute: map['starttime'].toString().split(':')[1] as int),
-      endTime: TimeOfDay(hour: map['endtime'].toString().split(':')[0] as int, minute: map['endtime'].toString().split(':')[1] as int),
+      startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
+      endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
       horimeter: (map['horimeter'] ?? 0) as int,
       airFilter: (map['airfilter'] ?? 0) as int,
       oilFilter: (map['oilfilter'] ?? 0) as int,
@@ -112,13 +114,15 @@ class EvaluationModel {
           (x) => EvaluationCoalescentModel.fromMap(x),
         ),
       ),
-      technicians: List<PersonModel>.from(
-        (map['technicians'] as List<int>).map<PersonModel>(
-          (x) => PersonModel.fromMap(x as Map<String, dynamic>),
+      technicians: List<EvaluationTechnicianModel>.from(
+        (map['technicians'] as List<Map<String, dynamic>>).map<EvaluationTechnicianModel>(
+          (x) => EvaluationTechnicianModel.fromMap(x),
         ),
       ),
-      photoPaths: List<String>.from(
-        (map['photopaths'] as List<String>),
+      photoPaths: List<EvaluationPhotoModel>.from(
+        (map['photopaths'] as List<Map<String, dynamic>>).map<EvaluationPhotoModel>(
+          (x) => EvaluationPhotoModel.fromMap(x),
+        ),
       ),
       responsible: (map['responsible'] ?? '') as String,
       signaturePath: (map['signaturepath']),

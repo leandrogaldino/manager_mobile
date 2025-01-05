@@ -21,125 +21,166 @@ import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/evaluation_coalescent_service.dart';
+import 'package:manager_mobile/services/evaluation_info_service.dart';
+import 'package:manager_mobile/services/evaluation_photo_service.dart';
+import 'package:manager_mobile/services/evaluation_service.dart';
+import 'package:manager_mobile/services/evaluation_technician_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 
 class Locator {
   Locator._();
-  static final GetIt getIt = GetIt.instance;
+  static final GetIt _getIt = GetIt.instance;
+
+  static T get<T extends Object>() {
+    return _getIt.get<T>();
+  }
 
   static void setup() {
-    getIt.registerLazySingleton<RemoteDatabase>(
+    _getIt.registerLazySingleton<RemoteDatabase>(
       () => FirestoreDatabase(),
     );
 
-    getIt.registerLazySingleton<Storage>(
+    _getIt.registerLazySingleton<Storage>(
       () => StorageFile(),
     );
 
-    getIt.registerLazySingleton<LocalDatabase>(
+    _getIt.registerLazySingleton<LocalDatabase>(
       () => SqfliteDatabase(),
     );
 
-    getIt.registerLazySingleton<Auth>(
+    _getIt.registerLazySingleton<Auth>(
       () => AuthService(),
     );
 
-    getIt.registerLazySingleton<Connection>(
+    _getIt.registerLazySingleton<Connection>(
       () => NetworkConnection(),
     );
 
-    getIt.registerLazySingleton<LoginController>(
+    _getIt.registerLazySingleton<LoginController>(
       () => LoginController(
-        service: GetIt.I<Auth>(),
-        connection: GetIt.I<Connection>(),
+        service: _getIt.get<Auth>(),
+        connection: _getIt.get<Connection>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => CoalescentRepository(
-        remoteDatabase: GetIt.I<RemoteDatabase>(),
-        localDatabase: GetIt.I<LocalDatabase>(),
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => CoalescentService(
-        repository: GetIt.I<CoalescentRepository>(),
+        repository: _getIt.get<CoalescentRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => CompressorRepository(
-        remoteDatabase: GetIt.I<RemoteDatabase>(),
-        localDatabase: GetIt.I<LocalDatabase>(),
-        coalescentRepository: GetIt.I<CoalescentRepository>(),
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+        coalescentRepository: _getIt.get<CoalescentRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => CompressorService(
-        repository: GetIt.I<CompressorRepository>(),
+        repository: _getIt.get<CompressorRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => PersonRepository(
-        remoteDatabase: GetIt.I<RemoteDatabase>(),
-        localDatabase: GetIt.I<LocalDatabase>(),
-        compressorRepository: GetIt.I<CompressorRepository>(),
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+        compressorRepository: _getIt.get<CompressorRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => PersonService(
-        repository: GetIt.I<PersonRepository>(),
+        repository: _getIt.get<PersonRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationCoalescentRepository(
-        localDatabase: GetIt.I<LocalDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationTechnicianRepository(
-        localDatabase: GetIt.I<LocalDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationPhotoRepository(
-        localDatabase: GetIt.I<LocalDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationInfoRepository(
-        localDatabase: GetIt.I<LocalDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-    getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationRepository(
-        remoteDatabase: GetIt.I<RemoteDatabase>(),
-        localDatabase: GetIt.I<LocalDatabase>(),
-        storage: GetIt.I<Storage>(),
-        compressorRepository: GetIt.I<CompressorRepository>(),
-        personRepository: GetIt.I<PersonRepository>(),
-        evaluationCoalescentRepository: GetIt.I<EvaluationCoalescentRepository>(),
-        evaluationTechnicianRepository: GetIt.I<EvaluationTechnicianRepository>(),
-        evaluationPhotoRepository: GetIt.I<EvaluationPhotoRepository>(),
-        evaluationInfoRepository: GetIt.I<EvaluationInfoRepository>(),
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+        storage: _getIt.get<Storage>(),
+        coalescentRepository: _getIt.get<CoalescentRepository>(),
+        compressorRepository: _getIt.get<CompressorRepository>(),
+        personRepository: _getIt.get<PersonRepository>(),
+        evaluationCoalescentRepository: _getIt.get<EvaluationCoalescentRepository>(),
+        evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
+        evaluationPhotoRepository: _getIt.get<EvaluationPhotoRepository>(),
+        evaluationInfoRepository: _getIt.get<EvaluationInfoRepository>(),
       ),
     );
 
-    getIt.registerLazySingleton<AppController>(
+    _getIt.registerLazySingleton(
+      () => EvaluationCoalescentService(
+        repository: _getIt.get<EvaluationCoalescentRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => EvaluationTechnicianService(
+        repository: _getIt.get<EvaluationTechnicianRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => EvaluationPhotoService(
+        repository: _getIt.get<EvaluationPhotoRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => EvaluationInfoService(
+        repository: _getIt.get<EvaluationInfoRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => EvaluationService(
+        repository: _getIt.get<EvaluationRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton<AppController>(
       () => AppController(
-        localDatabase: GetIt.I<LocalDatabase>(),
-        coalescentService: GetIt.I<CoalescentService>(),
-        compressorService: GetIt.I<CompressorService>(),
-        personService: GetIt.I<PersonService>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+        coalescentService: _getIt.get<CoalescentService>(),
+        compressorService: _getIt.get<CompressorService>(),
+        personService: _getIt.get<PersonService>(),
+        evaluationService: _getIt.get<EvaluationService>(),
       ),
     );
   }

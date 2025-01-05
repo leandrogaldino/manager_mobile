@@ -25,7 +25,7 @@ class Loader extends StatelessWidget {
               height: 40,
             ),
             Text(
-              _message ?? 'CARREGANDO...',
+              _message ?? 'Carregando...',
               style: theme.textTheme.titleLarge!.copyWith(color: theme.colorScheme.primary),
             )
           ],

@@ -13,7 +13,7 @@ class AuthStateListener extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader(message: 'EFETUANDO LOGIN');
+          return const Loader(message: 'Entrando');
         } else if (snapshot.hasData && snapshot.data != null) {
           return const HomePage();
         } else {

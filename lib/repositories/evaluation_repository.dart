@@ -4,6 +4,7 @@ import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
+import 'package:manager_mobile/repositories/coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_info_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
@@ -21,6 +22,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
+  final CoalescentRepository _coalescentRepository;
   final CompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
   final EvaluationCoalescentRepository _evaluationCoalescentRepository;
@@ -31,6 +33,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       {required RemoteDatabase remoteDatabase,
       required LocalDatabase localDatabase,
       required Storage storage,
+      required CoalescentRepository coalescentRepository,
       required CompressorRepository compressorRepository,
       required PersonRepository personRepository,
       required EvaluationCoalescentRepository evaluationCoalescentRepository,
@@ -40,6 +43,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
+        _coalescentRepository = coalescentRepository,
         _compressorRepository = compressorRepository,
         _personRepository = personRepository,
         _evaluationCoalescentRepository = evaluationCoalescentRepository,
@@ -52,67 +56,65 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
   }
 
+  Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
+    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
+    evaluationData['compressor'] = compressor;
+    evaluationData.remove('compressorid');
+    var customer = await _personRepository.getById(compressor['personid'] as int);
+    evaluationData['customer'] = customer;
+    var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
+    for (var evaluationCoalescent in evaluationCoalescents) {
+      var coalescent = await _coalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
+      evaluationCoalescent['coalescent'] = coalescent;
+      evaluationCoalescent.remove('coalescentid');
+    }
+    evaluationData['coalescents'] = evaluationCoalescents;
+    var technicians = await _evaluationTechnicianRepository.getByParentId(evaluationData['id'].toString());
+    for (var technician in technicians) {
+      var person = await _personRepository.getById(technician['personid'] as int);
+      technician['technician'] = person;
+      technician.remove('personid');
+      technician.remove('evaluationid');
+    }
+
+    evaluationData['technicians'] = technicians;
+    var photos = await _evaluationPhotoRepository.getByParentId(evaluationData['id'].toString());
+    evaluationData['photopaths'] = photos;
+    var info = await _evaluationInfoRepository.getByParentId(evaluationData['id'].toString()).then((i) => i.first);
+    evaluationData['info'] = info;
+    evaluationData.remove('infoid');
+    return evaluationData;
+  }
+
   @override
   Future<List<Map<String, Object?>>> getAll() async {
-    var evaluations = await _localDatabase.query('evaluation');
+    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
     for (var evaluation in evaluations) {
-      var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
-      evaluation['compressor'] = compressor;
-      var customer = await _personRepository.getById(evaluation['customerid'] as int);
-      evaluation['customer'] = customer;
-      var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
-      evaluation['coalescents'] = coalescents;
-      var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
-      evaluation['technicians'] = technicians;
-      var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
-      evaluation['photospaths'] = photos;
-      var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
-      evaluation['info'] = info;
+      evaluation = await _processEvaluation(evaluation);
     }
     return evaluations;
   }
 
   @override
   Future<Map<String, Object?>> getById(int id) async {
-    final Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
+    Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
       if (list.isEmpty) return {};
       return list[0];
     });
-    var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
-    evaluation['compressor'] = compressor;
-    var customer = await _personRepository.getById(evaluation['customerid'] as int);
-    evaluation['customer'] = customer;
-    var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
-    evaluation['coalescents'] = coalescents;
-    var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
-    evaluation['technicians'] = technicians;
-    var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
-    evaluation['photospaths'] = photos;
-    var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
-    evaluation['info'] = info;
+    evaluation = await _processEvaluation(evaluation);
     return evaluation;
   }
 
   @override
   Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    var evaluations = await _localDatabase.query('evaluation', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
+    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
     for (var evaluation in evaluations) {
-      var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
-      evaluation['compressor'] = compressor;
-      var customer = await _personRepository.getById(evaluation['customerid'] as int);
-      evaluation['customer'] = customer;
-      var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
-      evaluation['coalescents'] = coalescents;
-      var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
-      evaluation['technicians'] = technicians;
-      var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
-      evaluation['photospaths'] = photos;
-      var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
-      evaluation['info'] = info;
+      evaluation = await _processEvaluation(evaluation);
     }
     return evaluations;
   }
 
+  //TODO: Será necessário concluir esse método
   @override
   Future<String> save(Map<String, Object?> data) async {
     if (data['id'] == '') {
@@ -253,26 +255,52 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       for (var photo in photos) {
         exists = await _localDatabase.isSaved('evaluationphoto', id: photo['id'] as int);
         photo['evaluationid'] = evaluationMap['id'];
+
+        var photoData = await _storage.downloadFile(photo['path']);
+        if (photoData != null) {
+          photo['path'] = await _saveImage(photoData, photo['path'].toString().split('/').last);
+        } else {
+          photo['path'] = '';
+        }
+
         if (exists) {
           await _localDatabase.update('evaluationphoto', photo, where: 'id = ?', whereArgs: [evaluationMap['id']]);
         } else {
           await _localDatabase.insert('evaluationphoto', photo);
         }
       }
+
       evaluationMap.remove('documentid');
       evaluationMap.remove('technicians');
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
+
       var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
       if (signData != null) {
         evaluationMap['signaturepath'] = await _saveImage(signData, evaluationMap['signaturepath'].toString().split('/').last);
       } else {
         evaluationMap['signaturepath'] = '';
       }
-      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
-      evaluationMap['importedby'] = evaluationMap['info']['importedby'];
-      evaluationMap['importeddate'] = evaluationMap['info']['importeddate'];
+
+      exists = await _localDatabase.isSaved('evaluationinfo', id: evaluationMap['infoid']);
+      Map<String, Object?> infoMap = {};
+
+      infoMap['id'] = evaluationMap['info']['id'];
+      infoMap['evaluationid'] = evaluationMap['id'];
+      infoMap['imported'] = evaluationMap['info']['imported'];
+      infoMap['importingby'] = evaluationMap['info']['importingby'];
+      infoMap['importingdate'] = evaluationMap['info']['importingdate'];
+      infoMap['importedid'] = evaluationMap['info']['importedid'];
+      infoMap['importedby'] = evaluationMap['info']['importedby'];
+      infoMap['importeddate'] = evaluationMap['info']['importeddate'];
       evaluationMap.remove('info');
+      if (exists) {
+        await _localDatabase.update('evaluationinfo', infoMap, where: 'id = ?', whereArgs: [infoMap['id']]);
+      } else {
+        infoMap.remove('id');
+        evaluationMap['infoid'] = await _localDatabase.insert('evaluationinfo', infoMap);
+      }
+
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {
         await _localDatabase.update('evaluation', evaluationMap, where: 'id = ?', whereArgs: [evaluationMap['id']]);

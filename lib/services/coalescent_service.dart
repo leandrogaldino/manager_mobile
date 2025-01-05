@@ -41,7 +41,7 @@ class CoalescentService implements Readable<CoalescentModel>, Childable<Coalesce
   }
 
   @override
-  Future<List<CoalescentModel>> getByParentId(int parentId) async {
+  Future<List<CoalescentModel>> getByParentId(dynamic parentId) async {
     final data = await _repository.getByParentId(parentId);
     return data.map((item) => CoalescentModel.fromMap(item)).toList();
   }

@@ -53,8 +53,8 @@ class CompressorModel {
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
       serialNumber: (map['serialnumber'] ?? '') as String,
       coalescents: List<CoalescentModel>.from(
-        (map['coalescents'] as List<int>).map<CoalescentModel>(
-          (x) => CoalescentModel.fromMap(x as Map<String, dynamic>),
+        (map['coalescents'] as List<Map<String, dynamic>>).map<CoalescentModel>(
+          (x) => CoalescentModel.fromMap(x),
         ),
       ),
     );
