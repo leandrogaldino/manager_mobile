@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/person_model.dart';

@@ -65,7 +65,6 @@ class SQLScripts {
     CREATE TABLE evaluation (
       id TEXT PRIMARY KEY,
       compressorid INT NOT NULL,
-      customerid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       starttime TEXT NOT NULL,
       endtime TEXT NOT NULL,
@@ -75,7 +74,9 @@ class SQLScripts {
       oil INTEGER NOT NULL,
       separator INTEGER NOT NULL,
       responsible TEXT NOT NULL,
-      signatureurl TEXT NOT NULL,
+      advice TEXT,
+      signaturepath TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL,
       importedid INT DEFAULT NULL,
       importedby TEXT DEFAULT NULL,
       importeddate INTEGER DEFAULT NULL
@@ -87,7 +88,6 @@ class SQLScripts {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       coalescentid INT NOT NULL,
       evaluationid INT NOT NULL,
-      coalescentname TEXT NOT NULL,
       nextchange INTEGER NOT NULL
     );
   ''';
@@ -103,8 +103,21 @@ class SQLScripts {
   static const String createTableEvaluationPhoto = '''
     CREATE TABLE evaluationphoto (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      photourl TEXT NOT NULL,
+      path TEXT NOT NULL,
       evaluationid INT NOT NULL
+    );
+  ''';
+
+  static const String createTableEvaluationInfo = '''
+    CREATE TABLE evaluationinfo (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      evaluationid INT NOT NULL,
+      imported INTEGER NOT NULL,
+      importedby TEXT,
+      importeddate INTEGER,
+      importedid INTEGER
+      importingby TEXT,
+      importingdate INTEGER
     );
   ''';
 

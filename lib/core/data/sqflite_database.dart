@@ -2,16 +2,17 @@ import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/data/sql_scripts.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
 
+  //TODO: Remover o InMemory para persistencia
   @override
   Future<void> init() async {
     try {
       _database = await openDatabase(
-        join(await getDatabasesPath(), 'data.db'),
+        inMemoryDatabasePath,
+        //join(await getDatabasesPath(), 'data.db'),
         version: 1,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);
@@ -22,6 +23,7 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableEvaluationTechnician);
           await db.execute(SQLScripts.createTableEvaluationCoalescent);
           await db.execute(SQLScripts.createTableEvaluationPhoto);
+          await db.execute(SQLScripts.createTableEvaluationInfo);
           await db.execute(SQLScripts.createTableSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
@@ -115,7 +117,7 @@ class SqfliteDatabase implements LocalDatabase {
   }
 
   @override
-  Future<bool> isSaved(String table, {required int id}) async {
+  Future<bool> isSaved(String table, {required dynamic id}) async {
     try {
       final data = await _database.query(table, where: 'id = ?', whereArgs: [id]);
       if (data.isEmpty) return false;

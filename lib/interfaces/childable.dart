@@ -1,3 +1,3 @@
-abstract class ServiceParent<T> {
+abstract class Childable<T> {
   Future<List<T>> getByParentId(int parentId);
 }

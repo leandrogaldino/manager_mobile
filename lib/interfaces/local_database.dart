@@ -8,5 +8,5 @@ abstract class LocalDatabase {
   Future<int> rawInsert(String sql, [List<Object?>? arguments]);
   Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]);
   Future<int> rawUpdate(String sql, [List<Object?>? arguments]);
-  Future<bool> isSaved(String table, {required int id});
+  Future<bool> isSaved(String table, {required dynamic id});
 }

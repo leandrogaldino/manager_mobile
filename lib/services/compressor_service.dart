@@ -1,18 +1,21 @@
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
-import 'package:manager_mobile/interfaces/service.dart';
-import 'package:manager_mobile/interfaces/service_parent.dart';
+import 'package:manager_mobile/interfaces/childable.dart';
+import 'package:manager_mobile/interfaces/deletable.dart';
+import 'package:manager_mobile/interfaces/readable.dart';
+import 'package:manager_mobile/interfaces/syncronizable.dart';
+import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
-class CompressorService implements Service<CompressorModel>, ServiceParent<CompressorModel> {
+class CompressorService implements Readable<CompressorModel>, Childable<CompressorModel>, Writable<CompressorModel>, Deletable, Syncronizable {
   final CompressorRepository _repository;
 
   CompressorService({required CompressorRepository repository}) : _repository = repository;
 
   @override
-  Future<int> delete(int id) async {
-    return await _repository.delete(id);
+  Future<int> delete(dynamic id) async {
+    return await _repository.delete(id as int);
   }
 
   @override

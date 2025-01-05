@@ -1,10 +1,13 @@
+import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/repository.dart';
+import 'package:manager_mobile/interfaces/readable.dart';
+import 'package:manager_mobile/interfaces/syncronizable.dart';
+import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
-class PersonRepository implements Repository {
+class PersonRepository implements Readable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CompressorRepository _compressorRepository;
@@ -15,8 +18,8 @@ class PersonRepository implements Repository {
         _compressorRepository = compressorRepository;
 
   @override
-  Future<int> delete(int id) async {
-    return await _localDatabase.delete('person', where: 'id = ?', whereArgs: [id]);
+  Future<int> delete(dynamic id) async {
+    return await _localDatabase.delete('person', where: 'id = ?', whereArgs: [id as int]);
   }
 
   @override

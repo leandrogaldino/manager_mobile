@@ -1,11 +1,14 @@
+import 'package:manager_mobile/interfaces/childable.dart';
+import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/repository.dart';
-import 'package:manager_mobile/interfaces/repository_parent.dart';
+import 'package:manager_mobile/interfaces/readable.dart';
+import 'package:manager_mobile/interfaces/syncronizable.dart';
+import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
-class CompressorRepository implements Repository, RepositoryParent {
+class CompressorRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CoalescentRepository _coalescentRepository;
@@ -16,8 +19,8 @@ class CompressorRepository implements Repository, RepositoryParent {
         _coalescentRepository = coalescentRepository;
 
   @override
-  Future<int> delete(int id) async {
-    return await _localDatabase.delete('compressor', where: 'id = ?', whereArgs: [id]);
+  Future<int> delete(dynamic id) async {
+    return await _localDatabase.delete('compressor', where: 'id = ?', whereArgs: [id as int]);
   }
 
   @override

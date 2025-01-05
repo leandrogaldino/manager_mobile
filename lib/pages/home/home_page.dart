@@ -2,9 +2,8 @@ import 'dart:developer';
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/services/person_service.dart';
+import 'package:manager_mobile/repositories/evaluation_repository.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,8 +27,9 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            final result = GetIt.I<AppController>();
-            var all = await result.syncronize();
+            final result = GetIt.I<EvaluationRepository>();
+            await result.syncronize();
+
             log('Done!');
           },
           child: Text('Run'),

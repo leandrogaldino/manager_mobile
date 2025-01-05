@@ -47,11 +47,11 @@ class CompressorModel {
   factory CompressorModel.fromMap(Map<String, dynamic> map) {
     return CompressorModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusId'] ?? 0) as int,
-      compressorId: (map['compressorId'] ?? 0) as int,
-      compressorName: (map['compressorName'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
-      serialNumber: (map['serialNumber'] ?? '') as String,
+      statusId: (map['statusid'] ?? 0) as int,
+      compressorId: (map['compressorid'] ?? 0) as int,
+      compressorName: (map['compressorname'] ?? '') as String,
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      serialNumber: (map['serialnumber'] ?? '') as String,
       coalescents: List<CoalescentModel>.from(
         (map['coalescents'] as List<int>).map<CoalescentModel>(
           (x) => CoalescentModel.fromMap(x as Map<String, dynamic>),
@@ -78,7 +78,14 @@ class CompressorModel {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{'id': id, 'statusid': statusId, 'compressorid': compressorId, 'compressorname': compressorName, 'lastupdate': lastUpdate.millisecondsSinceEpoch, 'serialnumber': serialNumber};
+    return <String, dynamic>{
+      'id': id,
+      'statusid': statusId,
+      'compressorid': compressorId,
+      'compressorname': compressorName,
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
+      'serialnumber': serialNumber,
+    };
   }
 
   String toJson() => json.encode(toMap());

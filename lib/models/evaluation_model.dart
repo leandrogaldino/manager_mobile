@@ -1,6 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
+import 'package:manager_mobile/models/evaluation_info_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class EvaluationModel {
@@ -9,8 +13,8 @@ class EvaluationModel {
   final CompressorModel compressor;
   final PersonModel customer;
   final DateTime date;
-  final Duration startTime;
-  final Duration endTime;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
   final int horimeter;
   final int airFilter;
   final int oilFilter;
@@ -21,6 +25,8 @@ class EvaluationModel {
   final List<String> photoPaths;
   final String responsible;
   final String signaturePath;
+  final EvaluationInfoModel info;
+  final DateTime lastUpdate;
   EvaluationModel({
     required this.id,
     required this.advice,
@@ -39,6 +45,8 @@ class EvaluationModel {
     required this.photoPaths,
     required this.responsible,
     required this.signaturePath,
+    required this.info,
+    required this.lastUpdate,
   });
 
   EvaluationModel copyWith({
@@ -47,8 +55,8 @@ class EvaluationModel {
     CompressorModel? compressor,
     PersonModel? customer,
     DateTime? date,
-    Duration? startTime,
-    Duration? endTime,
+    TimeOfDay? startTime,
+    TimeOfDay? endTime,
     int? horimeter,
     int? airFilter,
     int? oilFilter,
@@ -59,6 +67,8 @@ class EvaluationModel {
     List<String>? photoPaths,
     String? responsible,
     String? signaturePath,
+    EvaluationInfoModel? info,
+    DateTime? lastUpdate,
   }) {
     return EvaluationModel(
       id: id ?? this.id,
@@ -78,6 +88,8 @@ class EvaluationModel {
       photoPaths: photoPaths ?? this.photoPaths,
       responsible: responsible ?? this.responsible,
       signaturePath: signaturePath ?? this.signaturePath,
+      info: info ?? this.info,
+      lastUpdate: lastUpdate ?? this.lastUpdate,
     );
   }
 
@@ -88,11 +100,11 @@ class EvaluationModel {
       compressor: CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
       date: DateTime.fromMillisecondsSinceEpoch((map['date'] ?? 0) as int),
-      startTime: map['startTime'],
-      endTime: map['endTime'],
+      startTime: TimeOfDay(hour: map['starttime'].toString().split(':')[0] as int, minute: map['starttime'].toString().split(':')[1] as int),
+      endTime: TimeOfDay(hour: map['endtime'].toString().split(':')[0] as int, minute: map['endtime'].toString().split(':')[1] as int),
       horimeter: (map['horimeter'] ?? 0) as int,
-      airFilter: (map['airFilter'] ?? 0) as int,
-      oilFilter: (map['oilFilter'] ?? 0) as int,
+      airFilter: (map['airfilter'] ?? 0) as int,
+      oilFilter: (map['oilfilter'] ?? 0) as int,
       separator: (map['separator'] ?? 0) as int,
       oil: (map['oil'] ?? 0) as int,
       coalescents: List<EvaluationCoalescentModel>.from(
@@ -106,16 +118,18 @@ class EvaluationModel {
         ),
       ),
       photoPaths: List<String>.from(
-        (map['photos'] as List<String>),
+        (map['photopaths'] as List<String>),
       ),
       responsible: (map['responsible'] ?? '') as String,
-      signaturePath: (map['signature']),
+      signaturePath: (map['signaturepath']),
+      info: EvaluationInfoModel.fromMap(map['info'] as Map<String, dynamic>),
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, date: $date, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, responsible: $responsible)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, date: $date, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -138,7 +152,9 @@ class EvaluationModel {
         listEquals(other.technicians, technicians) &&
         listEquals(other.photoPaths, photoPaths) &&
         other.responsible == responsible &&
-        other.signaturePath == signaturePath;
+        other.signaturePath == signaturePath &&
+        other.info == info &&
+        other.lastUpdate == lastUpdate;
   }
 
   @override
@@ -159,6 +175,38 @@ class EvaluationModel {
         technicians.hashCode ^
         photoPaths.hashCode ^
         responsible.hashCode ^
-        signaturePath.hashCode;
+        signaturePath.hashCode ^
+        info.hashCode ^
+        lastUpdate.hashCode;
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'advice': advice,
+      'compressorid': compressor.id,
+      'customerid': customer.id,
+      'date': date.millisecondsSinceEpoch,
+      'starttime': '${startTime.hour.toString()}:${startTime.minute.toString()}',
+      'endtime': '${endTime.hour.toString()}:${endTime.minute.toString()}',
+      'horimeter': horimeter,
+      'parts': {
+        'airfiler': airFilter,
+        'oilFilter': oilFilter,
+        'separator': separator,
+        'oil': oil,
+        'coalescents': coalescents.map((x) => x.toMap()).toList(),
+      },
+      'technicians': technicians.map((x) => x.toMap()).toList(),
+      'photopaths': photoPaths,
+      'responsible': responsible,
+      'signaturepath': signaturePath,
+      'info': info.toMap(),
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory EvaluationModel.fromJson(String source) => EvaluationModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }

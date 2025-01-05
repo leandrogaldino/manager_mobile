@@ -1,18 +1,21 @@
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
-import 'package:manager_mobile/interfaces/service.dart';
-import 'package:manager_mobile/interfaces/service_parent.dart';
+import 'package:manager_mobile/interfaces/childable.dart';
+import 'package:manager_mobile/interfaces/deletable.dart';
+import 'package:manager_mobile/interfaces/readable.dart';
+import 'package:manager_mobile/interfaces/syncronizable.dart';
+import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/coalescent_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
-class CoalescentService implements Service<CoalescentModel>, ServiceParent<CoalescentModel> {
+class CoalescentService implements Readable<CoalescentModel>, Childable<CoalescentModel>, Writable<CoalescentModel>, Deletable, Syncronizable {
   final CoalescentRepository _repository;
 
   CoalescentService({required CoalescentRepository repository}) : _repository = repository;
 
   @override
-  Future<int> delete(int id) async {
-    return await _repository.delete(id);
+  Future<int> delete(dynamic id) async {
+    return await _repository.delete(id as int);
   }
 
   @override

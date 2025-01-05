@@ -1,17 +1,20 @@
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
-import 'package:manager_mobile/interfaces/service.dart';
+import 'package:manager_mobile/interfaces/deletable.dart';
+import 'package:manager_mobile/interfaces/readable.dart';
+import 'package:manager_mobile/interfaces/syncronizable.dart';
+import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
-class PersonService implements Service<PersonModel> {
+class PersonService implements Readable<PersonModel>, Writable<PersonModel>, Deletable, Syncronizable {
   final PersonRepository _repository;
 
   PersonService({required PersonRepository repository}) : _repository = repository;
 
   @override
-  Future<int> delete(int id) async {
-    return await _repository.delete(id);
+  Future<int> delete(dynamic id) async {
+    return await _repository.delete(id as int);
   }
 
   @override
