@@ -61,7 +61,7 @@ class AppController {
     count += await _compressorService.syncronize().then((r) => r.downloaded);
     count += await _personService.syncronize().then((r) => r.downloaded);
     //TODO: Incluir sincronizações quando forem criadas
-    _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
+    // _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
     return SyncronizeResultModel(uploaded: 0, downloaded: count);
   }
 }

@@ -69,12 +69,24 @@ class FirestoreDatabase implements RemoteDatabase {
   }
 
   @override
-  Future<bool> updateField({required String collection, required String documentId, required String field, required value}) async {
-    try {
-      await _db.collection(collection).doc(documentId).update({field: value});
-      return true;
-    } catch (e) {
-      throw RemoteDatabaseException('Ocorreu um erro ao atualizar o registro na núvem: $e');
+  Future<void> set({required String collection, required Map<String, dynamic> data, String? id, bool merge = false}) async {
+    final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
+
+    await docRef.set(data, SetOptions(merge: merge));
+  }
+
+  @override
+  Future<void> delete({required String collection, required List<RemoteDatabaseFilter> filters}) async {
+    Query query = _db.collection(collection);
+    query = _proccessFilters(query, filters);
+    final querySnapshot = await query.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
     }
+  }
+
+  @override
+  Future<void> update({required collection, required String id, required Map<String, dynamic> data}) async {
+    await _db.collection(collection).doc(id).update(data);
   }
 }

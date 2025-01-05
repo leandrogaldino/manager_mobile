@@ -76,10 +76,7 @@ class SQLScripts {
       responsible TEXT NOT NULL,
       advice TEXT,
       signaturepath TEXT NOT NULL,
-      lastupdate INTEGER NOT NULL,
-      importedid INT DEFAULT NULL,
-      importedby TEXT DEFAULT NULL,
-      importeddate INTEGER DEFAULT NULL
+      lastupdate INTEGER NOT NULL
     );
   ''';
 
@@ -87,7 +84,7 @@ class SQLScripts {
     CREATE TABLE evaluationcoalescent (    
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       coalescentid INT NOT NULL,
-      evaluationid INT NOT NULL,
+      evaluationid TEXT NOT NULL,
       nextchange INTEGER NOT NULL
     );
   ''';
@@ -96,7 +93,7 @@ class SQLScripts {
     CREATE TABLE evaluationtechnician (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       personid INT NOT NULL,
-      evaluationid INT NOT NULL
+      evaluationid TEXT NOT NULL
     );
   ''';
 
@@ -104,18 +101,18 @@ class SQLScripts {
     CREATE TABLE evaluationphoto (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       path TEXT NOT NULL,
-      evaluationid INT NOT NULL
+      evaluationid TEXT NOT NULL
     );
   ''';
 
   static const String createTableEvaluationInfo = '''
     CREATE TABLE evaluationinfo (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      evaluationid INT NOT NULL,
+      evaluationid TEXT NOT NULL,
       imported INTEGER NOT NULL,
       importedby TEXT,
       importeddate INTEGER,
-      importedid INTEGER
+      importedid INTEGER,
       importingby TEXT,
       importingdate INTEGER
     );

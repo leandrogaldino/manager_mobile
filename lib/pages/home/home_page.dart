@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 
@@ -27,6 +28,8 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
+            //await GetIt.I<AppController>().syncronize();
+
             final result = GetIt.I<EvaluationRepository>();
             await result.syncronize();
 

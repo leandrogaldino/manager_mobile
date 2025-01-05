@@ -107,10 +107,81 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
     int lastSync = int.parse(lastSyncResult[0]['value'].toString());
 
-    //TODO Terminar de fazer LOCAL PARA A NUVEM
     //DO LOCAL PARA A NUVEM
+    var evaluationId = '${75}${104}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
+    await _localDatabase.insert('evaluation', {
+      'id': evaluationId,
+      'compressorid': 104,
+      'creationdate': DateTime.now().millisecondsSinceEpoch.toString(),
+      'starttime': '07:00',
+      'endtime': '09:00',
+      'horimeter': '13412',
+      'airfilter': '1245',
+      'oilfilter': '1245',
+      'oil': '3245',
+      'separator': '3245',
+      'responsible': 'Fulano',
+      'advice': 'Sem parecer técnico',
+      'signaturepath': '/data/user/0/br.com.lgcodecrafter.manager_mobile/files/file.png',
+      'lastupdate': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+    await _localDatabase.insert('evaluationcoalescent', {
+      'coalescentid': 1986,
+      'evaluationid': evaluationId,
+      'nextchange': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+    await _localDatabase.insert('evaluationtechnician', {
+      'personid': 5,
+      'evaluationid': evaluationId,
+    });
+    await _localDatabase.insert('evaluationphoto', {
+      'path': '/data/user/0/br.com.lgcodecrafter.manager_mobile/files/file.png',
+      'evaluationid': evaluationId,
+    });
+    await _localDatabase.insert('evaluationinfo', {
+      'evaluationid': evaluationId,
+      'imported': 0,
+      'importedby': '',
+      'importeddate': 0,
+      'importedid': 0,
+      'importingby': '',
+      'importingdate': 0,
+    });
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
-    for (var evaluationMap in localResult) {}
+    for (var evaluationMap in localResult) {
+      int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
+      String customerDocument = await _localDatabase.query('person', columns: ['document'], where: 'id = ?', whereArgs: [customerId]).then((v) => v[0]['document'].toString());
+      customerDocument = customerDocument.replaceAll('.', '').replaceFirst('/', '').replaceFirst('-', '');
+      String rootPath = '$customerDocument/${evaluationMap['id']}';
+      String signFilename = evaluationMap['signaturepath'].toString().split('/').last;
+      String signPath = '$rootPath/signature/$signFilename';
+      Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
+      await _storage.uploadFile(signPath, signData);
+      evaluationMap['signaturepath'] = signPath;
+
+      var infoMap = await _localDatabase.query('evaluationinfo', columns: ['id', 'imported', 'importedby', 'importeddate', 'importedid', 'importingby', 'importingdate'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]).then((v) => v.first);
+      evaluationMap['info'] = infoMap;
+
+      var photosListMap = await _localDatabase.query('evaluationphoto', columns: ['id', 'path'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+
+      for (var photoMap in photosListMap) {
+        String photoFilename = photoMap['path'].toString().split('/').last;
+        String photoPath = '$rootPath/photo/$photoFilename';
+        Uint8List photoData = await File(photoMap['path'].toString()).readAsBytes();
+        await _storage.uploadFile(photoPath, photoData);
+        photoMap['path'] = photoPath;
+      }
+
+      evaluationMap['photos'] = photosListMap;
+
+      var techniciansMap = await _localDatabase.query('evaluationtechnician', columns: ['id', 'personid'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+      evaluationMap['technicians'] = techniciansMap;
+
+      var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+      evaluationMap['coalescents'] = coalescentsMap;
+
+      await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
+    }
 
     //DA NUVEM PARA LOCAL
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
@@ -153,14 +224,12 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
 
-      var signature = await _storage.downloadFile(evaluationMap['signatureurl']);
-      if (signature != null) {
-        evaluationMap['signaturepath'] = await _saveImage(signature, evaluationMap['signatureurl'].toString().split('/').last);
+      var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
+      if (signData != null) {
+        evaluationMap['signaturepath'] = await _saveImage(signData, evaluationMap['signaturepath'].toString().split('/').last);
       } else {
         evaluationMap['signaturepath'] = '';
       }
-
-      evaluationMap.remove('signatureurl');
 
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap['importedby'] = evaluationMap['info']['importedby'];

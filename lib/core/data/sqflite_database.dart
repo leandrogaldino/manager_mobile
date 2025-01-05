@@ -1,6 +1,7 @@
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/data/sql_scripts.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SqfliteDatabase implements LocalDatabase {
@@ -11,8 +12,8 @@ class SqfliteDatabase implements LocalDatabase {
   Future<void> init() async {
     try {
       _database = await openDatabase(
-        inMemoryDatabasePath,
-        //join(await getDatabasesPath(), 'data.db'),
+        //inMemoryDatabasePath,
+        join(await getDatabasesPath(), 'data.db'),
         version: 1,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);
