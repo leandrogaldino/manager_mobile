@@ -28,6 +28,7 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
+          await db.execute(SQLScripts.insertSyncronizingPreference);
         },
       );
     } on DatabaseException catch (e) {
@@ -48,7 +49,7 @@ class SqfliteDatabase implements LocalDatabase {
   }
 
   @override
-  Future<int> insert(String table, Map<String, Object?> values) async {
+  Future<dynamic> insert(String table, Map<String, Object?> values) async {
     try {
       int lastInsertedId = await _database.insert(table, values);
       return lastInsertedId;
@@ -58,7 +59,7 @@ class SqfliteDatabase implements LocalDatabase {
   }
 
   @override
-  Future<int> update(String table, Map<String, Object?> values, {String? where, List<Object?>? whereArgs}) async {
+  Future<dynamic> update(String table, Map<String, Object?> values, {String? where, List<Object?>? whereArgs}) async {
     try {
       int changes = await _database.update(table, values, where: where, whereArgs: whereArgs);
       return changes;
@@ -88,7 +89,7 @@ class SqfliteDatabase implements LocalDatabase {
   }
 
   @override
-  Future<int> rawInsert(String sql, [List<Object?>? arguments]) async {
+  Future<dynamic> rawInsert(String sql, [List<Object?>? arguments]) async {
     try {
       int lastinsertedidd = await _database.rawInsert(sql, arguments);
       return lastinsertedidd;
@@ -108,7 +109,7 @@ class SqfliteDatabase implements LocalDatabase {
   }
 
   @override
-  Future<int> rawUpdate(String sql, [List<Object?>? arguments]) async {
+  Future<dynamic> rawUpdate(String sql, [List<Object?>? arguments]) async {
     try {
       int changes = await _database.rawUpdate(sql, arguments);
       return changes;

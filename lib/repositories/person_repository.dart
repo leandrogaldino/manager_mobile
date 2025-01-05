@@ -64,10 +64,8 @@ class PersonRepository implements Readable<Map<String, Object?>>, Writable<Map<S
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize() async {
+  Future<SyncronizeResultModel> syncronize(int lastSync) async {
     int count = 0;
-    final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
-    int lastSync = int.parse(lastSyncResult[0]['value'].toString());
     final remoteResult = await _remoteDatabase.get(collection: 'persons', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var data in remoteResult) {
       final bool exists = await _localDatabase.isSaved('person', id: data['id']);

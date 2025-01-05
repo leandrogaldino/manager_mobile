@@ -46,7 +46,7 @@ class PersonService implements Readable<PersonModel>, Writable<PersonModel>, Del
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize() async {
-    return _repository.syncronize();
+  Future<SyncronizeResultModel> syncronize(lastSync) async {
+    return _repository.syncronize(lastSync);
   }
 }

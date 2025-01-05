@@ -53,7 +53,7 @@ class CompressorService implements Readable<CompressorModel>, Childable<Compress
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize() async {
-    return _repository.syncronize();
+  Future<SyncronizeResultModel> syncronize(int lastSync) async {
+    return _repository.syncronize(lastSync);
   }
 }

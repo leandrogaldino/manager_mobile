@@ -27,6 +27,16 @@ class SQLScripts {
     );
   ''';
 
+  static const String insertSyncronizingPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'syncronizing',
+      0
+    );
+  ''';
+
   static const String createTableCoalescent = '''
     CREATE TABLE coalescent (
       id INTEGER PRIMARY KEY,

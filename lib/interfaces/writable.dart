@@ -1,3 +1,3 @@
 abstract class Writable<T> {
-  Future<int> save(T data);
+  Future<dynamic> save(T data);
 }

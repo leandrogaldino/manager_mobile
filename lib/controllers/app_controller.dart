@@ -56,12 +56,34 @@ class AppController {
   }
 
   Future<SyncronizeResultModel> syncronize() async {
-    int count = 0;
-    count = await _coalescentService.syncronize().then((r) => r.downloaded);
-    count += await _compressorService.syncronize().then((r) => r.downloaded);
-    count += await _personService.syncronize().then((r) => r.downloaded);
-    //TODO: Incluir sincronizações quando forem criadas
+    int downloaded = 0;
+    int uploaded = 0;
+    late SyncronizeResultModel SyncResult;
+
+    await _localDatabase.update('preferences', {'value': 1}, where: 'key = ?', whereArgs: ['syncronizing']);
+
+    final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
+    int lastSync = int.parse(lastSyncResult[0]['value'].toString());
+
+    SyncResult = await _coalescentService.syncronize(lastSync);
+    downloaded += SyncResult.downloaded;
+    uploaded += SyncResult.uploaded;
+
+    SyncResult = await _compressorService.syncronize(lastSync);
+    downloaded += SyncResult.downloaded;
+    uploaded += SyncResult.uploaded;
+
+    SyncResult = await _personService.syncronize(lastSync);
+    downloaded += SyncResult.downloaded;
+    uploaded += SyncResult.uploaded;
+
+    SyncResult = await _evaluationService.syncronize(lastSync);
+    downloaded += SyncResult.downloaded;
+    uploaded += SyncResult.uploaded;
+
     // _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
-    return SyncronizeResultModel(uploaded: 0, downloaded: count);
+
+    await _localDatabase.update('preferences', {'value': 0}, where: 'key = ?', whereArgs: ['syncronizing']);
+    return SyncronizeResultModel(uploaded: 0, downloaded: downloaded);
   }
 }

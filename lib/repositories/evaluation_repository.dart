@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
@@ -59,24 +58,83 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     for (var evaluation in evaluations) {
       var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
       evaluation['compressor'] = compressor;
-
       var customer = await _personRepository.getById(evaluation['customerid'] as int);
       evaluation['customer'] = customer;
-
       var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
       evaluation['coalescents'] = coalescents;
-
       var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
       evaluation['technicians'] = technicians;
-
       var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
       evaluation['photospaths'] = photos;
-
       var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
       evaluation['info'] = info;
     }
-
     return evaluations;
+  }
+
+  @override
+  Future<Map<String, Object?>> getById(int id) async {
+    final Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
+      if (list.isEmpty) return {};
+      return list[0];
+    });
+    var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
+    evaluation['compressor'] = compressor;
+    var customer = await _personRepository.getById(evaluation['customerid'] as int);
+    evaluation['customer'] = customer;
+    var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
+    evaluation['coalescents'] = coalescents;
+    var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
+    evaluation['technicians'] = technicians;
+    var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
+    evaluation['photospaths'] = photos;
+    var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
+    evaluation['info'] = info;
+    return evaluation;
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
+    var evaluations = await _localDatabase.query('evaluation', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
+    for (var evaluation in evaluations) {
+      var compressor = await _compressorRepository.getById(evaluation['compressorid'] as int);
+      evaluation['compressor'] = compressor;
+      var customer = await _personRepository.getById(evaluation['customerid'] as int);
+      evaluation['customer'] = customer;
+      var coalescents = await _evaluationCoalescentRepository.getByParentId(evaluation['id'] as int);
+      evaluation['coalescents'] = coalescents;
+      var technicians = await _evaluationTechnicianRepository.getByParentId(evaluation['id'] as int);
+      evaluation['technicians'] = technicians;
+      var photos = await _evaluationPhotoRepository.getByParentId(evaluation['id'] as int);
+      evaluation['photospaths'] = photos;
+      var info = await _evaluationInfoRepository.getByParentId(evaluation['id'] as int).then((i) => i.first);
+      evaluation['info'] = info;
+    }
+    return evaluations;
+  }
+
+  @override
+  Future<String> save(Map<String, Object?> data) async {
+    if (data['id'] == '') {
+      data['id'] = _getEvaluationId(data);
+      return await _localDatabase.insert('evaluation', data);
+    } else {
+      await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);
+      return data['id'].toString();
+    }
+  }
+
+  @override
+  Future<SyncronizeResultModel> syncronize(int lastSync) async {
+    int uploaded = await _syncronizeFromLocalToCloud(lastSync);
+    int downloaded = await _syncronizeFromCloudToLocal(lastSync);
+    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
+  }
+
+  String _getEvaluationId(Map<String, Object?> data) {
+    String id = '';
+    id = '${data['customerid']}${data['compressorid']}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
+    return id;
   }
 
   Future<String> _saveImage(Uint8List imageData, String fileName) async {
@@ -87,21 +145,16 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       await file.writeAsBytes(imageData);
       return filePath;
     } catch (e) {
-      throw Exception('Falha ao salvar a imagem no disco.');
+      throw FileSystemException('Falha ao salvar a imagem no disco.');
     }
   }
 
-  @override
-  Future<SyncronizeResultModel> syncronize() async {
-    int downloadedData = 0;
+  Future<int> _syncronizeFromLocalToCloud(int lastSync) async {
     int uploadedData = 0;
-    bool exists = false;
-    final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
-    int lastSync = int.parse(lastSyncResult[0]['value'].toString());
-
-    //DO LOCAL PARA A NUVEM
-    var evaluationId = '${75}${104}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
-    await _localDatabase.insert('evaluation', {
+    //MOCK
+    /*
+        var evaluationId = '${75}${104}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
+        await _localDatabase.insert('evaluation', {
       'id': evaluationId,
       'compressorid': 104,
       'creationdate': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -138,7 +191,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       'importedid': 0,
       'importingby': '',
       'importingdate': 0,
-    });
+    });*/
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
@@ -150,12 +203,9 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
       evaluationMap['signaturepath'] = signPath;
-
       var infoMap = await _localDatabase.query('evaluationinfo', columns: ['id', 'imported', 'importedby', 'importeddate', 'importedid', 'importingby', 'importingdate'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]).then((v) => v.first);
       evaluationMap['info'] = infoMap;
-
       var photosListMap = await _localDatabase.query('evaluationphoto', columns: ['id', 'path'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
-
       for (var photoMap in photosListMap) {
         String photoFilename = photoMap['path'].toString().split('/').last;
         String photoPath = '$rootPath/photo/$photoFilename';
@@ -163,19 +213,20 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         await _storage.uploadFile(photoPath, photoData);
         photoMap['path'] = photoPath;
       }
-
       evaluationMap['photos'] = photosListMap;
-
       var techniciansMap = await _localDatabase.query('evaluationtechnician', columns: ['id', 'personid'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['technicians'] = techniciansMap;
-
       var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['coalescents'] = coalescentsMap;
-
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
+      uploadedData += 1;
     }
+    return uploadedData;
+  }
 
-    //DA NUVEM PARA LOCAL
+  Future<int> _syncronizeFromCloudToLocal(int lastSync) async {
+    int downloadedData = 0;
+    bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
       var technicians = evaluationMap['technicians'];
@@ -188,7 +239,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
           await _localDatabase.insert('evaluationtechnician', technician);
         }
       }
-
       var coalescents = evaluationMap['coalescents'];
       for (var coalescent in coalescents) {
         exists = await _localDatabase.isSaved('evaluationcoalescent', id: coalescent['id'] as int);
@@ -199,7 +249,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
           await _localDatabase.insert('evaluationcoalescent', coalescent);
         }
       }
-
       var photos = evaluationMap['photos'];
       for (var photo in photos) {
         exists = await _localDatabase.isSaved('evaluationphoto', id: photo['id'] as int);
@@ -210,72 +259,28 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
           await _localDatabase.insert('evaluationphoto', photo);
         }
       }
-
       evaluationMap.remove('documentid');
       evaluationMap.remove('technicians');
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
-
       var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
       if (signData != null) {
         evaluationMap['signaturepath'] = await _saveImage(signData, evaluationMap['signaturepath'].toString().split('/').last);
       } else {
         evaluationMap['signaturepath'] = '';
       }
-
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap['importedby'] = evaluationMap['info']['importedby'];
       evaluationMap['importeddate'] = evaluationMap['info']['importeddate'];
-
       evaluationMap.remove('info');
-
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {
         await _localDatabase.update('evaluation', evaluationMap, where: 'id = ?', whereArgs: [evaluationMap['id']]);
       } else {
         await _localDatabase.insert('evaluation', evaluationMap);
       }
-
       downloadedData += 1;
     }
-
-    return SyncronizeResultModel(uploaded: uploadedData, downloaded: downloadedData);
-  }
-
-  @override
-  Future<Map<String, Object?>> getById(int id) async {
-    final Map<String, Object?> person = await _localDatabase.query('person', where: 'id = ?', whereArgs: [id]).then((list) {
-      if (list.isEmpty) return {};
-      return list[0];
-    });
-    var compressors = await _compressorRepository.getByParentId(person['id'] as int);
-    person['compressors'] = compressors;
-    return person;
-  }
-
-  @override
-  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    var persons = await _localDatabase.query('person', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
-    for (var person in persons) {
-      var compressors = await _compressorRepository.getByParentId(person['id'] as int);
-      person['compressors'] = compressors;
-    }
-    return persons;
-  }
-
-  @override
-  Future<int> save(Map<String, Object?> data) async {
-    if (data['id'] == 0) {
-      return await _localDatabase.insert('person', data);
-    } else {
-      await _localDatabase.update('person', data, where: 'id = ?', whereArgs: [data['id']]);
-      return data['id'] as int;
-    }
-  }
-
-  String _getEvaluationId(Map<String, Object?> data) {
-    String id = '';
-    id = '${data['customerid']}${data['compressorid']}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
-    return id;
+    return downloadedData;
   }
 }
