@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/interfaces/local_database.dart';
+import 'package:manager_mobile/repositories/schedule_repository.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,10 +41,11 @@ class _HomePageState extends State<HomePage> {
                 //final lastSyncResult = await Locator.get<LocalDatabase>().query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
                 //int lastSync = int.parse(lastSyncResult[0]['value'].toString());
                 //await Locator.get<EvaluationService>().syncronize(0);
+                final lastSyncResult = await Locator.get<LocalDatabase>().query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
+                int lastSync = int.parse(lastSyncResult[0]['value'].toString());
+                var result = await Locator.get<ScheduleRepository>().syncronize(lastSync);
 
-                var evaluations = await Locator.get<EvaluationService>().getAll();
-
-                log(evaluations.toString());
+                log(result.toString());
               },
               child: Text('Run'),
             ),

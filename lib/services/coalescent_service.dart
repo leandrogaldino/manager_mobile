@@ -25,7 +25,7 @@ class CoalescentService implements Readable<CoalescentModel>, Childable<Coalesce
   }
 
   @override
-  Future<CoalescentModel> getById(int id) async {
+  Future<CoalescentModel> getById(dynamic id) async {
     final data = await _repository.getById(id);
     if (data.isNotEmpty) {
       return CoalescentModel.fromMap(data);

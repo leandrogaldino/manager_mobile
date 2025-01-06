@@ -56,36 +56,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
   }
 
-  Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
-    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
-    evaluationData['compressor'] = compressor;
-    evaluationData.remove('compressorid');
-    var customer = await _personRepository.getById(compressor['personid'] as int);
-    evaluationData['customer'] = customer;
-    var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
-    for (var evaluationCoalescent in evaluationCoalescents) {
-      var coalescent = await _coalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
-      evaluationCoalescent['coalescent'] = coalescent;
-      evaluationCoalescent.remove('coalescentid');
-    }
-    evaluationData['coalescents'] = evaluationCoalescents;
-    var technicians = await _evaluationTechnicianRepository.getByParentId(evaluationData['id'].toString());
-    for (var technician in technicians) {
-      var person = await _personRepository.getById(technician['personid'] as int);
-      technician['technician'] = person;
-      technician.remove('personid');
-      technician.remove('evaluationid');
-    }
-
-    evaluationData['technicians'] = technicians;
-    var photos = await _evaluationPhotoRepository.getByParentId(evaluationData['id'].toString());
-    evaluationData['photopaths'] = photos;
-    var info = await _evaluationInfoRepository.getByParentId(evaluationData['id'].toString()).then((i) => i.first);
-    evaluationData['info'] = info;
-    evaluationData.remove('infoid');
-    return evaluationData;
-  }
-
   @override
   Future<List<Map<String, Object?>>> getAll() async {
     List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
@@ -96,7 +66,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   @override
-  Future<Map<String, Object?>> getById(int id) async {
+  Future<Map<String, Object?>> getById(dynamic id) async {
     Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
       if (list.isEmpty) return {};
       return list[0];
@@ -310,5 +280,35 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       downloadedData += 1;
     }
     return downloadedData;
+  }
+
+  Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
+    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
+    evaluationData['compressor'] = compressor;
+    evaluationData.remove('compressorid');
+    var customer = await _personRepository.getById(compressor['personid'] as int);
+    evaluationData['customer'] = customer;
+    var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
+    for (var evaluationCoalescent in evaluationCoalescents) {
+      var coalescent = await _coalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
+      evaluationCoalescent['coalescent'] = coalescent;
+      evaluationCoalescent.remove('coalescentid');
+    }
+    evaluationData['coalescents'] = evaluationCoalescents;
+    var technicians = await _evaluationTechnicianRepository.getByParentId(evaluationData['id'].toString());
+    for (var technician in technicians) {
+      var person = await _personRepository.getById(technician['personid'] as int);
+      technician['technician'] = person;
+      technician.remove('personid');
+      technician.remove('evaluationid');
+    }
+
+    evaluationData['technicians'] = technicians;
+    var photos = await _evaluationPhotoRepository.getByParentId(evaluationData['id'].toString());
+    evaluationData['photopaths'] = photos;
+    var info = await _evaluationInfoRepository.getByParentId(evaluationData['id'].toString()).then((i) => i.first);
+    evaluationData['info'] = info;
+    evaluationData.remove('infoid');
+    return evaluationData;
   }
 }

@@ -9,7 +9,7 @@ class ScheduleModel {
   final int id;
   final int statusId;
   final int userId;
-  final DateTime creation;
+  final DateTime creationDate;
   final DateTime visitDate;
   final int visitTypeId;
   final PersonModel customer;
@@ -21,7 +21,7 @@ class ScheduleModel {
     required this.id,
     required this.statusId,
     required this.userId,
-    required this.creation,
+    required this.creationDate,
     required this.visitDate,
     required this.visitTypeId,
     required this.customer,
@@ -48,7 +48,7 @@ class ScheduleModel {
       id: id ?? this.id,
       statusId: statusId ?? this.statusId,
       userId: userId ?? this.userId,
-      creation: creation ?? this.creation,
+      creationDate: creation ?? this.creationDate,
       visitDate: visitDate ?? this.visitDate,
       visitTypeId: visitTypeId ?? this.visitTypeId,
       customer: customer ?? this.customer,
@@ -64,7 +64,7 @@ class ScheduleModel {
       'id': id,
       'statusid': statusId,
       'userid': userId,
-      'creation': creation.millisecondsSinceEpoch,
+      'creationdate': creationDate.millisecondsSinceEpoch,
       'visitdate': visitDate.millisecondsSinceEpoch,
       'visittypeid': visitTypeId,
       'customer': customer.toMap(),
@@ -80,7 +80,7 @@ class ScheduleModel {
       id: (map['id'] ?? 0) as int,
       statusId: (map['statusid'] ?? 0) as int,
       userId: (map['userid'] ?? 0) as int,
-      creation: DateTime.fromMillisecondsSinceEpoch((map['creation'] ?? 0) as int),
+      creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       visitDate: DateTime.fromMillisecondsSinceEpoch((map['visitdate'] ?? 0) as int),
       visitTypeId: (map['visittypeid'] ?? 0) as int,
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
@@ -97,7 +97,7 @@ class ScheduleModel {
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, statusId: $statusId, userId: $userId, creation: $creation, visitDate: $visitDate, visitTypeId: $visitTypeId, customer: $customer, compressor: $compressor, evaluation: $evaluation, instructions: $instructions, lastUpdate: $lastUpdate)';
+    return 'ScheduleModel(id: $id, statusId: $statusId, userId: $userId, creationdate: $creationDate, visitDate: $visitDate, visitTypeId: $visitTypeId, customer: $customer, compressor: $compressor, evaluation: $evaluation, instructions: $instructions, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -107,7 +107,7 @@ class ScheduleModel {
     return other.id == id &&
         other.statusId == statusId &&
         other.userId == userId &&
-        other.creation == creation &&
+        other.creationDate == creationDate &&
         other.visitDate == visitDate &&
         other.visitTypeId == visitTypeId &&
         other.customer == customer &&
@@ -119,6 +119,6 @@ class ScheduleModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ userId.hashCode ^ creation.hashCode ^ visitDate.hashCode ^ visitTypeId.hashCode ^ customer.hashCode ^ compressor.hashCode ^ evaluation.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ statusId.hashCode ^ userId.hashCode ^ creationDate.hashCode ^ visitDate.hashCode ^ visitTypeId.hashCode ^ customer.hashCode ^ compressor.hashCode ^ evaluation.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
   }
 }

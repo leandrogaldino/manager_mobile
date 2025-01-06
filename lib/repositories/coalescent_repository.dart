@@ -26,7 +26,7 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<Map<String, Object?>> getById(int id) async {
+  Future<Map<String, Object?>> getById(dynamic id) async {
     final result = await _localDatabase.query('coalescent', where: 'id = ?', whereArgs: [id]);
     if (result.isEmpty) return {};
     return result[0];

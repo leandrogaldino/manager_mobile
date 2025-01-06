@@ -34,7 +34,7 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<Map<String, Object?>> getById(int id) async {
+  Future<Map<String, Object?>> getById(dynamic id) async {
     final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
       if (list.isEmpty) return {};
       return list[0];

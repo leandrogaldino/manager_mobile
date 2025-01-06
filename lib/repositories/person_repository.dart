@@ -33,7 +33,7 @@ class PersonRepository implements Readable<Map<String, Object?>>, Writable<Map<S
   }
 
   @override
-  Future<Map<String, Object?>> getById(int id) async {
+  Future<Map<String, Object?>> getById(dynamic id) async {
     final Map<String, Object?> person = await _localDatabase.query('person', where: 'id = ?', whereArgs: [id]).then((list) {
       if (list.isEmpty) return {};
       return list[0];

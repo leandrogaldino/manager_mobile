@@ -23,7 +23,7 @@ class SQLScripts {
       value
     ) VALUES (
       'lastsync',
-      0
+      '0'
     );
   ''';
 
@@ -33,7 +33,7 @@ class SQLScripts {
       value
     ) VALUES (
       'syncronizing',
-      0
+      '0'
     );
   ''';
 
@@ -43,29 +43,7 @@ class SQLScripts {
       value
     ) VALUES (
       'loggedtechnicianid',
-      0
-    );
-  ''';
-
-  static const String createTableCoalescent = '''
-    CREATE TABLE coalescent (
-      id INTEGER PRIMARY KEY,
-      statusid INTEGER NOT NULL,
-      personcompressorid INT NOT NULL,
-      coalescentname TEXT NOT NULL,
-      lastupdate INTEGER NOT NULL
-    );
-  ''';
-
-  static const String createTableCompressor = '''
-    CREATE TABLE compressor (
-      id INTEGER PRIMARY KEY,
-      personid INTEGER NOT NULL,
-      statusid INTEGER NOT NULL,
-      compressorid INTEGER NOT NULL,
-      compressorname TEXT NOT NULL,
-      serialnumber TEXT NOT NULL,
-      lastupdate INTEGER NOT NULL
+      '0'
     );
   ''';
 
@@ -78,6 +56,42 @@ class SQLScripts {
       iscustomer INTEGER NOT NULL,
       istechnician INTEGER NOT NULL,
       lastupdate INTEGER NOT NULL
+    );
+  ''';
+
+  static const String createTableCompressor = '''
+    CREATE TABLE compressor (
+      id INTEGER PRIMARY KEY,
+      personid INTEGER NOT NULL,
+      statusid INTEGER NOT NULL,
+      compressorid INTEGER NOT NULL,
+      compressorname TEXT NOT NULL,
+      serialnumber TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableCoalescent = '''
+    CREATE TABLE coalescent (
+      id INTEGER PRIMARY KEY,
+      statusid INTEGER NOT NULL,
+      compressorid INT NOT NULL,
+      coalescentname TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableEvaluationInfo = '''
+    CREATE TABLE evaluationinfo (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      imported INTEGER NOT NULL,
+      importedby TEXT,
+      importeddate INTEGER,
+      importedid INTEGER,
+      importingby TEXT,
+      importingdate INTEGER
     );
   ''';
 
@@ -98,6 +112,7 @@ class SQLScripts {
       signaturepath TEXT NOT NULL,
       infoid INTEGER NOT NULL,
       lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (infoid) REFERENCES evaluationinfo (id) ON DELETE CASCADE,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';
@@ -108,6 +123,7 @@ class SQLScripts {
       coalescentid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       nextchange INTEGER NOT NULL,
+      FOREIGN KEY (coalescentid) REFERENCES coalescent (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
@@ -117,6 +133,7 @@ class SQLScripts {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       personid INT NOT NULL,
       evaluationid TEXT NOT NULL,
+      FOREIGN KEY (personid) REFERENCES person (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
@@ -130,32 +147,20 @@ class SQLScripts {
     );
   ''';
 
-  static const String createTableEvaluationInfo = '''
-    CREATE TABLE evaluationinfo (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      evaluationid TEXT NOT NULL,
-      imported INTEGER NOT NULL,
-      importedby TEXT,
-      importeddate INTEGER,
-      importedid INTEGER,
-      importingby TEXT,
-      importingdate INTEGER,
-      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
-    );
-  ''';
-
   static const String createTableSchedule = '''
     CREATE TABLE schedule (
       id INTEGER PRIMARY KEY,
-      creation INTEGER NOT NULL,
-      customerid INT NOT NULL,
-      evaluationid INT DEFAULT NULL,
+      compressorid INT NOT NULL,
+      evaluationid TEXT DEFAULT NULL,
+      statusid INT NOT NULL,
+      creationdate INTEGER NOT NULL,
+      visitdate INTEGER NOT NULL,
+      visittypeid INT NOT NULL,
       instructions TEXT,
       lastupdate INTEGER NOT NULL,
-      personcompressorid INT NOT NULL,
-      statusid INT NOT NULL,
-      visitdate INTEGER NOT NULL,
-      visittypeid INT NOT NULL
+
+      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE SET NULL
     );
   ''';
 }

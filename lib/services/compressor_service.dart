@@ -25,7 +25,7 @@ class CompressorService implements Readable<CompressorModel>, Childable<Compress
   }
 
   @override
-  Future<CompressorModel> getById(int id) async {
+  Future<CompressorModel> getById(dynamic id) async {
     final data = await _repository.getById(id);
     if (data.isNotEmpty) {
       return CompressorModel.fromMap(data);

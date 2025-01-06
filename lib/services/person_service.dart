@@ -24,7 +24,7 @@ class PersonService implements Readable<PersonModel>, Writable<PersonModel>, Del
   }
 
   @override
-  Future<PersonModel> getById(int id) async {
+  Future<PersonModel> getById(dynamic id) async {
     final data = await _repository.getById(id);
     if (data.isNotEmpty) {
       return PersonModel.fromMap(data);

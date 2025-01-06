@@ -1,6 +1,6 @@
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/core/data/sql_scripts.dart';
+import 'package:manager_mobile/core/constants/sql_scripts.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

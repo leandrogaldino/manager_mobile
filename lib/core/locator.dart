@@ -15,6 +15,7 @@ import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/schedule_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
@@ -171,6 +172,16 @@ class Locator {
     _getIt.registerLazySingleton(
       () => EvaluationService(
         repository: _getIt.get<EvaluationRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => ScheduleRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+        compressorRepository: _getIt.get<CompressorRepository>(),
+        personRepository: _getIt.get<PersonRepository>(),
+        evaluationRepository: _getIt.get<EvaluationRepository>(),
       ),
     );
 

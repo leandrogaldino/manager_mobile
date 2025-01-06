@@ -14,7 +14,7 @@ class EvaluationModel {
   final String advice;
   final CompressorModel compressor;
   final PersonModel customer;
-  final DateTime date;
+  final DateTime creationDate;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
   final int horimeter;
@@ -34,7 +34,7 @@ class EvaluationModel {
     required this.advice,
     required this.compressor,
     required this.customer,
-    required this.date,
+    required this.creationDate,
     required this.startTime,
     required this.endTime,
     required this.horimeter,
@@ -77,7 +77,7 @@ class EvaluationModel {
       advice: advice ?? this.advice,
       compressor: compressor ?? this.compressor,
       customer: customer ?? this.customer,
-      date: date ?? this.date,
+      creationDate: date ?? this.creationDate,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       horimeter: horimeter ?? this.horimeter,
@@ -101,7 +101,7 @@ class EvaluationModel {
       advice: (map['advice'] ?? '') as String,
       compressor: CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
-      date: DateTime.fromMillisecondsSinceEpoch((map['date'] ?? 0) as int),
+      creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
       horimeter: (map['horimeter'] ?? 0) as int,
@@ -133,7 +133,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, date: $date, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationdate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -144,7 +144,7 @@ class EvaluationModel {
         other.advice == advice &&
         other.compressor == compressor &&
         other.customer == customer &&
-        other.date == date &&
+        other.creationDate == creationDate &&
         other.startTime == startTime &&
         other.endTime == endTime &&
         other.horimeter == horimeter &&
@@ -167,7 +167,7 @@ class EvaluationModel {
         advice.hashCode ^
         compressor.hashCode ^
         customer.hashCode ^
-        date.hashCode ^
+        creationDate.hashCode ^
         startTime.hashCode ^
         endTime.hashCode ^
         horimeter.hashCode ^
@@ -190,7 +190,7 @@ class EvaluationModel {
       'advice': advice,
       'compressorid': compressor.id,
       'customerid': customer.id,
-      'date': date.millisecondsSinceEpoch,
+      'creationdate': creationDate.millisecondsSinceEpoch,
       'starttime': '${startTime.hour.toString()}:${startTime.minute.toString()}',
       'endtime': '${endTime.hour.toString()}:${endTime.minute.toString()}',
       'horimeter': horimeter,

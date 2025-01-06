@@ -1,3 +1,3 @@
-abstract class Deletable<T> {
+abstract class Deletable {
   Future<int> delete(dynamic id);
 }

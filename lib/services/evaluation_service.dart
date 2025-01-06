@@ -24,7 +24,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
   }
 
   @override
-  Future<EvaluationModel> getById(int id) async {
+  Future<EvaluationModel> getById(dynamic id) async {
     final data = await _repository.getById(id);
     if (data.isNotEmpty) {
       return EvaluationModel.fromMap(data);
