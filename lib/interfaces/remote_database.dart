@@ -1,6 +1,6 @@
 abstract class RemoteDatabase {
   Future<List<Map<String, dynamic>>> get({required String collection, List<RemoteDatabaseFilter>? filters});
-  Future<void> set({required String collection, required Map<String, dynamic> data, String id, bool merge = false});
+  Future<void> set({required String collection, required Map<String, dynamic> data, String? id, bool merge = false});
   Future<void> delete({required String collection, required List<RemoteDatabaseFilter> filters});
   Future<void> update({required collection, required String id, required Map<String, dynamic> data});
 }

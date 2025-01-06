@@ -46,7 +46,11 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
 
   @override
   Future<int> save(Map<String, Object?> data) async {
-    if (data['id'] == 0) {
+    bool exists = await _localDatabase.query('coalescent', where: 'id = ?', whereArgs: [data['id']]).then((v) {
+      if (v.isEmpty) return false;
+      return true;
+    });
+    if (!exists) {
       return await _localDatabase.insert('coalescent', data);
     } else {
       await _localDatabase.update('coalescent', data, where: 'id = ?', whereArgs: [data['id']]);

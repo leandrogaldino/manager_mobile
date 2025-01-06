@@ -1,9 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:manager_mobile/interfaces/remote_database.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
+import 'package:manager_mobile/interfaces/remote_database.dart';
 
-class FirestoreDatabase implements RemoteDatabase {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+class FakeFirestoreDatabase implements RemoteDatabase {
+  final _db = FakeFirebaseFirestore();
+
+  @override
+  Future<void> delete({required String collection, required List<RemoteDatabaseFilter> filters}) async {
+    Query query = _db.collection(collection);
+    query = _proccessFilters(query, filters);
+    final querySnapshot = await query.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
 
   @override
   Future<List<Map<String, dynamic>>> get({required String collection, List<RemoteDatabaseFilter>? filters}) async {
@@ -23,6 +34,17 @@ class FirestoreDatabase implements RemoteDatabase {
     } catch (e) {
       throw RemoteDatabaseException('Ocorreu um erro ao consultar o registro na núvem: $e');
     }
+  }
+
+  @override
+  Future<void> set({required String collection, required Map<String, dynamic> data, String? id, bool merge = false}) async {
+    final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
+    await docRef.set(data, SetOptions(merge: merge));
+  }
+
+  @override
+  Future<void> update({required collection, required String id, required Map<String, dynamic> data}) async {
+    await _db.collection(collection).doc(id).update(data);
   }
 
   Query _proccessFilters(Query query, List<RemoteDatabaseFilter>? filters) {
@@ -66,26 +88,5 @@ class FirestoreDatabase implements RemoteDatabase {
       }
     }
     return query;
-  }
-
-  @override
-  Future<void> set({required String collection, required Map<String, dynamic> data, String? id, bool merge = false}) async {
-    final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
-    await docRef.set(data, SetOptions(merge: merge));
-  }
-
-  @override
-  Future<void> delete({required String collection, required List<RemoteDatabaseFilter> filters}) async {
-    Query query = _db.collection(collection);
-    query = _proccessFilters(query, filters);
-    final querySnapshot = await query.get();
-    for (var doc in querySnapshot.docs) {
-      await doc.reference.delete();
-    }
-  }
-
-  @override
-  Future<void> update({required collection, required String id, required Map<String, dynamic> data}) async {
-    await _db.collection(collection).doc(id).update(data);
   }
 }

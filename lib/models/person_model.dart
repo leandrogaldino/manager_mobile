@@ -11,7 +11,7 @@ class PersonModel {
   final String document;
   final bool isCustomer;
   final bool isTechnician;
-  final int lastUpdate;
+  final DateTime lastUpdate;
   final String shortName;
   final List<CompressorModel> compressors;
   PersonModel({
@@ -31,7 +31,7 @@ class PersonModel {
     String? document,
     bool? isCustomer,
     bool? isTechnician,
-    int? lastUpdate,
+    DateTime? lastUpdate,
     String? shortName,
     List<CompressorModel>? compressors,
   }) {
@@ -54,7 +54,7 @@ class PersonModel {
       document: (map['document'] ?? '') as String,
       isCustomer: map['iscustomer'] == 0 ? false : true,
       isTechnician: map['istechnician'] == 0 ? false : true,
-      lastUpdate: (map['lastupdate'] ?? 0) as int,
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
       shortName: (map['shortname'] ?? '') as String,
       compressors: List<CompressorModel>.from(
         (map['compressors'] as List<Map<String, dynamic>>).map<CompressorModel>(
@@ -88,7 +88,7 @@ class PersonModel {
       'document': document,
       'iscustomer': isCustomer == false ? 0 : 1,
       'istechnician': isTechnician == false ? 0 : 1,
-      'lastupdate': lastUpdate,
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
       'shortname': shortName,
     };
   }

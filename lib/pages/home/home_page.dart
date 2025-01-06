@@ -6,7 +6,6 @@ import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
-import 'package:manager_mobile/services/evaluation_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

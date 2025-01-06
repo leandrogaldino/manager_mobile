@@ -7,10 +7,10 @@ import 'package:sqflite/sqflite.dart';
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
   @override
-  Future<void> init() async {
+  Future<void> init({bool inMemory = false}) async {
     try {
       _database = await openDatabase(
-        join(await getDatabasesPath(), 'data.db'),
+        inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db'),
         version: 1,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);

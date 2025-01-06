@@ -1,5 +1,5 @@
 abstract class LocalDatabase {
-  Future<void> init();
+  Future<void> init({bool inMemory = false});
   Future<int> delete(String table, {String? where, List<Object?>? whereArgs});
   Future<dynamic> update(String table, Map<String, Object?> values, {String? where, List<Object?>? whereArgs});
   Future<dynamic> insert(String table, Map<String, Object?> values);
