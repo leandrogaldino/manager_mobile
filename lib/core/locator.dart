@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
@@ -28,6 +29,7 @@ import 'package:manager_mobile/services/evaluation_photo_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/evaluation_technician_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
+import 'package:manager_mobile/services/schedule_service.dart';
 
 class Locator {
   Locator._();
@@ -185,14 +187,21 @@ class Locator {
       ),
     );
 
-    _getIt.registerLazySingleton<AppController>(
-      () => AppController(
-        localDatabase: _getIt.get<LocalDatabase>(),
-        coalescentService: _getIt.get<CoalescentService>(),
-        compressorService: _getIt.get<CompressorService>(),
-        personService: _getIt.get<PersonService>(),
-        evaluationService: _getIt.get<EvaluationService>(),
-      ),
+    _getIt.registerLazySingleton(
+      () => ScheduleService(repository: _getIt.get<ScheduleRepository>()),
     );
+
+    _getIt.registerLazySingleton<AppController>(() => AppController(
+          localDatabase: _getIt.get<LocalDatabase>(),
+          coalescentService: _getIt.get<CoalescentService>(),
+          compressorService: _getIt.get<CompressorService>(),
+          personService: _getIt.get<PersonService>(),
+          evaluationService: _getIt.get<EvaluationService>(),
+        ));
+
+    _getIt.registerLazySingleton<HomeController>(() => HomeController(
+          scheduleService: _getIt.get<ScheduleService>(),
+          evaluationService: _getIt.get<EvaluationService>(),
+        ));
   }
 }

@@ -45,6 +45,28 @@ class AppController {
     _localDatabase.update('preferences', {'value': theme.toString()}, where: 'key = ?', whereArgs: ['theme']);
   }
 
+  String getCurrentThemeModeName() {
+    switch (themeMode.value) {
+      case ThemeMode.light:
+        return 'Claro';
+      case ThemeMode.dark:
+        return 'Escuro';
+      default:
+        return 'Sistema';
+    }
+  }
+
+  ThemeMode getThemeMode(String themeString) {
+    switch (themeString) {
+      case 'Claro':
+        return ThemeMode.light;
+      case 'Escuro':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
+
   ThemeMode _parseThemeMode(String themeString) {
     switch (themeString) {
       case 'ThemeMode.light':

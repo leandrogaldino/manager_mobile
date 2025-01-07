@@ -1,24 +1,17 @@
 import 'package:manager_mobile/interfaces/childable.dart';
-import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 
-class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
+class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
 
   CoalescentRepository({required RemoteDatabase remoteDatabase, required LocalDatabase localDatabase})
       : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase;
-
-  @override
-  Future<int> delete(dynamic id) async {
-    return await _localDatabase.delete('coalescent', where: 'id = ?', whereArgs: [id as int]);
-  }
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
@@ -42,20 +35,6 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
   Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     final result = await _localDatabase.query('coalescent', where: 'personcompressorid = ?', whereArgs: [parentId]);
     return result;
-  }
-
-  @override
-  Future<int> save(Map<String, Object?> data) async {
-    bool exists = await _localDatabase.query('coalescent', where: 'id = ?', whereArgs: [data['id']]).then((v) {
-      if (v.isEmpty) return false;
-      return true;
-    });
-    if (!exists) {
-      return await _localDatabase.insert('coalescent', data);
-    } else {
-      await _localDatabase.update('coalescent', data, where: 'id = ?', whereArgs: [data['id']]);
-      return data['id'] as int;
-    }
   }
 
   @override

@@ -1,15 +1,13 @@
-import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
-class ScheduleRepository implements Readable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
+class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CompressorRepository _compressorRepository;
@@ -26,11 +24,6 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Writable<Map
         _compressorRepository = compressorRepository,
         _personRepository = personRepository,
         _evaluationRepository = evaluationRepository;
-
-  @override
-  Future<int> delete(dynamic id) async {
-    return await _localDatabase.delete('schedule', where: 'id = ?', whereArgs: [id as int]);
-  }
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
@@ -58,16 +51,6 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Writable<Map
       schedule = await _processSchedule(schedule);
     }
     return schedules;
-  }
-
-  @override
-  Future<int> save(Map<String, Object?> data) async {
-    if (data['id'] == '') {
-      return await _localDatabase.insert('schedule', data);
-    } else {
-      await _localDatabase.update('schedule', data, where: 'id = ?', whereArgs: [data['id']]);
-      return int.parse(data['id'].toString());
-    }
   }
 
   @override

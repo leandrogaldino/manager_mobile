@@ -1,11 +1,8 @@
-import 'dart:developer';
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/repositories/schedule_repository.dart';
+import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,42 +12,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final appController = Locator.get<AppController>();
+
+  final homeController = Locator.get<HomeController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: (() async {
-              var c = GetIt.I<LoginController>();
-              await c.signOut().asyncLoader();
-            }),
-            icon: Icon(Icons.logout)),
-      ),
+      appBar: CustomAppBar(),
       body: Center(
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: () async {
-                //await Locator.get<AppController>().syncronize().asyncLoader(customLoader: Loader(message: 'Sincronizando Dados'));
-                //await Locator.get<LocalDatabase>().delete('evaluation');
-                //await Locator.get<LocalDatabase>().delete('evaluationphoto');
-                //await Locator.get<LocalDatabase>().delete('evaluationinfo');
-                //await Locator.get<LocalDatabase>().delete('evaluationtechnician');
-                //await Locator.get<LocalDatabase>().delete('evaluationcoalescent');
-                //final lastSyncResult = await Locator.get<LocalDatabase>().query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
-                //int lastSync = int.parse(lastSyncResult[0]['value'].toString());
-                //await Locator.get<EvaluationService>().syncronize(0);
-                final lastSyncResult = await Locator.get<LocalDatabase>().query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
-                int lastSync = int.parse(lastSyncResult[0]['value'].toString());
-                var result = await Locator.get<ScheduleRepository>().syncronize(lastSync);
-
-                log(result.toString());
-              },
+              onPressed: () async {},
               child: Text('Run'),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // await controller.getStories().asyncLoader();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    //_textController.dispose();
+    super.dispose();
   }
 }

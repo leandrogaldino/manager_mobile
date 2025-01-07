@@ -1,14 +1,12 @@
 import 'package:manager_mobile/interfaces/childable.dart';
-import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
-class CompressorRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
+class CompressorRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CoalescentRepository _coalescentRepository;
@@ -17,11 +15,6 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
       : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _coalescentRepository = coalescentRepository;
-
-  @override
-  Future<int> delete(dynamic id) async {
-    return await _localDatabase.delete('compressor', where: 'id = ?', whereArgs: [id as int]);
-  }
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
@@ -62,16 +55,6 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
       compressor['coalescents'] = coalescents;
     }
     return compressors;
-  }
-
-  @override
-  Future<int> save(Map<String, Object?> data) async {
-    if (data['id'] == 0) {
-      return await _localDatabase.insert('compressor', data);
-    } else {
-      await _localDatabase.update('compressor', data, where: 'id = ?', whereArgs: [data['id']]);
-      return data['id'] as int;
-    }
   }
 
   @override
