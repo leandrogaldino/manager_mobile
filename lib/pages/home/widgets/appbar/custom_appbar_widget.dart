@@ -23,9 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () {},
-          icon: Icon(
-            Icons.filter_alt_off,
-          ),
+          icon: Icon(Icons.filter_alt),
         ),
         PopupButton(loginController: loginController),
       ],

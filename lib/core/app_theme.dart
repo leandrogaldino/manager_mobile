@@ -7,7 +7,7 @@ class AppTheme {
 
   static OutlineInputBorder getBorder(Color color) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(color: color),
     );
   }
