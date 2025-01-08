@@ -14,19 +14,34 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final appController = Locator.get<AppController>();
-
   final homeController = Locator.get<HomeController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(
+        onFilterToggle: homeController.toggleFilterBarVisibility,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           spacing: 5,
           children: [
-            FilterBar(),
+            ListenableBuilder(
+              listenable: homeController,
+              builder: (context, child) {
+                return ClipRect(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    height: homeController.filterbarVisible ? 140 : 0,
+                    child: SingleChildScrollView(
+                      child: FilterBar(),
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

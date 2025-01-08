@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -33,5 +34,29 @@ class HomeController extends ChangeNotifier {
       _state = HomeStateError(e.toString());
     }
     notifyListeners();
+  }
+
+  bool filterbarVisible = false;
+  bool filtering = false;
+
+  void toggleFilterBarVisibility() {
+    filterbarVisible = !filterbarVisible;
+    notifyListeners();
+  }
+
+  DateTimeRange? _selectedDateRange;
+  DateTimeRange? get selectedDateRange => _selectedDateRange;
+
+  void setSelectedDateRange(DateTimeRange? range) {
+    _selectedDateRange = range;
+    notifyListeners();
+  }
+
+  String get selectedDateRangeText {
+    if (_selectedDateRange == null) return '';
+    String initialDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.start);
+    String finalDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.end);
+
+    return '$initialDate até $finalDate';
   }
 }

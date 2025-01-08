@@ -1,53 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/home_controller.dart';
+import 'package:manager_mobile/core/locator.dart';
 
 class FilterBar extends StatelessWidget {
   const FilterBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      spacing: 5,
-      children: [
-        Divider(),
-        TextField(
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: "Filtrar",
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {},
-          child: Container(
-            height: 48,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: theme.colorScheme.onSecondary,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                spacing: 15,
-                children: [
-                  Icon(
-                    Icons.calendar_month,
-                    color: theme.colorScheme.onSecondary,
-                  ),
-                  Text(
-                    'Data',
-                    style: theme.textTheme.labelLarge,
-                  ),
-                ],
-              ),
+    final homeController = Locator.get<HomeController>();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        spacing: 5,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              labelText: "Cliente/Compressor",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
             ),
           ),
-        ),
-        Divider()
-      ],
+          ListenableBuilder(
+              listenable: homeController,
+              builder: (context, child) {
+                return TextField(
+                  controller: TextEditingController(text: homeController.selectedDateRangeText),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: "Data",
+                    prefixIcon: Icon(Icons.calendar_month),
+                    border: OutlineInputBorder(),
+                  ),
+                  onTap: () async {
+                    final DateTimeRange? picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                      initialDateRange: homeController.selectedDateRange,
+                    );
+
+                    homeController.setSelectedDateRange(picked);
+                  },
+                );
+              }),
+          Divider()
+        ],
+      ),
     );
   }
 }
