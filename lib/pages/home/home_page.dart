@@ -30,11 +30,12 @@ class _HomePageState extends State<HomePage> {
             ListenableBuilder(
               listenable: homeController,
               builder: (context, child) {
+                if (!homeController.filterBarVisible) FocusScope.of(context).unfocus();
                 return ClipRect(
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
-                    height: homeController.filterbarVisible ? 140 : 0,
+                    height: homeController.filterBarVisible ? 150 : 0,
                     child: SingleChildScrollView(
                       child: FilterBar(),
                     ),

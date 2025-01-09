@@ -36,19 +36,26 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool filterbarVisible = false;
-  bool filtering = false;
-
+  bool _filterBarVisible = false;
+  bool get filterBarVisible => _filterBarVisible;
   void toggleFilterBarVisibility() {
-    filterbarVisible = !filterbarVisible;
+    _filterBarVisible = !_filterBarVisible;
     notifyListeners();
   }
+
+  bool _filtering = false;
+  bool get filtering => _filtering;
 
   DateTimeRange? _selectedDateRange;
   DateTimeRange? get selectedDateRange => _selectedDateRange;
 
   void setSelectedDateRange(DateTimeRange? range) {
     _selectedDateRange = range;
+    if (_selectedDateRange != null || _typedCustomerOrCompressorText != '') {
+      _filtering = true;
+    } else {
+      _filtering = false;
+    }
     notifyListeners();
   }
 
@@ -58,5 +65,18 @@ class HomeController extends ChangeNotifier {
     String finalDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.end);
 
     return '$initialDate até $finalDate';
+  }
+
+  String _typedCustomerOrCompressorText = '';
+  String get typedCustomerOrCompressorText => _typedCustomerOrCompressorText;
+
+  void setCustomerOrCompressorText(String text) {
+    _typedCustomerOrCompressorText = text;
+    if (_selectedDateRange != null || _typedCustomerOrCompressorText != '') {
+      _filtering = true;
+    } else {
+      _filtering = false;
+    }
+    notifyListeners();
   }
 }
