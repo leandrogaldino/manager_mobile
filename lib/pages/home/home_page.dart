@@ -5,6 +5,7 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
 
+//https://www.treinaweb.com.br/blog/criando-um-bottomnavigationbar-com-flutter?utm_source=&utm_medium=&utm_campaign=&utm_content=&gad_source=1&gclid=CjwKCAiAhP67BhAVEiwA2E_9g2_De7Y7S6geg0lLuAT71c6GBC8v-hqeCRxY2DAElcYJ9x7SWGbeDRoCBpUQAvD_BwE
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -43,9 +44,23 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 50,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text('Item $index'),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(onTap: (index) {}, items: [
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Agendamentos"),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: "Avaliações"),
+      ]),
     );
   }
 
