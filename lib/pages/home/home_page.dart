@@ -1,9 +1,11 @@
+import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
+import 'package:manager_mobile/pages/home/widgets/schedule/schedule_list.dart';
 
 //https://www.treinaweb.com.br/blog/criando-um-bottomnavigationbar-com-flutter?utm_source=&utm_medium=&utm_campaign=&utm_content=&gad_source=1&gclid=CjwKCAiAhP67BhAVEiwA2E_9g2_De7Y7S6geg0lLuAT71c6GBC8v-hqeCRxY2DAElcYJ9x7SWGbeDRoCBpUQAvD_BwE
 class HomePage extends StatefulWidget {
@@ -45,14 +47,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 50,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Item $index'),
-                  );
-                },
-              ),
+              child: ScheduleList(schedules: homeController.schedules),
             ),
           ],
         ),
@@ -67,7 +62,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // await controller.getStories().asyncLoader();
+      await appController.syncronize().asyncLoader();
+      await homeController.fetchData().asyncLoader();
     });
     super.initState();
   }

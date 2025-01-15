@@ -76,22 +76,24 @@ class SQLScripts {
     CREATE TABLE coalescent (
       id INTEGER PRIMARY KEY,
       statusid INTEGER NOT NULL,
-      compressorid INT NOT NULL,
+      personcompressorid INT NOT NULL,
       coalescentname TEXT NOT NULL,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE CASCADE
+      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE CASCADE
     );
   ''';
 
   static const String createTableEvaluationInfo = '''
     CREATE TABLE evaluationinfo (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      evaluationid TEXT NOT NULL,
       imported INTEGER NOT NULL,
       importedby TEXT,
       importeddate INTEGER,
       importedid INTEGER,
       importingby TEXT,
-      importingdate INTEGER
+      importingdate INTEGER,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';
 

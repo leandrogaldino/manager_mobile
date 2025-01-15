@@ -5,6 +5,7 @@ import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
+import 'package:manager_mobile/services/schedule_service.dart';
 
 class AppController {
   final LocalDatabase _localDatabase;
@@ -12,6 +13,7 @@ class AppController {
   final CompressorService _compressorService;
   final PersonService _personService;
   final EvaluationService _evaluationService;
+  final ScheduleService _scheduleService;
 
   AppController({
     required localDatabase,
@@ -19,11 +21,13 @@ class AppController {
     required compressorService,
     required personService,
     required evaluationService,
+    required scheduleService,
   })  : _localDatabase = localDatabase,
         _coalescentService = coalescentService,
         _compressorService = compressorService,
         _personService = personService,
-        _evaluationService = evaluationService;
+        _evaluationService = evaluationService,
+        _scheduleService = scheduleService;
 
   final themeMode = ValueNotifier<ThemeMode>(ThemeMode.light);
 
@@ -98,6 +102,10 @@ class AppController {
     uploaded += syncResult.uploaded;
 
     syncResult = await _personService.syncronize(lastSync);
+    downloaded += syncResult.downloaded;
+    uploaded += syncResult.uploaded;
+
+    syncResult = await _scheduleService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
 

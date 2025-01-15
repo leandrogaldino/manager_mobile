@@ -197,6 +197,7 @@ class Locator {
           compressorService: _getIt.get<CompressorService>(),
           personService: _getIt.get<PersonService>(),
           evaluationService: _getIt.get<EvaluationService>(),
+          scheduleService: _getIt.get<ScheduleService>(),
         ));
 
     _getIt.registerLazySingleton<HomeController>(() => HomeController(

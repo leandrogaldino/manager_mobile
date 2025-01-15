@@ -66,7 +66,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     scheduleData.remove('compressorid');
     var customer = await _personRepository.getById(compressor['personid'] as int);
     scheduleData['customer'] = customer;
-    var evaluation = await _evaluationRepository.getById(scheduleData['evaluationid'] as int);
+    var evaluation = await _evaluationRepository.getById(scheduleData['evaluationid'].toString());
     scheduleData['evaluation'] = evaluation;
     scheduleData.remove('evaluationid');
     return scheduleData;
