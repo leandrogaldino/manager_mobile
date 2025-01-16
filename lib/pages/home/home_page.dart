@@ -46,9 +46,14 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            Expanded(
-              child: ScheduleList(schedules: homeController.schedules),
-            ),
+            ListenableBuilder(
+              listenable: homeController,
+              builder: (context, child) {
+                return Expanded(
+                  child: ScheduleList(schedules: homeController.schedules),
+                );
+              },
+            )
           ],
         ),
       ),

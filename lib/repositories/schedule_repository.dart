@@ -4,7 +4,6 @@ import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
 class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizable {
@@ -12,18 +11,15 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
   final LocalDatabase _localDatabase;
   final CompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
-  final EvaluationRepository _evaluationRepository;
   ScheduleRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
     required CompressorRepository compressorRepository,
     required PersonRepository personRepository,
-    required EvaluationRepository evaluationRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _compressorRepository = compressorRepository,
-        _personRepository = personRepository,
-        _evaluationRepository = evaluationRepository;
+        _personRepository = personRepository;
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
@@ -66,14 +62,10 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     scheduleData.remove('compressorid');
     var customer = await _personRepository.getById(compressor['personid'] as int);
     scheduleData['customer'] = customer;
-    var evaluation = await _evaluationRepository.getById(scheduleData['evaluationid'].toString());
-    scheduleData['evaluation'] = evaluation;
-    scheduleData.remove('evaluationid');
     return scheduleData;
   }
 
   Future<int> _syncronizeFromLocalToCloud(int lastSync) async {
-    await _localDatabase.delete('schedule');
     int uploadedData = 0;
     final localResult = await _localDatabase.query('schedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {

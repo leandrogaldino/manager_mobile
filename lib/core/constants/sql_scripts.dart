@@ -153,16 +153,13 @@ class SQLScripts {
     CREATE TABLE schedule (
       id INTEGER PRIMARY KEY,
       compressorid INT NOT NULL,
-      evaluationid TEXT DEFAULT NULL,
       statusid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       visitdate INTEGER NOT NULL,
       visittypeid INT NOT NULL,
       instructions TEXT,
       lastupdate INTEGER NOT NULL,
-
-      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT,
-      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE SET NULL
+      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';
 }

@@ -183,7 +183,6 @@ class Locator {
         localDatabase: _getIt.get<LocalDatabase>(),
         compressorRepository: _getIt.get<CompressorRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
-        evaluationRepository: _getIt.get<EvaluationRepository>(),
       ),
     );
 
