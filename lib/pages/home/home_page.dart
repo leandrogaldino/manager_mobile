@@ -52,33 +52,20 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  Builder(builder: (context) {
-                    if (state is HomeStateError) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Message.showErrorSnackbar(context: context, message: state.errorMessage);
-                      });
-                      return GestureDetector(
-                        on
-                        child: Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final iconSize = constraints.maxWidth * 0.4;
-                              return Center(
-                                child: Icon(
-                                  Icons.error,
-                                  size: iconSize,
-                                  color: Colors.red,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    }
-                    return Expanded(
-                      child: ScheduleList(schedules: homeController.schedules),
-                    );
-                  })
+                  Expanded(
+                    child: Builder(builder: (context) {
+                      if (state is HomeStateError) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Message.showErrorSnackbar(context: context, message: state.errorMessage);
+                        });
+                      }
+                      return RefreshIndicator(
+                          onRefresh: () async {
+                            Future.delayed(Duration(seconds: 5)).asyncLoader();
+                          },
+                          child: ScheduleList(schedules: homeController.schedules));
+                    }),
+                  )
                 ],
               ),
             );

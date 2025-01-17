@@ -19,7 +19,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: (() async {
           await loginController.signOut().asyncLoader();
         }),
-        icon: Icon(Icons.edit_note_outlined),
+        icon: Icon(Icons.calendar_today),
       ),
       title: Text('Agendamentos'),
       centerTitle: true,

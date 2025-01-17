@@ -27,7 +27,6 @@ class HomeController extends ChangeNotifier {
 
   Future<void> fetchData() async {
     try {
-      throw Exception();
       _schedules = await _scheduleService.getAll();
       _evaluations = await _evaluationService.getAll();
       _state = HomeStateSuccess(schedules, evaluations);
