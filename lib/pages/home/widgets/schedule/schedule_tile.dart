@@ -31,7 +31,7 @@ class ScheduleTile extends StatelessWidget {
           ),
           trailing: Text(
             DateFormat('dd/MM/yyyy').format(schedule.visitDate),
-            style: TextStyle(color: Colors.white),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
           ),
         ),
       ),

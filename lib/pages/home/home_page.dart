@@ -1,11 +1,15 @@
+import 'dart:ffi';
+
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/schedule/schedule_list.dart';
+import 'package:manager_mobile/states/home_state.dart';
 
 //https://www.treinaweb.com.br/blog/criando-um-bottomnavigationbar-com-flutter?utm_source=&utm_medium=&utm_campaign=&utm_content=&gad_source=1&gclid=CjwKCAiAhP67BhAVEiwA2E_9g2_De7Y7S6geg0lLuAT71c6GBC8v-hqeCRxY2DAElcYJ9x7SWGbeDRoCBpUQAvD_BwE
 class HomePage extends StatefulWidget {
@@ -25,38 +29,60 @@ class _HomePageState extends State<HomePage> {
       appBar: CustomAppBar(
         onFilterToggle: homeController.toggleFilterBarVisibility,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          spacing: 5,
-          children: [
-            ListenableBuilder(
-              listenable: homeController,
-              builder: (context, child) {
-                if (!homeController.filterBarVisible) FocusScope.of(context).unfocus();
-                return ClipRect(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    height: homeController.filterBarVisible ? 150 : 0,
-                    child: SingleChildScrollView(
-                      child: FilterBar(),
+      body: ListenableBuilder(
+          listenable: homeController,
+          builder: (context, child) {
+            final state = homeController.state;
+
+            if (!homeController.filterBarVisible) {
+              FocusScope.of(context).unfocus();
+            }
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                spacing: 5,
+                children: [
+                  ClipRect(
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      height: homeController.filterBarVisible ? 150 : 0,
+                      child: SingleChildScrollView(
+                        child: FilterBar(),
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
-            ListenableBuilder(
-              listenable: homeController,
-              builder: (context, child) {
-                return Expanded(
-                  child: ScheduleList(schedules: homeController.schedules),
-                );
-              },
-            )
-          ],
-        ),
-      ),
+                  Builder(builder: (context) {
+                    if (state is HomeStateError) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Message.showErrorSnackbar(context: context, message: state.errorMessage);
+                      });
+                      return GestureDetector(
+                        on
+                        child: Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final iconSize = constraints.maxWidth * 0.4;
+                              return Center(
+                                child: Icon(
+                                  Icons.error,
+                                  size: iconSize,
+                                  color: Colors.red,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                    return Expanded(
+                      child: ScheduleList(schedules: homeController.schedules),
+                    );
+                  })
+                ],
+              ),
+            );
+          }),
       bottomNavigationBar: BottomNavigationBar(onTap: (index) {}, items: [
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Agendamentos"),
         BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: "Avaliações"),

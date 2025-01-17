@@ -17,7 +17,7 @@ class Loader extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            LoadingAnimationWidget.inkDrop(
+            LoadingAnimationWidget.threeArchedCircle(
               color: theme.colorScheme.primary,
               size: 50,
             ),
