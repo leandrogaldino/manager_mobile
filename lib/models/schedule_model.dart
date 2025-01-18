@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:manager_mobile/models/compressor_model.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class ScheduleModel {
@@ -86,6 +85,21 @@ class ScheduleModel {
   String toJson() => json.encode(toMap());
 
   factory ScheduleModel.fromJson(String source) => ScheduleModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  String get visitTypeString {
+    switch (visitTypeId) {
+      case 0:
+        return 'Levantamento';
+      case 1:
+        return 'Preventiva';
+      case 2:
+        return 'Chamado';
+      case 3:
+        return 'Contrato';
+      default:
+        return '';
+    }
+  }
 
   @override
   String toString() {

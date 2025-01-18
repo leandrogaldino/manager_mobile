@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:manager_mobile/models/schedule_model.dart';
-import 'package:manager_mobile/pages/home/widgets/schedule/schedule_tile.dart';
+import 'package:manager_mobile/pages/home/widgets/schedule/schedule_tile_widget.dart';
 
-class ScheduleList extends StatelessWidget {
-  const ScheduleList({
+class ScheduleListWidget extends StatelessWidget {
+  const ScheduleListWidget({
     super.key,
     required this.schedules,
   });
@@ -15,7 +15,9 @@ class ScheduleList extends StatelessWidget {
     return ListView.builder(
       itemCount: schedules.length,
       itemBuilder: (context, index) {
-        return ScheduleTile(schedule: schedules[index]);
+        return ScheduleTileWidget(
+          schedule: schedules[index],
+        );
       },
     );
   }

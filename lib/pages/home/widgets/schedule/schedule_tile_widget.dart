@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/pages/home/widgets/schedule/schedule_widget.dart';
 
-class ScheduleTile extends StatelessWidget {
-  const ScheduleTile({
+class ScheduleTileWidget extends StatelessWidget {
+  const ScheduleTileWidget({
     super.key,
     required this.schedule,
   });
@@ -33,6 +34,22 @@ class ScheduleTile extends StatelessWidget {
             DateFormat('dd/MM/yyyy').format(schedule.visitDate),
             style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
           ),
+          onTap: () async {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(10),
+                ),
+              ),
+              builder: (context) {
+                return ScheduleWidget(
+                  schedule: schedule,
+                );
+              },
+            );
+          },
         ),
       ),
     );
