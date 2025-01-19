@@ -7,7 +7,6 @@ import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/home/home_page.dart';
 import 'package:manager_mobile/pages/login/login_page.dart';
-import 'package:manager_mobile/pages/schedule/schedule_page.dart';
 import 'package:manager_mobile/core/app_theme.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/widgets/auth_state_listener.dart';
@@ -34,12 +33,6 @@ class App extends StatelessWidget {
           home: const AuthStateListener(),
           navigatorObservers: [observer],
           onGenerateRoute: (settings) {
-            if (settings.name == Routes.schedule) {
-              final schedule = settings.arguments as ScheduleModel;
-              return MaterialPageRoute(
-                builder: (context) => SchedulePage(schedule: schedule),
-              );
-            }
             if (settings.name == Routes.evaluation) {
               final evaluation = settings.arguments as EvaluationModel;
               return MaterialPageRoute(

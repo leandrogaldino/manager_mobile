@@ -8,6 +8,7 @@ import 'package:manager_mobile/models/evaluation_info_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/models/schedule_model.dart';
 
 class EvaluationModel {
   final String id;
@@ -130,6 +131,19 @@ class EvaluationModel {
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
+
+factory EvaluationModel.fromSchedule(ScheduleModel schedule){
+  List<EvaluationCoalescentModel> coalescents=[];
+for (var coalescent in schedule.compressor.coalescents) {
+  coalescents.add(EvaluationCoalescentModel(id: id, coalescent: coalescent, nextChange: nextChange))
+}
+
+EvaluationCoalescentModel coalescent = EvaluationCoalescentModel(id: id, coalescent: coalescent, nextChange: nextChange)
+
+
+  return EvaluationModel(id: null, advice: null, compressor: schedule.compressor, creationDate: DateTime.now(), startTime: TimeOfDay.now(), endTime: null, horimeter: null, airFilter: null, oilFilter: null, separator: null, oil: null, coalescents: coalescents, technicians: technicians, photoPaths: null, responsible: null, signaturePath: null, info: null, lastUpdate: null);
+}
+
 
   @override
   String toString() {

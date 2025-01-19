@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/core/constants/routes.dart';
 
 import 'package:manager_mobile/models/schedule_model.dart';
 
@@ -111,7 +112,10 @@ class ScheduleWidget extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // Salvar ação
-                  Navigator.of(context).pop();
+                  Navigator.of(context).popAndPushNamed(
+                    Routes.evaluation,
+                  );
+                  //arguments: EvaluationModel.fromSchedule(schedule)
                 },
                 child: Text('Iniciar Avaliação'),
               ),
