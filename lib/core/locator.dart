@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
@@ -203,5 +204,7 @@ class Locator {
           scheduleService: _getIt.get<ScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
         ));
+
+    _getIt.registerLazySingleton<FilterController>(() => FilterController());
   }
 }

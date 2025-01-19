@@ -1,16 +1,16 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
+import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/schedule/schedule_list_widget.dart';
-import 'package:manager_mobile/states/home_state.dart';
 
-//https://www.treinaweb.com.br/blog/criando-um-bottomnavigationbar-com-flutter?utm_source=&utm_medium=&utm_campaign=&utm_content=&gad_source=1&gclid=CjwKCAiAhP67BhAVEiwA2E_9g2_De7Y7S6geg0lLuAT71c6GBC8v-hqeCRxY2DAElcYJ9x7SWGbeDRoCBpUQAvD_BwE
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -19,75 +19,78 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final appController = Locator.get<AppController>();
-  final homeController = Locator.get<HomeController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        onFilterToggle: homeController.toggleFilterBarVisibility,
-      ),
-      body: ListenableBuilder(
-        listenable: homeController,
-        builder: (context, child) {
-          final state = homeController.state;
-          if (!homeController.filterBarVisible) {
-            FocusScope.of(context).unfocus();
-          }
-          if (state is HomeStateError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Message.showErrorSnackbar(context: context, message: state.errorMessage);
-            });
-          }
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              spacing: 5,
-              children: [
-                ClipRect(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    height: homeController.filterBarVisible ? 150 : 0,
-                    child: SingleChildScrollView(
-                      child: FilterBar(),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      final result = await appController.syncronize();
-                      _showSyncResultSnackbar(result);
-                    },
-                    child: ScheduleListWidget(schedules: homeController.schedules),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(onTap: (index) {}, items: [
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Agendamentos"),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_basket), label: "Avaliações"),
-      ]),
-    );
-  }
+  late final AppController appController;
+  late final HomeController homeController;
+  late final FilterController filterController;
 
   @override
   void initState() {
+    super.initState();
+    appController = Locator.get<AppController>();
+    homeController = Locator.get<HomeController>();
+    filterController = Locator.get<FilterController>();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await appController.syncronize().asyncLoader();
       await homeController.fetchData().asyncLoader();
     });
-    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          spacing: 5,
+          children: [
+            FilterBar(),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  final result = await appController.syncronize();
+                  _showSyncResultSnackbar(result);
+                },
+                child: ListenableBuilder(
+                  listenable: homeController,
+                  builder: (context, child) {
+                    return homeController.currentIndex == 0 ? ScheduleListWidget(schedules: homeController.schedules) : EvaluationListWidget(evaluations: homeController.evaluations);
+                  },
+                ),
+                //child: EvaluationListWidget(evaluations: homeController.evaluations),
+                //child: ScheduleListWidget(schedules: homeController.schedules),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: ListenableBuilder(
+        listenable: homeController,
+        builder: (context, child) {
+          return BottomNavigationBar(
+            currentIndex: homeController.currentIndex,
+            onTap: (index) {
+              homeController.setCurrentIndex(index);
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today),
+                label: "Agendamentos",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.content_paste),
+                label: "Avaliações",
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   @override
   void dispose() {
-    //_textController.dispose();
     super.dispose();
   }
 

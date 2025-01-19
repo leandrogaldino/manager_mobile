@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -25,10 +24,37 @@ class HomeController extends ChangeNotifier {
   List<ScheduleModel> get schedules => _schedules;
   List<EvaluationModel> get evaluations => _evaluations;
 
-  Future<void> fetchData() async {
+  Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
       _schedules = await _scheduleService.getAll();
       _evaluations = await _evaluationService.getAll();
+
+      if (customerOrCompressor != null && customerOrCompressor.isNotEmpty) {
+        _schedules = _schedules.where(
+          (schedule) {
+            return schedule.customer.shortName.toLowerCase().contains(customerOrCompressor) || schedule.compressor.compressorName.toLowerCase().contains(customerOrCompressor) || schedule.compressor.serialNumber.toLowerCase().contains(customerOrCompressor);
+          },
+        ).toList();
+        _evaluations = _evaluations.where(
+          (evaluation) {
+            return evaluation.customer.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor.serialNumber.toLowerCase().contains(customerOrCompressor);
+          },
+        ).toList();
+      }
+      if (dateRange != null) {
+        if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
+          _schedules = _schedules.where((schedule) => schedule.visitDate.isAtSameMomentAs(dateRange.start)).toList();
+          _evaluations = _evaluations.where((evaluation) => evaluation.creationDate.isAtSameMomentAs(dateRange.start)).toList();
+        } else {
+          _schedules = _schedules.where((schedule) {
+            return (schedule.visitDate.isAfter(dateRange.start) || schedule.visitDate.isAtSameMomentAs(dateRange.start)) && (schedule.visitDate.isBefore(dateRange.end) || schedule.visitDate.isAtSameMomentAs(dateRange.end));
+          }).toList();
+          _evaluations = _evaluations.where((evaluation) {
+            return (evaluation.creationDate.isAfter(dateRange.start) || evaluation.creationDate.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate.isBefore(dateRange.end) || evaluation.creationDate.isAtSameMomentAs(dateRange.end));
+          }).toList();
+        }
+      }
+
       _state = HomeStateSuccess(schedules, evaluations);
     } on Exception catch (e) {
       _state = HomeStateError(e.toString());
@@ -36,47 +62,11 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _filterBarVisible = false;
-  bool get filterBarVisible => _filterBarVisible;
-  void toggleFilterBarVisibility() {
-    _filterBarVisible = !_filterBarVisible;
-    notifyListeners();
-  }
+  int _currentIndex = 0;
+  int get currentIndex => _currentIndex;
 
-  bool _filtering = false;
-  bool get filtering => _filtering;
-
-  DateTimeRange? _selectedDateRange;
-  DateTimeRange? get selectedDateRange => _selectedDateRange;
-
-  void setSelectedDateRange(DateTimeRange? range) {
-    _selectedDateRange = range;
-    if (_selectedDateRange != null || _typedCustomerOrCompressorText != '') {
-      _filtering = true;
-    } else {
-      _filtering = false;
-    }
-    notifyListeners();
-  }
-
-  String get selectedDateRangeText {
-    if (_selectedDateRange == null) return '';
-    String initialDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.start);
-    String finalDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.end);
-
-    return '$initialDate até $finalDate';
-  }
-
-  String _typedCustomerOrCompressorText = '';
-  String get typedCustomerOrCompressorText => _typedCustomerOrCompressorText;
-
-  void setCustomerOrCompressorText(String text) {
-    _typedCustomerOrCompressorText = text;
-    if (_selectedDateRange != null || _typedCustomerOrCompressorText != '') {
-      _filtering = true;
-    } else {
-      _filtering = false;
-    }
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
     notifyListeners();
   }
 }

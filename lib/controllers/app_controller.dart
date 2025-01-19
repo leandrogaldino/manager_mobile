@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
@@ -7,7 +9,7 @@ import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
 
-class AppController {
+class AppController extends ChangeNotifier {
   final LocalDatabase _localDatabase;
   final CoalescentService _coalescentService;
   final CompressorService _compressorService;
@@ -93,22 +95,27 @@ class AppController {
     final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
     int lastSync = int.parse(lastSyncResult[0]['value'].toString());
 
+    log('Sincronizando Coalescentes');
     syncResult = await _coalescentService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
 
+    log('Sincronizando Compressores');
     syncResult = await _compressorService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
 
+    log('Sincronizando Pessoas');
     syncResult = await _personService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
 
+    log('Sincronizando Agendamentos');
     syncResult = await _scheduleService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
 
+    log('Sincronizando Avaliações');
     syncResult = await _evaluationService.syncronize(lastSync);
     downloaded += syncResult.downloaded;
     uploaded += syncResult.uploaded;
@@ -116,6 +123,7 @@ class AppController {
     _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
 
     await _localDatabase.update('preferences', {'value': 0}, where: 'key = ?', whereArgs: ['syncronizing']);
+    notifyListeners();
     return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }
 }
