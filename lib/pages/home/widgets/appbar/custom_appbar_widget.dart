@@ -1,8 +1,6 @@
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
-import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/popup_button_widget.dart';
 
