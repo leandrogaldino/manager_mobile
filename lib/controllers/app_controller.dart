@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
@@ -15,6 +16,7 @@ class AppController extends ChangeNotifier {
   final PersonService _personService;
   final EvaluationService _evaluationService;
   final ScheduleService _scheduleService;
+  final AppPreferences _appPreferences;
 
   AppController({
     required localDatabase,
@@ -23,12 +25,14 @@ class AppController extends ChangeNotifier {
     required personService,
     required evaluationService,
     required scheduleService,
+    required appPreferences,
   })  : _localDatabase = localDatabase,
         _coalescentService = coalescentService,
         _compressorService = compressorService,
         _personService = personService,
         _evaluationService = evaluationService,
-        _scheduleService = scheduleService;
+        _scheduleService = scheduleService,
+        _appPreferences = appPreferences;
 
   final themeMode = ValueNotifier<ThemeMode>(ThemeMode.light);
 
@@ -39,8 +43,7 @@ class AppController extends ChangeNotifier {
 
   Future<void> loadTheme() async {
     try {
-      final result = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['theme']);
-      themeMode.value = _parseThemeMode(result[0]['value'] as String? ?? 'ThemeMode.system');
+      themeMode.value = await _appPreferences.getThemeMode();
     } catch (e) {
       throw Exception('Erro ao carregar o tema: $e');
     }
@@ -67,18 +70,6 @@ class AppController extends ChangeNotifier {
         return ThemeMode.light;
       case 'Escuro':
         return ThemeMode.dark;
-      default:
-        return ThemeMode.system;
-    }
-  }
-
-  ThemeMode _parseThemeMode(String themeString) {
-    switch (themeString) {
-      case 'ThemeMode.light':
-        return ThemeMode.light;
-      case 'ThemeMode.dark':
-        return ThemeMode.dark;
-      case 'ThemeMode.system':
       default:
         return ThemeMode.system;
     }
