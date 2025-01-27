@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           spacing: 5,
           children: [
-            FilterBar(),
+            FilterBarWidget(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {

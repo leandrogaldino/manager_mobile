@@ -5,7 +5,7 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/login/widgets/app_title_widget.dart';
-import 'package:manager_mobile/core/widgets/loader.dart';
+import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/states/login_state.dart';
 import 'package:validatorless/validatorless.dart';
 
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                                 final valid = formKey.currentState?.validate() ?? false;
                                 if (valid) {
                                   await controller.singIn('${emailEC.text}@manager.com', passwordEC.text).asyncLoader(
-                                        customLoader: const Loader(message: 'Entrando'),
+                                        customLoader: const LoaderWidget(message: 'Entrando'),
                                       );
                                 }
                               },

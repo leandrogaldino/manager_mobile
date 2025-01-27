@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-class Loader extends StatelessWidget {
-  const Loader({
+class LoaderWidget extends StatelessWidget {
+  const LoaderWidget({
     super.key,
     String? message,
   }) : _message = message;

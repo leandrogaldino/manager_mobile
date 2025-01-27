@@ -3,14 +3,14 @@ import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 
-class FilterBar extends StatefulWidget {
-  const FilterBar({super.key});
+class FilterBarWidget extends StatefulWidget {
+  const FilterBarWidget({super.key});
 
   @override
-  State<FilterBar> createState() => _FilterBarState();
+  State<FilterBarWidget> createState() => _FilterBarWidgetState();
 }
 
-class _FilterBarState extends State<FilterBar> {
+class _FilterBarWidgetState extends State<FilterBarWidget> {
   late final FilterController filterController;
   late final HomeController homeController;
   late final TextEditingController customerControllerEC;

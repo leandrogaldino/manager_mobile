@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_widget.dart';
 
 class EvaluationTileWidget extends StatelessWidget {
   const EvaluationTileWidget({
@@ -33,20 +33,8 @@ class EvaluationTileWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
           ),
           onTap: () async {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(10),
-                ),
-              ),
-              builder: (context) {
-                return EvaluationWidget(
-                  evaluation: evaluation,
-                );
-              },
-            );
+            //TODO: Abrir página da avaliação.
+            Navigator.of(context).pushNamed(Routes.evaluation, arguments: evaluation);
           },
         ),
       ),

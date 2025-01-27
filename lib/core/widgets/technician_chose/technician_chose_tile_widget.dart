@@ -1,44 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/preferences.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
-class TechnicianChoseTileWidget extends StatefulWidget {
+class TechnicianChoseTileWidget extends StatelessWidget {
   const TechnicianChoseTileWidget({
     super.key,
     required this.technician,
+    required this.checked,
   });
 
   final PersonModel technician;
-
-  @override
-  State<TechnicianChoseTileWidget> createState() => _TechnicianChoseTileWidgetState();
-}
-
-class _TechnicianChoseTileWidgetState extends State<TechnicianChoseTileWidget> {
-  late final Preferences preferences;
-
-  @override
-  void initState() {
-    super.initState();
-    preferences = Locator.get<Preferences>();
-  }
+  final bool checked;
 
   @override
   Widget build(BuildContext context) {
+    final TechnicianController technicianController = Locator.get<TechnicianController>();
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
         color: Colors.orange,
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
+        trailing: checked ? Icon(Icons.check, color: Colors.white) : null,
         title: Text(
-          widget.technician.shortName,
+          technician.shortName,
           style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
         ),
         onTap: () async {
-          await preferences.setLoggedTechnicianId(widget.technician.id);
+          await technicianController.setLoggedTechnicianId(technician.id);
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
         },
       ),
     );

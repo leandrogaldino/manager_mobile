@@ -1,9 +1,9 @@
 import 'package:manager_mobile/interfaces/local_database.dart';
 
-class Preferences {
+class AppPreferences {
   final LocalDatabase _database;
 
-  Preferences({required LocalDatabase database}) : _database = database;
+  AppPreferences({required LocalDatabase database}) : _database = database;
 
   Future<void> setLoggedTechnicianId(int id) async {
     await _database.update('preferences', {'value': id}, where: 'key = ?', whereArgs: ['loggedtechnicianid']);

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 
-class ThemeSwitch extends StatelessWidget {
-  const ThemeSwitch({super.key});
+class ThemeSwitchWidget extends StatelessWidget {
+  const ThemeSwitchWidget({super.key});
 
   Widget rollingIconBuilder(String? value, bool foreground) {
     return Icon(

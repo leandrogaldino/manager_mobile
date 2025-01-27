@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:manager_mobile/models/evaluation_model.dart';
 
 class EvaluationPage extends StatefulWidget {
@@ -13,8 +14,12 @@ class EvaluationPage extends StatefulWidget {
 class _EvaluationPageState extends State<EvaluationPage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Página de Avaliação')),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Avaliação'),
+        centerTitle: true,
+      ),
+      body: Center(child: Text('Página de Avaliação: ${widget.evaluation.customer.shortName}')),
     );
   }
 }

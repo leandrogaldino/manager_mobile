@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/preferences.dart';
+import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
-import 'package:manager_mobile/pages/home/widgets/technician_chose/technician_choose_list_widget.dart';
 
-class ScheduleWidget extends StatefulWidget {
+class ScheduleWidget extends StatelessWidget {
   const ScheduleWidget({
     super.key,
     required this.schedule,
@@ -18,22 +18,9 @@ class ScheduleWidget extends StatefulWidget {
   final ScheduleModel schedule;
 
   @override
-  State<ScheduleWidget> createState() => _ScheduleWidgetState();
-}
-
-class _ScheduleWidgetState extends State<ScheduleWidget> {
-  late final TechnicianController technicianController;
-  late final Preferences preferences;
-
-  @override
-  void initState() {
-    super.initState();
-    technicianController = Locator.get<TechnicianController>();
-    preferences = Locator.get<Preferences>();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final TechnicianController technicianController = Locator.get<TechnicianController>();
+    final AppPreferences preferences = Locator.get<AppPreferences>();
     return Padding(
       padding: EdgeInsets.only(
         top: 24,
@@ -56,7 +43,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: widget.schedule.visitTypeString,
+                    text: schedule.visitTypeString,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -72,7 +59,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: DateFormat('dd/MM/yyyy').format(widget.schedule.visitDate),
+                    text: DateFormat('dd/MM/yyyy').format(schedule.visitDate),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -88,7 +75,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: widget.schedule.customer.shortName,
+                    text: schedule.customer.shortName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -104,13 +91,13 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: widget.schedule.compressor.compressorName,
+                    text: schedule.compressor.compressorName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
             ),
-            if (widget.schedule.instructions.isNotEmpty)
+            if (schedule.instructions.isNotEmpty)
               RichText(
                 text: TextSpan(
                   children: [
@@ -121,7 +108,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                           ),
                     ),
                     TextSpan(
-                      text: widget.schedule.instructions,
+                      text: schedule.instructions,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -133,18 +120,15 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                   var logged = await preferences.getLoggedTechnicianId;
                   if (logged == 0) {
                     var technicians = await technicianController.getTechnicians();
+
                     if (!context.mounted) return;
                     await showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Center(child: Text('Escolha o Técnico')),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            height: 300,
-                            child: TechnicianChoseListWidget(technicians: technicians),
-                          ),
+                        return TechnicianChooseDialog(
+                          technicians: technicians,
+                          loggedTechnician: technicianController.loggedTechnicianId,
                         );
                       },
                     );
@@ -160,7 +144,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                     return;
                   }
                   if (!context.mounted) return;
-                  var evaluation = EvaluationModel.fromSchedule(widget.schedule);
+                  var evaluation = EvaluationModel.fromSchedule(schedule);
                   Navigator.of(context).popAndPushNamed(
                     Routes.evaluation,
                     arguments: evaluation,
