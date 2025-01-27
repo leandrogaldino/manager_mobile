@@ -1,17 +1,36 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-
+import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/preferences.dart';
+import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/pages/home/widgets/technician_chose/technician_choose_list_widget.dart';
 
-class ScheduleWidget extends StatelessWidget {
+class ScheduleWidget extends StatefulWidget {
   const ScheduleWidget({
     super.key,
     required this.schedule,
   });
 
   final ScheduleModel schedule;
+
+  @override
+  State<ScheduleWidget> createState() => _ScheduleWidgetState();
+}
+
+class _ScheduleWidgetState extends State<ScheduleWidget> {
+  late final TechnicianController technicianController;
+  late final Preferences preferences;
+
+  @override
+  void initState() {
+    super.initState();
+    technicianController = Locator.get<TechnicianController>();
+    preferences = Locator.get<Preferences>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +56,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.visitTypeString,
+                    text: widget.schedule.visitTypeString,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -53,7 +72,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: DateFormat('dd/MM/yyyy').format(schedule.visitDate),
+                    text: DateFormat('dd/MM/yyyy').format(widget.schedule.visitDate),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -69,7 +88,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.customer.shortName,
+                    text: widget.schedule.customer.shortName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -85,13 +104,13 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.compressor.compressorName,
+                    text: widget.schedule.compressor.compressorName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
             ),
-            if (schedule.instructions.isNotEmpty)
+            if (widget.schedule.instructions.isNotEmpty)
               RichText(
                 text: TextSpan(
                   children: [
@@ -102,7 +121,7 @@ class ScheduleWidget extends StatelessWidget {
                           ),
                     ),
                     TextSpan(
-                      text: schedule.instructions,
+                      text: widget.schedule.instructions,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -110,12 +129,42 @@ class ScheduleWidget extends StatelessWidget {
               ),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Salvar ação
+                onPressed: () async {
+                  var logged = await preferences.getLoggedTechnicianId;
+                  if (logged == 0) {
+                    var technicians = await technicianController.getTechnicians();
+                    if (!context.mounted) return;
+                    await showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Center(child: Text('Escolha o Técnico')),
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            height: 300,
+                            child: TechnicianChoseListWidget(technicians: technicians),
+                          ),
+                        );
+                      },
+                    );
+                    logged = await preferences.getLoggedTechnicianId;
+                  }
+                  if (logged == 0) {
+                    if (context.mounted) {
+                      Message.showInfoSnackbar(
+                        context: context,
+                        message: 'Não é possível iniciar uma avaliação sem informar quem você é.',
+                      );
+                    }
+                    return;
+                  }
+                  if (!context.mounted) return;
+                  var evaluation = EvaluationModel.fromSchedule(widget.schedule);
                   Navigator.of(context).popAndPushNamed(
                     Routes.evaluation,
+                    arguments: evaluation,
                   );
-                  //arguments: EvaluationModel.fromSchedule(schedule)
                 },
                 child: Text('Iniciar Avaliação'),
               ),

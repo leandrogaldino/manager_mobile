@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/home/home_page.dart';
 import 'package:manager_mobile/pages/login/login_page.dart';

@@ -3,7 +3,9 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
+import 'package:manager_mobile/core/preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -206,5 +208,17 @@ class Locator {
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());
+
+    _getIt.registerLazySingleton<TechnicianController>(
+      () => TechnicianController(
+        personService: _getIt.get<PersonService>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton<Preferences>(
+      () => Preferences(
+        database: _getIt.get<LocalDatabase>(),
+      ),
+    );
   }
 }

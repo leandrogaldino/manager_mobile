@@ -25,7 +25,7 @@ class EvaluationTileWidget extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
           subtitle: Text(
-            '${evaluation.compressor.compressorName} - ${evaluation.compressor.serialNumber}',
+            '${evaluation.compressor!.compressorName} - ${evaluation.compressor!.serialNumber}',
             style: TextStyle(color: Colors.white),
           ),
           trailing: Text(

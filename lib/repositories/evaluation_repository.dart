@@ -89,6 +89,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   Future<String> save(Map<String, Object?> data) async {
     if (data['id'] == '') {
       data['id'] = _getEvaluationId(data);
+
       return await _localDatabase.insert('evaluation', data);
     } else {
       await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);

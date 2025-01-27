@@ -82,13 +82,13 @@ class EvaluationWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: evaluation.compressor.compressorName,
+                    text: evaluation.compressor!.compressorName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
             ),
-            if (evaluation.advice.isNotEmpty)
+            if (evaluation.advice!.isNotEmpty)
               RichText(
                 text: TextSpan(
                   children: [

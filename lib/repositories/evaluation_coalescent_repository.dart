@@ -1,8 +1,9 @@
 import 'package:manager_mobile/interfaces/childable.dart';
+import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
 
-class EvaluationCoalescentRepository implements Childable<Map<String, Object?>>, Writable<Map<String, Object?>> {
+class EvaluationCoalescentRepository implements Childable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable {
   final LocalDatabase _localDatabase;
 
   EvaluationCoalescentRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
@@ -15,7 +16,18 @@ class EvaluationCoalescentRepository implements Childable<Map<String, Object?>>,
 
   @override
   Future<int> save(Map<String, Object?> data) async {
-    await Future.delayed(Duration(seconds: 2));
-    return 0;
+    if (data['id'] == '') {
+      int id = await _localDatabase.insert('evaluationcoalescent', data);
+      data['id'] = id;
+      return id;
+    } else {
+      await _localDatabase.update('evaluationcoalescent', data, where: 'id = ?', whereArgs: [data['id']]);
+      return data['id'] as int;
+    }
+  }
+
+  @override
+  Future<int> delete(dynamic id) async {
+    return await _localDatabase.delete('evaluationcoalescent', where: 'id = ?', whereArgs: [id as int]);
   }
 }

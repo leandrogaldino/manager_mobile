@@ -37,7 +37,7 @@ class HomeController extends ChangeNotifier {
         ).toList();
         _evaluations = _evaluations.where(
           (evaluation) {
-            return evaluation.customer.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor.serialNumber.toLowerCase().contains(customerOrCompressor);
+            return evaluation.customer.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.serialNumber.toLowerCase().contains(customerOrCompressor);
           },
         ).toList();
       }

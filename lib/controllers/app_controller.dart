@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
