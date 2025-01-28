@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/reading_form_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/reading_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({super.key, required this.evaluation});
@@ -35,7 +35,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
               ExpandableSectionWidget(
                 initiallyExpanded: true,
                 title: 'Leitura',
-                child: ReadingFormWidget(),
+                child: ReadingSectionWidget(evaluation: widget.evaluation),
               ),
               //TODO: Fazer igual o primeiro
               _buildExpandableSection(
@@ -62,12 +62,23 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     isTechnicianExpanded = !isTechnicianExpanded;
                   });
                 },
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return ListTile(title: Text('Técnico ${index + 1}'));
-                  },
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return ListTile(title: Text('Técnico ${index + 1}'));
+                      },
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: FloatingActionButton(
+                        child: Icon(Icons.add),
+                        onPressed: () {},
+                      ),
+                    )
+                  ],
                 ),
               ),
               _buildExpandableSection(
