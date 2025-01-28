@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+//TODO: Ao filtrar por data e depois por texto, depois de apagar o texto o filtro somente da data não fica ativo.
 class FilterController extends ChangeNotifier {
   bool _filterBarVisible = false;
   bool get filterBarVisible => _filterBarVisible;

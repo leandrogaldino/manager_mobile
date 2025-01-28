@@ -138,7 +138,7 @@ class ScheduleWidget extends StatelessWidget {
                     if (context.mounted) {
                       Message.showInfoSnackbar(
                         context: context,
-                        message: 'Não é possível iniciar uma avaliação sem informar quem você é.',
+                        message: 'Não é possível iniciar uma avaliação sem informar um técnico.',
                       );
                     }
                     return;

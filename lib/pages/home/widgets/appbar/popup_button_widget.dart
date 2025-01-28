@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
@@ -14,7 +13,6 @@ class PopupButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppPreferences preferences = Locator.get<AppPreferences>();
     final LoginController loginController = Locator.get<LoginController>();
     final TechnicianController technicianController = Locator.get<TechnicianController>();
     return PopupMenuButton(
@@ -60,9 +58,7 @@ class PopupButtonWidget extends StatelessWidget {
             title: const Text('Zerar Técnico'),
             onTap: () async {
               Navigator.pop(context);
-              await preferences.setLoggedTechnicianId(0).asyncLoader(
-                    customLoader: const LoaderWidget(message: 'Zerando'),
-                  );
+              await technicianController.setLoggedTechnicianId(0);
             },
           ),
         ),
