@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
@@ -216,6 +217,8 @@ class Locator {
         appPreferences: _getIt.get<AppPreferences>(),
       ),
     );
+
+    _getIt.registerLazySingleton<EvaluationController>(() => EvaluationController());
 
     _getIt.registerLazySingleton<AppPreferences>(
       () => AppPreferences(
