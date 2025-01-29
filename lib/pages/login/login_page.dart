@@ -74,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
                       ValueListenableBuilder<LoginState>(
                         valueListenable: controller.state,
                         builder: (context, state, child) {
-                          // Exibir erro em uma SnackBar
                           if (state is LoginStateError) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               Message.showErrorSnackbar(context: context, message: state.message);

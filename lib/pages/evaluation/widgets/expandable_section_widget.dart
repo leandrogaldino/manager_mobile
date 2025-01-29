@@ -53,6 +53,9 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
               trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
               onTap: () {
                 setState(() {
+                  if (isExpanded) {
+                    FocusScope.of(context).unfocus(); // Remove o foco ao recolher
+                  }
                   isExpanded = !isExpanded;
                 });
               },
@@ -61,12 +64,13 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
           AnimatedSize(
             duration: Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            child: isExpanded
-                ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: widget.child,
-                  )
-                : SizedBox.shrink(),
+            child: Offstage(
+              offstage: !isExpanded,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: widget.child,
+              ),
+            ),
           ),
         ],
       ),

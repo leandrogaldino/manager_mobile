@@ -22,6 +22,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Avaliação'),
@@ -35,7 +36,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
               ExpandableSectionWidget(
                 initiallyExpanded: true,
                 title: 'Leitura',
-                child: ReadingSectionWidget(evaluation: widget.evaluation),
+                child: ReadingSectionWidget(
+                  evaluation: widget.evaluation,
+                  formKey: formKey,
+                ),
               ),
               //TODO: Fazer igual o primeiro
               _buildExpandableSection(
@@ -117,6 +121,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
               ),
+              ElevatedButton(
+                  key: formKey,
+                  onPressed: () {
+                    final valid = formKey.currentState?.validate() ?? false;
+                    if (valid) {}
+                  },
+                  child: Text('Salvar'))
             ],
           ),
         ),

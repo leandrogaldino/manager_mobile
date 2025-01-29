@@ -218,7 +218,11 @@ class Locator {
       ),
     );
 
-    _getIt.registerLazySingleton<EvaluationController>(() => EvaluationController());
+    _getIt.registerLazySingleton<EvaluationController>(
+      () => EvaluationController(
+        personService: _getIt.get<PersonService>(),
+      ),
+    );
 
     _getIt.registerLazySingleton<AppPreferences>(
       () => AppPreferences(

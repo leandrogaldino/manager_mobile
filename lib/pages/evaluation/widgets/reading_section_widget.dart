@@ -1,9 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/services/person_service.dart';
@@ -13,21 +13,21 @@ class ReadingSectionWidget extends StatefulWidget {
   const ReadingSectionWidget({
     super.key,
     required this.evaluation,
+    required this.formKey,
   });
 
   final EvaluationModel evaluation;
+  final GlobalKey<FormState> formKey;
 
   @override
   State<ReadingSectionWidget> createState() => _ReadingSectionWidgetState();
 }
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
-  final formKey = GlobalKey<FormState>();
   late final TextEditingController customerEC;
-  int? selectedItem = 1;
+  late final EvaluationController evaluationController;
 
-  late final List<PersonModel> persons;
-  PersonModel? selectedPerson;
+  int? selectedItem = 1;
 
   @override
   void dispose() {
@@ -38,15 +38,15 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   @override
   void initState() {
     super.initState();
+    evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var s = Locator.get<PersonService>();
-      persons = await s.getAll();
+      await evaluationController.fetchCustomers().asyncLoader();
     });
 
     customerEC = TextEditingController();
     customerEC.addListener(() {
-      if (selectedPerson != null && customerEC.text != selectedPerson!.shortName) {
-        selectedPerson = null;
+      if (evaluationController.selectedCustomer != null && customerEC.text != evaluationController.selectedCustomer!.shortName) {
+        evaluationController.setSelectedCustomer(null);
       }
     });
   }
@@ -54,39 +54,47 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: Column(
         spacing: 12,
         children: [
-          TypeAheadField<PersonModel>(
-            controller: customerEC,
-            builder: (context, controller, focusNode) {
-              return TextFormField(
-                controller: controller,
-                focusNode: focusNode,
-                validator: Validatorless.required('Cliente obrigatório'),
-                decoration: InputDecoration(labelText: 'Cliente'),
-              );
-            },
-            itemBuilder: (context, person) {
-              return ListTile(
-                title: Text(person.shortName),
-                subtitle: Text(person.document),
-              );
-            },
-            onSelected: (suggestion) {
-              customerEC.text = suggestion.shortName;
-              selectedPerson = suggestion;
-            },
-            suggestionsCallback: (query) async {
-              return persons.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
-            },
-          ),
-          TextFormField(
-            controller: customerEC,
-            validator: Validatorless.required('m'),
-            decoration: InputDecoration(labelText: 'Cliente'),
-          ),
+          ListenableBuilder(
+              listenable: evaluationController,
+              builder: (context, child) {
+                return TypeAheadField<PersonModel>(
+                  controller: customerEC,
+                  builder: (context, controller, focusNode) {
+                    return TextFormField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Este campo é obrigatório!';
+                        }
+                        if (evaluationController.selectedCustomer == null) {
+                          return 'Selecione um cliente';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(labelText: 'Cliente'),
+                      style: TextStyle(color: evaluationController.selectedCustomer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
+                    );
+                  },
+                  itemBuilder: (context, person) {
+                    return ListTile(
+                      title: Text(person.shortName),
+                      subtitle: Text(person.document),
+                    );
+                  },
+                  onSelected: (suggestion) {
+                    customerEC.text = suggestion.shortName;
+                    evaluationController.setSelectedCustomer(suggestion);
+                  },
+                  suggestionsCallback: (query) async {
+                    return evaluationController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
+                  },
+                );
+              }),
           TextFormField(decoration: InputDecoration(labelText: 'Compressor')),
           Row(
             spacing: 12,
