@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/services/person_service.dart';
 import 'package:validatorless/validatorless.dart';
 
 class ReadingSectionWidget extends StatefulWidget {
@@ -24,29 +24,40 @@ class ReadingSectionWidget extends StatefulWidget {
 }
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
-  late final TextEditingController customerEC;
-  late final EvaluationController evaluationController;
+  late final TextEditingController _customerEC;
+  late final TextEditingController _compressorEC;
+  late final EvaluationController _evaluationController;
 
   int? selectedItem = 1;
 
   @override
   void dispose() {
-    customerEC.dispose();
+    _customerEC.dispose();
+    _compressorEC.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    evaluationController = Locator.get<EvaluationController>();
+    _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await evaluationController.fetchCustomers().asyncLoader();
+      await _evaluationController.fetchCustomers().asyncLoader();
+    });
+    _customerEC = TextEditingController();
+    _customerEC.addListener(() {
+      if (_evaluationController.selectedCustomer != null && _customerEC.text != _evaluationController.selectedCustomer!.shortName) {
+        _evaluationController.setSelectedCustomer(null);
+        _evaluationController.setSelectedCompressor(null);
+        _compressorEC.text = '';
+        //TODO: Os Campos da avaliação nao podem ser final, para poder fazer o bind no listen
+      }
     });
 
-    customerEC = TextEditingController();
-    customerEC.addListener(() {
-      if (evaluationController.selectedCustomer != null && customerEC.text != evaluationController.selectedCustomer!.shortName) {
-        evaluationController.setSelectedCustomer(null);
+    _compressorEC = TextEditingController();
+    _compressorEC.addListener(() {
+      if (_evaluationController.selectedCompressor != null && _compressorEC.text != _evaluationController.selectedCompressor!.compressorName) {
+        _evaluationController.setSelectedCompressor(null);
       }
     });
   }
@@ -59,43 +70,91 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
         spacing: 12,
         children: [
           ListenableBuilder(
-              listenable: evaluationController,
-              builder: (context, child) {
-                return TypeAheadField<PersonModel>(
-                  controller: customerEC,
-                  builder: (context, controller, focusNode) {
-                    return TextFormField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo é obrigatório!';
+            listenable: _evaluationController,
+            builder: (context, child) {
+              return TypeAheadField<PersonModel>(
+                controller: _customerEC,
+                builder: (context, controller, focusNode) {
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    validator: Validatorless.multiple(
+                      [
+                        Validatorless.required('O cliente é obrigatório'),
+                        (value) {
+                          if (_evaluationController.selectedCustomer == null) {
+                            return 'Selecione um cliente';
+                          }
+                          return null;
                         }
-                        if (evaluationController.selectedCustomer == null) {
-                          return 'Selecione um cliente';
+                      ],
+                    ),
+                    decoration: InputDecoration(labelText: 'Cliente'),
+                    style: TextStyle(color: _evaluationController.selectedCustomer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
+                  );
+                },
+                itemBuilder: (context, person) {
+                  return ListTile(
+                    title: Text(person.shortName),
+                    subtitle: Text(person.document),
+                  );
+                },
+                onSelected: (suggestion) {
+                  _customerEC.text = suggestion.shortName;
+                  _evaluationController.setSelectedCustomer(suggestion);
+
+                  // Limpa o compressor ao alterar o cliente
+                  _compressorEC.clear();
+                  _evaluationController.setSelectedCompressor(null);
+                },
+                suggestionsCallback: (query) async {
+                  return _evaluationController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
+                },
+              );
+            },
+          ),
+          ListenableBuilder(
+            listenable: _evaluationController,
+            builder: (context, child) {
+              return TypeAheadField<CompressorModel>(
+                key: ValueKey(_evaluationController.selectedCustomer?.id),
+                controller: _compressorEC,
+                builder: (context, controller, focusNode) {
+                  return TextFormField(
+                    enabled: _evaluationController.selectedCustomer != null,
+                    controller: controller,
+                    focusNode: focusNode,
+                    validator: Validatorless.multiple(
+                      [
+                        Validatorless.required('O compressor é obrigatório'),
+                        (value) {
+                          if (_evaluationController.selectedCompressor == null) {
+                            return 'Selecione um compressor';
+                          }
+                          return null;
                         }
-                        return null;
-                      },
-                      decoration: InputDecoration(labelText: 'Cliente'),
-                      style: TextStyle(color: evaluationController.selectedCustomer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
-                    );
-                  },
-                  itemBuilder: (context, person) {
-                    return ListTile(
-                      title: Text(person.shortName),
-                      subtitle: Text(person.document),
-                    );
-                  },
-                  onSelected: (suggestion) {
-                    customerEC.text = suggestion.shortName;
-                    evaluationController.setSelectedCustomer(suggestion);
-                  },
-                  suggestionsCallback: (query) async {
-                    return evaluationController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
-                  },
-                );
-              }),
-          TextFormField(decoration: InputDecoration(labelText: 'Compressor')),
+                      ],
+                    ),
+                    decoration: InputDecoration(labelText: 'Compressor'),
+                    style: TextStyle(color: _evaluationController.selectedCompressor == null ? Colors.blue : Colors.orange), // Cor do texto digitado
+                  );
+                },
+                itemBuilder: (context, compressor) {
+                  return ListTile(
+                    title: Text(compressor.compressorName),
+                    subtitle: Text(compressor.serialNumber),
+                  );
+                },
+                onSelected: (suggestion) {
+                  _compressorEC.text = suggestion.compressorName;
+                  _evaluationController.setSelectedCompressor(suggestion);
+                },
+                suggestionsCallback: (query) async {
+                  return _evaluationController.selectedCustomer?.compressors.where((item) => item.compressorName.toLowerCase().contains(query.toLowerCase())).toList();
+                },
+              );
+            },
+          ),
           Row(
             spacing: 12,
             children: [
