@@ -7,10 +7,11 @@ import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
-class ScheduleWidget extends StatelessWidget {
+class ScheduleWidget extends StatefulWidget {
   const ScheduleWidget({
     super.key,
     required this.schedule,
@@ -19,9 +20,27 @@ class ScheduleWidget extends StatelessWidget {
   final ScheduleModel schedule;
 
   @override
+  State<ScheduleWidget> createState() => _ScheduleWidgetState();
+}
+
+class _ScheduleWidgetState extends State<ScheduleWidget> {
+  late final TechnicianController technicianController;
+  late final AppPreferences preferences;
+
+  @override
+  void initState() {
+    super.initState();
+    technicianController = Locator.get<TechnicianController>();
+    preferences = Locator.get<AppPreferences>();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TechnicianController technicianController = Locator.get<TechnicianController>();
-    final AppPreferences preferences = Locator.get<AppPreferences>();
     return Padding(
       padding: EdgeInsets.only(
         top: 24,
@@ -44,7 +63,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.visitTypeString,
+                    text: widget.schedule.visitTypeString,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -60,7 +79,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: DateFormat('dd/MM/yyyy').format(schedule.visitDate),
+                    text: DateFormat('dd/MM/yyyy').format(widget.schedule.visitDate),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -76,7 +95,7 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.customer.shortName,
+                    text: widget.schedule.customer.shortName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
@@ -92,13 +111,13 @@ class ScheduleWidget extends StatelessWidget {
                         ),
                   ),
                   TextSpan(
-                    text: schedule.compressor.compressorName,
+                    text: widget.schedule.compressor.compressorName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
             ),
-            if (schedule.instructions.isNotEmpty)
+            if (widget.schedule.instructions.isNotEmpty)
               RichText(
                 text: TextSpan(
                   children: [
@@ -109,7 +128,7 @@ class ScheduleWidget extends StatelessWidget {
                           ),
                     ),
                     TextSpan(
-                      text: schedule.instructions,
+                      text: widget.schedule.instructions,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -144,11 +163,13 @@ class ScheduleWidget extends StatelessWidget {
                     }
                     return;
                   }
+                  var evaluation = EvaluationModel.fromSource(schedule: widget.schedule);
+                  var loggedTechnician = await technicianController.getLoggedTechnician();
+                  if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
                   if (!context.mounted) return;
-                  var evaluation = EvaluationModel.fromSource(schedule: schedule);
                   Navigator.of(context).popAndPushNamed(
                     Routes.evaluation,
-                    arguments: [evaluation, EvaluationSource.fromSchedule, schedule.instructions],
+                    arguments: [evaluation, EvaluationSource.fromSchedule, widget.schedule.instructions],
                   );
                 },
                 child: Text('Iniciar Avaliação'),

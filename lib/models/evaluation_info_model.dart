@@ -43,7 +43,7 @@ class EvaluationInfoModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'imported': imported,
+      'imported': imported == false ? 0 : 1,
       'importedBy': importedBy,
       'importedDate': importedDate.millisecondsSinceEpoch,
       'importedId': importedId,

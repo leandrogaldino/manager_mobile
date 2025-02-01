@@ -6,6 +6,7 @@ import 'package:manager_mobile/services/person_service.dart';
 class TechnicianController extends ChangeNotifier {
   final PersonService _personService;
   final AppPreferences _appPreferences;
+
   TechnicianController({
     required PersonService personService,
     required AppPreferences appPreferences,
@@ -26,6 +27,11 @@ class TechnicianController extends ChangeNotifier {
     _loggedTechnicianId = await _appPreferences.getLoggedTechnicianId;
     notifyListeners();
     return _loggedTechnicianId;
+  }
+
+  Future<PersonModel?> getLoggedTechnician() async {
+    int id = await getLoggedTechnicianId();
+    return id == 0 ? null : await _personService.getById(id);
   }
 
   Future<List<PersonModel>> getTechnicians() async {

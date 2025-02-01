@@ -22,9 +22,9 @@ class ThemeSwitchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final controller = GetIt.I<AppController>();
+    final appController = GetIt.I<AppController>();
     return ValueListenableBuilder(
-        valueListenable: controller.themeMode,
+        valueListenable: appController.themeMode,
         builder: (context, themeMode, child) {
           return Dialog(
             shape: RoundedRectangleBorder(
@@ -45,15 +45,15 @@ class ThemeSwitchWidget extends StatelessWidget {
                   const SizedBox(height: 16),
                   AnimatedToggleSwitch.rolling(
                     values: const ['Claro', 'Escuro', 'Sistema'],
-                    current: controller.getCurrentThemeModeName(),
-                    onChanged: (value) => controller.changeTheme(controller.getThemeMode(value)),
+                    current: appController.getCurrentThemeModeName(),
+                    onChanged: (value) => appController.changeTheme(appController.getThemeMode(value)),
                     iconBuilder: rollingIconBuilder,
                     style: ToggleStyle(indicatorColor: theme.colorScheme.tertiary),
                     spacing: 30,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    controller.getCurrentThemeModeName(),
+                    appController.getCurrentThemeModeName(),
                     style: theme.textTheme.titleMedium,
                   ),
                 ],

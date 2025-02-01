@@ -5,6 +5,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widge
 import 'package:manager_mobile/pages/evaluation/widgets/header_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/instructions_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/reading_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/technician_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({
@@ -68,6 +69,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     formKey: formKey,
                   ),
                 ),
+                ExpandableSectionWidget(
+                  title: 'Técnicos',
+                  action: IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                  child: TechnicianSectionWidget(evaluation: widget.evaluation),
+                ),
                 widget.source != EvaluationSource.fromSaved
                     ? ElevatedButton(
                         onPressed: () {
@@ -76,11 +82,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         },
                         child: Text('Salvar'))
                     : SizedBox.shrink(),
-                ExpandableSectionWidget(
-                  title: 'Técnicos',
-                  child: TechnicianSectionWidget(evaluation: widget.evaluation),
-                  action: IconButton(icon: Icon(Icons.add), onPressed: () {}),
-                )
               ],
             ),
           ),

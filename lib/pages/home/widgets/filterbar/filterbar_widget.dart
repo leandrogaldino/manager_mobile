@@ -26,6 +26,13 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
   }
 
   @override
+  void dispose() {
+    customerControllerEC.dispose();
+    dateControllerEC.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: filterController,
@@ -105,12 +112,5 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    customerControllerEC.dispose();
-    dateControllerEC.dispose();
-    super.dispose();
   }
 }

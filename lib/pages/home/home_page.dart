@@ -1,13 +1,14 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
+import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
@@ -26,13 +27,14 @@ class _HomePageState extends State<HomePage> {
   late final AppController appController;
   late final HomeController homeController;
   late final FilterController filterController;
-
+  late final TechnicianController technicianController;
   @override
   void initState() {
     super.initState();
     appController = Locator.get<AppController>();
     homeController = Locator.get<HomeController>();
     filterController = Locator.get<FilterController>();
+    technicianController = Locator.get<TechnicianController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await appController.syncronize().asyncLoader();
@@ -93,8 +95,11 @@ class _HomePageState extends State<HomePage> {
           builder: (context, child) {
             return homeController.currentIndex == 1
                 ? FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       var evaluation = EvaluationModel.fromSource();
+                      var loggedTechnician = await technicianController.getLoggedTechnician();
+                      if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
+
                       Navigator.of(context).pushNamed(
                         Routes.evaluation,
                         arguments: [evaluation, EvaluationSource.fromNew],
@@ -105,11 +110,6 @@ class _HomePageState extends State<HomePage> {
                 : SizedBox.shrink();
           }),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _showSyncResultSnackbar(SyncronizeResultModel result) {

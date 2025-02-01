@@ -17,11 +17,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final formKey = GlobalKey<FormState>();
-  final emailEC = TextEditingController();
-  final passwordEC = TextEditingController();
-  final controller = GetIt.I<LoginController>();
-  final appController = GetIt.I<AppController>();
+  late final GlobalKey<FormState> formKey;
+  late final TextEditingController emailEC;
+  late final TextEditingController passwordEC;
+  late final LoginController loginController;
+  late final AppController appController;
+
+  @override
+  void initState() {
+    super.initState();
+    formKey = GlobalKey<FormState>();
+    emailEC = TextEditingController();
+    passwordEC = TextEditingController();
+    loginController = GetIt.I<LoginController>();
+    appController = GetIt.I<AppController>();
+  }
+
+  @override
+  void dispose() {
+    emailEC.dispose();
+    passwordEC.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 18),
                       ValueListenableBuilder<bool>(
-                        valueListenable: controller.obscurePassword,
+                        valueListenable: loginController.obscurePassword,
                         builder: (_, obscurePassword, __) {
                           return TextFormField(
                             obscureText: obscurePassword,
@@ -60,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                             decoration: InputDecoration(
                               labelText: 'Senha',
                               suffixIcon: IconButton(
-                                onPressed: controller.toggleObscurePassword,
+                                onPressed: loginController.toggleObscurePassword,
                                 icon: Icon(
                                   obscurePassword ? Icons.visibility : Icons.visibility_off,
                                 ),
@@ -72,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       ValueListenableBuilder<LoginState>(
-                        valueListenable: controller.state,
+                        valueListenable: loginController.state,
                         builder: (context, state, child) {
                           if (state is LoginStateError) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: () async {
                                 final valid = formKey.currentState?.validate() ?? false;
                                 if (valid) {
-                                  await controller.singIn('${emailEC.text}@manager.com', passwordEC.text).asyncLoader(
+                                  await loginController.singIn('${emailEC.text}@manager.com', passwordEC.text).asyncLoader(
                                         customLoader: const LoaderWidget(message: 'Entrando'),
                                       );
                                 }

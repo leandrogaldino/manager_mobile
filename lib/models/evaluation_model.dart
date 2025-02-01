@@ -62,9 +62,6 @@ class EvaluationModel {
       }
     }
 
-    List<EvaluationTechnicianModel> technicians = [];
-    technicians.add(EvaluationTechnicianModel(id: 0, technician: PersonModel(id: 0, statusId: 0, document: '01653915102', isCustomer: false, isTechnician: true, lastUpdate: DateTime.now(), shortName: 'Leandro', compressors: [])));
-
     return EvaluationModel(
         id: null,
         advice: null,
@@ -80,7 +77,7 @@ class EvaluationModel {
         separator: null,
         oil: null,
         coalescents: coalescents,
-        technicians: technicians,
+        technicians: [],
         photoPaths: [],
         responsible: null,
         signaturePath: null,
