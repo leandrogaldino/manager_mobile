@@ -54,7 +54,7 @@ class AppTheme {
       );
 
   static ColorScheme lightScheme() {
-    return const ColorScheme(
+    return ColorScheme(
       brightness: Brightness.light,
       primary: Colors.orange,
       secondary: Colors.orangeAccent,

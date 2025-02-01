@@ -7,8 +7,12 @@ import 'package:manager_mobile/pages/evaluation/widgets/instructions_section_wid
 import 'package:manager_mobile/pages/evaluation/widgets/reading_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({super.key, required this.evaluation, required this.source, this.instructions});
-
+  const EvaluationPage({
+    super.key,
+    required this.evaluation,
+    required this.source,
+    this.instructions,
+  });
   final EvaluationModel evaluation;
   final EvaluationSource source;
   final String? instructions;
@@ -18,40 +22,6 @@ class EvaluationPage extends StatefulWidget {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
-  Future<bool?> _showBackDialog(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar Saída'),
-          content: const Text(
-            'Todas as informações desta avaliação serão perdidas. Deseja realmente voltar?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Não'),
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Sim'),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -106,11 +76,50 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         },
                         child: Text('Salvar'))
                     : SizedBox.shrink(),
+                ExpandableSectionWidget(
+                  title: 'Técnicos',
+                  child: TechnicianSectionWidget(evaluation: widget.evaluation),
+                  action: IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                )
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Future<bool?> _showBackDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Saída'),
+          content: const Text(
+            'Todas as informações desta avaliação serão perdidas. Deseja realmente voltar?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Não'),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Sim'),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
