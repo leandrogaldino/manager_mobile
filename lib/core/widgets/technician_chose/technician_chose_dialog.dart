@@ -22,6 +22,9 @@ class TechnicianChooseDialog extends StatelessWidget {
         child: TechnicianChoseListWidget(
           technicians: technicians,
           loggedTechnician: loggedTechnician,
+          onTechnicianSelected: (PersonModel selectedTechnician) {
+            Navigator.pop(context, selectedTechnician);
+          },
         ),
       ),
     );

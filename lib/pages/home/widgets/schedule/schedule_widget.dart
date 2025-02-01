@@ -8,6 +8,7 @@ import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
@@ -137,12 +138,11 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  var logged = await preferences.getLoggedTechnicianId;
-                  if (logged == 0) {
+                  var loggedId = await preferences.getLoggedTechnicianId;
+                  if (loggedId == 0) {
                     var technicians = await technicianController.getTechnicians();
-
                     if (!context.mounted) return;
-                    await showDialog(
+                    var person = await showDialog<PersonModel>(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) {
@@ -152,9 +152,12 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         );
                       },
                     );
-                    logged = await preferences.getLoggedTechnicianId;
+                    if (person != null) {
+                      preferences.setLoggedTechnicianId(person.id);
+                      loggedId = person.id;
+                    }
                   }
-                  if (logged == 0) {
+                  if (loggedId == 0) {
                     if (context.mounted) {
                       Message.showInfoSnackbar(
                         context: context,

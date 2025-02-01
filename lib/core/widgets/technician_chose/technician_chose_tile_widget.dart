@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/technician_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class TechnicianChoseTileWidget extends StatelessWidget {
@@ -8,14 +6,15 @@ class TechnicianChoseTileWidget extends StatelessWidget {
     super.key,
     required this.technician,
     required this.checked,
+    required this.onTechnicianSelected,
   });
 
   final PersonModel technician;
   final bool checked;
+  final ValueChanged<PersonModel> onTechnicianSelected;
 
   @override
   Widget build(BuildContext context) {
-    final TechnicianController technicianController = Locator.get<TechnicianController>();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
@@ -28,11 +27,8 @@ class TechnicianChoseTileWidget extends StatelessWidget {
           technician.shortName,
           style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
         ),
-        onTap: () async {
-          await technicianController.setLoggedTechnicianId(technician.id);
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
+        onTap: () {
+          onTechnicianSelected(technician);
         },
       ),
     );

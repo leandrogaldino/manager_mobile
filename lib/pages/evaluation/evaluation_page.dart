@@ -27,11 +27,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: widget.source == EvaluationSource.fromSaved,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
         }
+
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
           Navigator.pop(context, result);
@@ -71,7 +72,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 ExpandableSectionWidget(
                   title: 'Técnicos',
-                  action: IconButton(icon: Icon(Icons.add), onPressed: () {}),
+                  action: widget.source == EvaluationSource.fromSaved
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            //TODO: Incluir técnico reaproveitando o technician_chose
+                          },
+                        ),
                   child: TechnicianSectionWidget(evaluation: widget.evaluation),
                 ),
                 widget.source != EvaluationSource.fromSaved

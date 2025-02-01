@@ -4,11 +4,14 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
+import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
@@ -28,6 +31,8 @@ class _HomePageState extends State<HomePage> {
   late final HomeController homeController;
   late final FilterController filterController;
   late final TechnicianController technicianController;
+  late final AppPreferences preferences;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +40,7 @@ class _HomePageState extends State<HomePage> {
     homeController = Locator.get<HomeController>();
     filterController = Locator.get<FilterController>();
     technicianController = Locator.get<TechnicianController>();
+    preferences = Locator.get<AppPreferences>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await appController.syncronize().asyncLoader();
@@ -96,10 +102,39 @@ class _HomePageState extends State<HomePage> {
             return homeController.currentIndex == 1
                 ? FloatingActionButton(
                     onPressed: () async {
+                      var loggedId = await preferences.getLoggedTechnicianId;
+                      if (loggedId == 0) {
+                        var technicians = await technicianController.getTechnicians();
+                        if (!context.mounted) return;
+                        var person = await showDialog<PersonModel>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return TechnicianChooseDialog(
+                              technicians: technicians,
+                              loggedTechnician: technicianController.loggedTechnicianId,
+                            );
+                          },
+                        );
+                        if (person != null) {
+                          preferences.setLoggedTechnicianId(person.id);
+                          loggedId = person.id;
+                        }
+                      }
+                      if (loggedId == 0) {
+                        if (context.mounted) {
+                          Message.showInfoSnackbar(
+                            context: context,
+                            message: 'Não é possível iniciar uma avaliação sem informar um técnico.',
+                          );
+                        }
+                        return;
+                      }
+
                       var evaluation = EvaluationModel.fromSource();
                       var loggedTechnician = await technicianController.getLoggedTechnician();
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
-
+                      if (!context.mounted) return;
                       Navigator.of(context).pushNamed(
                         Routes.evaluation,
                         arguments: [evaluation, EvaluationSource.fromNew],

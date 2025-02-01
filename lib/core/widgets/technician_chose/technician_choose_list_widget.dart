@@ -9,9 +9,11 @@ class TechnicianChoseListWidget extends StatelessWidget {
     super.key,
     required this.technicians,
     required this.loggedTechnician,
+    required this.onTechnicianSelected,
   });
   final List<PersonModel> technicians;
   final int loggedTechnician;
+  final ValueChanged<PersonModel> onTechnicianSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class TechnicianChoseListWidget extends StatelessWidget {
               return TechnicianChoseTileWidget(
                 technician: technicians[index],
                 checked: loggedTechnician == technicians[index].id,
+                onTechnicianSelected: onTechnicianSelected,
               );
             },
           );

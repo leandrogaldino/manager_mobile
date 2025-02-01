@@ -75,7 +75,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       controller: customerControllerEC,
                       onChanged: (text) async {
                         filterController.setCustomerOrCompressorText(text);
-                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text);
+                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text, dateRange: filterController.selectedDateRange);
                       },
                       decoration: InputDecoration(
                         labelText: "Cliente/Compressor",
@@ -100,7 +100,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                         );
                         filterController.setSelectedDateRange(picked);
                         dateControllerEC.text = filterController.selectedDateRangeText;
-                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text, dateRange: picked);
+                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text, dateRange: filterController.selectedDateRange);
                       },
                     ),
                     Divider(),
