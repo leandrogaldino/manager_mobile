@@ -8,6 +8,7 @@ import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
 class ScheduleWidget extends StatelessWidget {
   const ScheduleWidget({
@@ -144,10 +145,10 @@ class ScheduleWidget extends StatelessWidget {
                     return;
                   }
                   if (!context.mounted) return;
-                  var evaluation = EvaluationModel.fromSchedule(schedule);
+                  var evaluation = EvaluationModel.fromSource(schedule: schedule);
                   Navigator.of(context).popAndPushNamed(
                     Routes.evaluation,
-                    arguments: evaluation,
+                    arguments: [evaluation, EvaluationSource.fromSchedule, schedule.instructions],
                   );
                 },
                 child: Text('Iniciar Avaliação'),

@@ -1,11 +1,15 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
+import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
@@ -58,8 +62,6 @@ class _HomePageState extends State<HomePage> {
                     return homeController.currentIndex == 0 ? ScheduleListWidget(schedules: homeController.schedules) : EvaluationListWidget(evaluations: homeController.evaluations);
                   },
                 ),
-                //child: EvaluationListWidget(evaluations: homeController.evaluations),
-                //child: ScheduleListWidget(schedules: homeController.schedules),
               ),
             ),
           ],
@@ -86,6 +88,22 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+      floatingActionButton: ListenableBuilder(
+          listenable: homeController,
+          builder: (context, child) {
+            return homeController.currentIndex == 1
+                ? FloatingActionButton(
+                    onPressed: () {
+                      var evaluation = EvaluationModel.fromSource();
+                      Navigator.of(context).pushNamed(
+                        Routes.evaluation,
+                        arguments: [evaluation, EvaluationSource.fromNew],
+                      );
+                    },
+                    child: Icon(Icons.add),
+                  )
+                : SizedBox.shrink();
+          }),
     );
   }
 

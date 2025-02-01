@@ -23,6 +23,7 @@ class AppTheme {
         scaffoldBackgroundColor: colorScheme.surface,
         canvasColor: colorScheme.surface,
         inputDecorationTheme: InputDecorationTheme(
+          disabledBorder: getBorder(colorScheme.outline),
           filled: true,
           labelStyle: textTheme.labelLarge,
           floatingLabelStyle: textTheme.labelLarge,

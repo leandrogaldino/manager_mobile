@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
 class EvaluationTileWidget extends StatelessWidget {
   const EvaluationTileWidget({
@@ -21,7 +22,7 @@ class EvaluationTileWidget extends StatelessWidget {
         ),
         child: ListTile(
           title: Text(
-            evaluation.customer.shortName,
+            evaluation.customer!.shortName,
             style: TextStyle(color: Colors.white),
           ),
           subtitle: Text(
@@ -33,8 +34,7 @@ class EvaluationTileWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
           ),
           onTap: () async {
-            //TODO: Abrir página da avaliação.
-            Navigator.of(context).pushNamed(Routes.evaluation, arguments: evaluation);
+            Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, EvaluationSource.fromSaved]);
           },
         ),
       ),

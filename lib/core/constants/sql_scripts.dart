@@ -105,6 +105,7 @@ class SQLScripts {
       starttime TEXT NOT NULL,
       endtime TEXT NOT NULL,
       horimeter INTEGER NOT NULL,
+      oiltypeid INTEGER NOT NULL,
       airfilter INTEGER NOT NULL,
       oilfilter INTEGER NOT NULL,
       oil INTEGER NOT NULL,

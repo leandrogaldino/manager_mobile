@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/services/person_service.dart';
 
 class EvaluationController extends ChangeNotifier {
   final PersonService personService;
   EvaluationController({required this.personService});
+
+  OilTypes _selectedOilType = OilTypes.semiSynthetic;
+  OilTypes get selectedOilType => _selectedOilType;
+
+  void setOilType(OilTypes oilType) {
+    _selectedOilType = oilType;
+    notifyListeners();
+  }
 
   List<PersonModel> _customers = [];
   List<PersonModel> get customers => _customers;

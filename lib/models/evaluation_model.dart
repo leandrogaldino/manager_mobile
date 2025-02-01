@@ -1,9 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_info_model.dart';
@@ -11,36 +8,39 @@ import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 
 class EvaluationModel {
-  final String? id;
-  final String? advice;
-  final CompressorModel? compressor;
-  final PersonModel customer;
-  final DateTime creationDate;
-  final TimeOfDay startTime;
-  final TimeOfDay? endTime;
-  final int? horimeter;
-  final int? airFilter;
-  final int? oilFilter;
-  final int? separator;
-  final int? oil;
-  final List<EvaluationCoalescentModel> coalescents;
-  final List<EvaluationTechnicianModel> technicians;
-  final List<EvaluationPhotoModel> photoPaths;
-  final String? responsible;
-  final String? signaturePath;
-  final EvaluationInfoModel? info;
-  final DateTime? lastUpdate;
+  String? id;
+  String? advice;
+  CompressorModel? compressor;
+  PersonModel? customer;
+  DateTime creationDate;
+  TimeOfDay startTime;
+  TimeOfDay? endTime;
+  int? horimeter;
+  OilTypes? oilType;
+  int? airFilter;
+  int? oilFilter;
+  int? separator;
+  int? oil;
+  List<EvaluationCoalescentModel> coalescents;
+  List<EvaluationTechnicianModel> technicians;
+  List<EvaluationPhotoModel> photoPaths;
+  String? responsible;
+  String? signaturePath;
+  EvaluationInfoModel? info;
+  DateTime? lastUpdate;
   EvaluationModel({
     this.id,
     this.advice,
     this.compressor,
-    required this.customer,
+    this.customer,
     required this.creationDate,
     required this.startTime,
     this.endTime,
     this.horimeter,
+    this.oilType,
     this.airFilter,
     this.oilFilter,
     this.separator,
@@ -54,10 +54,12 @@ class EvaluationModel {
     this.lastUpdate,
   });
 
-  factory EvaluationModel.fromSchedule(ScheduleModel schedule) {
+  factory EvaluationModel.fromSource({ScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
-    for (var coalescent in schedule.compressor.coalescents) {
-      coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent, nextChange: 0));
+    if (schedule != null) {
+      for (var coalescent in schedule.compressor.coalescents) {
+        coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent, nextChange: 0));
+      }
     }
 
     List<EvaluationTechnicianModel> technicians = [];
@@ -66,12 +68,13 @@ class EvaluationModel {
     return EvaluationModel(
         id: null,
         advice: null,
-        customer: schedule.customer,
-        compressor: schedule.compressor,
+        customer: schedule?.customer,
+        compressor: schedule?.compressor,
         creationDate: DateTime.now(),
         startTime: TimeOfDay.now(),
         endTime: null,
         horimeter: null,
+        oilType: OilTypes.semiSynthetic,
         airFilter: null,
         oilFilter: null,
         separator: null,
@@ -94,6 +97,7 @@ class EvaluationModel {
     TimeOfDay? startTime,
     TimeOfDay? endTime,
     int? horimeter,
+    OilTypes? oilType,
     int? airFilter,
     int? oilFilter,
     int? separator,
@@ -115,6 +119,7 @@ class EvaluationModel {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       horimeter: horimeter ?? this.horimeter,
+      oilType: oilType ?? this.oilType,
       airFilter: airFilter ?? this.airFilter,
       oilFilter: oilFilter ?? this.oilFilter,
       separator: separator ?? this.separator,
@@ -134,11 +139,12 @@ class EvaluationModel {
       'id': id,
       'advice': advice,
       'compressor': compressor?.toMap(),
-      'customer': customer.toMap(),
+      'customer': customer?.toMap(),
       'creationDate': creationDate.millisecondsSinceEpoch,
       'startTime': '${startTime.hour.toString()}:${startTime.minute.toString()}',
       'endTime': '${endTime?.hour.toString()}:${endTime?.minute.toString()}',
       'horimeter': horimeter,
+      'oilType': oilType?.name,
       'airFilter': airFilter,
       'oilFilter': oilFilter,
       'separator': separator,
@@ -158,11 +164,12 @@ class EvaluationModel {
       id: map['id'] != null ? map['id'] as String : null,
       advice: map['advice'] != null ? map['advice'] as String : null,
       compressor: map['compressor'] != null ? CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>) : null,
-      customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
+      customer: map['customer'] != null ? PersonModel.fromMap(map['customer'] as Map<String, dynamic>) : null,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
       horimeter: map['horimeter'] != null ? map['horimeter'] as int : null,
+      oilType: OilTypes.values[map['oiltypeid'] as int],
       airFilter: map['airfilter'] != null ? map['airfilter'] as int : null,
       oilFilter: map['oilfilter'] != null ? map['oilfilter'] as int : null,
       separator: map['separator'] != null ? map['separator'] as int : null,
@@ -195,7 +202,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -210,6 +217,7 @@ class EvaluationModel {
         other.startTime == startTime &&
         other.endTime == endTime &&
         other.horimeter == horimeter &&
+        other.oilType == oilType &&
         other.airFilter == airFilter &&
         other.oilFilter == oilFilter &&
         other.separator == separator &&
@@ -233,6 +241,7 @@ class EvaluationModel {
         startTime.hashCode ^
         endTime.hashCode ^
         horimeter.hashCode ^
+        oilType.hashCode ^
         airFilter.hashCode ^
         oilFilter.hashCode ^
         separator.hashCode ^
