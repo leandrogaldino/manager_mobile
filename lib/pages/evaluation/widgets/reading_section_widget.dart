@@ -107,6 +107,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController.updateCompressor(widget.evaluation.compressor);
   }
 
+//TODO: Alterar a cor do container das sugestoes, do technicianpicker e consertar o technicianpick na avaliacao
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -132,7 +133,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ],
                       ),
                       decoration: InputDecoration(labelText: 'Cliente'),
-                      style: TextStyle(color: _evaluationController.evaluation!.customer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
+                      style: TextStyle(
+                        color: _evaluationController.evaluation!.customer != null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+                      ), // Cor do texto digitado
                       onChanged: (value) {},
                     );
                   },

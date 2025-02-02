@@ -34,7 +34,6 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
       curve: Curves.easeInOut,
       margin: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -52,7 +51,7 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
                     child: Text(
                       widget.title,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -69,7 +68,10 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
                   ),
                 ],
               ),
-              trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+              trailing: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: Theme.of(context).colorScheme.surface,
+              ),
               onTap: () {
                 setState(() {
                   if (isExpanded) {
