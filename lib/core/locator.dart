@@ -195,18 +195,16 @@ class Locator {
     );
 
     _getIt.registerLazySingleton<AppController>(() => AppController(
-          localDatabase: _getIt.get<LocalDatabase>(),
-          coalescentService: _getIt.get<CoalescentService>(),
-          compressorService: _getIt.get<CompressorService>(),
-          personService: _getIt.get<PersonService>(),
-          evaluationService: _getIt.get<EvaluationService>(),
-          scheduleService: _getIt.get<ScheduleService>(),
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
+          coalescentService: _getIt.get<CoalescentService>(),
+          compressorService: _getIt.get<CompressorService>(),
+          personService: _getIt.get<PersonService>(),
           scheduleService: _getIt.get<ScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
+          appPreferences: _getIt.get<AppPreferences>(),
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());

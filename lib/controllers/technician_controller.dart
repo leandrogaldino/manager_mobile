@@ -24,7 +24,7 @@ class TechnicianController extends ChangeNotifier {
   }
 
   Future<int> getLoggedTechnicianId() async {
-    _loggedTechnicianId = await _appPreferences.getLoggedTechnicianId;
+    _loggedTechnicianId = await _appPreferences.loggedTechnicianId;
     notifyListeners();
     return _loggedTechnicianId;
   }
@@ -38,7 +38,7 @@ class TechnicianController extends ChangeNotifier {
     var persons = await _personService.getAll();
     var technicians = persons.where((person) => person.isTechnician && person.statusId == 0).toList();
     technicians.sort((a, b) => a.shortName.compareTo(b.shortName));
-    var logged = await _appPreferences.getLoggedTechnicianId;
+    var logged = await _appPreferences.loggedTechnicianId;
     if (logged > 0) {
       _loggedTechnicianId = logged;
       var index = technicians.indexWhere((technician) => technician.id == logged);

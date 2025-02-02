@@ -1,38 +1,12 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
-import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
-import 'package:manager_mobile/services/coalescent_service.dart';
-import 'package:manager_mobile/services/compressor_service.dart';
-import 'package:manager_mobile/services/evaluation_service.dart';
-import 'package:manager_mobile/services/person_service.dart';
-import 'package:manager_mobile/services/schedule_service.dart';
 
 class AppController extends ChangeNotifier {
-  final LocalDatabase _localDatabase;
-  final CoalescentService _coalescentService;
-  final CompressorService _compressorService;
-  final PersonService _personService;
-  final EvaluationService _evaluationService;
-  final ScheduleService _scheduleService;
   final AppPreferences _appPreferences;
 
   AppController({
-    required localDatabase,
-    required coalescentService,
-    required compressorService,
-    required personService,
-    required evaluationService,
-    required scheduleService,
     required appPreferences,
-  })  : _localDatabase = localDatabase,
-        _coalescentService = coalescentService,
-        _compressorService = compressorService,
-        _personService = personService,
-        _evaluationService = evaluationService,
-        _scheduleService = scheduleService,
-        _appPreferences = appPreferences;
+  }) : _appPreferences = appPreferences;
 
   final themeMode = ValueNotifier<ThemeMode>(ThemeMode.light);
 
@@ -43,14 +17,14 @@ class AppController extends ChangeNotifier {
 
   Future<void> loadTheme() async {
     try {
-      themeMode.value = await _appPreferences.getThemeMode();
+      themeMode.value = await _appPreferences.themeMode;
     } catch (e) {
       throw Exception('Erro ao carregar o tema: $e');
     }
   }
 
   Future<void> _saveTheme(ThemeMode theme) async {
-    _localDatabase.update('preferences', {'value': theme.toString()}, where: 'key = ?', whereArgs: ['theme']);
+    await _appPreferences.setThemeMode(theme);
   }
 
   String getCurrentThemeModeName() {
@@ -73,47 +47,5 @@ class AppController extends ChangeNotifier {
       default:
         return ThemeMode.system;
     }
-  }
-
-  Future<SyncronizeResultModel> syncronize() async {
-    int downloaded = 0;
-    int uploaded = 0;
-    late SyncronizeResultModel syncResult;
-
-    await _localDatabase.update('preferences', {'value': 1}, where: 'key = ?', whereArgs: ['syncronizing']);
-
-    final lastSyncResult = await _localDatabase.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsync']);
-    int lastSync = int.parse(lastSyncResult[0]['value'].toString());
-
-    log('Sincronizando Coalescentes');
-    syncResult = await _coalescentService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
-
-    log('Sincronizando Compressores');
-    syncResult = await _compressorService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
-
-    log('Sincronizando Pessoas');
-    syncResult = await _personService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
-
-    log('Sincronizando Agendamentos');
-    syncResult = await _scheduleService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
-
-    log('Sincronizando Avaliações');
-    syncResult = await _evaluationService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
-
-    _localDatabase.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
-
-    await _localDatabase.update('preferences', {'value': 0}, where: 'key = ?', whereArgs: ['syncronizing']);
-    notifyListeners();
-    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }
 }

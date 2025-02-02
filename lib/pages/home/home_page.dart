@@ -1,6 +1,7 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
@@ -8,6 +9,7 @@ import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   late final HomeController homeController;
   late final FilterController filterController;
   late final TechnicianController technicianController;
+  late final EvaluationController evaluationController;
 
   @override
   void initState() {
@@ -37,10 +40,12 @@ class _HomePageState extends State<HomePage> {
     homeController = Locator.get<HomeController>();
     filterController = Locator.get<FilterController>();
     technicianController = Locator.get<TechnicianController>();
+    evaluationController = Locator.get<EvaluationController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await appController.syncronize().asyncLoader();
-      await homeController.fetchData().asyncLoader();
+      await homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'AAAAAA'));
+      await homeController.fetchData().asyncLoader(customLoader: LoaderWidget(message: 'BBBBBB'));
+      await evaluationController.fetchCustomers().asyncLoader(customLoader: LoaderWidget(message: 'CCCCC'));
     });
   }
 
@@ -57,7 +62,9 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  final result = await appController.syncronize();
+                  final result = await homeController.syncronize();
+                  await homeController.fetchData();
+                  await evaluationController.fetchCustomers();
                   _showSyncResultSnackbar(result);
                 },
                 child: ListenableBuilder(

@@ -32,7 +32,7 @@ class SQLScripts {
       key,
       value
     ) VALUES (
-      'syncronizing',
+      'synchronizing',
       '0'
     );
   ''';

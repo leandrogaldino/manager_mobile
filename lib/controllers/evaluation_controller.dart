@@ -84,6 +84,5 @@ class EvaluationController extends ChangeNotifier {
   Future<void> fetchCustomers() async {
     _customers = await personService.getAll();
     _customers = _customers.where((person) => person.isCustomer && person.statusId == 0).toList();
-    notifyListeners();
   }
 }
