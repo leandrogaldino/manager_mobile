@@ -98,7 +98,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                             if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
                           },
                         ),
-                  child: TechnicianSectionWidget(evaluation: widget.evaluation),
+                  child: TechnicianSectionWidget(
+                    evaluation: widget.evaluation,
+                    source: widget.source,
+                  ),
                 ),
                 widget.source != EvaluationSource.fromSaved
                     ? ElevatedButton(

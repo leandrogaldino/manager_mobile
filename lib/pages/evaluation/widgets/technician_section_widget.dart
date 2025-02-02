@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
-//TODO: quando a avaliação está salva nao pode aparecer a lixeira
 class TechnicianSectionWidget extends StatefulWidget {
-  const TechnicianSectionWidget({super.key, required this.evaluation});
   final EvaluationModel evaluation;
+  final EvaluationSource source;
+
+  const TechnicianSectionWidget({
+    super.key,
+    required this.evaluation,
+    required this.source,
+  });
 
   @override
   State<TechnicianSectionWidget> createState() => _TechnicianSectionWidgetState();
@@ -46,7 +52,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                                 child: Text(widget.evaluation.technicians[index].technician.shortName),
                               ),
                               Offstage(
-                                offstage: index == 0,
+                                offstage: index == 0 || widget.source != EvaluationSource.fromNew,
                                 child: IconButton(
                                     onPressed: () {
                                       evaluationController.removeTechnician(widget.evaluation.technicians[index]);
