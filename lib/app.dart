@@ -20,16 +20,16 @@ class App extends StatelessWidget {
     AppTheme appTheme = AppTheme(textTheme);
     AppController controller = GetIt.I<AppController>();
 
-    return ValueListenableBuilder(
-      valueListenable: controller.themeMode,
-      builder: (context, themeMode, child) => AsyncStateBuilder(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, child) => AsyncStateBuilder(
         enableLog: true,
         customLoader: const LoaderWidget(),
         builder: (observer) => MaterialApp(
           title: 'Gerenciador',
           theme: appTheme.light(),
           darkTheme: appTheme.dark(),
-          themeMode: themeMode,
+          themeMode: controller.themeMode,
           home: const AuthStateListenerWidget(),
           navigatorObservers: [observer],
           onGenerateRoute: (settings) {

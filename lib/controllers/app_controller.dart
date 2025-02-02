@@ -8,27 +8,26 @@ class AppController extends ChangeNotifier {
     required appPreferences,
   }) : _appPreferences = appPreferences;
 
-  final themeMode = ValueNotifier<ThemeMode>(ThemeMode.light);
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode get themeMode => _themeMode;
 
-  Future<void> changeTheme(ThemeMode mode) async {
-    themeMode.value = mode;
-    await _saveTheme(mode);
+  Future<void> changeTheme(ThemeMode themeMode) async {
+    _themeMode = themeMode;
+    await _appPreferences.setThemeMode(themeMode);
+    notifyListeners();
   }
 
   Future<void> loadTheme() async {
     try {
-      themeMode.value = await _appPreferences.themeMode;
+      _themeMode = await _appPreferences.themeMode;
+      notifyListeners();
     } catch (e) {
       throw Exception('Erro ao carregar o tema: $e');
     }
   }
 
-  Future<void> _saveTheme(ThemeMode theme) async {
-    await _appPreferences.setThemeMode(theme);
-  }
-
-  String getCurrentThemeModeName() {
-    switch (themeMode.value) {
+  String getThemeModeName(ThemeMode themeMode) {
+    switch (themeMode) {
       case ThemeMode.light:
         return 'Claro';
       case ThemeMode.dark:
