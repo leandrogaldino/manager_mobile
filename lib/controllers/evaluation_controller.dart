@@ -77,12 +77,4 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.technicians.remove(technician);
     notifyListeners();
   }
-
-  List<PersonModel> _customers = [];
-  List<PersonModel> get customers => _customers;
-
-  Future<void> fetchCustomers() async {
-    _customers = await personService.getAll();
-    _customers = _customers.where((person) => person.isCustomer && person.statusId == 0).toList();
-  }
 }

@@ -1,7 +1,7 @@
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:manager_mobile/controllers/customer_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
@@ -31,6 +31,7 @@ class ReadingSectionWidget extends StatefulWidget {
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
+  late final CustomerController _customerController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
   late final TextEditingController _serialNumberEC;
@@ -61,9 +62,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void initState() {
     super.initState();
     _evaluationController = Locator.get<EvaluationController>();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _evaluationController.fetchCustomers().asyncLoader();
-    });
+    _customerController = Locator.get<CustomerController>();
+
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
       if (_evaluationController.evaluation!.customer != null && _customerEC.text != _evaluationController.evaluation!.customer!.shortName) {
@@ -151,7 +151,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   },
                   suggestionsCallback: (query) async {
                     if (widget.source != EvaluationSource.fromNew) return [];
-                    return _evaluationController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
+                    return _customerController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
                   },
                   decorationBuilder: (context, child) {
                     return Container(

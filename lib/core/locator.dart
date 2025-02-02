@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/customer_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
@@ -198,6 +199,12 @@ class Locator {
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
+    _getIt.registerLazySingleton<CustomerController>(
+      () => CustomerController(
+        personService: _getIt.get<PersonService>(),
+      ),
+    );
+
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
           coalescentService: _getIt.get<CoalescentService>(),
           compressorService: _getIt.get<CompressorService>(),
@@ -205,6 +212,7 @@ class Locator {
           scheduleService: _getIt.get<ScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
           appPreferences: _getIt.get<AppPreferences>(),
+          customerController: _getIt.get<CustomerController>(),
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/customer_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
@@ -19,12 +20,14 @@ class HomeController extends ChangeNotifier {
     required ScheduleService scheduleService,
     required EvaluationService evaluationService,
     required AppPreferences appPreferences,
+    required CustomerController customerController,
   })  : _coalescentService = coalescentService,
         _compressorService = compressorService,
         _personService = personService,
         _scheduleService = scheduleService,
         _evaluationService = evaluationService,
-        _appPreferences = appPreferences;
+        _appPreferences = appPreferences,
+        _customerController = customerController;
 
   final CoalescentService _coalescentService;
   final CompressorService _compressorService;
@@ -32,6 +35,7 @@ class HomeController extends ChangeNotifier {
   final ScheduleService _scheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
+  final CustomerController _customerController;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -42,7 +46,20 @@ class HomeController extends ChangeNotifier {
   List<ScheduleModel> get schedules => _schedules;
   List<EvaluationModel> get evaluations => _evaluations;
 
-  //Se em algum momento eu precisar manter os filtros, terei que guardar o valor deles em variaveis externas.
+  String _customerOrCompressor = '';
+  String get customerOrCompressor => _customerOrCompressor;
+  Future<void> setcustomerOrCompressorFilter(String query) async {
+    _customerOrCompressor = query;
+    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
+  }
+
+  DateTimeRange? _dateRange;
+  DateTimeRange? get dateRange => _dateRange;
+  Future<void> setdateRangeFilter(DateTimeRange? query) async {
+    _dateRange = query;
+    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
+  }
+
   Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
       _schedules = await _scheduleService.getAll();
@@ -116,8 +133,8 @@ class HomeController extends ChangeNotifier {
 
     await _appPreferences.updateLastSynchronize();
     await _appPreferences.setSynchronizing(false);
-
-    notifyListeners();
+    await _customerController.fetchCustomers();
+    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
     return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }
 

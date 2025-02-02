@@ -9,7 +9,6 @@ import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
@@ -43,9 +42,7 @@ class _HomePageState extends State<HomePage> {
     evaluationController = Locator.get<EvaluationController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'AAAAAA'));
-      await homeController.fetchData().asyncLoader(customLoader: LoaderWidget(message: 'BBBBBB'));
-      await evaluationController.fetchCustomers().asyncLoader(customLoader: LoaderWidget(message: 'CCCCC'));
+      await homeController.syncronize().asyncLoader();
     });
   }
 
@@ -63,8 +60,6 @@ class _HomePageState extends State<HomePage> {
               child: RefreshIndicator(
                 onRefresh: () async {
                   final result = await homeController.syncronize();
-                  await homeController.fetchData();
-                  await evaluationController.fetchCustomers();
                   _showSyncResultSnackbar(result);
                 },
                 child: ListenableBuilder(
