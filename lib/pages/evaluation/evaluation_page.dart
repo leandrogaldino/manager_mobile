@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/helper/technician_picker.dart';
+import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_technician_model.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/header_section_widget.dart';
@@ -23,7 +28,17 @@ class EvaluationPage extends StatefulWidget {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
-  final formKey = GlobalKey<FormState>();
+  late final GlobalKey<FormState> formKey;
+  late final EvaluationController evaluationController;
+
+  @override
+  void initState() {
+    super.initState();
+    formKey = GlobalKey<FormState>();
+    evaluationController = Locator.get<EvaluationController>();
+    evaluationController.setEvaluation(widget.evaluation);
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -76,8 +91,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       ? null
                       : IconButton(
                           icon: Icon(Icons.add),
-                          onPressed: () {
-                            //TODO: Incluir técnico reaproveitando o technician_chose
+                          onPressed: () async {
+                            PersonModel? technician = await TechnicianPicker.pick(context: context, hide: widget.evaluation.technicians.map((t) => t.technician).toList());
+                            evaluationController.setEvaluation(widget.evaluation);
+
+                            if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
                           },
                         ),
                   child: TechnicianSectionWidget(evaluation: widget.evaluation),

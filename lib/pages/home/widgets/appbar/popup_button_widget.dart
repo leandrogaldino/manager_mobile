@@ -1,11 +1,10 @@
-// app_popup_menu.dart
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
+import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
-import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 
 class PopupButtonWidget extends StatelessWidget {
@@ -39,16 +38,16 @@ class PopupButtonWidget extends StatelessWidget {
             leading: const Icon(Icons.build),
             title: const Text('Trocar Técnico'),
             onTap: () async {
-              var technicians = await technicianController.getTechnicians();
-              var loggedTechnician = await technicianController.getLoggedTechnicianId();
               if (!context.mounted) return;
               Navigator.pop(context);
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
-                    return TechnicianChooseDialog(technicians: technicians, loggedTechnician: loggedTechnician);
-                  });
+
+              var person = await TechnicianPicker.pick(
+                context: context,
+              );
+
+              if (person != null) {
+                await technicianController.setLoggedTechnicianId(person.id);
+              }
             },
           ),
         ),

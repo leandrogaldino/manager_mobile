@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
+import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/core/widgets/technician_chose/technician_chose_dialog.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
@@ -26,13 +24,11 @@ class ScheduleWidget extends StatefulWidget {
 
 class _ScheduleWidgetState extends State<ScheduleWidget> {
   late final TechnicianController technicianController;
-  late final AppPreferences preferences;
 
   @override
   void initState() {
     super.initState();
     technicianController = Locator.get<TechnicianController>();
-    preferences = Locator.get<AppPreferences>();
   }
 
   @override
@@ -138,22 +134,12 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  var loggedId = await preferences.getLoggedTechnicianId;
+                  var loggedId = await technicianController.getLoggedTechnicianId();
                   if (loggedId == 0) {
-                    var technicians = await technicianController.getTechnicians();
                     if (!context.mounted) return;
-                    var person = await showDialog<PersonModel>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return TechnicianChooseDialog(
-                          technicians: technicians,
-                          loggedTechnician: technicianController.loggedTechnicianId,
-                        );
-                      },
-                    );
+                    var person = await TechnicianPicker.pick(context: context);
                     if (person != null) {
-                      preferences.setLoggedTechnicianId(person.id);
+                      technicianController.setLoggedTechnicianId(person.id);
                       loggedId = person.id;
                     }
                   }

@@ -134,6 +134,7 @@ class SQLScripts {
   static const String createTableEvaluationTechnician = '''
     CREATE TABLE evaluationtechnician (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      ismain INTEGER NOT NULL,
       personid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       FOREIGN KEY (personid) REFERENCES person (id) ON DELETE RESTRICT,

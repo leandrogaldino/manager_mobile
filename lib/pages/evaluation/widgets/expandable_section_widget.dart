@@ -64,10 +64,7 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
                       offstage: widget.action == null,
                       child: Offstage(
                         offstage: !isExpanded,
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.add),
-                        ),
+                        child: widget.action,
                       ),
                     ),
                   ),

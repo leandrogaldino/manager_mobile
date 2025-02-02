@@ -107,6 +107,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController.setSelectedCompressor(widget.evaluation.compressor);
   }
 
+//TODO fazer os metodos para atualizar a evaluation no controller e usalos no onchanged dos controles igual os tecnicos
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
