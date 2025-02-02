@@ -3,6 +3,7 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 
+//TODO: quando a avaliação está salva nao pode aparecer a lixeira
 class TechnicianSectionWidget extends StatefulWidget {
   const TechnicianSectionWidget({super.key, required this.evaluation});
   final EvaluationModel evaluation;

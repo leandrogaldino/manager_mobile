@@ -66,17 +66,17 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     });
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
-      if (_evaluationController.selectedCustomer != null && _customerEC.text != _evaluationController.selectedCustomer!.shortName) {
-        _evaluationController.setSelectedCustomer(null);
-        _evaluationController.setSelectedCompressor(null);
+      if (_evaluationController.evaluation!.customer != null && _customerEC.text != _evaluationController.evaluation!.customer!.shortName) {
+        _evaluationController.evaluation!.customer = null;
+        _evaluationController.updateCompressor(null);
         _compressorEC.text = '';
         _serialNumberEC.text = '';
       }
     });
     _compressorEC = TextEditingController();
     _compressorEC.addListener(() {
-      if (_evaluationController.selectedCompressor != null && _compressorEC.text != _evaluationController.selectedCompressor!.compressorName) {
-        _evaluationController.setSelectedCompressor(null);
+      if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _evaluationController.evaluation!.compressor!.compressorName) {
+        _evaluationController.updateCompressor(null);
         _serialNumberEC.text = '';
       }
     });
@@ -103,11 +103,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _oilEC.text = widget.evaluation.oil == null ? '' : widget.evaluation.oil.toString();
     _adviceEC.text = widget.evaluation.advice ?? '';
     _responsibleEC.text = widget.evaluation.responsible ?? '';
-    _evaluationController.setSelectedCustomer(widget.evaluation.customer);
-    _evaluationController.setSelectedCompressor(widget.evaluation.compressor);
+    _evaluationController.updateCustomer(widget.evaluation.customer);
+    _evaluationController.updateCompressor(widget.evaluation.compressor);
   }
 
-//TODO fazer os metodos para atualizar a evaluation no controller e usalos no onchanged dos controles igual os tecnicos
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -129,11 +128,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       validator: Validatorless.multiple(
                         [
                           Validatorless.required('Campo obrigatório'),
-                          EvaluationValidators.hasCustomer(_evaluationController.selectedCustomer, 'Selecione um item'),
+                          EvaluationValidators.hasCustomer(_evaluationController.evaluation!.customer, 'Selecione um item'),
                         ],
                       ),
                       decoration: InputDecoration(labelText: 'Cliente'),
-                      style: TextStyle(color: _evaluationController.selectedCustomer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
+                      style: TextStyle(color: _evaluationController.evaluation!.customer == null ? Colors.blue : Colors.orange), // Cor do texto digitado
                       onChanged: (value) {},
                     );
                   },
@@ -145,14 +144,34 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   },
                   onSelected: (suggestion) {
                     _customerEC.text = suggestion.shortName;
-                    _evaluationController.setSelectedCustomer(suggestion);
+                    _evaluationController.evaluation!.customer = suggestion;
                     _compressorEC.clear();
                     _serialNumberEC.clear();
-                    _evaluationController.setSelectedCompressor(null);
+                    _evaluationController.updateCompressor(null);
                   },
                   suggestionsCallback: (query) async {
                     if (widget.source != EvaluationSource.fromNew) return [];
                     return _evaluationController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
+                  },
+                  decorationBuilder: (context, child) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      constraints: BoxConstraints(
+                        maxHeight: 220,
+                      ),
+                      child: child,
+                    );
                   },
                 ),
                 Row(
@@ -162,7 +181,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                     Expanded(
                       child: TypeAheadField<CompressorModel>(
                         hideOnEmpty: true,
-                        key: ValueKey(_evaluationController.selectedCustomer?.id),
+                        key: ValueKey(_evaluationController.evaluation!.customer?.id),
                         controller: _compressorEC,
                         builder: (context, controller, focusNode) {
                           return TextFormField(
@@ -171,14 +190,14 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             focusNode: focusNode,
                             validator: Validatorless.multiple(
                               [
-                                EvaluationValidators.requiredCompressor(_evaluationController.selectedCustomer, _evaluationController.selectedCompressor, 'Campo obrigatório'),
-                                EvaluationValidators.hasCompressor(_evaluationController.selectedCustomer, _evaluationController.selectedCompressor, 'Selecione um item'),
+                                EvaluationValidators.requiredCompressor(_evaluationController.evaluation!.customer, _evaluationController.evaluation!.compressor, 'Campo obrigatório'),
+                                EvaluationValidators.hasCompressor(_evaluationController.evaluation!.customer, _evaluationController.evaluation!.compressor, 'Selecione um item'),
                               ],
                             ),
                             decoration: InputDecoration(labelText: 'Compressor'),
-                            style: TextStyle(color: _evaluationController.selectedCompressor == null ? Colors.blue : Colors.orange),
+                            style: TextStyle(color: _evaluationController.evaluation!.compressor == null ? Colors.blue : Colors.orange),
                             onChanged: (value) {
-                              widget.evaluation.compressor = null;
+                              _evaluationController.updateCompressor(null);
                             },
                           );
                         },
@@ -191,12 +210,31 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         onSelected: (suggestion) {
                           _compressorEC.text = suggestion.compressorName;
                           _serialNumberEC.text = suggestion.serialNumber;
-                          _evaluationController.setSelectedCompressor(suggestion);
-                          widget.evaluation.compressor = _evaluationController.selectedCompressor;
+                          _evaluationController.updateCompressor(suggestion);
                         },
                         suggestionsCallback: (query) async {
                           if (widget.source != EvaluationSource.fromNew) return [];
-                          return _evaluationController.selectedCustomer?.compressors.where((item) => item.compressorName.toLowerCase().contains(query.toLowerCase())).toList();
+                          return _evaluationController.evaluation!.customer?.compressors.where((item) => item.compressorName.toLowerCase().contains(query.toLowerCase())).toList();
+                        },
+                        decorationBuilder: (context, child) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            constraints: BoxConstraints(
+                              maxHeight: 220,
+                            ),
+                            child: child,
+                          );
                         },
                       ),
                     ),
@@ -226,13 +264,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Horímetro',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => widget.evaluation.horimeter = value == '' ? 0 : int.parse(value),
+                        onChanged: (value) => _evaluationController.updateHorimeter(int.tryParse(value) ?? 0),
                       ),
                     ),
                     Expanded(
                       child: DropdownButtonFormField<OilTypes>(
                         alignment: AlignmentDirectional.center,
-                        value: _evaluationController.selectedOilType,
+                        value: _evaluationController.evaluation!.oilType,
                         decoration: InputDecoration(
                           labelText: 'Tipo de Óleo',
                         ),
@@ -247,7 +285,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         }).toList(),
                         onChanged: widget.source != EvaluationSource.fromSaved
                             ? (oilType) {
-                                _evaluationController.setOilType(oilType!);
+                                _evaluationController.updateOilType(oilType!);
                               }
                             : null,
                       ),
@@ -268,7 +306,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           [
                             Validatorless.required('Campo obrigatório'),
                             EvaluationValidators.validPartTimeRange(
-                              _evaluationController.selectedOilType,
+                              _evaluationController.evaluation!.oilType!,
                               PartTypes.airFilter,
                             ),
                           ],
@@ -277,7 +315,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Filtro de Ar',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => widget.evaluation.airFilter = int.tryParse(value) ?? 0,
+                        onChanged: (value) => _evaluationController.updateAirFilter(int.tryParse(value) ?? 0),
                       ),
                     ),
                     Expanded(
@@ -291,7 +329,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           [
                             Validatorless.required('Campo obrigatório'),
                             EvaluationValidators.validPartTimeRange(
-                              _evaluationController.selectedOilType,
+                              _evaluationController.evaluation!.oilType!,
                               PartTypes.oilFilter,
                             ),
                           ],
@@ -300,7 +338,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Filtro de Óleo',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => widget.evaluation.oilFilter = int.tryParse(value) ?? 0,
+                        onChanged: (value) => _evaluationController.updateOilFilter(int.tryParse(value) ?? 0),
                       ),
                     ),
                   ],
@@ -320,7 +358,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           [
                             Validatorless.required('Campo obrigatório'),
                             EvaluationValidators.validPartTimeRange(
-                              _evaluationController.selectedOilType,
+                              _evaluationController.evaluation!.oilType!,
                               PartTypes.separator,
                             ),
                           ],
@@ -329,7 +367,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Separador',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => widget.evaluation.separator = int.tryParse(value) ?? 0,
+                        onChanged: (value) => _evaluationController.updateSeparator(int.tryParse(value) ?? 0),
                       ),
                     ),
                     Expanded(
@@ -343,7 +381,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           [
                             Validatorless.required('Campo obrigatório'),
                             EvaluationValidators.validPartTimeRange(
-                              _evaluationController.selectedOilType,
+                              _evaluationController.evaluation!.oilType!,
                               PartTypes.oil,
                             ),
                           ],
@@ -352,7 +390,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Óleo',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => widget.evaluation.oil = int.tryParse(value) ?? 0,
+                        onChanged: (value) => _evaluationController.updateOil(int.tryParse(value) ?? 0),
                       ),
                     ),
                   ],
@@ -363,7 +401,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(labelText: 'Parecer Técnico'),
                   maxLines: 5,
-                  onChanged: (value) => widget.evaluation.advice = value,
+                  onChanged: (value) => _evaluationController.updateAdvice(value),
                 ),
                 TextFormField(
                   controller: _responsibleEC,
@@ -371,7 +409,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   textCapitalization: TextCapitalization.words,
                   validator: Validatorless.required('Campo obrigatório'),
                   decoration: InputDecoration(labelText: 'Responsável'),
-                  onChanged: (value) => widget.evaluation.advice = value,
+                  onChanged: (value) => _evaluationController.updateResponsible(value),
                 ),
               ],
             ),
