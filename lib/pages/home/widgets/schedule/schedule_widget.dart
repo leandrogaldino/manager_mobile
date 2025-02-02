@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:manager_mobile/controllers/technician_controller.dart';
+import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
@@ -23,12 +22,12 @@ class ScheduleWidget extends StatefulWidget {
 }
 
 class _ScheduleWidgetState extends State<ScheduleWidget> {
-  late final TechnicianController technicianController;
+  late final LoginController loginController;
 
   @override
   void initState() {
     super.initState();
-    technicianController = Locator.get<TechnicianController>();
+    loginController = Locator.get<LoginController>();
   }
 
   @override
@@ -134,27 +133,9 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  var loggedId = await technicianController.getLoggedTechnicianId();
-                  if (loggedId == 0) {
-                    if (!context.mounted) return;
-                    var person = await TechnicianPicker.pick(context: context);
-                    if (person != null) {
-                      technicianController.setLoggedTechnicianId(person.id);
-                      loggedId = person.id;
-                    }
-                  }
-                  if (loggedId == 0) {
-                    if (context.mounted) {
-                      Message.showInfoSnackbar(
-                        context: context,
-                        message: 'Não é possível iniciar uma avaliação sem informar um técnico.',
-                      );
-                    }
-                    return;
-                  }
                   var evaluation = EvaluationModel.fromSource(schedule: widget.schedule);
-                  var loggedTechnician = await technicianController.getLoggedTechnician();
-                  if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
+                  PersonModel? technician = await loginController.currentLoggedUser;
+                  if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: technician));
                   if (!context.mounted) return;
                   Navigator.of(context).popAndPushNamed(
                     Routes.evaluation,

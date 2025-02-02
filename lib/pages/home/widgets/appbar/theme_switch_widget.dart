@@ -2,22 +2,26 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/core/app_preferences.dart';
 
-class ThemeSwitchWidget extends StatelessWidget {
+class ThemeSwitchWidget extends StatefulWidget {
   const ThemeSwitchWidget({super.key});
 
-  IconData iconDataByValue(String? value) => switch (value) {
-        'Claro' => Icons.light_mode,
-        'Escuro' => Icons.dark_mode,
-        _ => Icons.android,
-      };
+  @override
+  State<ThemeSwitchWidget> createState() => _ThemeSwitchWidgetState();
+}
+
+class _ThemeSwitchWidgetState extends State<ThemeSwitchWidget> {
+  late final AppController appController;
+
+  @override
+  void initState() {
+    super.initState();
+    appController = GetIt.I<AppController>();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final appController = GetIt.I<AppController>();
-    final appPreferences = GetIt.I<AppPreferences>();
+    ThemeData theme = Theme.of(context);
     return ListenableBuilder(
         listenable: appController,
         builder: (context, child) {
@@ -44,7 +48,11 @@ class ThemeSwitchWidget extends StatelessWidget {
                     onChanged: (value) async => await appController.changeTheme(appController.getThemeMode(value)),
                     iconBuilder: (a, b) {
                       return Icon(
-                        iconDataByValue(a),
+                        switch (a) {
+                          'Claro' => Icons.light_mode,
+                          'Escuro' => Icons.dark_mode,
+                          _ => Icons.android,
+                        },
                         size: 40,
                       );
                     },

@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 import 'package:manager_mobile/interfaces/connection.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/states/login_state.dart';
 
-class LoginController {
-  final Auth _authService;
-  final Connection _connection;
+class LoginController extends ChangeNotifier {
   LoginController({required Auth service, required Connection connection})
       : _authService = service,
         _connection = connection;
 
-  final ValueNotifier<LoginState> _state = ValueNotifier<LoginState>(LoginStateInitial());
-  ValueNotifier<LoginState> get state => _state;
-  void _setState(LoginState newState) => _state.value = newState;
+  Future<PersonModel?> get currentLoggedUser async {
+    return await _authService.currentLoggedUser;
+  }
 
-  final _obscurePassword = ValueNotifier<bool>(true);
-  ValueNotifier<bool> get obscurePassword => _obscurePassword;
-  void toggleObscurePassword() => _obscurePassword.value = !_obscurePassword.value;
+  final Auth _authService;
+  final Connection _connection;
+
+  LoginState _state = LoginStateInitial();
+  LoginState get state => _state;
+
+  void _setState(LoginState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+
+  bool _obscurePassword = true;
+  bool get obscurePassword => _obscurePassword;
+
+  void toggleObscurePassword() {
+    _obscurePassword = !_obscurePassword;
+    notifyListeners();
+  }
 
   Future<void> singIn(String email, String password) async {
     await Future.delayed(Duration(seconds: 2));
-
     try {
       final hasConnection = await _connection.hasConnection();
       if (!hasConnection) {

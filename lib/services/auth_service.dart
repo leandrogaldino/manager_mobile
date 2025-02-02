@@ -1,9 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:manager_mobile/core/exceptions/auth_exception.dart';
+import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
+
+import 'package:manager_mobile/interfaces/remote_database.dart';
+import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/services/person_service.dart';
 
 class AuthService implements Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final RemoteDatabase _remoteDatabase = Locator.get<RemoteDatabase>();
+  final PersonService _personService = Locator.get<PersonService>();
 
   @override
   Future<void> signIn({required String email, required String password}) async {
@@ -34,5 +41,15 @@ class AuthService implements Auth {
     } catch (e) {
       throw AuthException('Erro ao sair: ${e.toString()}');
     }
+  }
+
+  @override
+  Future<PersonModel?> get currentLoggedUser async {
+    if (_auth.currentUser == null) return null;
+    String userId = _auth.currentUser!.uid;
+    var result = await _remoteDatabase.get(collection: 'users', filters: [RemoteDatabaseFilter(field: 'userid', operator: FilterOperator.isEqualTo, value: userId)]);
+    if (result.isEmpty) throw Exception('Usuario não vinculado com a pessoa.');
+    var personId = int.parse(result[0]['personid']);
+    return _personService.getById(personId);
   }
 }

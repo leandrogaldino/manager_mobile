@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/helper/technician_picker.dart';
+import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
@@ -29,12 +29,14 @@ class EvaluationPage extends StatefulWidget {
 
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> formKey;
+  late final LoginController loginController;
   late final EvaluationController evaluationController;
 
   @override
   void initState() {
     super.initState();
     formKey = GlobalKey<FormState>();
+    loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
     evaluationController.setEvaluation(widget.evaluation);
   }
@@ -92,9 +94,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       : IconButton(
                           icon: Icon(Icons.add),
                           onPressed: () async {
-                            PersonModel? technician = await TechnicianPicker.pick(context: context, hide: widget.evaluation.technicians.map((t) => t.technician).toList());
+                            PersonModel? technician = await loginController.currentLoggedUser;
                             evaluationController.setEvaluation(widget.evaluation);
-
                             if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
                           },
                         ),

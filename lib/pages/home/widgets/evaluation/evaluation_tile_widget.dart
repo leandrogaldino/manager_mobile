@@ -21,6 +21,10 @@ class EvaluationTileWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: ListTile(
+          leading: Icon(
+            Icons.cloud_off,
+            color: Colors.white,
+          ),
           title: Text(
             evaluation.customer!.shortName,
             style: TextStyle(color: Colors.white),

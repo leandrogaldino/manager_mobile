@@ -6,7 +6,6 @@ import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -100,25 +99,6 @@ class _HomePageState extends State<HomePage> {
             return homeController.currentIndex == 1
                 ? FloatingActionButton(
                     onPressed: () async {
-                      var loggedId = await technicianController.getLoggedTechnicianId();
-                      if (loggedId == 0) {
-                        if (!context.mounted) return;
-                        var person = await TechnicianPicker.pick(context: context);
-                        if (person != null) {
-                          technicianController.setLoggedTechnicianId(person.id);
-                          loggedId = person.id;
-                        }
-                      }
-                      if (loggedId == 0) {
-                        if (context.mounted) {
-                          Message.showInfoSnackbar(
-                            context: context,
-                            message: 'Não é possível iniciar uma avaliação sem informar um técnico.',
-                          );
-                        }
-                        return;
-                      }
-
                       var evaluation = EvaluationModel.fromSource();
                       var loggedTechnician = await technicianController.getLoggedTechnician();
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));

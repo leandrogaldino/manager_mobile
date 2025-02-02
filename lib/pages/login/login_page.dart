@@ -67,11 +67,11 @@ class _LoginPageState extends State<LoginPage> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 18),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: loginController.obscurePassword,
-                        builder: (_, obscurePassword, __) {
+                      ListenableBuilder(
+                        listenable: loginController,
+                        builder: (context, child) {
                           return TextFormField(
-                            obscureText: obscurePassword,
+                            obscureText: loginController.obscurePassword,
                             controller: passwordEC,
                             validator: Validatorless.required('Senha obrigatória'),
                             decoration: InputDecoration(
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                               suffixIcon: IconButton(
                                 onPressed: loginController.toggleObscurePassword,
                                 icon: Icon(
-                                  obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  loginController.obscurePassword ? Icons.visibility : Icons.visibility_off,
                                 ),
                               ),
                             ),
@@ -88,12 +88,13 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      ValueListenableBuilder<LoginState>(
-                        valueListenable: loginController.state,
-                        builder: (context, state, child) {
-                          if (state is LoginStateError) {
+                      ListenableBuilder(
+                        listenable: loginController,
+                        builder: (context, child) {
+                          if (loginController.state is LoginStateError) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Message.showErrorSnackbar(context: context, message: state.message);
+                              final errorState = loginController.state as LoginStateError;
+                              Message.showErrorSnackbar(context: context, message: errorState.message);
                             });
                           }
 

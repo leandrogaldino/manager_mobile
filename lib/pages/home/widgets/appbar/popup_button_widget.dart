@@ -36,7 +36,7 @@ class PopupButtonWidget extends StatelessWidget {
         PopupMenuItem(
           child: ListTile(
             leading: const Icon(Icons.build),
-            title: const Text('Trocar Técnico'),
+            title: const Text('Trocar Técnico (Remover...)'),
             onTap: () async {
               if (!context.mounted) return;
               Navigator.pop(context);
@@ -54,7 +54,7 @@ class PopupButtonWidget extends StatelessWidget {
         PopupMenuItem(
           child: ListTile(
             leading: const Icon(Icons.build),
-            title: const Text('Zerar Técnico'),
+            title: const Text('Zerar Técnico (Remover...)'),
             onTap: () async {
               Navigator.pop(context);
               await technicianController.setLoggedTechnicianId(0);
