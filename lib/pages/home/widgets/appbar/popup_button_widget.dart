@@ -1,19 +1,28 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/controllers/technician_controller.dart';
-import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 
-class PopupButtonWidget extends StatelessWidget {
+class PopupButtonWidget extends StatefulWidget {
   const PopupButtonWidget({super.key});
 
   @override
+  State<PopupButtonWidget> createState() => _PopupButtonWidgetState();
+}
+
+class _PopupButtonWidgetState extends State<PopupButtonWidget> {
+  late final LoginController loginController;
+
+  @override
+  void initState() {
+    super.initState();
+    loginController = Locator.get<LoginController>();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final LoginController loginController = Locator.get<LoginController>();
-    final TechnicianController technicianController = Locator.get<TechnicianController>();
     return PopupMenuButton(
       icon: const Icon(Icons.more_vert),
       itemBuilder: (_) => [
@@ -30,34 +39,6 @@ class PopupButtonWidget extends StatelessWidget {
                 },
               );
               const ThemeSwitchWidget();
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.build),
-            title: const Text('Trocar Técnico (Remover...)'),
-            onTap: () async {
-              if (!context.mounted) return;
-              Navigator.pop(context);
-
-              var person = await TechnicianPicker.pick(
-                context: context,
-              );
-
-              if (person != null) {
-                await technicianController.setLoggedTechnicianId(person.id);
-              }
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.build),
-            title: const Text('Zerar Técnico (Remover...)'),
-            onTap: () async {
-              Navigator.pop(context);
-              await technicianController.setLoggedTechnicianId(0);
             },
           ),
         ),

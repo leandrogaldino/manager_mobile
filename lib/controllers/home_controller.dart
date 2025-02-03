@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/customer_controller.dart';
+import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
@@ -20,7 +20,7 @@ class HomeController extends ChangeNotifier {
     required ScheduleService scheduleService,
     required EvaluationService evaluationService,
     required AppPreferences appPreferences,
-    required CustomerController customerController,
+    required PersonController customerController,
   })  : _coalescentService = coalescentService,
         _compressorService = compressorService,
         _personService = personService,
@@ -35,7 +35,7 @@ class HomeController extends ChangeNotifier {
   final ScheduleService _scheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
-  final CustomerController _customerController;
+  final PersonController _customerController;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -134,6 +134,7 @@ class HomeController extends ChangeNotifier {
     await _appPreferences.updateLastSynchronize();
     await _appPreferences.setSynchronizing(false);
     await _customerController.fetchCustomers();
+    await _customerController.fetchTechnicians();
     await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
     return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }

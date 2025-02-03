@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
@@ -92,10 +93,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   action: widget.source == EvaluationSource.fromSaved
                       ? null
                       : IconButton(
-                          icon: Icon(Icons.add),
+                          icon: Icon(
+                            Icons.add,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
                           onPressed: () async {
-                            PersonModel? technician = await loginController.currentLoggedUser;
-                            evaluationController.setEvaluation(widget.evaluation);
+                            PersonModel? technician = await TechnicianPicker.pick(context: context);
                             if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
                           },
                         ),

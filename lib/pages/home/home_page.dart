@@ -4,7 +4,7 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
-import 'package:manager_mobile/controllers/technician_controller.dart';
+import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   late final AppController appController;
   late final HomeController homeController;
   late final FilterController filterController;
-  late final TechnicianController technicianController;
+  late final LoginController loginController;
   late final EvaluationController evaluationController;
 
   @override
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     appController = Locator.get<AppController>();
     homeController = Locator.get<HomeController>();
     filterController = Locator.get<FilterController>();
-    technicianController = Locator.get<TechnicianController>();
+    loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                 ? FloatingActionButton(
                     onPressed: () async {
                       var evaluation = EvaluationModel.fromSource();
-                      var loggedTechnician = await technicianController.getLoggedTechnician();
+                      var loggedTechnician = await loginController.currentLoggedUser;
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
                       if (!context.mounted) return;
                       Navigator.of(context).pushNamed(

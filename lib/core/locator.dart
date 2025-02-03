@@ -1,11 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/controllers/customer_controller.dart';
+import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/controllers/technician_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
@@ -199,8 +198,8 @@ class Locator {
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
-    _getIt.registerLazySingleton<CustomerController>(
-      () => CustomerController(
+    _getIt.registerLazySingleton<PersonController>(
+      () => PersonController(
         personService: _getIt.get<PersonService>(),
       ),
     );
@@ -212,17 +211,10 @@ class Locator {
           scheduleService: _getIt.get<ScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
           appPreferences: _getIt.get<AppPreferences>(),
-          customerController: _getIt.get<CustomerController>(),
+          customerController: _getIt.get<PersonController>(),
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());
-
-    _getIt.registerLazySingleton<TechnicianController>(
-      () => TechnicianController(
-        personService: _getIt.get<PersonService>(),
-        appPreferences: _getIt.get<AppPreferences>(),
-      ),
-    );
 
     _getIt.registerLazySingleton<EvaluationController>(
       () => EvaluationController(

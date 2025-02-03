@@ -16,21 +16,27 @@ class ScheduleTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(5),
         ),
         child: ListTile(
           title: Text(
             schedule.customer.shortName,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
           subtitle: Text(
             '${schedule.compressor.compressorName} - ${schedule.compressor.serialNumber}',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
           trailing: Text(
             DateFormat('dd/MM/yyyy').format(schedule.visitDate),
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
           ),
           onTap: () async {
             showModalBottomSheet(

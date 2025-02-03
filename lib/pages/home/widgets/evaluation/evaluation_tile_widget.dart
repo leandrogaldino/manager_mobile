@@ -17,25 +17,31 @@ class EvaluationTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(5),
         ),
         child: ListTile(
           leading: Icon(
             Icons.cloud_off,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
           ),
           title: Text(
             evaluation.customer!.shortName,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
           subtitle: Text(
             '${evaluation.compressor!.compressorName} - ${evaluation.compressor!.serialNumber}',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
           trailing: Text(
             DateFormat('dd/MM/yyyy').format(evaluation.creationDate),
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
           ),
           onTap: () async {
             Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, EvaluationSource.fromSaved]);

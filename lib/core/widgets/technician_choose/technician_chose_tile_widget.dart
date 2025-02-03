@@ -5,12 +5,10 @@ class TechnicianChoseTileWidget extends StatelessWidget {
   const TechnicianChoseTileWidget({
     super.key,
     required this.technician,
-    required this.checked,
     required this.onTechnicianSelected,
   });
 
   final PersonModel technician;
-  final bool checked;
   final ValueChanged<PersonModel> onTechnicianSelected;
 
   @override
@@ -18,14 +16,15 @@ class TechnicianChoseTileWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.orange,
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        trailing: checked ? Icon(Icons.check, color: Colors.white) : null,
         title: Text(
           technician.shortName,
-          style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                color: Theme.of(context).colorScheme.surface,
+              ),
         ),
         onTap: () {
           onTechnicianSelected(technician);

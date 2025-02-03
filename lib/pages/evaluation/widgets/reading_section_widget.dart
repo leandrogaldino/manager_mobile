@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:manager_mobile/controllers/customer_controller.dart';
+import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
@@ -31,7 +31,7 @@ class ReadingSectionWidget extends StatefulWidget {
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
-  late final CustomerController _customerController;
+  late final PersonController _customerController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
   late final TextEditingController _serialNumberEC;
@@ -62,7 +62,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void initState() {
     super.initState();
     _evaluationController = Locator.get<EvaluationController>();
-    _customerController = Locator.get<CustomerController>();
+    _customerController = Locator.get<PersonController>();
 
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
@@ -107,7 +107,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController.updateCompressor(widget.evaluation.compressor);
   }
 
-//TODO: Alterar a cor do container das sugestoes, do technicianpicker e consertar o technicianpick na avaliacao
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -135,7 +134,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       decoration: InputDecoration(labelText: 'Cliente'),
                       style: TextStyle(
                         color: _evaluationController.evaluation!.customer != null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
-                      ), // Cor do texto digitado
+                      ),
                       onChanged: (value) {},
                     );
                   },
@@ -155,26 +154,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   suggestionsCallback: (query) async {
                     if (widget.source != EvaluationSource.fromNew) return [];
                     return _customerController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
-                  },
-                  decorationBuilder: (context, child) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      constraints: BoxConstraints(
-                        maxHeight: 220,
-                      ),
-                      child: child,
-                    );
                   },
                 ),
                 Row(
@@ -218,26 +197,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         suggestionsCallback: (query) async {
                           if (widget.source != EvaluationSource.fromNew) return [];
                           return _evaluationController.evaluation!.customer?.compressors.where((item) => item.compressorName.toLowerCase().contains(query.toLowerCase())).toList();
-                        },
-                        decorationBuilder: (context, child) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  spreadRadius: 1,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            constraints: BoxConstraints(
-                              maxHeight: 220,
-                            ),
-                            child: child,
-                          );
                         },
                       ),
                     ),
