@@ -16,6 +16,16 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
+  Future<List<PersonModel>> getCustomers() async {
+    final data = await _repository.getCustomers();
+    return data.map((item) => PersonModel.fromMap(item)).toList();
+  }
+
+  Future<List<PersonModel>> getTechnicians() async {
+    final data = await _repository.getTechnicians();
+    return data.map((item) => PersonModel.fromMap(item)).toList();
+  }
+
   @override
   Future<PersonModel> getById(dynamic id) async {
     final data = await _repository.getById(id);

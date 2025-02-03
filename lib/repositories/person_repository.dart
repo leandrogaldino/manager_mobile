@@ -25,6 +25,24 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
     return persons;
   }
 
+  Future<List<Map<String, Object?>>> getCustomers() async {
+    var persons = await _localDatabase.query('person', where: 'iscustomer = ?', whereArgs: ['1']);
+    for (var person in persons) {
+      var compressors = await _compressorRepository.getByParentId(person['id'] as int);
+      person['compressors'] = compressors;
+    }
+    return persons;
+  }
+
+  Future<List<Map<String, Object?>>> getTechnicians() async {
+    var persons = await _localDatabase.query('person', where: 'istechnician = ?', whereArgs: ['1']);
+    for (var person in persons) {
+      var compressors = await _compressorRepository.getByParentId(person['id'] as int);
+      person['compressors'] = compressors;
+    }
+    return persons;
+  }
+
   @override
   Future<Map<String, Object?>> getById(dynamic id) async {
     final Map<String, Object?> person = await _localDatabase.query('person', where: 'id = ?', whereArgs: [id]).then((list) {
