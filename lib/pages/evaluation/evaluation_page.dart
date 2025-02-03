@@ -7,6 +7,7 @@ import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/header_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/instructions_section_widget.dart';
@@ -86,6 +87,16 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     evaluation: widget.evaluation,
                     source: widget.source,
                     formKey: formKey,
+                  ),
+                ),
+                Offstage(
+                  offstage: widget.evaluation.coalescents.isNotEmpty,
+                  child: ExpandableSectionWidget(
+                    title: 'Coalescentes',
+                    child: CoalescentSectionWidget(
+                      evaluation: widget.evaluation,
+                      source: widget.source,
+                    ),
                   ),
                 ),
                 ExpandableSectionWidget(
