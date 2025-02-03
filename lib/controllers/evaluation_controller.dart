@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -15,6 +16,11 @@ class EvaluationController extends ChangeNotifier {
 
   void setEvaluation(EvaluationModel? evaluation) {
     _evaluation = evaluation;
+    notifyListeners();
+  }
+
+  void setCoalescentNextChange(int index, DateTime? nextChange) {
+    _evaluation!.coalescents[index] = _evaluation!.coalescents[index].copyWith(nextChange: nextChange);
     notifyListeners();
   }
 
@@ -65,6 +71,12 @@ class EvaluationController extends ChangeNotifier {
 
   void updateCompressor(CompressorModel? compressor) {
     _evaluation!.compressor = compressor;
+    _evaluation!.coalescents.clear();
+    if (compressor != null) {
+      for (var coalescent in evaluation!.compressor!.coalescents) {
+        _evaluation!.coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent));
+      }
+    }
     notifyListeners();
   }
 
@@ -75,6 +87,16 @@ class EvaluationController extends ChangeNotifier {
 
   void removeTechnician(EvaluationTechnicianModel technician) {
     _evaluation!.technicians.remove(technician);
+    notifyListeners();
+  }
+
+  void addCoalescent(EvaluationCoalescentModel coalescent) {
+    _evaluation!.coalescents.add(coalescent);
+    notifyListeners();
+  }
+
+  void removeCoalescent(EvaluationCoalescentModel coalescent) {
+    _evaluation!.coalescents.remove(coalescent);
     notifyListeners();
   }
 }

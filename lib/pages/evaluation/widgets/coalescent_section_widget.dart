@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -39,7 +40,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
             child: Scrollbar(
               child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: widget.evaluation.technicians.length,
+                  itemCount: widget.evaluation.coalescents.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Column(
@@ -49,16 +50,33 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                             children: [
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(widget.evaluation.technicians[index].technician.shortName),
+                                child: Column(
+                                  children: [
+                                    Text(widget.evaluation.coalescents[index].coalescent.coalescentName),
+                                    ListenableBuilder(
+                                        listenable: evaluationController,
+                                        builder: (context, child) {
+                                          return TextButton(
+                                            onPressed: () async {
+                                              DateTime? selectedDate = await showDatePicker(
+                                                context: context,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(2000),
+                                                lastDate: DateTime(2100),
+                                              );
+                                              if (selectedDate != null) {
+                                                evaluationController.setCoalescentNextChange(index, selectedDate);
+                                              }
+                                            },
+                                            child: Text(
+                                              widget.evaluation.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(widget.evaluation.coalescents[index].nextChange!),
+                                              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                            ),
+                                          );
+                                        }),
+                                  ],
+                                ),
                               ),
-                              Offstage(
-                                offstage: index == 0 || widget.source != EvaluationSource.fromNew,
-                                child: IconButton(
-                                    onPressed: () {
-                                      evaluationController.removeTechnician(widget.evaluation.technicians[index]);
-                                    },
-                                    icon: Icon(Icons.delete)),
-                              )
                             ],
                           ),
                           Divider(

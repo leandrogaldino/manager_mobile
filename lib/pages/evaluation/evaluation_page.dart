@@ -3,6 +3,7 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -89,16 +90,20 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     formKey: formKey,
                   ),
                 ),
-                Offstage(
-                  offstage: widget.evaluation.coalescents.isNotEmpty,
-                  child: ExpandableSectionWidget(
-                    title: 'Coalescentes',
-                    child: CoalescentSectionWidget(
-                      evaluation: widget.evaluation,
-                      source: widget.source,
-                    ),
-                  ),
-                ),
+                ListenableBuilder(
+                    listenable: evaluationController,
+                    builder: (context, child) {
+                      return Offstage(
+                        offstage: widget.evaluation.coalescents.isEmpty,
+                        child: ExpandableSectionWidget(
+                          title: 'Coalescentes',
+                          child: CoalescentSectionWidget(
+                            evaluation: widget.evaluation,
+                            source: widget.source,
+                          ),
+                        ),
+                      );
+                    }),
                 ExpandableSectionWidget(
                   title: 'Técnicos',
                   action: widget.source == EvaluationSource.fromSaved
@@ -121,7 +126,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 widget.source != EvaluationSource.fromSaved
                     ? ElevatedButton(
                         onPressed: () {
-                          final valid = formKey.currentState?.validate() ?? false;
+                          bool valid = formKey.currentState?.validate() ?? false;
+                          valid = _validateCoalescentsNextChange();
                           if (valid) {}
                         },
                         child: Text('Salvar'))
@@ -132,6 +138,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
         ),
       ),
     );
+  }
+
+  bool _validateCoalescentsNextChange() {
+    final bool valid = widget.evaluation.coalescents.every((coalescent) => coalescent.nextChange != null);
+    if (!valid) {
+      Message.showInfoSnackbar(context: context, message: 'Selecione a data da próxima troca de todos os coalescentes.');
+    }
+    return valid;
   }
 
   Future<bool?> _showBackDialog(BuildContext context) {

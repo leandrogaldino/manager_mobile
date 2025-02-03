@@ -58,7 +58,7 @@ class EvaluationModel {
     List<EvaluationCoalescentModel> coalescents = [];
     if (schedule != null) {
       for (var coalescent in schedule.compressor.coalescents) {
-        coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent, nextChange: 0));
+        coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent));
       }
     }
 

@@ -6,39 +6,23 @@ import 'package:manager_mobile/models/coalescent_model.dart';
 class EvaluationCoalescentModel {
   final int id;
   final CoalescentModel coalescent;
-  final int nextChange;
+  final DateTime? nextChange;
 
   EvaluationCoalescentModel({
     required this.id,
     required this.coalescent,
-    required this.nextChange,
+    this.nextChange,
   });
 
   EvaluationCoalescentModel copyWith({
     int? id,
     CoalescentModel? coalescent,
-    int? nextChange,
+    DateTime? nextChange,
   }) {
     return EvaluationCoalescentModel(
       id: id ?? this.id,
       coalescent: coalescent ?? this.coalescent,
       nextChange: nextChange ?? this.nextChange,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'coalescentid': coalescent.id,
-      'nextchange': nextChange,
-    };
-  }
-
-  factory EvaluationCoalescentModel.fromMap(Map<String, dynamic> map) {
-    return EvaluationCoalescentModel(
-      id: (map['id'] ?? 0) as int,
-      coalescent: CoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
-      nextChange: (map['nextchange'] ?? 0) as int,
     );
   }
 
@@ -58,4 +42,20 @@ class EvaluationCoalescentModel {
 
   @override
   int get hashCode => id.hashCode ^ coalescent.hashCode ^ nextChange.hashCode;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'coalescent': coalescent.toMap(),
+      'nextChange': nextChange?.millisecondsSinceEpoch,
+    };
+  }
+
+  factory EvaluationCoalescentModel.fromMap(Map<String, dynamic> map) {
+    return EvaluationCoalescentModel(
+      id: (map['id'] ?? 0) as int,
+      coalescent: CoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
+      nextChange: map['nextChange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextChange'] ?? 0) as int) : null,
+    );
+  }
 }
