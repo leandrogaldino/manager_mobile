@@ -47,7 +47,7 @@ class AppTheme {
             foregroundColor: colorScheme.onPrimary,
             backgroundColor: colorScheme.secondary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(10),
             ),
             textStyle: textTheme.bodyMedium),
       ),
@@ -71,6 +71,7 @@ class AppTheme {
       onSecondary: Colors.blue,
       onSurface: Colors.blue,
       onError: Colors.white,
+      primaryContainer: Colors.grey.shade200,
     );
   }
 

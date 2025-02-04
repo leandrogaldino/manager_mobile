@@ -8,12 +8,13 @@ import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/coalescent_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/header_section_widget.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/instructions_section_widget.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/reading_section_widget.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/technician_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/instructions_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/reading_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/signature_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({
@@ -121,6 +122,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   child: TechnicianSectionWidget(
                     evaluation: widget.evaluation,
                     source: widget.source,
+                  ),
+                ),
+                ExpandableSectionWidget(
+                  title: 'Assinatura',
+                  child: SignatureSectionWidget(
+                    evaluation: widget.evaluation,
                   ),
                 ),
                 widget.source != EvaluationSource.fromSaved
