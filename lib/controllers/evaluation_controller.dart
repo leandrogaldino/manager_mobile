@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
@@ -5,11 +8,33 @@ import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
+import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 
 class EvaluationController extends ChangeNotifier {
+  final EvaluationService evaluationService;
   final PersonService personService;
-  EvaluationController({required this.personService});
+  EvaluationController({required this.evaluationService, required this.personService});
+
+  Future<void> save() async {
+    await evaluationService.saveSignature(_signatureBytes!);
+    await evaluationService.save(evaluation!);
+    notifyListeners();
+  }
+
+  Uint8List? _signatureBytes;
+  Uint8List? get signatureBytes => _signatureBytes;
+  void setSignatureBytes(Uint8List? signatureBytes) {
+    _signatureBytes = signatureBytes;
+    notifyListeners();
+  }
+
+  void updateSignaturePath(String signaturePath) async {
+    _evaluation!.signaturePath = signaturePath;
+    final file = File(signaturePath);
+    _signatureBytes = await file.readAsBytes();
+    notifyListeners();
+  }
 
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;

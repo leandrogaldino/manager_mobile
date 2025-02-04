@@ -132,10 +132,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 widget.source != EvaluationSource.fromSaved
                     ? ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           bool valid = formKey.currentState?.validate() ?? false;
                           valid = _validateCoalescentsNextChange();
-                          if (valid) {}
+                          if (valid) {
+                            await evaluationController.save();
+                            if (!context.mounted) return;
+                          }
                         },
                         child: Text('Salvar'))
                     : SizedBox.shrink(),
@@ -179,7 +182,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
               child: const Text('Sim'),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context, true);
               },
             ),

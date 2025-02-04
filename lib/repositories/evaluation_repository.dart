@@ -84,12 +84,11 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     return evaluations;
   }
 
-  //TODO: Será necessário concluir esse método
+  //TODO: Fazer o tratamento das listas...
   @override
   Future<String> save(Map<String, Object?> data) async {
     if (data['id'] == '') {
       data['id'] = _getEvaluationId(data);
-
       return await _localDatabase.insert('evaluation', data);
     } else {
       await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);
@@ -124,47 +123,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
   Future<int> _syncronizeFromLocalToCloud(int lastSync) async {
     int uploadedData = 0;
-    //MOCK
-    /*
-        var evaluationId = '${75}${104}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
-        await _localDatabase.insert('evaluation', {
-      'id': evaluationId,
-      'compressorid': 104,
-      'creationdate': DateTime.now().millisecondsSinceEpoch.toString(),
-      'starttime': '07:00',
-      'endtime': '09:00',
-      'horimeter': '13412',
-      'airfilter': '1245',
-      'oilfilter': '1245',
-      'oil': '3245',
-      'separator': '3245',
-      'responsible': 'Fulano',
-      'advice': 'Sem parecer técnico',
-      'signaturepath': '/data/user/0/br.com.lgcodecrafter.manager_mobile/files/file.png',
-      'lastupdate': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
-    await _localDatabase.insert('evaluationcoalescent', {
-      'coalescentid': 1986,
-      'evaluationid': evaluationId,
-      'nextchange': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
-    await _localDatabase.insert('evaluationtechnician', {
-      'personid': 5,
-      'evaluationid': evaluationId,
-    });
-    await _localDatabase.insert('evaluationphoto', {
-      'path': '/data/user/0/br.com.lgcodecrafter.manager_mobile/files/file.png',
-      'evaluationid': evaluationId,
-    });
-    await _localDatabase.insert('evaluationinfo', {
-      'evaluationid': evaluationId,
-      'imported': 0,
-      'importedby': '',
-      'importeddate': 0,
-      'importedid': 0,
-      'importingby': '',
-      'importingdate': 0,
-    });*/
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);

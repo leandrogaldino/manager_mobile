@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
+import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:signature/signature.dart';
 
 class SignatureSectionWidget extends StatefulWidget {
   const SignatureSectionWidget({super.key, required this.evaluation});
@@ -15,6 +14,14 @@ class SignatureSectionWidget extends StatefulWidget {
 }
 
 class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
+  late final EvaluationController evaluationController;
+
+  @override
+  void initState() {
+    super.initState();
+    evaluationController = Locator.get<EvaluationController>();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -27,19 +34,19 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
           onTap: () {
             Navigator.of(context).pushNamed(Routes.evaluationSignature, arguments: [widget.evaluation]);
           },
-          child: Container(
-            width: double.infinity,
-            height: 150,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: widget.evaluation.signaturePath == null
-                ? Center(child: Text('Toque para assinar'))
-                : Image.file(
-                    File(widget.evaluation.signaturePath!),
+          child: ListenableBuilder(
+              listenable: evaluationController,
+              builder: (context, child) {
+                return Container(
+                  width: double.infinity,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-          ),
+                  child: evaluationController.signatureBytes == null ? Center(child: Text('Toque para assinar')) : Image.memory(evaluationController.signatureBytes!),
+                );
+              }),
         ),
       ],
     ));

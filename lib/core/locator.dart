@@ -177,7 +177,8 @@ class Locator {
 
     _getIt.registerLazySingleton(
       () => EvaluationService(
-        repository: _getIt.get<EvaluationRepository>(),
+        evaluationRepository: _getIt.get<EvaluationRepository>(),
+        infoRepository: _getIt.get<EvaluationInfoRepository>(),
       ),
     );
 
@@ -218,6 +219,7 @@ class Locator {
 
     _getIt.registerLazySingleton<EvaluationController>(
       () => EvaluationController(
+        evaluationService: _getIt.get<EvaluationService>(),
         personService: _getIt.get<PersonService>(),
       ),
     );
