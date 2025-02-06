@@ -54,7 +54,7 @@ class EvaluationModel {
     this.lastUpdate,
   });
 
-  factory EvaluationModel.fromSource({ScheduleModel? schedule}) {
+  factory EvaluationModel.fromScheduleOrNew({ScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
     if (schedule != null) {
       for (var coalescent in schedule.compressor.coalescents) {

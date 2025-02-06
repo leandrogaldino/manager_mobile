@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
             return homeController.currentIndex == 1
                 ? FloatingActionButton(
                     onPressed: () async {
-                      var evaluation = EvaluationModel.fromSource();
+                      var evaluation = EvaluationModel.fromScheduleOrNew();
                       var loggedTechnician = await loginController.currentLoggedUser;
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
                       if (!context.mounted) return;

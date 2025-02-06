@@ -41,6 +41,7 @@ class EvaluationController extends ChangeNotifier {
 
   void setEvaluation(EvaluationModel? evaluation) {
     _evaluation = evaluation;
+    _signatureBytes = null;
     notifyListeners();
   }
 

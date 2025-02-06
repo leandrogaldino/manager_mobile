@@ -69,7 +69,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     var tmp = model.copyWith();
     final evaluationMap = model.toMap();
     final infoMap = evaluationMap['info'];
-    tmp.info!.id = await _infoRepository.save(infoMap);
+    tmp.info!.copyWith(id: await _infoRepository.save(infoMap));
     evaluationMap.remove('info');
     model.id = await _evaluationRepository.save(evaluationMap);
   }

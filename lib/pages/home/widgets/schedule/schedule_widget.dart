@@ -133,7 +133,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  var evaluation = EvaluationModel.fromSource(schedule: widget.schedule);
+                  var evaluation = EvaluationModel.fromScheduleOrNew(schedule: widget.schedule);
                   PersonModel? technician = await loginController.currentLoggedUser;
                   if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: technician));
                   if (!context.mounted) return;
