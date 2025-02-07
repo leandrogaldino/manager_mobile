@@ -47,7 +47,7 @@ class EvaluationCoalescentModel {
     return <String, dynamic>{
       'id': id,
       'coalescent': coalescent.toMap(),
-      'nextChange': nextChange?.millisecondsSinceEpoch,
+      'nextchange': nextChange?.millisecondsSinceEpoch,
     };
   }
 
@@ -55,7 +55,7 @@ class EvaluationCoalescentModel {
     return EvaluationCoalescentModel(
       id: (map['id'] ?? 0) as int,
       coalescent: CoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
-      nextChange: map['nextChange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextChange'] ?? 0) as int) : null,
+      nextChange: map['nextchange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
     );
   }
 }

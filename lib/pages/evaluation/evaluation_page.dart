@@ -43,6 +43,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
     loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
     evaluationController.setEvaluation(widget.evaluation);
+    // for (int i = 0; i < widget.evaluation.coalescents.length; i++) {
+    //   evaluationController.setCoalescentNextChange(
+    //     i,
+    //     widget.evaluation.coalescents[i].nextChange,
+    //   );
+    // }
   }
 
   @override

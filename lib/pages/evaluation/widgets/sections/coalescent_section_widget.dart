@@ -78,6 +78,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                 ),
                               ),
                             ],
+                            //TODO: a changedate do coalescente ta ficando null em algum momento.
                           ),
                           Divider(
                             color: Theme.of(context).colorScheme.primary,
