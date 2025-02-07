@@ -21,7 +21,6 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableEvaluationTechnician);
           await db.execute(SQLScripts.createTableEvaluationCoalescent);
           await db.execute(SQLScripts.createTableEvaluationPhoto);
-          await db.execute(SQLScripts.createTableEvaluationInfo);
           await db.execute(SQLScripts.createTableSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
@@ -49,7 +48,7 @@ class SqfliteDatabase implements LocalDatabase {
   @override
   Future<dynamic> insert(String table, Map<String, Object?> values) async {
     try {
-      int lastInsertedId = await _database.insert(table, values);
+      dynamic lastInsertedId = await _database.insert(table, values);
       return lastInsertedId;
     } catch (e) {
       throw LocalDatabaseException('Erro ao salvar: $e');

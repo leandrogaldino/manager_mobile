@@ -15,7 +15,6 @@ import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_info_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
@@ -28,7 +27,6 @@ import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/evaluation_coalescent_service.dart';
-import 'package:manager_mobile/services/evaluation_info_service.dart';
 import 'package:manager_mobile/services/evaluation_photo_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/evaluation_technician_service.dart';
@@ -131,12 +129,6 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => EvaluationInfoRepository(
-        localDatabase: _getIt.get<LocalDatabase>(),
-      ),
-    );
-
-    _getIt.registerLazySingleton(
       () => EvaluationRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
@@ -147,7 +139,6 @@ class Locator {
         evaluationCoalescentRepository: _getIt.get<EvaluationCoalescentRepository>(),
         evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
         evaluationPhotoRepository: _getIt.get<EvaluationPhotoRepository>(),
-        evaluationInfoRepository: _getIt.get<EvaluationInfoRepository>(),
       ),
     );
 
@@ -170,15 +161,8 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => EvaluationInfoService(
-        repository: _getIt.get<EvaluationInfoRepository>(),
-      ),
-    );
-
-    _getIt.registerLazySingleton(
       () => EvaluationService(
         evaluationRepository: _getIt.get<EvaluationRepository>(),
-        infoRepository: _getIt.get<EvaluationInfoRepository>(),
       ),
     );
 

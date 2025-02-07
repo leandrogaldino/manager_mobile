@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/interfaces/deletable.dart';
@@ -9,20 +8,17 @@ import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
-import 'package:manager_mobile/repositories/evaluation_info_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class EvaluationService implements Readable<EvaluationModel>, Writable<EvaluationModel>, Deletable, Syncronizable {
   final EvaluationRepository _evaluationRepository;
-  final EvaluationInfoRepository _infoRepository;
 
   EvaluationService({
     required EvaluationRepository evaluationRepository,
-    required EvaluationInfoRepository infoRepository,
-  })  : _evaluationRepository = evaluationRepository,
-        _infoRepository = infoRepository;
+  }) : _evaluationRepository = evaluationRepository;
 
   Future<String> saveSignature(Uint8List signatureBytes) async {
     try {
@@ -66,12 +62,9 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
 
   @override
   Future<EvaluationModel> save(EvaluationModel model) async {
-    var tmp = model.copyWith();
     final evaluationMap = model.toMap();
-    final infoMap = evaluationMap['info'];
-    tmp.info!.copyWith(id: await _infoRepository.save(infoMap));
-    evaluationMap.remove('info');
-    model.id = await _evaluationRepository.save(evaluationMap);
+    var savedMap = await _evaluationRepository.save(evaluationMap);
+    return EvaluationModel.fromMap(savedMap);
   }
 
   @override

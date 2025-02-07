@@ -15,14 +15,14 @@ class EvaluationCoalescentRepository implements Childable<Map<String, Object?>>,
   }
 
   @override
-  Future<int> save(Map<String, Object?> data) async {
+  Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     if (data['id'] == '') {
       int id = await _localDatabase.insert('evaluationcoalescent', data);
       data['id'] = id;
-      return id;
+      return data;
     } else {
       await _localDatabase.update('evaluationcoalescent', data, where: 'id = ?', whereArgs: [data['id']]);
-      return data['id'] as int;
+      return data;
     }
   }
 

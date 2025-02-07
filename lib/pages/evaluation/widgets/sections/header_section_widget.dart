@@ -28,7 +28,7 @@ class HeaderSectionWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: evaluation.info!.id.toString(),
+                      text: evaluation.importedId == null ? 'Não importada' : evaluation.importedId!.toString(),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],

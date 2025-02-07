@@ -83,20 +83,6 @@ class SQLScripts {
     );
   ''';
 
-  static const String createTableEvaluationInfo = '''
-    CREATE TABLE evaluationinfo (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      evaluationid TEXT NOT NULL,
-      imported INTEGER NOT NULL,
-      importedby TEXT,
-      importeddate INTEGER,
-      importedid INTEGER,
-      importingby TEXT,
-      importingdate INTEGER,
-      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
-    );
-  ''';
-
   static const String createTableEvaluation = '''
     CREATE TABLE evaluation (
       id TEXT PRIMARY KEY,
@@ -113,9 +99,8 @@ class SQLScripts {
       responsible TEXT NOT NULL,
       advice TEXT,
       signaturepath TEXT NOT NULL,
-      infoid INTEGER NOT NULL,
+      importedid INTEGER,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (infoid) REFERENCES evaluationinfo (id) ON DELETE CASCADE,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';

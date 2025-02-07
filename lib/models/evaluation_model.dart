@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
-import 'package:manager_mobile/models/evaluation_info_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -29,7 +28,7 @@ class EvaluationModel {
   List<EvaluationPhotoModel> photoPaths;
   String? responsible;
   String? signaturePath;
-  EvaluationInfoModel? info;
+  int? importedId;
   DateTime? lastUpdate;
   EvaluationModel({
     this.id,
@@ -50,7 +49,7 @@ class EvaluationModel {
     required this.photoPaths,
     this.responsible,
     this.signaturePath,
-    this.info,
+    this.importedId,
     this.lastUpdate,
   });
 
@@ -81,7 +80,7 @@ class EvaluationModel {
         photoPaths: [],
         responsible: null,
         signaturePath: null,
-        info: null,
+        importedId: null,
         lastUpdate: null);
   }
 
@@ -104,7 +103,7 @@ class EvaluationModel {
     List<EvaluationPhotoModel>? photoPaths,
     String? responsible,
     String? signaturePath,
-    EvaluationInfoModel? info,
+    int? importedId,
     DateTime? lastUpdate,
   }) {
     return EvaluationModel(
@@ -126,7 +125,7 @@ class EvaluationModel {
       photoPaths: photoPaths ?? this.photoPaths,
       responsible: responsible ?? this.responsible,
       signaturePath: signaturePath ?? this.signaturePath,
-      info: info ?? this.info,
+      importedId: importedId ?? this.importedId,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
   }
@@ -150,7 +149,7 @@ class EvaluationModel {
       'responsible': responsible,
       'advice': advice,
       'signaturepath': signaturePath,
-      'info': info?.id,
+      'importedid': importedId,
       'lastUpdate': lastUpdate?.millisecondsSinceEpoch,
     };
   }
@@ -187,7 +186,7 @@ class EvaluationModel {
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
       signaturePath: map['signaturepath'] != null ? map['signaturepath'] as String : null,
-      info: map['info'] != null ? EvaluationInfoModel.fromMap(map['info'] as Map<String, dynamic>) : null,
+      importedId: map['importedid'] != null ? map['importedid'] as int : null,
       lastUpdate: map['lastupdate'] != null ? DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
     );
   }
@@ -198,7 +197,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, info: $info, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, importedId: $importedId, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -223,7 +222,7 @@ class EvaluationModel {
         listEquals(other.photoPaths, photoPaths) &&
         other.responsible == responsible &&
         other.signaturePath == signaturePath &&
-        other.info == info &&
+        other.importedId == importedId &&
         other.lastUpdate == lastUpdate;
   }
 
@@ -247,7 +246,7 @@ class EvaluationModel {
         photoPaths.hashCode ^
         responsible.hashCode ^
         signaturePath.hashCode ^
-        info.hashCode ^
+        importedId.hashCode ^
         lastUpdate.hashCode;
   }
 }

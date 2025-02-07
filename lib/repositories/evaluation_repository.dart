@@ -6,7 +6,6 @@ import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_info_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -28,19 +27,17 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   final EvaluationCoalescentRepository _evaluationCoalescentRepository;
   final EvaluationTechnicianRepository _evaluationTechnicianRepository;
   final EvaluationPhotoRepository _evaluationPhotoRepository;
-  final EvaluationInfoRepository _evaluationInfoRepository;
-  EvaluationRepository(
-      {required RemoteDatabase remoteDatabase,
-      required LocalDatabase localDatabase,
-      required Storage storage,
-      required CoalescentRepository coalescentRepository,
-      required CompressorRepository compressorRepository,
-      required PersonRepository personRepository,
-      required EvaluationCoalescentRepository evaluationCoalescentRepository,
-      required EvaluationTechnicianRepository evaluationTechnicianRepository,
-      required EvaluationPhotoRepository evaluationPhotoRepository,
-      required EvaluationInfoRepository evaluationInfoRepository})
-      : _remoteDatabase = remoteDatabase,
+  EvaluationRepository({
+    required RemoteDatabase remoteDatabase,
+    required LocalDatabase localDatabase,
+    required Storage storage,
+    required CoalescentRepository coalescentRepository,
+    required CompressorRepository compressorRepository,
+    required PersonRepository personRepository,
+    required EvaluationCoalescentRepository evaluationCoalescentRepository,
+    required EvaluationTechnicianRepository evaluationTechnicianRepository,
+    required EvaluationPhotoRepository evaluationPhotoRepository,
+  })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
         _coalescentRepository = coalescentRepository,
@@ -48,8 +45,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         _personRepository = personRepository,
         _evaluationCoalescentRepository = evaluationCoalescentRepository,
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
-        _evaluationPhotoRepository = evaluationPhotoRepository,
-        _evaluationInfoRepository = evaluationInfoRepository;
+        _evaluationPhotoRepository = evaluationPhotoRepository;
 
   @override
   Future<int> delete(dynamic id) async {
@@ -86,13 +82,20 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
   //TODO: Fazer o tratamento das listas...
   @override
-  Future<String> save(Map<String, Object?> data) async {
+  Future<Map<String, Object?>> save(Map<String, Object?> data) async {
+    var evaluationInfoData = data['info'] as Map<String, Object?>;
+    data.remove('info');
     if (data['id'] == '') {
       data['id'] = _getEvaluationId(data);
-      return await _localDatabase.insert('evaluation', data);
+      await _localDatabase.insert('evaluation', data);
+      evaluationInfoData['id'] = await _localDatabase.insert('evaluationinfo', evaluationInfoData);
+      data['info'] = evaluationInfoData;
+      return data;
     } else {
       await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);
-      return data['id'].toString();
+      await _localDatabase.update('evaluationinfo', data, where: 'id = ?', whereArgs: [evaluationInfoData['id']]);
+      data['info'] = evaluationInfoData;
+      return data;
     }
   }
 
@@ -134,8 +137,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
       evaluationMap['signaturepath'] = signPath;
-      var infoMap = await _localDatabase.query('evaluationinfo', columns: ['id', 'imported', 'importedby', 'importeddate', 'importedid', 'importingby', 'importingdate'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]).then((v) => v.first);
-      evaluationMap['info'] = infoMap;
+
       var photosListMap = await _localDatabase.query('evaluationphoto', columns: ['id', 'path'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       for (var photoMap in photosListMap) {
         String photoFilename = photoMap['path'].toString().split('/').last;
@@ -160,6 +162,9 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
+      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
+      evaluationMap.remove('info');
+
       var technicians = evaluationMap['technicians'];
       for (var technician in technicians) {
         exists = await _localDatabase.isSaved('evaluationtechnician', id: technician['id'] as int);
@@ -211,25 +216,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         evaluationMap['signaturepath'] = '';
       }
 
-      exists = await _localDatabase.isSaved('evaluationinfo', id: evaluationMap['infoid']);
-      Map<String, Object?> infoMap = {};
-
-      infoMap['id'] = evaluationMap['info']['id'];
-      infoMap['evaluationid'] = evaluationMap['id'];
-      infoMap['imported'] = evaluationMap['info']['imported'];
-      infoMap['importingby'] = evaluationMap['info']['importingby'];
-      infoMap['importingdate'] = evaluationMap['info']['importingdate'];
-      infoMap['importedid'] = evaluationMap['info']['importedid'];
-      infoMap['importedby'] = evaluationMap['info']['importedby'];
-      infoMap['importeddate'] = evaluationMap['info']['importeddate'];
-      evaluationMap.remove('info');
-      if (exists) {
-        await _localDatabase.update('evaluationinfo', infoMap, where: 'id = ?', whereArgs: [infoMap['id']]);
-      } else {
-        infoMap.remove('id');
-        evaluationMap['infoid'] = await _localDatabase.insert('evaluationinfo', infoMap);
-      }
-
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {
         await _localDatabase.update('evaluation', evaluationMap, where: 'id = ?', whereArgs: [evaluationMap['id']]);
@@ -265,9 +251,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     evaluationData['technicians'] = technicians;
     var photos = await _evaluationPhotoRepository.getByParentId(evaluationData['id'].toString());
     evaluationData['photopaths'] = photos;
-    var info = await _evaluationInfoRepository.getByParentId(evaluationData['id'].toString()).then((i) => i.first);
-    evaluationData['info'] = info;
-    evaluationData.remove('infoid');
+
     return evaluationData;
   }
 }
