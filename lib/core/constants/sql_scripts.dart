@@ -67,6 +67,7 @@ class SQLScripts {
       compressorid INTEGER NOT NULL,
       compressorname TEXT NOT NULL,
       serialnumber TEXT NOT NULL,
+      sector TEXT NOT NULL,
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE
     );

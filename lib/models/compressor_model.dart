@@ -11,6 +11,7 @@ class CompressorModel {
   final String compressorName;
   final DateTime lastUpdate;
   final String serialNumber;
+  final String sector;
   final List<CoalescentModel> coalescents;
 
   CompressorModel({
@@ -20,6 +21,7 @@ class CompressorModel {
     required this.compressorName,
     required this.lastUpdate,
     required this.serialNumber,
+    required this.sector,
     required this.coalescents,
   });
 
@@ -30,6 +32,7 @@ class CompressorModel {
     String? compressorName,
     DateTime? lastUpdate,
     String? serialNumber,
+    String? sector,
     List<CoalescentModel>? coalescents,
   }) {
     return CompressorModel(
@@ -39,6 +42,7 @@ class CompressorModel {
       compressorName: compressorName ?? this.compressorName,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       serialNumber: serialNumber ?? this.serialNumber,
+      sector: sector ?? this.sector,
       coalescents: coalescents ?? this.coalescents,
     );
   }
@@ -51,6 +55,7 @@ class CompressorModel {
       compressorName: (map['compressorname'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
       serialNumber: (map['serialnumber'] ?? '') as String,
+      sector: (map['sector'] ?? '') as String,
       coalescents: List<CoalescentModel>.from(
         (map['coalescents'] as List<Map<String, dynamic>>).map<CoalescentModel>(
           (x) => CoalescentModel.fromMap(x),
@@ -61,19 +66,19 @@ class CompressorModel {
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, statusId: $statusId, compressorId: $compressorId, compressorName: $compressorName, lastUpdate: $lastUpdate, serialNumber: $serialNumber, coalescents: $coalescents)';
+    return 'CompressorModel(id: $id, statusId: $statusId, compressorId: $compressorId, compressorName: $compressorName, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, coalescents: $coalescents)';
   }
 
   @override
   bool operator ==(covariant CompressorModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.statusId == statusId && other.compressorId == compressorId && other.compressorName == compressorName && other.lastUpdate == lastUpdate && other.serialNumber == serialNumber && listEquals(other.coalescents, coalescents);
+    return other.id == id && other.statusId == statusId && other.compressorId == compressorId && other.compressorName == compressorName && other.lastUpdate == lastUpdate && other.serialNumber == serialNumber && other.sector == sector && listEquals(other.coalescents, coalescents);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ compressorId.hashCode ^ compressorName.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ coalescents.hashCode;
+    return id.hashCode ^ statusId.hashCode ^ compressorId.hashCode ^ compressorName.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ coalescents.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -84,6 +89,7 @@ class CompressorModel {
       'compressorname': compressorName,
       'lastupdate': lastUpdate.millisecondsSinceEpoch,
       'serialnumber': serialNumber,
+      'sector': sector,
     };
   }
 
