@@ -165,7 +165,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         controller: _compressorEC,
                         builder: (context, controller, focusNode) {
                           return TextFormField(
-                            readOnly: widget.source != EvaluationSource.fromNew,
+                            readOnly: _evaluationController.evaluation!.customer == null || widget.source != EvaluationSource.fromNew,
                             controller: controller,
                             focusNode: focusNode,
                             validator: Validatorless.multiple(
