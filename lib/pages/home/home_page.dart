@@ -1,6 +1,7 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   late final HomeController homeController;
   late final FilterController filterController;
   late final LoginController loginController;
+  late final EvaluationController evaluationController;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     homeController = Locator.get<HomeController>();
     filterController = Locator.get<FilterController>();
     loginController = Locator.get<LoginController>();
+    evaluationController = Locator.get<EvaluationController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await homeController.syncronize().asyncLoader();
@@ -99,11 +102,9 @@ class _HomePageState extends State<HomePage> {
                       var evaluation = EvaluationModel.fromScheduleOrNew();
                       var loggedTechnician = await loginController.currentLoggedUser;
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
+                      evaluationController.setEvaluation(evaluation, EvaluationSource.fromNew);
                       if (!context.mounted) return;
-                      Navigator.of(context).pushNamed(
-                        Routes.evaluation,
-                        arguments: [evaluation, EvaluationSource.fromNew],
-                      );
+                      Navigator.of(context).pushNamed(Routes.evaluation);
                     },
                     child: Icon(Icons.add),
                   )

@@ -7,6 +7,7 @@ import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
@@ -39,8 +40,13 @@ class EvaluationController extends ChangeNotifier {
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;
 
-  void setEvaluation(EvaluationModel? evaluation) {
+  EvaluationSource? _source;
+
+  EvaluationSource? get source => _source;
+
+  void setEvaluation(EvaluationModel? evaluation, EvaluationSource source) {
     _evaluation = evaluation;
+    _source = source;
     _signatureBytes = null;
     notifyListeners();
   }

@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
@@ -21,12 +19,9 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_sect
 class EvaluationPage extends StatefulWidget {
   const EvaluationPage({
     super.key,
-    required this.evaluation,
-    required this.source,
     this.instructions,
   });
-  final EvaluationModel evaluation;
-  final EvaluationSource source;
+
   final String? instructions;
 
   @override
@@ -44,10 +39,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
     formKey = GlobalKey<FormState>();
     loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
-    evaluationController.setEvaluation(widget.evaluation);
-    if (widget.source == EvaluationSource.fromSaved) {
+
+    if (evaluationController.source == EvaluationSource.fromSaved) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-        final signaturePath = widget.evaluation.signaturePath;
+        final signaturePath = evaluationController.evaluation!.signaturePath;
         if (signaturePath != null && await File(signaturePath).exists()) {
           var signatureBytes = await File(signaturePath).readAsBytes();
           evaluationController.setSignatureBytes(signatureBytes);
@@ -59,7 +54,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: widget.source == EvaluationSource.fromSaved,
+      canPop: evaluationController.source == EvaluationSource.fromSaved,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
@@ -80,25 +75,25 @@ class _EvaluationPageState extends State<EvaluationPage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                widget.source == EvaluationSource.fromSchedule && widget.instructions != null
+                evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null
                     ? ExpandableSectionWidget(
                         initiallyExpanded: true,
                         title: 'Instruções',
                         child: StructionsSectionWidget(instructions: widget.instructions!),
                       )
                     : SizedBox.shrink(),
-                widget.source == EvaluationSource.fromSaved
+                evaluationController.source == EvaluationSource.fromSaved
                     ? ExpandableSectionWidget(
                         title: 'Cabeçalho',
-                        child: HeaderSectionWidget(evaluation: widget.evaluation),
+                        child: HeaderSectionWidget(evaluation: evaluationController.evaluation!),
                       )
                     : SizedBox.shrink(),
                 ExpandableSectionWidget(
                   initiallyExpanded: true,
                   title: 'Leitura',
                   child: ReadingSectionWidget(
-                    evaluation: widget.evaluation,
-                    source: widget.source,
+                    evaluation: evaluationController.evaluation!,
+                    source: evaluationController.source!,
                     formKey: formKey,
                   ),
                 ),
@@ -106,19 +101,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     listenable: evaluationController,
                     builder: (context, child) {
                       return Offstage(
-                        offstage: widget.evaluation.coalescents.isEmpty,
+                        offstage: evaluationController.evaluation!.coalescents.isEmpty,
                         child: ExpandableSectionWidget(
                           title: 'Coalescentes',
                           child: CoalescentSectionWidget(
-                            evaluation: widget.evaluation,
-                            source: widget.source,
+                            evaluation: evaluationController.evaluation!,
+                            source: evaluationController.source!,
                           ),
                         ),
                       );
                     }),
                 ExpandableSectionWidget(
                   title: 'Técnicos',
-                  action: widget.source == EvaluationSource.fromSaved
+                  action: evaluationController.source == EvaluationSource.fromSaved
                       ? null
                       : IconButton(
                           icon: Icon(
@@ -131,18 +126,18 @@ class _EvaluationPageState extends State<EvaluationPage> {
                           },
                         ),
                   child: TechnicianSectionWidget(
-                    evaluation: widget.evaluation,
-                    source: widget.source,
+                    evaluation: evaluationController.evaluation!,
+                    source: evaluationController.source!,
                   ),
                 ),
                 ExpandableSectionWidget(
                   title: 'Assinatura',
                   child: SignatureSectionWidget(
-                    evaluation: widget.evaluation,
-                    source: widget.source,
+                    evaluation: evaluationController.evaluation!,
+                    source: evaluationController.source!,
                   ),
                 ),
-                widget.source != EvaluationSource.fromSaved
+                evaluationController.source != EvaluationSource.fromSaved
                     ? ElevatedButton(
                         onPressed: () async {
                           bool valid = formKey.currentState?.validate() ?? false;
@@ -172,7 +167,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   bool _validateCoalescentsNextChange() {
-    final bool valid = widget.evaluation.coalescents.every((coalescent) => coalescent.nextChange != null);
+    final bool valid = evaluationController.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);
     if (!valid) {
       Message.showInfoSnackbar(context: context, message: 'Selecione a data da próxima troca de todos os coalescentes.');
     }

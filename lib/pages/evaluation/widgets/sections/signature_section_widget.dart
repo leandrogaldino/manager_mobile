@@ -35,7 +35,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
           onTap: () {
             if (widget.source != EvaluationSource.fromSaved) {
               FocusScope.of(context).requestFocus(FocusNode());
-              Navigator.of(context).pushNamed(Routes.evaluationSignature, arguments: [widget.evaluation, widget.source]);
+              Navigator.of(context).pushNamed(Routes.evaluationSignature);
             } else {
               null;
             }

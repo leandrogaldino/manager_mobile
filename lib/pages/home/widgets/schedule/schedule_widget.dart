@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
@@ -23,11 +24,12 @@ class ScheduleWidget extends StatefulWidget {
 
 class _ScheduleWidgetState extends State<ScheduleWidget> {
   late final LoginController loginController;
-
+  late final EvaluationController evaluationController;
   @override
   void initState() {
     super.initState();
     loginController = Locator.get<LoginController>();
+    evaluationController = Locator.get<EvaluationController>();
   }
 
   @override
@@ -137,10 +139,8 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                   PersonModel? technician = await loginController.currentLoggedUser;
                   if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: technician));
                   if (!context.mounted) return;
-                  Navigator.of(context).popAndPushNamed(
-                    Routes.evaluation,
-                    arguments: [evaluation, EvaluationSource.fromSchedule, widget.schedule.instructions],
-                  );
+                  evaluationController.setEvaluation(evaluation, EvaluationSource.fromSchedule);
+                  Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: widget.schedule.instructions);
                 },
                 child: Text('Iniciar Avaliação'),
               ),

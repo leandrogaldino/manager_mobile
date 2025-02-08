@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -50,7 +48,8 @@ class EvaluationTileWidget extends StatelessWidget {
                 ),
           ),
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, EvaluationSource.fromSaved]);
+            evaluationController.setEvaluation(evaluation, EvaluationSource.fromSaved);
+            Navigator.of(context).pushNamed(Routes.evaluation);
           },
         ),
       ),

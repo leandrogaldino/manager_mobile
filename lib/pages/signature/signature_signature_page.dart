@@ -4,15 +4,9 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:signature/signature.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 
 class EvaluationSignaturePage extends StatefulWidget {
-  const EvaluationSignaturePage({
-    super.key,
-    required this.evaluation,
-  });
-
-  final EvaluationModel evaluation;
+  const EvaluationSignaturePage({super.key});
 
   @override
   State<EvaluationSignaturePage> createState() => _EvaluationSignaturePageState();
