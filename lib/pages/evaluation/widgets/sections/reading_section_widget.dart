@@ -88,7 +88,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _oilEC = TextEditingController();
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
-
     if (widget.source != EvaluationSource.fromNew) _fillForm();
   }
 
@@ -104,7 +103,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC.text = widget.evaluation.advice ?? '';
     _responsibleEC.text = widget.evaluation.responsible ?? '';
     _evaluationController.updateCustomer(widget.evaluation.customer);
-    _evaluationController.updateCompressor(widget.evaluation.compressor);
   }
 
   @override

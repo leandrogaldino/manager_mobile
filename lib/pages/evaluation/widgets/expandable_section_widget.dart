@@ -20,6 +20,7 @@ class ExpandableSectionWidget extends StatefulWidget {
 
 class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
   late bool isExpanded;
+  final GlobalKey _expandableKey = GlobalKey(); // Usamos GlobalKey para referenciar o widget
 
   @override
   void initState() {
@@ -72,13 +73,23 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
                 isExpanded ? Icons.expand_less : Icons.expand_more,
                 color: Theme.of(context).colorScheme.surface,
               ),
-              onTap: () {
+              onTap: () async {
                 setState(() {
                   if (isExpanded) {
                     FocusScope.of(context).unfocus();
                   }
                   isExpanded = !isExpanded;
                 });
+                if (isExpanded) {
+                  await Future.delayed(Duration(milliseconds: 300), () {
+                    if (!context.mounted) return;
+                    Scrollable.ensureVisible(
+                      context,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  });
+                }
               },
             ),
           ),
@@ -88,6 +99,7 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
             child: Offstage(
               offstage: !isExpanded,
               child: Padding(
+                key: _expandableKey, // Usamos o GlobalKey aqui
                 padding: const EdgeInsets.all(16.0),
                 child: widget.child,
               ),

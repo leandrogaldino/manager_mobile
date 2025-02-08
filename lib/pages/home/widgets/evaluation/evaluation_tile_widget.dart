@@ -9,6 +9,7 @@ class EvaluationTileWidget extends StatelessWidget {
     super.key,
     required this.evaluation,
   });
+
   final EvaluationModel evaluation;
 
   @override
@@ -43,7 +44,7 @@ class EvaluationTileWidget extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surface,
                 ),
           ),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, EvaluationSource.fromSaved]);
           },
         ),

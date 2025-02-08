@@ -5,7 +5,7 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
-import 'package:manager_mobile/pages/evaluation/signature_signature_page.dart';
+import 'package:manager_mobile/pages/signature/signature_signature_page.dart';
 import 'package:manager_mobile/pages/home/home_page.dart';
 import 'package:manager_mobile/pages/login/login_page.dart';
 import 'package:manager_mobile/core/app_theme.dart';

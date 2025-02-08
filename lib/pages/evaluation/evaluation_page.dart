@@ -140,7 +140,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ? ElevatedButton(
                         onPressed: () async {
                           bool valid = formKey.currentState?.validate() ?? false;
-                          valid = _validateCoalescentsNextChange();
+                          if (valid) valid = _validateCoalescentsNextChange();
+                          if (valid) valid = _validateSignature();
                           if (valid) {
                             await evaluationController.save();
                             if (!context.mounted) return;
@@ -154,6 +155,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
         ),
       ),
     );
+  }
+
+  bool _validateSignature() {
+    final bool valid = evaluationController.signatureBytes != null;
+    if (!valid) {
+      Message.showInfoSnackbar(context: context, message: 'Assinatura do cliente necessária para salvar.');
+    }
+    return valid;
   }
 
   bool _validateCoalescentsNextChange() {

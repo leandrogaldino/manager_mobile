@@ -33,6 +33,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
         GestureDetector(
           onTap: () {
             Navigator.of(context).pushNamed(Routes.evaluationSignature, arguments: [widget.evaluation]);
+            FocusScope.of(context).unfocus();
           },
           child: ListenableBuilder(
               listenable: evaluationController,

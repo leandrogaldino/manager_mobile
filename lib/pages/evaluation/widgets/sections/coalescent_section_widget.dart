@@ -57,17 +57,21 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                         listenable: evaluationController,
                                         builder: (context, child) {
                                           return TextButton(
-                                            onPressed: () async {
-                                              DateTime? selectedDate = await showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(2000),
-                                                lastDate: DateTime(2100),
-                                              );
-                                              if (selectedDate != null) {
-                                                evaluationController.setCoalescentNextChange(index, selectedDate);
-                                              }
-                                            },
+                                            isSemanticButton: true,
+                                            onPressed: widget.source == EvaluationSource.fromSaved
+                                                ? null
+                                                : () async {
+                                                    DateTime? selectedDate = await showDatePicker(
+                                                      context: context,
+                                                      initialDate: DateTime.now(),
+                                                      firstDate: DateTime(2000),
+                                                      lastDate: DateTime(2100),
+                                                    );
+
+                                                    if (selectedDate != null) {
+                                                      evaluationController.setCoalescentNextChange(index, selectedDate);
+                                                    }
+                                                  },
                                             child: Text(
                                               widget.evaluation.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(widget.evaluation.coalescents[index].nextChange!),
                                               style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -78,7 +82,6 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                 ),
                               ),
                             ],
-                            //TODO: a changedate do coalescente ta ficando null em algum momento.
                           ),
                           Divider(
                             color: Theme.of(context).colorScheme.primary,

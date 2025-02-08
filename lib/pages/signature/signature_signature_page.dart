@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
@@ -24,13 +25,13 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
   void initState() {
     super.initState();
     evaluationController = Locator.get<EvaluationController>();
-    //SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   }
 
   @override
   void dispose() {
     signatureController?.dispose;
-    //SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     super.dispose();
   }
 
@@ -69,26 +70,29 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
               ),
             ),
           ),
-          Row(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(onPressed: () => signatureController!.undo(), child: Text('Desfazer')),
-              ElevatedButton(onPressed: () => signatureController!.clear(), child: Text('Limpar')),
-              ElevatedButton(onPressed: () => signatureController!.redo(), child: Text('Refazer')),
-              ElevatedButton(
-                  onPressed: () async {
-                    if (signatureController!.isNotEmpty) {
-                      var signatureBytes = await signatureController!.toPngBytes();
-                      evaluationController.setSignatureBytes(signatureBytes);
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                    } else {
-                      Message.showInfoSnackbar(context: context, message: 'Assine antes de aceitar');
-                    }
-                  },
-                  child: Text('Aceitar')),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              spacing: 12,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(onPressed: () => signatureController!.undo(), child: Text('Desfazer')),
+                ElevatedButton(onPressed: () => signatureController!.clear(), child: Text('Limpar')),
+                ElevatedButton(onPressed: () => signatureController!.redo(), child: Text('Refazer')),
+                ElevatedButton(
+                    onPressed: () async {
+                      if (signatureController!.isNotEmpty) {
+                        var signatureBytes = await signatureController!.toPngBytes();
+                        evaluationController.setSignatureBytes(signatureBytes);
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+                      } else {
+                        Message.showInfoSnackbar(context: context, message: 'Assine antes de aceitar');
+                      }
+                    },
+                    child: Text('Aceitar')),
+              ],
+            ),
           )
         ],
       )),

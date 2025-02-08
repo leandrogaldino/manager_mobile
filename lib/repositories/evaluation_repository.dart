@@ -83,18 +83,15 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   //TODO: Fazer o tratamento das listas...
   @override
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
-    var evaluationInfoData = data['info'] as Map<String, Object?>;
     data.remove('info');
     if (data['id'] == '') {
       data['id'] = _getEvaluationId(data);
       await _localDatabase.insert('evaluation', data);
-      evaluationInfoData['id'] = await _localDatabase.insert('evaluationinfo', evaluationInfoData);
-      data['info'] = evaluationInfoData;
+
       return data;
     } else {
       await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);
-      await _localDatabase.update('evaluationinfo', data, where: 'id = ?', whereArgs: [evaluationInfoData['id']]);
-      data['info'] = evaluationInfoData;
+
       return data;
     }
   }

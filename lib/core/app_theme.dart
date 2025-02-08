@@ -44,12 +44,13 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-            foregroundColor: colorScheme.onPrimary,
-            backgroundColor: colorScheme.secondary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            textStyle: textTheme.bodyMedium),
+          foregroundColor: colorScheme.onPrimary,
+          backgroundColor: colorScheme.secondary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+        ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         foregroundColor: colorScheme.onPrimary,
