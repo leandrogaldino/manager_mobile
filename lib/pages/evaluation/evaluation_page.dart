@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
@@ -43,12 +45,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
     loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
     evaluationController.setEvaluation(widget.evaluation);
-    // for (int i = 0; i < widget.evaluation.coalescents.length; i++) {
-    //   evaluationController.setCoalescentNextChange(
-    //     i,
-    //     widget.evaluation.coalescents[i].nextChange,
-    //   );
-    // }
+    if (widget.source == EvaluationSource.fromSaved) {
+      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
+        final signaturePath = widget.evaluation.signaturePath;
+        if (signaturePath != null && await File(signaturePath).exists()) {
+          var signatureBytes = await File(signaturePath).readAsBytes();
+          evaluationController.setSignatureBytes(signatureBytes);
+        }
+      });
+    }
   }
 
   @override
@@ -134,6 +139,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   title: 'Assinatura',
                   child: SignatureSectionWidget(
                     evaluation: widget.evaluation,
+                    source: widget.source,
                   ),
                 ),
                 widget.source != EvaluationSource.fromSaved

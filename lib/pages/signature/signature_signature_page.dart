@@ -51,51 +51,55 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
         title: Text('Assinatura'),
         centerTitle: true,
       ),
-      body: Center(
+      body: SingleChildScrollView(
+        child: Center(
           child: Column(
-        spacing: 12,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: Signature(
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                controller: signatureController!,
+            spacing: 12,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: Signature(
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    controller: signatureController!,
+                  ),
+                ),
               ),
-            ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 12,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: () => signatureController!.undo(), child: Text('Desfazer')),
+                    ElevatedButton(onPressed: () => signatureController!.clear(), child: Text('Limpar')),
+                    ElevatedButton(onPressed: () => signatureController!.redo(), child: Text('Refazer')),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (signatureController!.isNotEmpty) {
+                          var signatureBytes = await signatureController!.toPngBytes();
+                          evaluationController.setSignatureBytes(signatureBytes);
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                        } else {
+                          Message.showInfoSnackbar(context: context, message: 'Assine antes de aceitar');
+                        }
+                      },
+                      child: Text('Aceitar'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              spacing: 12,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(onPressed: () => signatureController!.undo(), child: Text('Desfazer')),
-                ElevatedButton(onPressed: () => signatureController!.clear(), child: Text('Limpar')),
-                ElevatedButton(onPressed: () => signatureController!.redo(), child: Text('Refazer')),
-                ElevatedButton(
-                    onPressed: () async {
-                      if (signatureController!.isNotEmpty) {
-                        var signatureBytes = await signatureController!.toPngBytes();
-                        evaluationController.setSignatureBytes(signatureBytes);
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                      } else {
-                        Message.showInfoSnackbar(context: context, message: 'Assine antes de aceitar');
-                      }
-                    },
-                    child: Text('Aceitar')),
-              ],
-            ),
-          )
-        ],
-      )),
+        ),
+      ),
     );
   }
 }

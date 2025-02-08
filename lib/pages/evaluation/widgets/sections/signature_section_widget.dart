@@ -3,11 +3,12 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
 class SignatureSectionWidget extends StatefulWidget {
-  const SignatureSectionWidget({super.key, required this.evaluation});
-
+  const SignatureSectionWidget({super.key, required this.evaluation, required this.source});
   final EvaluationModel evaluation;
+  final EvaluationSource source;
 
   @override
   State<SignatureSectionWidget> createState() => _SignatureSectionWidgetState();
@@ -32,8 +33,12 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.evaluationSignature, arguments: [widget.evaluation]);
-            FocusScope.of(context).unfocus();
+            if (widget.source != EvaluationSource.fromSaved) {
+              FocusScope.of(context).requestFocus(FocusNode());
+              Navigator.of(context).pushNamed(Routes.evaluationSignature, arguments: [widget.evaluation, widget.source]);
+            } else {
+              null;
+            }
           },
           child: ListenableBuilder(
               listenable: evaluationController,

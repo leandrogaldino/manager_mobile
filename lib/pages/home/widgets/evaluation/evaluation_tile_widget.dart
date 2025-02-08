@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
+import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 
@@ -14,6 +18,7 @@ class EvaluationTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final evaluationController = Locator.get<EvaluationController>();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
