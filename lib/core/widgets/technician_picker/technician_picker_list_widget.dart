@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/core/widgets/technician_choose/technician_chose_tile_widget.dart';
+import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_tile_widget.dart';
 
-class TechnicianChooseListWidget extends StatefulWidget {
-  const TechnicianChooseListWidget({
+class TechnicianPickerListWidget extends StatefulWidget {
+  const TechnicianPickerListWidget({
     super.key,
     required this.technicians,
     required this.onTechnicianSelected,
@@ -15,10 +15,10 @@ class TechnicianChooseListWidget extends StatefulWidget {
   final ValueChanged<PersonModel> onTechnicianSelected;
 
   @override
-  State<TechnicianChooseListWidget> createState() => _TechnicianChoseListWidgetState();
+  State<TechnicianPickerListWidget> createState() => _TechnicianChoseListWidgetState();
 }
 
-class _TechnicianChoseListWidgetState extends State<TechnicianChooseListWidget> {
+class _TechnicianChoseListWidgetState extends State<TechnicianPickerListWidget> {
   late final PersonController personController;
 
   @override
@@ -32,7 +32,7 @@ class _TechnicianChoseListWidgetState extends State<TechnicianChooseListWidget> 
     return ListView.builder(
       itemCount: widget.technicians.length,
       itemBuilder: (context, index) {
-        return TechnicianChoseTileWidget(
+        return TechnicianPickerTileWidget(
           technician: widget.technicians[index],
           onTechnicianSelected: widget.onTechnicianSelected,
         );

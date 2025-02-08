@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/widgets/technician_choose/technician_choose_dialog.dart';
+import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_dialog.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class TechnicianPicker {
@@ -31,7 +31,7 @@ class TechnicianPicker {
     person = await showDialog<PersonModel>(
       context: context,
       builder: (BuildContext context) {
-        return TechnicianChooseDialog(
+        return TechniciaPickerDialog(
           technicians: allTechnicians,
         );
       },

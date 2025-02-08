@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/controllers/person_controller.dart';
+import 'package:manager_mobile/core/helper/compressor_picker.dart';
 import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
@@ -32,6 +35,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> formKey;
   late final LoginController loginController;
   late final EvaluationController evaluationController;
+  late final PersonController personController;
 
   @override
   void initState() {
@@ -39,7 +43,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     formKey = GlobalKey<FormState>();
     loginController = Locator.get<LoginController>();
     evaluationController = Locator.get<EvaluationController>();
-
+    personController = Locator.get<PersonController>();
     if (evaluationController.source == EvaluationSource.fromSaved) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
         final signaturePath = evaluationController.evaluation!.signaturePath;
@@ -91,6 +95,22 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ExpandableSectionWidget(
                   initiallyExpanded: true,
                   title: 'Leitura',
+                  actionButtons: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                      onPressed: () async {
+                        CompressorModel? compressor = await CompressorPicker.pick(context: context);
+                        if (compressor != null) {
+                          var customer = personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
+                          evaluationController.updateCustomer(customer);
+                          evaluationController.updateCompressor(compressor);
+                        }
+                      },
+                    )
+                  ],
                   child: ReadingSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,
@@ -113,18 +133,20 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     }),
                 ExpandableSectionWidget(
                   title: 'Técnicos',
-                  action: evaluationController.source == EvaluationSource.fromSaved
+                  actionButtons: evaluationController.source == EvaluationSource.fromSaved
                       ? null
-                      : IconButton(
-                          icon: Icon(
-                            Icons.add,
-                            color: Theme.of(context).colorScheme.surface,
-                          ),
-                          onPressed: () async {
-                            PersonModel? technician = await TechnicianPicker.pick(context: context);
-                            if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
-                          },
-                        ),
+                      : [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                            onPressed: () async {
+                              PersonModel? technician = await TechnicianPicker.pick(context: context);
+                              if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
+                            },
+                          )
+                        ],
                   child: TechnicianSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,

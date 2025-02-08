@@ -4,14 +4,14 @@ class ExpandableSectionWidget extends StatefulWidget {
   final String title;
   final Widget child;
   final bool initiallyExpanded;
-  final IconButton? action;
+  final List<IconButton>? actionButtons;
 
   const ExpandableSectionWidget({
     super.key,
     required this.title,
     required this.child,
     this.initiallyExpanded = false,
-    this.action,
+    this.actionButtons,
   });
 
   @override
@@ -57,16 +57,18 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
                           ),
                     ),
                   ),
-                  SizedBox(
-                    height: 40,
-                    child: Offstage(
-                      offstage: widget.action == null,
-                      child: Offstage(
-                        offstage: !isExpanded,
-                        child: widget.action,
-                      ),
+                  if (widget.actionButtons != null && isExpanded)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widget.actionButtons!
+                          .map((button) => Row(
+                                children: [
+                                  button,
+                                  const SizedBox(width: 8), // Espaçamento entre os botões
+                                ],
+                              ))
+                          .toList(),
                     ),
-                  ),
                 ],
               ),
               trailing: Icon(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/widgets/technician_choose/technician_choose_list_widget.dart';
+import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_list_widget.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
-class TechnicianChooseDialog extends StatelessWidget {
+class TechniciaPickerDialog extends StatelessWidget {
   final List<PersonModel> technicians;
 
-  const TechnicianChooseDialog({
+  const TechniciaPickerDialog({
     super.key,
     required this.technicians,
   });
@@ -25,7 +25,7 @@ class TechnicianChooseDialog extends StatelessWidget {
       content: SizedBox(
         width: double.maxFinite,
         height: (technicians.length > 5) ? 330 : (technicians.length * 66),
-        child: TechnicianChooseListWidget(
+        child: TechnicianPickerListWidget(
           technicians: technicians,
           onTechnicianSelected: (PersonModel selectedTechnician) {
             Navigator.pop(context, selectedTechnician);

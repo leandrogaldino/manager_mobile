@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
-class TechnicianChoseTileWidget extends StatelessWidget {
-  const TechnicianChoseTileWidget({
+class TechnicianPickerTileWidget extends StatelessWidget {
+  const TechnicianPickerTileWidget({
     super.key,
     required this.technician,
     required this.onTechnicianSelected,
@@ -27,6 +27,7 @@ class TechnicianChoseTileWidget extends StatelessWidget {
               ),
         ),
         onTap: () {
+          //TODO: IGUAL
           onTechnicianSelected(technician);
         },
       ),
