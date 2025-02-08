@@ -92,31 +92,37 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         child: HeaderSectionWidget(evaluation: evaluationController.evaluation!),
                       )
                     : SizedBox.shrink(),
-                ExpandableSectionWidget(
-                  initiallyExpanded: true,
-                  title: 'Leitura',
-                  actionButtons: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-                      onPressed: () async {
-                        CompressorModel? compressor = await CompressorPicker.pick(context: context);
-                        if (compressor != null) {
-                          var customer = personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                          evaluationController.updateCustomer(customer);
-                          evaluationController.updateCompressor(compressor);
-                        }
-                      },
-                    )
-                  ],
-                  child: ReadingSectionWidget(
-                    evaluation: evaluationController.evaluation!,
-                    source: evaluationController.source!,
-                    formKey: formKey,
-                  ),
-                ),
+                ListenableBuilder(
+                    listenable: evaluationController,
+                    builder: (context, child) {
+                      return ExpandableSectionWidget(
+                        initiallyExpanded: true,
+                        title: 'Leitura',
+                        actionButtons: evaluationController.source != EvaluationSource.fromNew
+                            ? null
+                            : [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.search,
+                                    color: Theme.of(context).colorScheme.surface,
+                                  ),
+                                  onPressed: () async {
+                                    CompressorModel? compressor = await CompressorPicker.pick(context: context);
+                                    if (compressor != null) {
+                                      var customer = personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
+                                      evaluationController.updateCustomer(customer);
+                                      evaluationController.updateCompressor(compressor);
+                                    }
+                                  },
+                                )
+                              ],
+                        child: ReadingSectionWidget(
+                          evaluation: evaluationController.evaluation!,
+                          source: evaluationController.source!,
+                          formKey: formKey,
+                        ),
+                      );
+                    }),
                 ListenableBuilder(
                     listenable: evaluationController,
                     builder: (context, child) {
@@ -142,6 +148,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                               color: Theme.of(context).colorScheme.surface,
                             ),
                             onPressed: () async {
+                              FocusScope.of(context).requestFocus(FocusNode());
                               PersonModel? technician = await TechnicianPicker.pick(context: context);
                               if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
                             },

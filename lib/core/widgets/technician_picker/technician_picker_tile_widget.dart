@@ -27,7 +27,6 @@ class TechnicianPickerTileWidget extends StatelessWidget {
               ),
         ),
         onTap: () {
-          //TODO: IGUAL
           onTechnicianSelected(technician);
         },
       ),

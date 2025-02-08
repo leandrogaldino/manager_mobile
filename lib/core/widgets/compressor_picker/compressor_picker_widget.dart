@@ -78,6 +78,9 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
                       )
                     ],
                   ),
+                  onTap: () {
+                    widget.onCompressorSelected(filteredCompressors[index]);
+                  },
                 );
               }),
         )

@@ -61,6 +61,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                             onPressed: widget.source == EvaluationSource.fromSaved
                                                 ? null
                                                 : () async {
+                                                    FocusScope.of(context).requestFocus(FocusNode());
                                                     DateTime? selectedDate = await showDatePicker(
                                                       context: context,
                                                       initialDate: DateTime.now(),

@@ -50,7 +50,6 @@ dependencies:
   uuid: ^4.5.1
   firebase_storage: ^12.3.7
   intl: ^0.20.1
-  flutter_typeahead: ^5.2.0
   signature: ^5.5.0
   
 dev_dependencies:

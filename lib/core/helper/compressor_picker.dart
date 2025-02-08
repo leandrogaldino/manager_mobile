@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/compressor_picker/compressor_picker_dialog.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 
@@ -17,7 +15,6 @@ class CompressorPicker {
         return CompressorPickerDialog();
       },
     );
-
     return compressor;
   }
 }

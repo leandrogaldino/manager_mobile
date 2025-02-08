@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/pages/evaluation/enums/part_types.dart';
@@ -31,7 +27,6 @@ class ReadingSectionWidget extends StatefulWidget {
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
-  late final PersonController _customerController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
   late final TextEditingController _serialNumberEC;
@@ -62,7 +57,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void initState() {
     super.initState();
     _evaluationController = Locator.get<EvaluationController>();
-    _customerController = Locator.get<PersonController>();
 
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
@@ -88,6 +82,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _oilEC = TextEditingController();
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
+
     if (widget.source != EvaluationSource.fromNew) _fillForm();
   }
 
@@ -102,11 +97,19 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _oilEC.text = widget.evaluation.oil == null ? '' : widget.evaluation.oil.toString();
     _adviceEC.text = widget.evaluation.advice ?? '';
     _responsibleEC.text = widget.evaluation.responsible ?? '';
-    _evaluationController.updateCustomer(widget.evaluation.customer);
   }
 
   @override
   Widget build(BuildContext context) {
+    _customerEC.text = _evaluationController.evaluation!.customer?.shortName ?? '';
+    _compressorEC.text = _evaluationController.evaluation!.compressor?.compressorName ?? '';
+
+    final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
+    final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
+    final String separator = serialNumber != '' && sector != '' ? '/' : '';
+    final String serialNumberAndSector = '$serialNumber$separator$sector';
+    _serialNumberEC.text = serialNumberAndSector;
+
     return ListenableBuilder(
         listenable: _evaluationController,
         builder: (context, child) {
@@ -115,87 +118,24 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
             child: Column(
               spacing: 12,
               children: [
-                TypeAheadField<PersonModel>(
-                  hideOnEmpty: true,
+                TextFormField(
                   controller: _customerEC,
-                  builder: (context, controller, focusNode) {
-                    return TextFormField(
-                      controller: controller,
-                      readOnly: widget.source != EvaluationSource.fromNew,
-                      focusNode: focusNode,
-                      validator: Validatorless.multiple(
-                        [
-                          Validatorless.required('Campo obrigatório'),
-                          EvaluationValidators.hasCustomer(_evaluationController.evaluation!.customer, 'Selecione um item'),
-                        ],
-                      ),
-                      decoration: InputDecoration(labelText: 'Cliente'),
-                      style: TextStyle(
-                        color: _evaluationController.evaluation!.customer != null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
-                      ),
-                      onChanged: (value) {},
-                    );
-                  },
-                  itemBuilder: (context, person) {
-                    return ListTile(
-                      title: Text(person.shortName),
-                      subtitle: Text(person.document),
-                    );
-                  },
-                  onSelected: (suggestion) {
-                    _customerEC.text = suggestion.shortName;
-                    _evaluationController.evaluation!.customer = suggestion;
-                    _compressorEC.clear();
-                    _serialNumberEC.clear();
-                    _evaluationController.updateCompressor(null);
-                  },
-                  suggestionsCallback: (query) async {
-                    if (widget.source != EvaluationSource.fromNew) return [];
-                    return _customerController.customers.where((item) => item.shortName.toLowerCase().contains(query.toLowerCase())).toList();
-                  },
+                  readOnly: true,
+                  validator: Validatorless.required('Campo obrigatório'),
+                  decoration: InputDecoration(labelText: 'Cliente'),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 12,
                   children: [
                     Expanded(
-                      child: TypeAheadField<CompressorModel>(
-                        hideOnEmpty: true,
-                        key: ValueKey(_evaluationController.evaluation!.customer?.id),
+                      child: TextFormField(
+                        readOnly: true,
                         controller: _compressorEC,
-                        builder: (context, controller, focusNode) {
-                          return TextFormField(
-                            readOnly: _evaluationController.evaluation!.customer == null || widget.source != EvaluationSource.fromNew,
-                            controller: controller,
-                            focusNode: focusNode,
-                            validator: Validatorless.multiple(
-                              [
-                                EvaluationValidators.requiredCompressor(_evaluationController.evaluation!.customer, _evaluationController.evaluation!.compressor, 'Campo obrigatório'),
-                                EvaluationValidators.hasCompressor(_evaluationController.evaluation!.customer, _evaluationController.evaluation!.compressor, 'Selecione um item'),
-                              ],
-                            ),
-                            decoration: InputDecoration(labelText: 'Compressor'),
-                            style: TextStyle(color: _evaluationController.evaluation!.compressor == null ? Colors.blue : Colors.orange),
-                            onChanged: (value) {
-                              _evaluationController.updateCompressor(null);
-                            },
-                          );
-                        },
-                        itemBuilder: (context, compressor) {
-                          return ListTile(
-                            title: Text(compressor.compressorName),
-                            subtitle: Text(compressor.serialNumber),
-                          );
-                        },
-                        onSelected: (suggestion) {
-                          _compressorEC.text = suggestion.compressorName;
-                          _serialNumberEC.text = suggestion.serialNumber;
-                          _evaluationController.updateCompressor(suggestion);
-                        },
-                        suggestionsCallback: (query) async {
-                          if (widget.source != EvaluationSource.fromNew) return [];
-                          return _evaluationController.evaluation!.customer?.compressors.where((item) => item.compressorName.toLowerCase().contains(query.toLowerCase())).toList();
-                        },
+                        validator: Validatorless.required('Campo obrigatório'),
+                        decoration: InputDecoration(labelText: 'Compressor'),
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
                       ),
                     ),
                     Expanded(
@@ -203,7 +143,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         controller: _serialNumberEC,
                         textAlign: TextAlign.center,
                         readOnly: true,
-                        decoration: InputDecoration(labelText: 'Nº Série'),
+                        decoration: InputDecoration(labelText: 'Nº Série/Setor'),
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
                       ),
                     )
                   ],
