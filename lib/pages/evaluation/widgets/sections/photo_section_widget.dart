@@ -28,7 +28,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    const int maxPhotos = 6; // Número máximo de fotos
+    int maxPhotos = widget.source != EvaluationSource.fromSaved ? 6 : widget.evaluation.photoPaths.length; // Número máximo de fotos
     const int crossAxisCount = 3; // Número de colunas no grid
     const double cellHeight = 110; // Altura de cada célula
     const double spacing = 8; // Espaçamento entre as células
@@ -50,12 +50,12 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
       height: totalHeight,
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount, // 3 colunas
-          crossAxisSpacing: spacing, // Espaçamento horizontal
-          mainAxisSpacing: spacing, // Espaçamento vertical
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: spacing,
+          mainAxisSpacing: spacing,
         ),
         itemCount: maxPhotos,
-        physics: const NeverScrollableScrollPhysics(), // Impede rolagem
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final String? photoPath = photoPaths[index];
           final bool isPhotoTaken = photoPath != null;
