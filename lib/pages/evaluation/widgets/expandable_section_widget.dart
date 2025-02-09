@@ -4,7 +4,7 @@ class ExpandableSectionWidget extends StatefulWidget {
   final String title;
   final Widget child;
   final bool initiallyExpanded;
-  final List<IconButton>? actionButtons;
+  final List<Widget>? actionButtons;
 
   const ExpandableSectionWidget({
     super.key,

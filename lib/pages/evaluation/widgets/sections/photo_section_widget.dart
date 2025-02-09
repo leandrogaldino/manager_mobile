@@ -38,8 +38,8 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
     final int rowCount = (itemCount / crossAxisCount).ceil();
 
     // Calcula a altura total necessária para o grid
-    final double totalHeight = (rowCount * cellHeight) + ((rowCount - 1) * spacing);
-
+    double totalHeight = (rowCount * cellHeight) + ((rowCount - 1) * spacing);
+    if (totalHeight < 0) totalHeight = 0;
     return SizedBox(
       height: totalHeight,
       child: GridView.builder(
@@ -71,7 +71,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
               if (widget.source == EvaluationSource.fromSaved) return;
               final bool isYes = await YesNoPicker.pick(context: context, question: 'Deseja excluir essa foto?') ?? false;
               if (isYes) {
-                //Exclui a foto.
+                //TODO: Exclui a foto.
               }
             },
           );

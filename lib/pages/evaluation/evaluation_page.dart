@@ -143,16 +143,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   actionButtons: evaluationController.source == EvaluationSource.fromSaved
                       ? null
                       : [
-                          IconButton(
-                            icon: Icon(
-                              Icons.add,
-                              color: Theme.of(context).colorScheme.surface,
+                          CircleAvatar(
+                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.add,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              onPressed: () async {
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                PersonModel? technician = await TechnicianPicker.pick(context: context);
+                                if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
+                              },
                             ),
-                            onPressed: () async {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              PersonModel? technician = await TechnicianPicker.pick(context: context);
-                              if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
-                            },
                           )
                         ],
                   child: TechnicianSectionWidget(
@@ -162,6 +165,18 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 ExpandableSectionWidget(
                   title: 'Fotos',
+                  actionButtons: [
+                    CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                   child: PhotoSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,

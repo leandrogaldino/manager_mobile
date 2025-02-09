@@ -36,6 +36,7 @@ class App extends StatelessWidget {
               final String? args = settings.arguments as String?;
               final instructions = args;
               return MaterialPageRoute(
+                fullscreenDialog: true,
                 builder: (context) => EvaluationPage(
                   instructions: instructions,
                 ),
