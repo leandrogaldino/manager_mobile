@@ -117,230 +117,233 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     return ListenableBuilder(
         listenable: _evaluationController,
         builder: (context, child) {
-          return Column(
-            spacing: 8,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    CompressorModel? compressor = await CompressorPicker.pick(context: context);
-                    if (compressor != null) {
-                      var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                      _evaluationController.updateCustomer(customer);
-                      _evaluationController.updateCompressor(compressor);
-                    }
-                  },
-                  child: Text('Buscar Cliente/Compressor'),
-                ),
-              ),
-              Form(
-                key: widget.formKey,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    spacing: 12,
-                    children: [
-                      TextFormField(
-                        controller: _customerEC,
-                        readOnly: true,
-                        validator: Validatorless.required('Campo obrigatório'),
-                        decoration: InputDecoration(labelText: 'Cliente'),
-                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 12,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: true,
-                              controller: _compressorEC,
-                              validator: Validatorless.required('Campo obrigatório'),
-                              decoration: InputDecoration(labelText: 'Compressor'),
-                              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _serialNumberEC,
-                              textAlign: TextAlign.center,
-                              readOnly: true,
-                              decoration: InputDecoration(labelText: 'Nº Série/Setor'),
-                              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 12,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _horimeterEC,
-                              readOnly: widget.source == EvaluationSource.fromSaved,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              validator: Validatorless.required('Campo obrigatório'),
-                              decoration: InputDecoration(
-                                labelText: 'Horímetro',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) => _evaluationController.updateHorimeter(int.tryParse(value) ?? 0),
-                            ),
-                          ),
-                          Expanded(
-                            child: DropdownButtonFormField<OilTypes>(
-                              alignment: AlignmentDirectional.center,
-                              value: _evaluationController.evaluation!.oilType,
-                              decoration: InputDecoration(
-                                labelText: 'Tipo de Óleo',
-                              ),
-                              items: OilTypes.values.map((oilType) {
-                                return DropdownMenuItem<OilTypes>(
-                                  value: oilType,
-                                  child: Text(
-                                    oilType.stringValue,
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: widget.source != EvaluationSource.fromSaved
-                                  ? (oilType) {
-                                      _evaluationController.updateOilType(oilType!);
-                                    }
-                                  : null,
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 12,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _airFilterEC,
-                              readOnly: widget.source == EvaluationSource.fromSaved,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
-                              validator: Validatorless.multiple(
-                                [
-                                  Validatorless.required('Campo obrigatório'),
-                                  EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
-                                    PartTypes.airFilter,
-                                  ),
-                                ],
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Filtro de Ar',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) => _evaluationController.updateAirFilter(int.tryParse(value) ?? 0),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _oilFilterEC,
-                              readOnly: widget.source == EvaluationSource.fromSaved,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
-                              validator: Validatorless.multiple(
-                                [
-                                  Validatorless.required('Campo obrigatório'),
-                                  EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
-                                    PartTypes.oilFilter,
-                                  ),
-                                ],
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Filtro de Óleo',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) => _evaluationController.updateOilFilter(int.tryParse(value) ?? 0),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 12,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _separatorEC,
-                              readOnly: widget.source == EvaluationSource.fromSaved,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
-                              validator: Validatorless.multiple(
-                                [
-                                  Validatorless.required('Campo obrigatório'),
-                                  EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
-                                    PartTypes.separator,
-                                  ),
-                                ],
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Separador',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) => _evaluationController.updateSeparator(int.tryParse(value) ?? 0),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _oilEC,
-                              readOnly: widget.source == EvaluationSource.fromSaved,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
-                              validator: Validatorless.multiple(
-                                [
-                                  Validatorless.required('Campo obrigatório'),
-                                  EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
-                                    PartTypes.oil,
-                                  ),
-                                ],
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Óleo',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (value) => _evaluationController.updateOil(int.tryParse(value) ?? 0),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TextFormField(
-                        controller: _adviceEC,
-                        readOnly: widget.source == EvaluationSource.fromSaved,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(labelText: 'Parecer Técnico'),
-                        maxLines: 5,
-                        onChanged: (value) => _evaluationController.updateAdvice(value),
-                      ),
-                      TextFormField(
-                        controller: _responsibleEC,
-                        readOnly: widget.source == EvaluationSource.fromSaved,
-                        textCapitalization: TextCapitalization.words,
-                        validator: Validatorless.required('Campo obrigatório'),
-                        decoration: InputDecoration(labelText: 'Responsável'),
-                        onChanged: (value) => _evaluationController.updateResponsible(value),
-                      ),
-                    ],
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              spacing: 8,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      CompressorModel? compressor = await CompressorPicker.pick(context: context);
+                      if (compressor != null) {
+                        var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
+                        _evaluationController.updateCustomer(customer);
+                        _evaluationController.updateCompressor(compressor);
+                      }
+                    },
+                    child: Text('Buscar Cliente/Compressor'),
                   ),
                 ),
-              ),
-            ],
+                Form(
+                  key: widget.formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Column(
+                      spacing: 12,
+                      children: [
+                        TextFormField(
+                          controller: _customerEC,
+                          readOnly: true,
+                          validator: Validatorless.required('Campo obrigatório'),
+                          decoration: InputDecoration(labelText: 'Cliente'),
+                          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 12,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                readOnly: true,
+                                controller: _compressorEC,
+                                validator: Validatorless.required('Campo obrigatório'),
+                                decoration: InputDecoration(labelText: 'Compressor'),
+                                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _serialNumberEC,
+                                textAlign: TextAlign.center,
+                                readOnly: true,
+                                decoration: InputDecoration(labelText: 'Nº Série/Setor'),
+                                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 12,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _horimeterEC,
+                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                validator: Validatorless.required('Campo obrigatório'),
+                                decoration: InputDecoration(
+                                  labelText: 'Horímetro',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) => _evaluationController.updateHorimeter(int.tryParse(value) ?? 0),
+                              ),
+                            ),
+                            Expanded(
+                              child: DropdownButtonFormField<OilTypes>(
+                                alignment: AlignmentDirectional.center,
+                                value: _evaluationController.evaluation!.oilType,
+                                decoration: InputDecoration(
+                                  labelText: 'Tipo de Óleo',
+                                ),
+                                items: OilTypes.values.map((oilType) {
+                                  return DropdownMenuItem<OilTypes>(
+                                    value: oilType,
+                                    child: Text(
+                                      oilType.stringValue,
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: widget.source != EvaluationSource.fromSaved
+                                    ? (oilType) {
+                                        _evaluationController.updateOilType(oilType!);
+                                      }
+                                    : null,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 12,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _airFilterEC,
+                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
+                                validator: Validatorless.multiple(
+                                  [
+                                    Validatorless.required('Campo obrigatório'),
+                                    EvaluationValidators.validPartTimeRange(
+                                      _evaluationController.evaluation!.oilType!,
+                                      PartTypes.airFilter,
+                                    ),
+                                  ],
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Filtro de Ar',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) => _evaluationController.updateAirFilter(int.tryParse(value) ?? 0),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _oilFilterEC,
+                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                                validator: Validatorless.multiple(
+                                  [
+                                    Validatorless.required('Campo obrigatório'),
+                                    EvaluationValidators.validPartTimeRange(
+                                      _evaluationController.evaluation!.oilType!,
+                                      PartTypes.oilFilter,
+                                    ),
+                                  ],
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Filtro de Óleo',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) => _evaluationController.updateOilFilter(int.tryParse(value) ?? 0),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 12,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _separatorEC,
+                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                                validator: Validatorless.multiple(
+                                  [
+                                    Validatorless.required('Campo obrigatório'),
+                                    EvaluationValidators.validPartTimeRange(
+                                      _evaluationController.evaluation!.oilType!,
+                                      PartTypes.separator,
+                                    ),
+                                  ],
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Separador',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) => _evaluationController.updateSeparator(int.tryParse(value) ?? 0),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _oilEC,
+                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                                validator: Validatorless.multiple(
+                                  [
+                                    Validatorless.required('Campo obrigatório'),
+                                    EvaluationValidators.validPartTimeRange(
+                                      _evaluationController.evaluation!.oilType!,
+                                      PartTypes.oil,
+                                    ),
+                                  ],
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Óleo',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value) => _evaluationController.updateOil(int.tryParse(value) ?? 0),
+                              ),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: _adviceEC,
+                          readOnly: widget.source == EvaluationSource.fromSaved,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(labelText: 'Parecer Técnico'),
+                          maxLines: 5,
+                          onChanged: (value) => _evaluationController.updateAdvice(value),
+                        ),
+                        TextFormField(
+                          controller: _responsibleEC,
+                          readOnly: widget.source == EvaluationSource.fromSaved,
+                          textCapitalization: TextCapitalization.words,
+                          validator: Validatorless.required('Campo obrigatório'),
+                          decoration: InputDecoration(labelText: 'Responsável'),
+                          onChanged: (value) => _evaluationController.updateResponsible(value),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         });
   }

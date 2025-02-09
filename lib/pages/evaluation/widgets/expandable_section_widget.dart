@@ -23,11 +23,14 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
       borderRadius: BorderRadius.circular(10),
       child: Theme(
         data: Theme.of(context).copyWith(
-          dividerColor: Theme.of(context).colorScheme.primary,
+          dividerColor: Theme.of(context).colorScheme.outline,
         ),
         child: ExpansionTile(
+          minTileHeight: 0,
+          maintainState: true,
           initiallyExpanded: widget.initiallyExpanded,
-          collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
+          collapsedIconColor: Theme.of(context).colorScheme.surface,
+          collapsedBackgroundColor: Theme.of(context).colorScheme.secondary,
           collapsedTextColor: Theme.of(context).colorScheme.surface,
           title: widget.title,
           children: widget.children,

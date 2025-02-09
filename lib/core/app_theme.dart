@@ -75,15 +75,15 @@ class AppTheme {
   static ColorScheme lightScheme() {
     return ColorScheme(
       brightness: Brightness.light,
-      primary: Color.fromARGB(255, 230, 140, 0),
-      secondary: const Color.fromARGB(255, 250, 165, 55),
+      primary: const Color.fromARGB(255, 250, 165, 55),
+      secondary: const Color.fromARGB(255, 255, 180, 80),
       surface: const Color.fromARGB(255, 255, 255, 255),
       error: const Color.fromARGB(255, 244, 65, 55),
       onPrimary: const Color.fromARGB(255, 255, 255, 255),
       onSecondary: const Color.fromRGBO(33, 150, 243, 1),
       onSurface: const Color.fromRGBO(33, 150, 243, 1),
       onError: const Color.fromARGB(255, 255, 255, 255),
-      primaryContainer: const Color.fromARGB(255, 230, 230, 230),
+      primaryContainer: const Color.fromARGB(255, 250, 250, 255),
       secondaryContainer: const Color.fromARGB(255, 255, 240, 215),
     );
   }
@@ -104,7 +104,7 @@ class AppTheme {
       onSurface: const Color.fromARGB(255, 255, 255, 255),
       onError: const Color.fromARGB(255, 255, 210, 130),
       primaryContainer: const Color.fromARGB(255, 245, 245, 245),
-      secondaryContainer: const Color.fromARGB(255, 255, 255, 255),
+      secondaryContainer: const Color.fromARGB(255, 40, 40, 4),
     );
   }
 

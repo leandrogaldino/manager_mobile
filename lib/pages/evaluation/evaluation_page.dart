@@ -84,7 +84,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   visible: evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
-                    title: Center(child: Text('Instruções')),
+                    title: Text('Instruções'),
                     children: [
                       InstructionsSectionWidget(
                         instructions: widget.instructions ?? '',
@@ -99,7 +99,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 Visibility(
                   visible: evaluationController.source == EvaluationSource.fromSaved,
                   child: ExpandableSectionWidget(
-                    title: Center(child: Text('Cabeçalho')),
+                    title: Text('Cabeçalho'),
                     children: [HeaderSectionWidget(evaluation: evaluationController.evaluation!)],
                   ),
                 ),
@@ -112,7 +112,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     builder: (context, child) {
                       return ExpandableSectionWidget(
                         initiallyExpanded: true,
-                        title: Center(child: Text('Dados do Compressor')),
+                        title: Text('Dados do Compressor'),
                         children: [
                           ReadingSectionWidget(
                             evaluation: evaluationController.evaluation!,
@@ -129,7 +129,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       return Visibility(
                         visible: evaluationController.evaluation!.coalescents.isNotEmpty,
                         child: ExpandableSectionWidget(
-                          title: Center(child: Text('Coalescentes')),
+                          title: Text('Coalescentes'),
                           children: [
                             CoalescentSectionWidget(
                               evaluation: evaluationController.evaluation!,
@@ -144,7 +144,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   child: SizedBox(height: 5),
                 ),
                 ExpandableSectionWidget(
-                  title: Center(child: Text('Técnicos')),
+                  title: Text('Técnicos'),
                   children: [
                     TechnicianSectionWidget(
                       evaluation: evaluationController.evaluation!,
@@ -154,7 +154,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 SizedBox(height: 5),
                 ExpandableSectionWidget(
-                  title: Center(child: Text('Fotos')),
+                  title: Text('Fotos'),
                   children: [
                     PhotoSectionWidget(
                       evaluation: evaluationController.evaluation!,
@@ -164,7 +164,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 SizedBox(height: 5),
                 ExpandableSectionWidget(
-                  title: Center(child: Text('Assinatura')),
+                  title: Text('Assinatura'),
                   children: [
                     SignatureSectionWidget(
                       evaluation: evaluationController.evaluation!,

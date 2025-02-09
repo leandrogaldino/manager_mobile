@@ -35,61 +35,64 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
     return ListenableBuilder(
       listenable: evaluationController,
       builder: (context, child) {
-        return Column(
-          spacing: 8,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  PersonModel? technician = await TechnicianPicker.pick(context: context);
-                  if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
-                },
-                child: Text('Incluir Técnico'),
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            spacing: 8,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () async {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    PersonModel? technician = await TechnicianPicker.pick(context: context);
+                    if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
+                  },
+                  child: Text('Incluir Técnico'),
+                ),
               ),
-            ),
-            ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: widget.evaluation.technicians.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.evaluation.technicians[index].technician.shortName,
-                            style: Theme.of(context).textTheme.bodyLarge,
+              ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: widget.evaluation.technicians.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              widget.evaluation.technicians[index].technician.shortName,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 40,
-                          child: Offstage(
-                            offstage: index == 0 || widget.source != EvaluationSource.fromNew,
-                            child: IconButton(
-                                onPressed: () {
-                                  evaluationController.removeTechnician(widget.evaluation.technicians[index]);
-                                },
-                                icon: Icon(Icons.delete)),
-                          ),
-                        )
-                      ],
-                    ),
-                    index != widget.evaluation.technicians.length - 1
-                        ? Divider(
-                            color: Theme.of(context).colorScheme.primary,
-                            height: 1,
+                          SizedBox(
+                            height: 40,
+                            child: Offstage(
+                              offstage: index == 0 || widget.source != EvaluationSource.fromNew,
+                              child: IconButton(
+                                  onPressed: () {
+                                    evaluationController.removeTechnician(widget.evaluation.technicians[index]);
+                                  },
+                                  icon: Icon(Icons.delete)),
+                            ),
                           )
-                        : SizedBox.shrink(),
-                  ],
-                );
-              },
-            ),
-          ],
+                        ],
+                      ),
+                      index != widget.evaluation.technicians.length - 1
+                          ? Divider(
+                              color: Theme.of(context).colorScheme.primary,
+                              height: 1,
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         );
       },
     );
