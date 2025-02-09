@@ -51,6 +51,7 @@ dependencies:
   firebase_storage: ^12.3.7
   intl: ^0.20.1
   signature: ^5.5.0
+  camera_camera: ^3.0.0
   
 dev_dependencies:
   flutter_test:

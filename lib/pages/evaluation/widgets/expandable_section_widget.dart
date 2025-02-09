@@ -4,14 +4,12 @@ class ExpandableSectionWidget extends StatefulWidget {
   final String title;
   final Widget child;
   final bool initiallyExpanded;
-  final List<Widget>? actionButtons;
 
   const ExpandableSectionWidget({
     super.key,
     required this.title,
     required this.child,
     this.initiallyExpanded = false,
-    this.actionButtons,
   });
 
   @override
@@ -20,7 +18,6 @@ class ExpandableSectionWidget extends StatefulWidget {
 
 class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
   late bool isExpanded;
-  final GlobalKey _expandableKey = GlobalKey(); // Usamos GlobalKey para referenciar o widget
 
   @override
   void initState() {
@@ -33,7 +30,7 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -42,70 +39,43 @@ class _ExpandableSectionWidgetState extends State<ExpandableSectionWidget> {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: ListTile(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.title,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontWeight: FontWeight.bold,
-                          ),
+              title: Text(
+                widget.title,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  if (widget.actionButtons != null && isExpanded)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: widget.actionButtons!
-                          .map((button) => Row(
-                                children: [
-                                  button,
-                                  const SizedBox(width: 8), // Espaçamento entre os botões
-                                ],
-                              ))
-                          .toList(),
-                    ),
-                ],
               ),
               trailing: Icon(
                 isExpanded ? Icons.expand_less : Icons.expand_more,
                 color: Theme.of(context).colorScheme.surface,
               ),
-              onTap: () async {
+              onTap: () {
                 setState(() {
-                  if (isExpanded) {
-                    FocusScope.of(context).unfocus();
-                  }
                   isExpanded = !isExpanded;
                 });
-                if (isExpanded) {
-                  await Future.delayed(Duration(milliseconds: 300), () {
-                    if (!context.mounted) return;
-                    Scrollable.ensureVisible(
-                      context,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  });
-                }
               },
             ),
           ),
-          AnimatedSize(
-            duration: Duration(milliseconds: 300),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: isExpanded ? 0.0 : 1.0, end: isExpanded ? 1.0 : 0.0),
+            duration: Duration(milliseconds: 500),
             curve: Curves.easeInOut,
-            child: Offstage(
-              offstage: !isExpanded,
-              child: Padding(
-                key: _expandableKey, // Usamos o GlobalKey aqui
-                padding: const EdgeInsets.all(16.0),
-                child: widget.child,
-              ),
-            ),
+            builder: (context, value, child) {
+              return ClipRect(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  heightFactor: value.clamp(0.0, 1.0),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+                    child: widget.child,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

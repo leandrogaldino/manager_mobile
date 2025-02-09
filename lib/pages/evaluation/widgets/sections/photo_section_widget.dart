@@ -28,18 +28,24 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Número de imagens e colunas
-    final int itemCount = widget.evaluation.photoPaths.length;
+    const int maxPhotos = 6; // Número máximo de fotos
     const int crossAxisCount = 3; // Número de colunas no grid
-    const double cellHeight = 120; // Altura de cada célula
+    const double cellHeight = 110; // Altura de cada célula
     const double spacing = 8; // Espaçamento entre as células
 
+    // Adiciona placeholders para fotos ainda não tiradas
+    final List<String?> photoPaths = List.generate(
+      maxPhotos,
+      (index) => index < widget.evaluation.photoPaths.length ? widget.evaluation.photoPaths[index].path : null, // Fotos vazias
+    );
+
     // Calcula o número de linhas necessárias
-    final int rowCount = (itemCount / crossAxisCount).ceil();
+    final int rowCount = (maxPhotos / crossAxisCount).ceil();
 
     // Calcula a altura total necessária para o grid
     double totalHeight = (rowCount * cellHeight) + ((rowCount - 1) * spacing);
     if (totalHeight < 0) totalHeight = 0;
+
     return SizedBox(
       height: totalHeight,
       child: GridView.builder(
@@ -48,30 +54,63 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
           crossAxisSpacing: spacing, // Espaçamento horizontal
           mainAxisSpacing: spacing, // Espaçamento vertical
         ),
-        itemCount: itemCount,
+        itemCount: maxPhotos,
         physics: const NeverScrollableScrollPhysics(), // Impede rolagem
         itemBuilder: (context, index) {
+          final String? photoPath = photoPaths[index];
+          final bool isPhotoTaken = photoPath != null;
+
           return GestureDetector(
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  child: Image.file(
-                    File(widget.evaluation.photoPaths[index].path),
-                    fit: BoxFit.cover,
-                  ),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
                 ),
               ),
+              child: isPhotoTaken
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(photoPath),
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.camera_alt,
+                            size: 40,
+                            color: Theme.of(context).colorScheme.primary.withAlpha(100),
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Adicionar Foto',
+                              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  )),
+                        ],
+                      ),
+                    ),
             ),
+            onTap: () async {
+              if (!isPhotoTaken && widget.source != EvaluationSource.fromSaved) {
+                // TODO: Adicionar lógica para capturar uma nova foto
+              }
+            },
             onLongPress: () async {
-              if (widget.source == EvaluationSource.fromSaved) return;
-              final bool isYes = await YesNoPicker.pick(context: context, question: 'Deseja excluir essa foto?') ?? false;
-              if (isYes) {
-                //TODO: Exclui a foto.
+              if (isPhotoTaken && widget.source != EvaluationSource.fromSaved) {
+                final bool isYes = await YesNoPicker.pick(
+                      context: context,
+                      question: 'Deseja excluir essa foto?',
+                    ) ??
+                    false;
+                if (isYes) {
+                  // TODO: Excluir a foto
+                }
               }
             },
           );

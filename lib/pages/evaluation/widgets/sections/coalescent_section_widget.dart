@@ -33,66 +33,56 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
     return ListenableBuilder(
         listenable: evaluationController,
         builder: (context, child) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 300,
-            ),
-            child: Scrollbar(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: widget.evaluation.coalescents.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Column(
-                                  children: [
-                                    Text(widget.evaluation.coalescents[index].coalescent.coalescentName),
-                                    ListenableBuilder(
-                                        listenable: evaluationController,
-                                        builder: (context, child) {
-                                          return TextButton(
-                                            isSemanticButton: true,
-                                            onPressed: widget.source == EvaluationSource.fromSaved
-                                                ? null
-                                                : () async {
-                                                    FocusScope.of(context).requestFocus(FocusNode());
-                                                    DateTime? selectedDate = await showDatePicker(
-                                                      context: context,
-                                                      initialDate: DateTime.now(),
-                                                      firstDate: DateTime(2000),
-                                                      lastDate: DateTime(2100),
-                                                    );
+          return ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: widget.evaluation.coalescents.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          widget.evaluation.coalescents[index].coalescent.coalescentName,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        ListenableBuilder(
+                            listenable: evaluationController,
+                            builder: (context, child) {
+                              return TextButton(
+                                isSemanticButton: true,
+                                onPressed: widget.source == EvaluationSource.fromSaved
+                                    ? null
+                                    : () async {
+                                        FocusScope.of(context).requestFocus(FocusNode());
+                                        DateTime? selectedDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime(2100),
+                                        );
 
-                                                    if (selectedDate != null) {
-                                                      evaluationController.setCoalescentNextChange(index, selectedDate);
-                                                    }
-                                                  },
-                                            child: Text(
-                                              widget.evaluation.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(widget.evaluation.coalescents[index].nextChange!),
-                                              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                                            ),
-                                          );
-                                        }),
-                                  ],
+                                        if (selectedDate != null) {
+                                          evaluationController.setCoalescentNextChange(index, selectedDate);
+                                        }
+                                      },
+                                child: Text(
+                                  widget.evaluation.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(widget.evaluation.coalescents[index].nextChange!),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Divider(
+                              );
+                            }),
+                      ],
+                    ),
+                    index != widget.evaluation.coalescents.length - 1
+                        ? Divider(
                             color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-          );
+                            height: 1,
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                );
+              });
         });
   }
 }

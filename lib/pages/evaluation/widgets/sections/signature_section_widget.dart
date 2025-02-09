@@ -50,7 +50,16 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
                     color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: evaluationController.signatureBytes == null ? Center(child: Text('Toque para assinar')) : Image.memory(evaluationController.signatureBytes!),
+                  child: evaluationController.signatureBytes == null
+                      ? Center(
+                          child: Text(
+                            'Toque para assinar',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                        )
+                      : Image.memory(evaluationController.signatureBytes!),
                 );
               }),
         ),

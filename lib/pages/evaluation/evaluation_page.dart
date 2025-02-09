@@ -99,24 +99,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       return ExpandableSectionWidget(
                         initiallyExpanded: true,
                         title: 'Leitura',
-                        actionButtons: evaluationController.source != EvaluationSource.fromNew
-                            ? null
-                            : [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.search,
-                                    color: Theme.of(context).colorScheme.surface,
-                                  ),
-                                  onPressed: () async {
-                                    CompressorModel? compressor = await CompressorPicker.pick(context: context);
-                                    if (compressor != null) {
-                                      var customer = personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                                      evaluationController.updateCustomer(customer);
-                                      evaluationController.updateCompressor(compressor);
-                                    }
-                                  },
-                                )
-                              ],
                         child: ReadingSectionWidget(
                           evaluation: evaluationController.evaluation!,
                           source: evaluationController.source!,
@@ -140,24 +122,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     }),
                 ExpandableSectionWidget(
                   title: 'Técnicos',
-                  actionButtons: evaluationController.source == EvaluationSource.fromSaved
-                      ? null
-                      : [
-                          CircleAvatar(
-                            backgroundColor: Theme.of(context).colorScheme.surface,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.add,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              onPressed: () async {
-                                FocusScope.of(context).requestFocus(FocusNode());
-                                PersonModel? technician = await TechnicianPicker.pick(context: context);
-                                if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
-                              },
-                            ),
-                          )
-                        ],
                   child: TechnicianSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,
@@ -165,18 +129,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ),
                 ExpandableSectionWidget(
                   title: 'Fotos',
-                  actionButtons: [
-                    CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.camera_alt,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                  ],
                   child: PhotoSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,
@@ -190,17 +142,36 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
                 evaluationController.source != EvaluationSource.fromSaved
-                    ? ElevatedButton(
-                        onPressed: () async {
-                          bool valid = formKey.currentState?.validate() ?? false;
-                          if (valid) valid = _validateCoalescentsNextChange();
-                          if (valid) valid = _validateSignature();
-                          if (valid) {
-                            await evaluationController.save();
-                            if (!context.mounted) return;
-                          }
-                        },
-                        child: Text('Salvar'))
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                bool isValid = formKey.currentState?.validate() ?? false;
+                                if (!isValid) {
+                                  Message.showInfoSnackbar(
+                                    context: context,
+                                    message: 'Verifique a seção de leitura',
+                                  );
+                                  return;
+                                }
+                                if (!_validateCoalescentsNextChange()) return;
+                                if (!_validateSignature()) return;
+
+                                await evaluationController.save();
+                                if (!context.mounted) return;
+                              },
+                              child: Text(
+                                'Salvar',
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: Theme.of(context).colorScheme.surface,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              )),
+                        ),
+                      )
                     : SizedBox.shrink(),
               ],
             ),
