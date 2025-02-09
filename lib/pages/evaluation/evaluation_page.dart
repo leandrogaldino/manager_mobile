@@ -84,7 +84,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ? ExpandableSectionWidget(
                         initiallyExpanded: true,
                         title: 'Instruções',
-                        child: StructionsSectionWidget(instructions: widget.instructions!),
+                        child: InstructionsSectionWidget(instructions: widget.instructions!),
                       )
                     : SizedBox.shrink(),
                 evaluationController.source == EvaluationSource.fromSaved

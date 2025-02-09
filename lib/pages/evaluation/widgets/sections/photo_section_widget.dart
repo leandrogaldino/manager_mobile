@@ -28,7 +28,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    int maxPhotos = widget.source != EvaluationSource.fromSaved ? 6 : widget.evaluation.photoPaths.length; // Número máximo de fotos
+    final int maxPhotos = widget.source != EvaluationSource.fromSaved ? 6 : widget.evaluation.photoPaths.length; // Número máximo de fotos
     const int crossAxisCount = 3; // Número de colunas no grid
     const double cellHeight = 110; // Altura de cada célula
     const double spacing = 8; // Espaçamento entre as células

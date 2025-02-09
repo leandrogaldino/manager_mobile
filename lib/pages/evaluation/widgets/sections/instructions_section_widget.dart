@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class StructionsSectionWidget extends StatelessWidget {
-  const StructionsSectionWidget({
+class InstructionsSectionWidget extends StatelessWidget {
+  const InstructionsSectionWidget({
     super.key,
     required this.instructions,
   });
