@@ -9,9 +9,12 @@ class InstructionsSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(instructions),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(instructions),
+      ),
     );
   }
 }

@@ -77,69 +77,100 @@ class _EvaluationPageState extends State<EvaluationPage> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               children: [
-                evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null
-                    ? ExpandableSectionWidget(
-                        initiallyExpanded: true,
-                        title: 'Instruções',
-                        child: InstructionsSectionWidget(instructions: widget.instructions!),
-                      )
-                    : SizedBox.shrink(),
-                evaluationController.source == EvaluationSource.fromSaved
-                    ? ExpandableSectionWidget(
-                        title: 'Cabeçalho',
-                        child: HeaderSectionWidget(evaluation: evaluationController.evaluation!),
-                      )
-                    : SizedBox.shrink(),
+                Visibility(
+                  visible: evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  child: ExpandableSectionWidget(
+                    initiallyExpanded: true,
+                    title: Center(child: Text('Instruções')),
+                    children: [
+                      InstructionsSectionWidget(
+                        instructions: widget.instructions ?? '',
+                      ),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  child: SizedBox(height: 5),
+                ),
+                Visibility(
+                  visible: evaluationController.source == EvaluationSource.fromSaved,
+                  child: ExpandableSectionWidget(
+                    title: Center(child: Text('Cabeçalho')),
+                    children: [HeaderSectionWidget(evaluation: evaluationController.evaluation!)],
+                  ),
+                ),
+                Visibility(
+                  visible: evaluationController.source == EvaluationSource.fromSaved,
+                  child: SizedBox(height: 5),
+                ),
                 ListenableBuilder(
                     listenable: evaluationController,
                     builder: (context, child) {
                       return ExpandableSectionWidget(
                         initiallyExpanded: true,
-                        title: 'Leitura',
-                        child: ReadingSectionWidget(
-                          evaluation: evaluationController.evaluation!,
-                          source: evaluationController.source!,
-                          formKey: formKey,
-                        ),
+                        title: Center(child: Text('Dados do Compressor')),
+                        children: [
+                          ReadingSectionWidget(
+                            evaluation: evaluationController.evaluation!,
+                            source: evaluationController.source!,
+                            formKey: formKey,
+                          )
+                        ],
                       );
                     }),
+                SizedBox(height: 5),
                 ListenableBuilder(
                     listenable: evaluationController,
                     builder: (context, child) {
-                      return Offstage(
-                        offstage: evaluationController.evaluation!.coalescents.isEmpty,
+                      return Visibility(
+                        visible: evaluationController.evaluation!.coalescents.isNotEmpty,
                         child: ExpandableSectionWidget(
-                          title: 'Coalescentes',
-                          child: CoalescentSectionWidget(
-                            evaluation: evaluationController.evaluation!,
-                            source: evaluationController.source!,
-                          ),
+                          title: Center(child: Text('Coalescentes')),
+                          children: [
+                            CoalescentSectionWidget(
+                              evaluation: evaluationController.evaluation!,
+                              source: evaluationController.source!,
+                            )
+                          ],
                         ),
                       );
                     }),
-                ExpandableSectionWidget(
-                  title: 'Técnicos',
-                  child: TechnicianSectionWidget(
-                    evaluation: evaluationController.evaluation!,
-                    source: evaluationController.source!,
-                  ),
+                Visibility(
+                  visible: evaluationController.evaluation!.coalescents.isNotEmpty,
+                  child: SizedBox(height: 5),
                 ),
                 ExpandableSectionWidget(
-                  title: 'Fotos',
-                  child: PhotoSectionWidget(
-                    evaluation: evaluationController.evaluation!,
-                    source: evaluationController.source!,
-                  ),
+                  title: Center(child: Text('Técnicos')),
+                  children: [
+                    TechnicianSectionWidget(
+                      evaluation: evaluationController.evaluation!,
+                      source: evaluationController.source!,
+                    )
+                  ],
                 ),
+                SizedBox(height: 5),
                 ExpandableSectionWidget(
-                  title: 'Assinatura',
-                  child: SignatureSectionWidget(
-                    evaluation: evaluationController.evaluation!,
-                    source: evaluationController.source!,
-                  ),
+                  title: Center(child: Text('Fotos')),
+                  children: [
+                    PhotoSectionWidget(
+                      evaluation: evaluationController.evaluation!,
+                      source: evaluationController.source!,
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
+                ExpandableSectionWidget(
+                  title: Center(child: Text('Assinatura')),
+                  children: [
+                    SignatureSectionWidget(
+                      evaluation: evaluationController.evaluation!,
+                      source: evaluationController.source!,
+                    )
+                  ],
                 ),
               ],
             ),

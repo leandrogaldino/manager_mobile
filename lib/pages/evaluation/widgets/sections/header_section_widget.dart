@@ -14,7 +14,7 @@ class HeaderSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 12,
+      spacing: 10,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,

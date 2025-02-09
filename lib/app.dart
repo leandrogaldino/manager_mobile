@@ -51,12 +51,11 @@ class App extends StatelessWidget {
             Routes.evaluationSignature: (context) => const EvaluationSignaturePage(),
           },
           locale: Locale('pt', 'BR'),
-          supportedLocales: [
-            Locale('pt', 'BR'),
-          ],
+          supportedLocales: [Locale('pt', 'BR')],
           localizationsDelegates: [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
         ),
       ),
