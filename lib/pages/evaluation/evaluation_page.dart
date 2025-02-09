@@ -141,42 +141,42 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     source: evaluationController.source!,
                   ),
                 ),
-                evaluationController.source != EvaluationSource.fromSaved
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                bool isValid = formKey.currentState?.validate() ?? false;
-                                if (!isValid) {
-                                  Message.showInfoSnackbar(
-                                    context: context,
-                                    message: 'Verifique a seção de leitura',
-                                  );
-                                  return;
-                                }
-                                if (!_validateCoalescentsNextChange()) return;
-                                if (!_validateSignature()) return;
-
-                                await evaluationController.save();
-                                if (!context.mounted) return;
-                              },
-                              child: Text(
-                                'Salvar',
-                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      color: Theme.of(context).colorScheme.surface,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              )),
-                        ),
-                      )
-                    : SizedBox.shrink(),
               ],
             ),
           ),
         ),
+        bottomNavigationBar: evaluationController.source != EvaluationSource.fromSaved
+            ? Container(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      bool isValid = formKey.currentState?.validate() ?? false;
+                      if (!isValid) {
+                        Message.showInfoSnackbar(
+                          context: context,
+                          message: 'Verifique a seção de leitura',
+                        );
+                        return;
+                      }
+                      if (!_validateCoalescentsNextChange()) return;
+                      if (!_validateSignature()) return;
+
+                      await evaluationController.save();
+                      if (!context.mounted) return;
+                    },
+                    child: Text(
+                      'Salvar',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }

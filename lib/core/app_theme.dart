@@ -75,15 +75,16 @@ class AppTheme {
   static ColorScheme lightScheme() {
     return ColorScheme(
       brightness: Brightness.light,
-      primary: Colors.orange,
-      secondary: Colors.orangeAccent,
-      surface: Colors.white,
-      error: Colors.red,
-      onPrimary: Colors.white,
-      onSecondary: Colors.blue,
-      onSurface: Colors.blue,
-      onError: Colors.white,
-      primaryContainer: Colors.grey.shade200,
+      primary: Color.fromARGB(255, 230, 140, 0),
+      secondary: const Color.fromARGB(255, 250, 165, 55),
+      surface: const Color.fromARGB(255, 255, 255, 255),
+      error: const Color.fromARGB(255, 244, 65, 55),
+      onPrimary: const Color.fromARGB(255, 255, 255, 255),
+      onSecondary: const Color.fromRGBO(33, 150, 243, 1),
+      onSurface: const Color.fromRGBO(33, 150, 243, 1),
+      onError: const Color.fromARGB(255, 255, 255, 255),
+      primaryContainer: const Color.fromARGB(255, 230, 230, 230),
+      secondaryContainer: const Color.fromARGB(255, 255, 240, 215),
     );
   }
 
@@ -94,15 +95,16 @@ class AppTheme {
   static ColorScheme darkScheme() {
     return ColorScheme(
       brightness: Brightness.dark,
-      primary: const Color(0xFFFFAB40),
-      secondary: const Color(0xFFFFCC80),
-      surface: const Color(0xFF1A1A1A),
-      error: const Color(0xFFFF6F00),
-      onPrimary: const Color(0xFF212121),
-      onSecondary: const Color(0xFF212121),
+      primary: const Color.fromARGB(255, 255, 170, 65),
+      secondary: const Color.fromARGB(255, 255, 210, 130),
+      surface: const Color.fromARGB(255, 25, 25, 25),
+      error: const Color.fromARGB(255, 255, 110, 0),
+      onPrimary: const Color.fromARGB(255, 35, 35, 35),
+      onSecondary: const Color.fromARGB(255, 35, 35, 35),
       onSurface: const Color.fromARGB(255, 255, 255, 255),
-      onError: const Color(0xFFFFD180),
-      primaryContainer: Colors.grey.shade100,
+      onError: const Color.fromARGB(255, 255, 210, 130),
+      primaryContainer: const Color.fromARGB(255, 245, 245, 245),
+      secondaryContainer: const Color.fromARGB(255, 255, 255, 255),
     );
   }
 

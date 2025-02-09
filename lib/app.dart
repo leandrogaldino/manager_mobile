@@ -1,5 +1,6 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
@@ -18,7 +19,6 @@ class App extends StatelessWidget {
     TextTheme textTheme = AppTheme.appTextTheme;
     AppTheme appTheme = AppTheme(textTheme);
     AppController controller = GetIt.I<AppController>();
-
     return ListenableBuilder(
       listenable: controller,
       builder: (context, child) => AsyncStateBuilder(
@@ -50,6 +50,14 @@ class App extends StatelessWidget {
             Routes.home: (context) => const HomePage(),
             Routes.evaluationSignature: (context) => const EvaluationSignaturePage(),
           },
+          locale: Locale('pt', 'BR'),
+          supportedLocales: [
+            Locale('pt', 'BR'),
+          ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
         ),
       ),
     );
