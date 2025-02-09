@@ -15,6 +15,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_sect
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/instructions_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/photo_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/reading_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/signature_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_section_widget.dart';
@@ -155,6 +156,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
                           )
                         ],
                   child: TechnicianSectionWidget(
+                    evaluation: evaluationController.evaluation!,
+                    source: evaluationController.source!,
+                  ),
+                ),
+                ExpandableSectionWidget(
+                  title: 'Fotos',
+                  child: PhotoSectionWidget(
                     evaluation: evaluationController.evaluation!,
                     source: evaluationController.source!,
                   ),
