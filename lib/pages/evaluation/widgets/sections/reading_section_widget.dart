@@ -124,17 +124,20 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
               children: [
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      CompressorModel? compressor = await CompressorPicker.pick(context: context);
-                      if (compressor != null) {
-                        var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                        _evaluationController.updateCustomer(customer);
-                        _evaluationController.updateCompressor(compressor);
-                      }
-                    },
-                    child: Text('Buscar Cliente/Compressor'),
+                  child: Visibility(
+                    visible: _evaluationController.source == EvaluationSource.fromNew,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        CompressorModel? compressor = await CompressorPicker.pick(context: context);
+                        if (compressor != null) {
+                          var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
+                          _evaluationController.updateCustomer(customer);
+                          _evaluationController.updateCompressor(compressor);
+                        }
+                      },
+                      child: Text('Buscar Cliente/Compressor'),
+                    ),
                   ),
                 ),
                 Form(

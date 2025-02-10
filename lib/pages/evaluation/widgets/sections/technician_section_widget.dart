@@ -42,13 +42,16 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
             children: [
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    PersonModel? technician = await TechnicianPicker.pick(context: context);
-                    if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
-                  },
-                  child: Text('Incluir Técnico'),
+                child: Visibility(
+                  visible: evaluationController.source != EvaluationSource.fromSaved,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      PersonModel? technician = await TechnicianPicker.pick(context: context);
+                      if (technician != null) evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
+                    },
+                    child: Text('Incluir Técnico'),
+                  ),
                 ),
               ),
               ListView.builder(

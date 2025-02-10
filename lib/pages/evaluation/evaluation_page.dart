@@ -3,13 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/controllers/person_controller.dart';
-import 'package:manager_mobile/core/helper/compressor_picker.dart';
-import 'package:manager_mobile/core/helper/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
-import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
@@ -64,7 +59,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
         if (didPop) {
           return;
         }
-
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
           Navigator.pop(context, result);
@@ -139,10 +133,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         ),
                       );
                     }),
-                Visibility(
-                  visible: evaluationController.evaluation!.coalescents.isNotEmpty,
-                  child: SizedBox(height: 5),
-                ),
+                ListenableBuilder(
+                    listenable: evaluationController,
+                    builder: (context, child) {
+                      return Visibility(
+                        visible: evaluationController.evaluation!.coalescents.isNotEmpty,
+                        child: SizedBox(height: 5),
+                      );
+                    }),
                 ExpandableSectionWidget(
                   title: Text('Técnicos'),
                   children: [
@@ -153,16 +151,30 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ],
                 ),
                 SizedBox(height: 5),
-                ExpandableSectionWidget(
-                  title: Text('Fotos'),
-                  children: [
-                    PhotoSectionWidget(
-                      evaluation: evaluationController.evaluation!,
-                      source: evaluationController.source!,
-                    )
-                  ],
-                ),
-                SizedBox(height: 5),
+                ListenableBuilder(
+                    listenable: evaluationController,
+                    builder: (context, child) {
+                      return Visibility(
+                        visible: (evaluationController.source == EvaluationSource.fromSaved && evaluationController.evaluation!.photoPaths.isNotEmpty) || (evaluationController.source != EvaluationSource.fromSaved),
+                        child: ExpandableSectionWidget(
+                          title: Text('Fotos'),
+                          children: [
+                            PhotoSectionWidget(
+                              evaluation: evaluationController.evaluation!,
+                              source: evaluationController.source!,
+                            )
+                          ],
+                        ),
+                      );
+                    }),
+                ListenableBuilder(
+                    listenable: evaluationController,
+                    builder: (context, child) {
+                      return Visibility(
+                        visible: (evaluationController.source == EvaluationSource.fromSaved && evaluationController.evaluation!.photoPaths.isNotEmpty) || (evaluationController.source != EvaluationSource.fromSaved),
+                        child: SizedBox(height: 5),
+                      );
+                    }),
                 ExpandableSectionWidget(
                   title: Text('Assinatura'),
                   children: [
