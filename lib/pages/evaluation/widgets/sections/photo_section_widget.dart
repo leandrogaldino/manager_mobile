@@ -1,11 +1,17 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'dart:ui' as ui;
 
+//TODO: alterar para o controller
+//TODO: Fazer EvaluationPhotoViewPage (Entra ao clicar em uma foto ja tirada)
 class PhotoSectionWidget extends StatefulWidget {
   const PhotoSectionWidget({super.key, required this.evaluation, required this.source});
   final EvaluationModel evaluation;
@@ -92,7 +98,28 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
               ),
               onTap: () async {
                 if (!isPhotoTaken && widget.source != EvaluationSource.fromSaved) {
-                  // TODO: Adicionar lógica para capturar uma nova foto
+                  // Exibe a tela de captura de foto
+                  final File? file = await Navigator.pushNamed<File?>(context, Routes.evaluationPhoto);
+
+                  // Verifique se uma foto foi tirada e faça o que for necessário
+                  if (file != null) {
+                    // Aqui você pode salvar o arquivo da foto tirada
+
+                    verificarTamanhoDoArquivo(file);
+
+                    final bytes = await file.readAsBytes(); // Lê os bytes do arquivo
+                    final codec = await ui.instantiateImageCodec(bytes); // Cria um codec da imagem
+                    final frame = await codec.getNextFrame(); // Obtém o primeiro frame da imagem
+                    final image = frame.image;
+
+                    print('Largura: ${image.width} px'); //1080
+                    print('Altura: ${image.height} px');
+
+                    setState(() {
+                      // Adicione a foto ao modelo ou lista de fotos
+                      widget.evaluation.photoPaths.add(EvaluationPhotoModel(id: 0, path: file.path));
+                    });
+                  }
                 }
               },
               onLongPress: () async {
@@ -104,6 +131,9 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
                       false;
                   if (isYes) {
                     // TODO: Excluir a foto
+                    setState(() {
+                      widget.evaluation.photoPaths.remove(widget.evaluation.photoPaths[index]);
+                    });
                   }
                 }
               },
@@ -112,5 +142,13 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
         ),
       ),
     );
+  }
+
+//TODO: Depois que fizer o photoviewpage, verificar se metade do tamanho atual esta bom.
+  void verificarTamanhoDoArquivo(File file) async {
+    int tamanhoEmBytes = await file.length();
+    double tamanhoEmKB = tamanhoEmBytes / 1024;
+    double tamanhoEmMB = tamanhoEmKB / 1024;
+    log('Tamanho do arquivo: ${tamanhoEmMB.toStringAsFixed(2)} MB');
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:asyncstate/asyncstate.dart';
+import 'package:camera_camera/camera_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
@@ -42,7 +45,17 @@ class App extends StatelessWidget {
                 ),
               );
             }
-
+            if (settings.name == Routes.evaluationPhoto) {
+              return MaterialPageRoute<File?>(
+                builder: (context) => CameraCamera(
+                  enableZoom: false,
+                  cameraSide: CameraSide.back,
+                  onFile: (file) {
+                    Navigator.pop(context, file);
+                  },
+                ),
+              );
+            }
             return null;
           },
           routes: {

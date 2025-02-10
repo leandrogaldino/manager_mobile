@@ -199,7 +199,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       if (!isValid) {
                         Message.showInfoSnackbar(
                           context: context,
-                          message: 'Verifique a seção de leitura',
+                          message: 'Verifique a seção de dados do compressor',
                         );
                         return;
                       }
