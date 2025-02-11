@@ -11,37 +11,37 @@ class FilterBarWidget extends StatefulWidget {
 }
 
 class _FilterBarWidgetState extends State<FilterBarWidget> {
-  late final FilterController filterController;
-  late final HomeController homeController;
-  late final TextEditingController customerControllerEC;
-  late final TextEditingController dateControllerEC;
+  late final FilterController _filterController;
+  late final HomeController _homeController;
+  late final TextEditingController _customerControllerEC;
+  late final TextEditingController _dateControllerEC;
 
   @override
   void initState() {
     super.initState();
-    filterController = Locator.get<FilterController>();
-    homeController = Locator.get<HomeController>();
-    customerControllerEC = TextEditingController();
-    dateControllerEC = TextEditingController();
+    _filterController = Locator.get<FilterController>();
+    _homeController = Locator.get<HomeController>();
+    _customerControllerEC = TextEditingController();
+    _dateControllerEC = TextEditingController();
   }
 
   @override
   void dispose() {
-    customerControllerEC.dispose();
-    dateControllerEC.dispose();
+    _customerControllerEC.dispose();
+    _dateControllerEC.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: filterController,
+      listenable: _filterController,
       builder: (context, child) {
         return ClipRect(
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            height: filterController.filterBarHeight.toDouble(),
+            height: _filterController.filterBarHeight.toDouble(),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -49,16 +49,16 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                   spacing: 5,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (filterController.filtering)
+                    if (_filterController.filtering)
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () async {
-                            customerControllerEC.clear();
-                            dateControllerEC.clear();
-                            filterController.setCustomerOrCompressorText('');
-                            filterController.setSelectedDateRange(null);
-                            await homeController.fetchData();
+                            _customerControllerEC.clear();
+                            _dateControllerEC.clear();
+                            _filterController.setCustomerOrCompressorText('');
+                            _filterController.setSelectedDateRange(null);
+                            await _homeController.fetchData();
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -72,10 +72,10 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                         ),
                       ),
                     TextField(
-                      controller: customerControllerEC,
+                      controller: _customerControllerEC,
                       onChanged: (text) async {
-                        filterController.setCustomerOrCompressorText(text);
-                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text, dateRange: filterController.selectedDateRange);
+                        _filterController.setCustomerOrCompressorText(text);
+                        await _homeController.fetchData(customerOrCompressor: _customerControllerEC.text, dateRange: _filterController.selectedDateRange);
                       },
                       decoration: InputDecoration(
                         labelText: "Cliente/Compressor",
@@ -84,7 +84,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       ),
                     ),
                     TextField(
-                      controller: dateControllerEC,
+                      controller: _dateControllerEC,
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText: "Data",
@@ -96,11 +96,11 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                           context: context,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
-                          initialDateRange: filterController.selectedDateRange,
+                          initialDateRange: _filterController.selectedDateRange,
                         );
-                        filterController.setSelectedDateRange(picked);
-                        dateControllerEC.text = filterController.selectedDateRangeText;
-                        await homeController.fetchData(customerOrCompressor: customerControllerEC.text, dateRange: filterController.selectedDateRange);
+                        _filterController.setSelectedDateRange(picked);
+                        _dateControllerEC.text = _filterController.selectedDateRangeText;
+                        await _homeController.fetchData(customerOrCompressor: _customerControllerEC.text, dateRange: _filterController.selectedDateRange);
                       },
                     ),
                     Divider(),

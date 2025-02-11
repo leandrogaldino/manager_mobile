@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:intl/intl.dart';
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
+import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
@@ -11,7 +11,6 @@ import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class EvaluationService implements Readable<EvaluationModel>, Writable<EvaluationModel>, Deletable, Syncronizable {
   final EvaluationRepository _evaluationRepository;
@@ -20,10 +19,10 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     required EvaluationRepository evaluationRepository,
   }) : _evaluationRepository = evaluationRepository;
 
-  Future<String> saveSignature(Uint8List signatureBytes) async {
+  Future<String> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final String fileName = '${Uuid().v4()}_${DateFormat('ddMMyyyy_HHmmssSSS').format(DateTime.now())}.png';
+      final directory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
+      final String fileName = StringHelper.getRandomFileName('png');
       final filePath = '${directory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);

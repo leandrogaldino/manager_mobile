@@ -13,12 +13,12 @@ class PopupButtonWidget extends StatefulWidget {
 }
 
 class _PopupButtonWidgetState extends State<PopupButtonWidget> {
-  late final LoginController loginController;
+  late final LoginController _loginController;
 
   @override
   void initState() {
     super.initState();
-    loginController = Locator.get<LoginController>();
+    _loginController = Locator.get<LoginController>();
   }
 
   @override
@@ -48,7 +48,7 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
             title: const Text('Sair'),
             onTap: () async {
               Navigator.pop(context);
-              await loginController.signOut().asyncLoader(
+              await _loginController.signOut().asyncLoader(
                     customLoader: const LoaderWidget(message: 'Saindo'),
                   );
             },

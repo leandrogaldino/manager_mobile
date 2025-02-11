@@ -78,7 +78,9 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
                       onPressed: () async {
                         if (signatureController!.isNotEmpty) {
                           var signatureBytes = await signatureController!.toPngBytes();
-                          evaluationController.setSignatureBytes(signatureBytes);
+                          if (signatureBytes != null) {
+                            await evaluationController.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
+                          }
                           if (!context.mounted) return;
                           Navigator.pop(context);
                         } else {

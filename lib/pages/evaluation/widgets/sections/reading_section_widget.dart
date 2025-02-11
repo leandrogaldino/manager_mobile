@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/person_controller.dart';
-import 'package:manager_mobile/core/helper/compressor_picker.dart';
+import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/pages/evaluation/enums/part_types.dart';
@@ -15,13 +14,9 @@ import 'package:validatorless/validatorless.dart';
 class ReadingSectionWidget extends StatefulWidget {
   const ReadingSectionWidget({
     super.key,
-    required this.evaluation,
     required this.formKey,
-    required this.source,
   });
 
-  final EvaluationModel evaluation;
-  final EvaluationSource source;
   final GlobalKey<FormState> formKey;
 
   @override
@@ -87,20 +82,20 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
 
-    if (widget.source != EvaluationSource.fromNew) _fillForm();
+    if (_evaluationController.source != EvaluationSource.fromNew) _fillForm();
   }
 
   _fillForm() {
-    _customerEC.text = widget.evaluation.customer!.shortName;
-    _compressorEC.text = widget.evaluation.compressor!.compressorName;
-    _serialNumberEC.text = widget.evaluation.compressor!.serialNumber;
-    _horimeterEC.text = widget.evaluation.horimeter == null ? '' : widget.evaluation.horimeter.toString();
-    _airFilterEC.text = widget.evaluation.airFilter == null ? '' : widget.evaluation.airFilter.toString();
-    _oilFilterEC.text = widget.evaluation.oilFilter == null ? '' : widget.evaluation.oilFilter.toString();
-    _separatorEC.text = widget.evaluation.separator == null ? '' : widget.evaluation.separator.toString();
-    _oilEC.text = widget.evaluation.oil == null ? '' : widget.evaluation.oil.toString();
-    _adviceEC.text = widget.evaluation.advice ?? '';
-    _responsibleEC.text = widget.evaluation.responsible ?? '';
+    _customerEC.text = _evaluationController.evaluation!.customer!.shortName;
+    _compressorEC.text = _evaluationController.evaluation!.compressor!.compressorName;
+    _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
+    _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
+    _airFilterEC.text = _evaluationController.evaluation!.airFilter == null ? '' : _evaluationController.evaluation!.airFilter.toString();
+    _oilFilterEC.text = _evaluationController.evaluation!.oilFilter == null ? '' : _evaluationController.evaluation!.oilFilter.toString();
+    _separatorEC.text = _evaluationController.evaluation!.separator == null ? '' : _evaluationController.evaluation!.separator.toString();
+    _oilEC.text = _evaluationController.evaluation!.oil == null ? '' : _evaluationController.evaluation!.oil.toString();
+    _adviceEC.text = _evaluationController.evaluation!.advice ?? '';
+    _responsibleEC.text = _evaluationController.evaluation!.responsible ?? '';
   }
 
   @override
@@ -185,7 +180,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             Expanded(
                               child: TextFormField(
                                 controller: _horimeterEC,
-                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -213,7 +208,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                     ),
                                   );
                                 }).toList(),
-                                onChanged: widget.source != EvaluationSource.fromSaved
+                                onChanged: _evaluationController.source != EvaluationSource.fromSaved
                                     ? (oilType) {
                                         _evaluationController.updateOilType(oilType!);
                                       }
@@ -229,7 +224,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             Expanded(
                               child: TextFormField(
                                 controller: _airFilterEC,
-                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                                 validator: Validatorless.multiple(
@@ -251,7 +246,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             Expanded(
                               child: TextFormField(
                                 controller: _oilFilterEC,
-                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -280,7 +275,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             Expanded(
                               child: TextFormField(
                                 controller: _separatorEC,
-                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -303,7 +298,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             Expanded(
                               child: TextFormField(
                                 controller: _oilEC,
-                                readOnly: widget.source == EvaluationSource.fromSaved,
+                                readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -327,7 +322,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ),
                         TextFormField(
                           controller: _adviceEC,
-                          readOnly: widget.source == EvaluationSource.fromSaved,
+                          readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                           textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(labelText: 'Parecer Técnico'),
                           maxLines: 5,
@@ -335,7 +330,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ),
                         TextFormField(
                           controller: _responsibleEC,
-                          readOnly: widget.source == EvaluationSource.fromSaved,
+                          readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                           textCapitalization: TextCapitalization.words,
                           validator: Validatorless.required('Campo obrigatório'),
                           decoration: InputDecoration(labelText: 'Responsável'),

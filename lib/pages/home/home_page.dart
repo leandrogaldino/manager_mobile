@@ -1,8 +1,6 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
@@ -26,23 +24,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final AppController appController;
-  late final HomeController homeController;
-  late final FilterController filterController;
-  late final LoginController loginController;
-  late final EvaluationController evaluationController;
+  late final HomeController _homeController;
+  late final LoginController _loginController;
+  late final EvaluationController _evaluationController;
 
   @override
   void initState() {
     super.initState();
-    appController = Locator.get<AppController>();
-    homeController = Locator.get<HomeController>();
-    filterController = Locator.get<FilterController>();
-    loginController = Locator.get<LoginController>();
-    evaluationController = Locator.get<EvaluationController>();
-
+    _homeController = Locator.get<HomeController>();
+    _loginController = Locator.get<LoginController>();
+    _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await homeController.syncronize().asyncLoader();
+      await _homeController.syncronize().asyncLoader();
     });
   }
 
@@ -59,13 +52,13 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  final result = await homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'Sincronizando'));
+                  final result = await _homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'Sincronizando'));
                   _showSyncResultSnackbar(result);
                 },
                 child: ListenableBuilder(
-                  listenable: homeController,
+                  listenable: _homeController,
                   builder: (context, child) {
-                    return homeController.currentIndex == 0 ? ScheduleListWidget(schedules: homeController.schedules) : EvaluationListWidget(evaluations: homeController.evaluations);
+                    return _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: _homeController.schedules) : EvaluationListWidget(evaluations: _homeController.evaluations);
                   },
                 ),
               ),
@@ -74,12 +67,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: ListenableBuilder(
-        listenable: homeController,
+        listenable: _homeController,
         builder: (context, child) {
           return BottomNavigationBar(
-            currentIndex: homeController.currentIndex,
+            currentIndex: _homeController.currentIndex,
             onTap: (index) {
-              homeController.setCurrentIndex(index);
+              _homeController.setCurrentIndex(index);
             },
             items: [
               BottomNavigationBarItem(
@@ -95,15 +88,15 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: ListenableBuilder(
-          listenable: homeController,
+          listenable: _homeController,
           builder: (context, child) {
-            return homeController.currentIndex == 1
+            return _homeController.currentIndex == 1
                 ? FloatingActionButton(
                     onPressed: () async {
                       var evaluation = EvaluationModel.fromScheduleOrNew();
-                      var loggedTechnician = await loginController.currentLoggedUser;
+                      var loggedTechnician = await _loginController.currentLoggedUser;
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
-                      evaluationController.setEvaluation(evaluation, EvaluationSource.fromNew);
+                      _evaluationController.setEvaluation(evaluation, EvaluationSource.fromNew);
                       if (!context.mounted) return;
                       Navigator.of(context).pushNamed(Routes.evaluation);
                     },

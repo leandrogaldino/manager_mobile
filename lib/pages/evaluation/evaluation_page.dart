@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
@@ -28,25 +25,17 @@ class EvaluationPage extends StatefulWidget {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
-  late final GlobalKey<FormState> formKey;
-  late final LoginController loginController;
-  late final EvaluationController evaluationController;
-  late final PersonController personController;
+  late final GlobalKey<FormState> _formKey;
+  late final EvaluationController _evaluationController;
 
   @override
   void initState() {
     super.initState();
-    formKey = GlobalKey<FormState>();
-    loginController = Locator.get<LoginController>();
-    evaluationController = Locator.get<EvaluationController>();
-    personController = Locator.get<PersonController>();
-    if (evaluationController.source == EvaluationSource.fromSaved) {
+    _formKey = GlobalKey<FormState>();
+    _evaluationController = Locator.get<EvaluationController>();
+    if (_evaluationController.source == EvaluationSource.fromSaved) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-        final signaturePath = evaluationController.evaluation!.signaturePath;
-        if (signaturePath != null && await File(signaturePath).exists()) {
-          var signatureBytes = await File(signaturePath).readAsBytes();
-          evaluationController.setSignatureBytes(signatureBytes);
-        }
+        await _evaluationController.updateImagesBytes();
       });
     }
   }
@@ -54,14 +43,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: evaluationController.source == EvaluationSource.fromSaved,
+      canPop: _evaluationController.source == EvaluationSource.fromSaved,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
         }
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
-          Navigator.pop(context, result);
+          await _evaluationController.deleteTempFiles();
+          if (context.mounted) Navigator.pop(context, result);
         }
       },
       child: Scaffold(
@@ -75,7 +65,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
                     title: Text('Instruções'),
@@ -87,115 +77,103 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
                 Visibility(
-                  visible: evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
                   child: SizedBox(height: 5),
                 ),
                 Visibility(
-                  visible: evaluationController.source == EvaluationSource.fromSaved,
+                  visible: _evaluationController.source == EvaluationSource.fromSaved,
                   child: ExpandableSectionWidget(
                     title: Text('Cabeçalho'),
-                    children: [HeaderSectionWidget(evaluation: evaluationController.evaluation!)],
+                    children: [
+                      HeaderSectionWidget(),
+                    ],
                   ),
                 ),
                 Visibility(
-                  visible: evaluationController.source == EvaluationSource.fromSaved,
+                  visible: _evaluationController.source == EvaluationSource.fromSaved,
                   child: SizedBox(height: 5),
                 ),
                 ListenableBuilder(
-                    listenable: evaluationController,
+                    listenable: _evaluationController,
                     builder: (context, child) {
                       return ExpandableSectionWidget(
                         initiallyExpanded: true,
                         title: Text('Dados do Compressor'),
                         children: [
                           ReadingSectionWidget(
-                            evaluation: evaluationController.evaluation!,
-                            source: evaluationController.source!,
-                            formKey: formKey,
+                            formKey: _formKey,
                           )
                         ],
                       );
                     }),
                 SizedBox(height: 5),
                 ListenableBuilder(
-                    listenable: evaluationController,
+                    listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: evaluationController.evaluation!.coalescents.isNotEmpty,
+                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
                         child: ExpandableSectionWidget(
                           title: Text('Coalescentes'),
                           children: [
-                            CoalescentSectionWidget(
-                              evaluation: evaluationController.evaluation!,
-                              source: evaluationController.source!,
-                            )
+                            CoalescentSectionWidget(),
                           ],
                         ),
                       );
                     }),
                 ListenableBuilder(
-                    listenable: evaluationController,
+                    listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: evaluationController.evaluation!.coalescents.isNotEmpty,
+                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
                         child: SizedBox(height: 5),
                       );
                     }),
                 ExpandableSectionWidget(
                   title: Text('Técnicos'),
                   children: [
-                    TechnicianSectionWidget(
-                      evaluation: evaluationController.evaluation!,
-                      source: evaluationController.source!,
-                    )
+                    TechnicianSectionWidget(),
                   ],
                 ),
                 SizedBox(height: 5),
                 ListenableBuilder(
-                    listenable: evaluationController,
+                    listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (evaluationController.source == EvaluationSource.fromSaved && evaluationController.evaluation!.photoPaths.isNotEmpty) || (evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photoPaths.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
                         child: ExpandableSectionWidget(
                           title: Text('Fotos'),
                           children: [
-                            PhotoSectionWidget(
-                              evaluation: evaluationController.evaluation!,
-                              source: evaluationController.source!,
-                            )
+                            PhotoSectionWidget(),
                           ],
                         ),
                       );
                     }),
                 ListenableBuilder(
-                    listenable: evaluationController,
+                    listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (evaluationController.source == EvaluationSource.fromSaved && evaluationController.evaluation!.photoPaths.isNotEmpty) || (evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photoPaths.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
                         child: SizedBox(height: 5),
                       );
                     }),
                 ExpandableSectionWidget(
                   title: Text('Assinatura'),
                   children: [
-                    SignatureSectionWidget(
-                      evaluation: evaluationController.evaluation!,
-                      source: evaluationController.source!,
-                    )
+                    SignatureSectionWidget(),
                   ],
                 ),
               ],
             ),
           ),
         ),
-        bottomNavigationBar: evaluationController.source != EvaluationSource.fromSaved
+        bottomNavigationBar: _evaluationController.source != EvaluationSource.fromSaved
             ? Container(
                 color: Theme.of(context).colorScheme.secondaryContainer,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      bool isValid = formKey.currentState?.validate() ?? false;
+                      bool isValid = _formKey.currentState?.validate() ?? false;
                       if (!isValid) {
                         Message.showInfoSnackbar(
                           context: context,
@@ -206,7 +184,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       if (!_validateCoalescentsNextChange()) return;
                       if (!_validateSignature()) return;
 
-                      await evaluationController.save();
+                      await _evaluationController.save();
                       if (!context.mounted) return;
                     },
                     child: Text(
@@ -225,7 +203,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   bool _validateSignature() {
-    final bool valid = evaluationController.signatureBytes != null;
+    final bool valid = _evaluationController.signatureBytes != null;
     if (!valid) {
       Message.showInfoSnackbar(context: context, message: 'Assinatura do cliente necessária para salvar.');
     }
@@ -233,7 +211,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   bool _validateCoalescentsNextChange() {
-    final bool valid = evaluationController.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);
+    final bool valid = _evaluationController.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);
     if (!valid) {
       Message.showInfoSnackbar(context: context, message: 'Selecione a data da próxima troca de todos os coalescentes.');
     }

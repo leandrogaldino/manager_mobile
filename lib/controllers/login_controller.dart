@@ -48,6 +48,7 @@ class LoginController extends ChangeNotifier {
 
   Future<void> signOut() async {
     await Future.delayed(const Duration(seconds: 2));
-    return _authService.signOut();
+    _authService.signOut();
+    _setState(LoginStateInitial());
   }
 }

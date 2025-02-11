@@ -3,34 +3,31 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-import 'package:manager_mobile/core/helper/yes_no_picker.dart';
+import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'dart:ui' as ui;
 
 class PhotoSectionWidget extends StatefulWidget {
-  const PhotoSectionWidget({super.key, required this.evaluation, required this.source});
-  final EvaluationModel evaluation;
-  final EvaluationSource source;
+  const PhotoSectionWidget({super.key});
 
   @override
   State<PhotoSectionWidget> createState() => _SignatureSectionWidgetState();
 }
 
 class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
-  late final EvaluationController evaluationController;
+  late final EvaluationController _evaluationController;
 
   @override
   void initState() {
     super.initState();
-    evaluationController = Locator.get<EvaluationController>();
+    _evaluationController = Locator.get<EvaluationController>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final int maxPhotos = widget.source != EvaluationSource.fromSaved ? 6 : widget.evaluation.photoPaths.length; // Número máximo de fotos
+    final int maxPhotos = _evaluationController.source != EvaluationSource.fromSaved ? 6 : _evaluationController.evaluation!.photoPaths.length; // Número máximo de fotos
     const int crossAxisCount = 3;
     const double spacing = 8;
 
@@ -38,7 +35,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
     final double cellHeight = cellWidth * 1.1;
     final List<String?> photoPaths = List.generate(
       maxPhotos,
-      (index) => index < widget.evaluation.photoPaths.length ? widget.evaluation.photoPaths[index].path : null,
+      (index) => index < _evaluationController.evaluation!.photoPaths.length ? _evaluationController.evaluation!.photoPaths[index].path : null,
     );
 
     return Padding(
@@ -97,7 +94,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
                       ),
               ),
               onTap: () async {
-                if (!isPhotoTaken && widget.source != EvaluationSource.fromSaved) {
+                if (!isPhotoTaken && _evaluationController.source != EvaluationSource.fromSaved) {
                   final File? file = await Navigator.pushNamed<File?>(context, Routes.evaluationPhoto);
 
                   if (file != null) {
@@ -112,13 +109,13 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
                     print('Altura: ${image.height} px');
 
                     setState(() {
-                      widget.evaluation.photoPaths.add(EvaluationPhotoModel(id: 0, path: file.path));
+                      _evaluationController.evaluation!.photoPaths.add(EvaluationPhotoModel(id: 0, path: file.path));
                     });
                   }
                 }
               },
               onLongPress: () async {
-                if (isPhotoTaken && widget.source != EvaluationSource.fromSaved) {
+                if (isPhotoTaken && _evaluationController.source != EvaluationSource.fromSaved) {
                   final bool isYes = await YesNoPicker.pick(
                         context: context,
                         question: 'Deseja excluir essa foto?',
@@ -126,7 +123,7 @@ class _SignatureSectionWidgetState extends State<PhotoSectionWidget> {
                       false;
                   if (isYes) {
                     setState(() {
-                      widget.evaluation.photoPaths.remove(widget.evaluation.photoPaths[index]);
+                      _evaluationController.evaluation!.photoPaths.remove(_evaluationController.evaluation!.photoPaths[index]);
                     });
                   }
                 }

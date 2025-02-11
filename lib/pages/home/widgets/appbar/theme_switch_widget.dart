@@ -11,19 +11,19 @@ class ThemeSwitchWidget extends StatefulWidget {
 }
 
 class _ThemeSwitchWidgetState extends State<ThemeSwitchWidget> {
-  late final AppController appController;
+  late final AppController _appController;
 
   @override
   void initState() {
     super.initState();
-    appController = GetIt.I<AppController>();
+    _appController = GetIt.I<AppController>();
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return ListenableBuilder(
-        listenable: appController,
+        listenable: _appController,
         builder: (context, child) {
           return Dialog(
             shape: RoundedRectangleBorder(
@@ -44,8 +44,8 @@ class _ThemeSwitchWidgetState extends State<ThemeSwitchWidget> {
                   const SizedBox(height: 16),
                   AnimatedToggleSwitch.rolling(
                     values: const ['Claro', 'Escuro', 'Sistema'],
-                    current: appController.getThemeModeName(appController.themeMode),
-                    onChanged: (value) async => await appController.changeTheme(appController.getThemeMode(value)),
+                    current: _appController.getThemeModeName(_appController.themeMode),
+                    onChanged: (value) async => await _appController.changeTheme(_appController.getThemeMode(value)),
                     iconBuilder: (a, b) {
                       return Icon(
                         switch (a) {
@@ -61,7 +61,7 @@ class _ThemeSwitchWidgetState extends State<ThemeSwitchWidget> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    appController.getThemeModeName(appController.themeMode),
+                    _appController.getThemeModeName(_appController.themeMode),
                     style: theme.textTheme.titleMedium,
                   ),
                 ],
