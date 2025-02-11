@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:asyncstate/asyncstate.dart';
 import 'package:camera_camera/camera_camera.dart';
 import 'package:flutter/material.dart';
