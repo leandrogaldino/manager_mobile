@@ -13,18 +13,18 @@ class EvaluationSignaturePage extends StatefulWidget {
 }
 
 class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
-  SignatureController? signatureController;
-  late final EvaluationController evaluationController;
+  SignatureController? _signatureController;
+  late final EvaluationController _evaluationController;
   @override
   void initState() {
     super.initState();
-    evaluationController = Locator.get<EvaluationController>();
+    _evaluationController = Locator.get<EvaluationController>();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   }
 
   @override
   void dispose() {
-    signatureController?.dispose;
+    _signatureController?.dispose;
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     super.dispose();
   }
@@ -32,8 +32,8 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (signatureController != null) return;
-    signatureController = SignatureController(
+    if (_signatureController != null) return;
+    _signatureController = SignatureController(
       penColor: Theme.of(context).colorScheme.onSecondary,
     );
   }
@@ -61,7 +61,7 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
                   height: MediaQuery.of(context).size.height * 0.6,
                   child: Signature(
                     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    controller: signatureController!,
+                    controller: _signatureController!,
                   ),
                 ),
               ),
@@ -71,15 +71,16 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
                   spacing: 12,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(onPressed: () => signatureController!.undo(), child: Text('Desfazer')),
-                    ElevatedButton(onPressed: () => signatureController!.clear(), child: Text('Limpar')),
-                    ElevatedButton(onPressed: () => signatureController!.redo(), child: Text('Refazer')),
+                    ElevatedButton(onPressed: () => _signatureController!.undo(), child: Text('Desfazer')),
+                    ElevatedButton(onPressed: () => _signatureController!.clear(), child: Text('Limpar')),
+                    ElevatedButton(onPressed: () => _signatureController!.redo(), child: Text('Refazer')),
                     ElevatedButton(
                       onPressed: () async {
-                        if (signatureController!.isNotEmpty) {
-                          var signatureBytes = await signatureController!.toPngBytes();
+                        if (_signatureController!.isNotEmpty) {
+                          var signatureBytes = await _signatureController!.toPngBytes();
                           if (signatureBytes != null) {
-                            await evaluationController.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
+                            await _evaluationController.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
+                            await _evaluationController.updateImagesBytes();
                           }
                           if (!context.mounted) return;
                           Navigator.pop(context);

@@ -10,7 +10,6 @@ import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
-import 'package:path_provider/path_provider.dart';
 
 class EvaluationController extends ChangeNotifier {
   final EvaluationService evaluationService;
@@ -21,29 +20,6 @@ class EvaluationController extends ChangeNotifier {
     await saveSignature(signatureBytes: _signatureBytes!, asTemporary: false);
     await evaluationService.save(evaluation!);
     notifyListeners();
-  }
-
-  Future<void> deleteTempFiles() async {
-    final Directory tempDir = await getTemporaryDirectory();
-    String path = _evaluation!.signaturePath ?? '';
-    if (path.startsWith(tempDir.path)) {
-      File file = File(path);
-      bool fileExists = await file.exists();
-      if (fileExists) {
-        await file.delete();
-      }
-    }
-
-    for (var photo in _evaluation!.photoPaths) {
-      path = photo.path;
-      if (path.startsWith(tempDir.path)) {
-        File file = File(path);
-        bool fileExists = await file.exists();
-        if (fileExists) {
-          await file.delete();
-        }
-      }
-    }
   }
 
   Future<void> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {

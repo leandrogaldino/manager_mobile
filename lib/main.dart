@@ -19,7 +19,8 @@ void main() async {
         DeviceOrientation.portraitDown,
       ]);
       Locator.setup();
-      await GetIt.I<LocalDatabase>().init();
+      await Locator.get<LocalDatabase>().init();
+      await Locator.get<AppController>().clearOldTemporaryFiles();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );

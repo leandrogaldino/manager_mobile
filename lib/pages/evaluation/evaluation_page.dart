@@ -50,7 +50,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
         }
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
-          await _evaluationController.deleteTempFiles();
           if (context.mounted) Navigator.pop(context, result);
         }
       },
