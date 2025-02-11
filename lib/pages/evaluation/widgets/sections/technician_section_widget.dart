@@ -74,7 +74,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                           SizedBox(
                             height: 40,
                             child: Offstage(
-                              offstage: index == 0 || widget.source != EvaluationSource.fromNew,
+                              offstage: index == 0 || widget.source == EvaluationSource.fromSaved,
                               child: IconButton(
                                   onPressed: () {
                                     evaluationController.removeTechnician(widget.evaluation.technicians[index]);
