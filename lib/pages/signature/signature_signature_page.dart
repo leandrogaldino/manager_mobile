@@ -79,7 +79,7 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
                         if (_signatureController!.isNotEmpty) {
                           var signatureBytes = await _signatureController!.toPngBytes();
                           if (signatureBytes != null) {
-                            await _evaluationController.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
+                            await _evaluationController.saveTempSignature(signatureBytes: signatureBytes);
                             await _evaluationController.updateImagesBytes();
                           }
                           if (!context.mounted) return;

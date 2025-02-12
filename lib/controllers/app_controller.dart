@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AppController extends ChangeNotifier {
   final AppPreferences _appPreferences;
@@ -51,22 +53,19 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> clearOldTemporaryFiles() async {
-    final tempDir = Directory.systemTemp; // Obtém o diretório temporário do sistema
-    final files = tempDir.listSync(); // Lista todos os arquivos e diretórios na pasta temporária
+    final tempDir = await getTemporaryDirectory();
+    final files = tempDir.listSync();
 
     for (var fileOrDir in files) {
       if (fileOrDir is File) {
         try {
           final lastModified = await fileOrDir.lastModified();
           final now = DateTime.now();
-
-          // Exclui arquivos que foram modificados há mais de 24 horas, por exemplo
           if (now.difference(lastModified).inHours > 24) {
             await fileOrDir.delete();
-            print("Arquivo temporário excluído: ${fileOrDir.path}");
           }
         } catch (e) {
-          print("Erro ao excluir arquivo temporário: $e");
+          log("Erro ao excluir arquivo temporário: $e");
         }
       }
     }

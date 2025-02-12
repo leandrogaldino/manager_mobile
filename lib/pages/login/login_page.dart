@@ -9,6 +9,7 @@ import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/states/login_state.dart';
 import 'package:validatorless/validatorless.dart';
 
+//TODO: deslogar, desligar a internet, esperar dar erro, e depois clicar para mostrar e esconder senha
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

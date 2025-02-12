@@ -25,7 +25,7 @@ class EvaluationModel {
   int? oil;
   List<EvaluationCoalescentModel> coalescents;
   List<EvaluationTechnicianModel> technicians;
-  List<EvaluationPhotoModel> photoPaths;
+  List<EvaluationPhotoModel> photos;
   String? responsible;
   String? signaturePath;
   int? importedId;
@@ -46,7 +46,7 @@ class EvaluationModel {
     this.oil,
     required this.coalescents,
     required this.technicians,
-    required this.photoPaths,
+    required this.photos,
     this.responsible,
     this.signaturePath,
     this.importedId,
@@ -77,7 +77,7 @@ class EvaluationModel {
         oil: null,
         coalescents: coalescents,
         technicians: [],
-        photoPaths: [],
+        photos: [],
         responsible: null,
         signaturePath: null,
         importedId: null,
@@ -100,7 +100,7 @@ class EvaluationModel {
     int? oil,
     List<EvaluationCoalescentModel>? coalescents,
     List<EvaluationTechnicianModel>? technicians,
-    List<EvaluationPhotoModel>? photoPaths,
+    List<EvaluationPhotoModel>? photos,
     String? responsible,
     String? signaturePath,
     int? importedId,
@@ -122,7 +122,7 @@ class EvaluationModel {
       oil: oil ?? this.oil,
       coalescents: coalescents ?? this.coalescents,
       technicians: technicians ?? this.technicians,
-      photoPaths: photoPaths ?? this.photoPaths,
+      photos: photos ?? this.photos,
       responsible: responsible ?? this.responsible,
       signaturePath: signaturePath ?? this.signaturePath,
       importedId: importedId ?? this.importedId,
@@ -145,7 +145,7 @@ class EvaluationModel {
       'oil': oil,
       'coalescents': coalescents.map((x) => x.toMap()).toList(),
       'technicians': technicians.map((x) => x.toMap()).toList(),
-      'photoPaths': photoPaths.map((x) => x.toMap()).toList(),
+      'photos': photos.map((x) => x.toMap()).toList(),
       'responsible': responsible,
       'advice': advice,
       'signaturepath': signaturePath,
@@ -179,8 +179,8 @@ class EvaluationModel {
           (x) => EvaluationTechnicianModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      photoPaths: List<EvaluationPhotoModel>.from(
-        (map['photopaths'] as List<Map<String, Object?>>).map<EvaluationPhotoModel>(
+      photos: List<EvaluationPhotoModel>.from(
+        (map['photos'] as List<Map<String, Object?>>).map<EvaluationPhotoModel>(
           (x) => EvaluationPhotoModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
@@ -197,7 +197,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photoPaths: $photoPaths, responsible: $responsible, signaturePath: $signaturePath, importedId: $importedId, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, importedId: $importedId, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -219,7 +219,7 @@ class EvaluationModel {
         other.oil == oil &&
         listEquals(other.coalescents, coalescents) &&
         listEquals(other.technicians, technicians) &&
-        listEquals(other.photoPaths, photoPaths) &&
+        listEquals(other.photos, photos) &&
         other.responsible == responsible &&
         other.signaturePath == signaturePath &&
         other.importedId == importedId &&
@@ -243,7 +243,7 @@ class EvaluationModel {
         oil.hashCode ^
         coalescents.hashCode ^
         technicians.hashCode ^
-        photoPaths.hashCode ^
+        photos.hashCode ^
         responsible.hashCode ^
         signaturePath.hashCode ^
         importedId.hashCode ^

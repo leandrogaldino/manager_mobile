@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
@@ -16,29 +17,63 @@ class EvaluationController extends ChangeNotifier {
   final PersonService personService;
   EvaluationController({required this.evaluationService, required this.personService});
 
+  Future<void> updateImagesBytes() async {
+    final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
+    _signatureBytes = signatureFile != null ? await signatureFile.readAsBytes() : null;
+    _signatureBytes = signatureBytes;
+
+    _photosBytes.clear();
+    for (var photo in _evaluation!.photos) {
+      final File photoFile = File(photo.path);
+      final Uint8List photoBytes = await photoFile.readAsBytes();
+      _photosBytes.add(photoBytes);
+    }
+
+    notifyListeners();
+  }
+
   Future<void> save() async {
-    await saveSignature(signatureBytes: _signatureBytes!, asTemporary: false);
+    await _saveSignature(signatureBytes: _signatureBytes!);
+    await _savePhotos(photosBytes: _photosBytes);
     await evaluationService.save(evaluation!);
     notifyListeners();
   }
 
-  Future<void> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
-    _evaluation!.signaturePath = await evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: asTemporary);
+  Future<void> _saveSignature({required Uint8List signatureBytes}) async {
+    _evaluation!.signaturePath = await evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
+  }
+
+  Future<void> saveTempSignature({required Uint8List signatureBytes}) async {
+    _evaluation!.signaturePath = await evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
     notifyListeners();
+  }
+
+  Future<void> _savePhotos({required List<Uint8List> photosBytes}) async {
+    _evaluation!.photos.clear();
+    for (var photoBytes in _photosBytes) {
+      String path = await evaluationService.savePhoto(photoBytes: photoBytes);
+      _evaluation!.photos.add(EvaluationPhotoModel(id: 0, path: path));
+    }
   }
 
   Uint8List? _signatureBytes;
   Uint8List? get signatureBytes => _signatureBytes;
 
-  Future<void> updateImagesBytes() async {
-    final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
-    _signatureBytes = signatureFile != null ? await signatureFile.readAsBytes() : null;
-    _signatureBytes = signatureBytes;
+  void updateSignaturePath(String signaturePath) {
+    _evaluation!.signaturePath = signaturePath;
     notifyListeners();
   }
 
-  void updateSignaturePath(String signaturePath) {
-    _evaluation!.signaturePath = signaturePath;
+  final List<Uint8List> _photosBytes = [];
+  List<Uint8List> get photosBytes => _photosBytes;
+
+  void addPhoto(EvaluationPhotoModel photo) {
+    _evaluation!.photos.add(photo);
+    notifyListeners();
+  }
+
+  void removePhoto(EvaluationPhotoModel photo) {
+    _evaluation!.photos.remove(photo);
     notifyListeners();
   }
 

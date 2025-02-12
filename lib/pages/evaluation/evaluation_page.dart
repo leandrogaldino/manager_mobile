@@ -138,7 +138,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photoPaths.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
                         child: ExpandableSectionWidget(
                           title: Text('Fotos'),
                           children: [
@@ -151,7 +151,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photoPaths.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
                         child: SizedBox(height: 5),
                       );
                     }),

@@ -247,7 +247,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
     evaluationData['technicians'] = technicians;
     var photos = await _evaluationPhotoRepository.getByParentId(evaluationData['id'].toString());
-    evaluationData['photopaths'] = photos;
+    evaluationData['photos'] = photos;
 
     return evaluationData;
   }

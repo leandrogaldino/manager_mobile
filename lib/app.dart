@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
+import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/signature/signature_signature_page.dart';
 import 'package:manager_mobile/pages/home/home_page.dart';
@@ -48,9 +49,13 @@ class App extends StatelessWidget {
               return MaterialPageRoute<File?>(
                 builder: (context) => CameraCamera(
                   enableZoom: false,
-                  cameraSide: CameraSide.back,
-                  onFile: (file) {
-                    Navigator.pop(context, file);
+                  cameraSide: CameraSide.front,
+                  onFile: (file) async {
+                    final dir = file.parent;
+                    final fileName = StringHelper.getRandomFileName('jpg');
+                    final newPath = '${dir.path}/$fileName';
+                    file.rename(newPath);
+                    Navigator.pop(context, File(newPath));
                   },
                 ),
               );
