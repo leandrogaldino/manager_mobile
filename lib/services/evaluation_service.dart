@@ -7,6 +7,7 @@ import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 
@@ -27,6 +28,19 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);
       return filePath;
+    } catch (e) {
+      throw Exception('Erro ao salvar a imagem: $e');
+    }
+  }
+
+  Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final String fileName = StringHelper.getRandomFileName('jpg');
+      final filePath = '${directory.path}/$fileName';
+      final file = File(filePath);
+      await file.writeAsBytes(photoBytes);
+      return EvaluationPhotoModel(id: 0, path: file.path);
     } catch (e) {
       throw Exception('Erro ao salvar a imagem: $e');
     }

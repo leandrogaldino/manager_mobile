@@ -51,8 +51,8 @@ class EvaluationController extends ChangeNotifier {
   Future<void> _savePhotos({required List<Uint8List> photosBytes}) async {
     _evaluation!.photos.clear();
     for (var photoBytes in _photosBytes) {
-      String path = await evaluationService.savePhoto(photoBytes: photoBytes);
-      _evaluation!.photos.add(EvaluationPhotoModel(id: 0, path: path));
+      EvaluationPhotoModel photo = await evaluationService.savePhoto(photoBytes: photoBytes);
+      _evaluation!.photos.add(photo);
     }
   }
 
