@@ -22,9 +22,15 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
 
   Future<String> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
     try {
-      final directory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
+      final rootDirectory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
+
+      final signatureDirectory = asTemporary ? rootDirectory : Directory('${rootDirectory.path}/signatures');
+      if (!await signatureDirectory.exists()) {
+        await signatureDirectory.create(recursive: true);
+      }
       final String fileName = StringHelper.getRandomFileName('png');
-      final filePath = '${directory.path}/$fileName';
+
+      final filePath = '${signatureDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);
       return filePath;
@@ -35,9 +41,15 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
 
   Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
+      final rootDirectory = await getApplicationDocumentsDirectory();
+      final photosDirectory = Directory('${rootDirectory.path}/photos');
+
+      if (!await photosDirectory.exists()) {
+        await photosDirectory.create(recursive: true);
+      }
+
       final String fileName = StringHelper.getRandomFileName('jpg');
-      final filePath = '${directory.path}/$fileName';
+      final filePath = '${photosDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(photoBytes);
       return EvaluationPhotoModel(id: 0, path: file.path);
