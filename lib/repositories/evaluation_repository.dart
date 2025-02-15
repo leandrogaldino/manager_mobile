@@ -17,6 +17,11 @@ import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+//TODO: LIDAR COM OS DOIS CAMPOS CRIADOS NA AVALIACAO EXISTSINCLOUD E NEEDPROPOSAL
+//PRECISA VIR DA NUVEM O NEEDPROPOSAL
+//O EXISTS IN CLOUD DEVE VIR TRUE PARA SINCRONIZADOS DA NUVEM
+//CRIAR O CAMPO EVALUATIONTYPE
+
 class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
