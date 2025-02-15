@@ -12,7 +12,6 @@ import 'package:manager_mobile/repositories/evaluation_technician_repository.dar
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:path_provider/path_provider.dart';
@@ -114,10 +113,9 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(int lastSync) async {
-    int uploaded = await _syncronizeFromLocalToCloud(lastSync);
-    int downloaded = await _syncronizeFromCloudToLocal(lastSync);
-    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
+  Future<void> syncronize(int lastSync) async {
+    await _syncronizeFromLocalToCloud(lastSync);
+    await _syncronizeFromCloudToLocal(lastSync);
   }
 
   String _getEvaluationId(Map<String, Object?> data) {
@@ -138,8 +136,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     }
   }
 
-  Future<int> _syncronizeFromLocalToCloud(int lastSync) async {
-    int uploadedData = 0;
+  Future<void> _syncronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
@@ -166,13 +163,10 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['coalescents'] = coalescentsMap;
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
-      uploadedData += 1;
     }
-    return uploadedData;
   }
 
-  Future<int> _syncronizeFromCloudToLocal(int lastSync) async {
-    int downloadedData = 0;
+  Future<void> _syncronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
@@ -236,9 +230,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       } else {
         await _localDatabase.insert('evaluation', evaluationMap);
       }
-      downloadedData += 1;
     }
-    return downloadedData;
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {

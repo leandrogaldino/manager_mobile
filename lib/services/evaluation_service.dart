@@ -8,7 +8,6 @@ import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -87,7 +86,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(lastSync) async {
-    return _evaluationRepository.syncronize(lastSync);
+  Future<void> syncronize(lastSync) async {
+    await _evaluationRepository.syncronize(lastSync);
   }
 }

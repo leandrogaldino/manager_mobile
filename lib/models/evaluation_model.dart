@@ -30,6 +30,9 @@ class EvaluationModel {
   String? signaturePath;
   int? importedId;
   DateTime? lastUpdate;
+  bool existsInCloud;
+  bool needProposal;
+
   EvaluationModel({
     this.id,
     this.advice,
@@ -51,6 +54,8 @@ class EvaluationModel {
     this.signaturePath,
     this.importedId,
     this.lastUpdate,
+    this.existsInCloud = false,
+    this.needProposal = false,
   });
 
   factory EvaluationModel.fromScheduleOrNew({ScheduleModel? schedule}) {
@@ -60,7 +65,6 @@ class EvaluationModel {
         coalescents.add(EvaluationCoalescentModel(coalescent: coalescent));
       }
     }
-
     return EvaluationModel(
         id: null,
         advice: null,
@@ -105,6 +109,8 @@ class EvaluationModel {
     String? signaturePath,
     int? importedId,
     DateTime? lastUpdate,
+    bool? existsInCloud,
+    bool? needProposal,
   }) {
     return EvaluationModel(
       id: id ?? this.id,
@@ -127,6 +133,8 @@ class EvaluationModel {
       signaturePath: signaturePath ?? this.signaturePath,
       importedId: importedId ?? this.importedId,
       lastUpdate: lastUpdate ?? this.lastUpdate,
+      existsInCloud: existsInCloud ?? this.existsInCloud,
+      needProposal: needProposal ?? this.needProposal,
     );
   }
 
@@ -151,6 +159,7 @@ class EvaluationModel {
       'signaturepath': signaturePath,
       'importedid': importedId,
       'lastupdate': lastUpdate?.millisecondsSinceEpoch,
+      'needProposal': needProposal,
     };
   }
 
@@ -188,6 +197,7 @@ class EvaluationModel {
       signaturePath: map['signaturepath'] != null ? map['signaturepath'] as String : null,
       importedId: map['importedid'] != null ? map['importedid'] as int : null,
       lastUpdate: map['lastupdate'] != null ? DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
+      needProposal: map['needproposal'] as bool,
     );
   }
 
@@ -197,7 +207,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, importedId: $importedId, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, advice: $advice, compressor: $compressor, customer: $customer, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: ${oilType!.name}, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, importedId: $importedId, lastUpdate: $lastUpdate, existsInCloud: $existsInCloud, needProposal: $needProposal)';
   }
 
   @override
@@ -223,7 +233,9 @@ class EvaluationModel {
         other.responsible == responsible &&
         other.signaturePath == signaturePath &&
         other.importedId == importedId &&
-        other.lastUpdate == lastUpdate;
+        other.lastUpdate == lastUpdate &&
+        other.needProposal == needProposal &&
+        other.existsInCloud == existsInCloud;
   }
 
   @override
@@ -247,6 +259,8 @@ class EvaluationModel {
         responsible.hashCode ^
         signaturePath.hashCode ^
         importedId.hashCode ^
-        lastUpdate.hashCode;
+        lastUpdate.hashCode ^
+        needProposal.hashCode ^
+        existsInCloud.hashCode;
   }
 }

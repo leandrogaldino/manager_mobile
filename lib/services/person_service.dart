@@ -2,7 +2,6 @@ import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
 class PersonService implements Readable<PersonModel>, Syncronizable {
@@ -37,7 +36,7 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(lastSync) async {
-    return _repository.syncronize(lastSync);
+  Future<void> syncronize(lastSync) async {
+    await _repository.syncronize(lastSync);
   }
 }

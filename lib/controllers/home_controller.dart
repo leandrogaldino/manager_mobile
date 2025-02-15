@@ -4,7 +4,6 @@ import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -98,45 +97,30 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<SyncronizeResultModel> syncronize() async {
-    int downloaded = 0;
-    int uploaded = 0;
-    late SyncronizeResultModel syncResult;
-
+  Future<void> syncronize() async {
     await _appPreferences.setSynchronizing(true);
     int lastSync = await _appPreferences.lastSynchronize;
 
     log('Sincronizando Coalescentes');
-    syncResult = await _coalescentService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
+    await _coalescentService.syncronize(lastSync);
 
     log('Sincronizando Compressores');
-    syncResult = await _compressorService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
+    await _compressorService.syncronize(lastSync);
 
     log('Sincronizando Pessoas');
-    syncResult = await _personService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
+    await _personService.syncronize(lastSync);
 
     log('Sincronizando Agendamentos');
-    syncResult = await _scheduleService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
+    await _scheduleService.syncronize(lastSync);
 
     log('Sincronizando Avaliações');
-    syncResult = await _evaluationService.syncronize(lastSync);
-    downloaded += syncResult.downloaded;
-    uploaded += syncResult.uploaded;
+    await _evaluationService.syncronize(lastSync);
 
     await _appPreferences.updateLastSynchronize();
     await _appPreferences.setSynchronizing(false);
     await _customerController.fetchCustomers();
     await _customerController.fetchTechnicians();
     await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
-    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
   }
 
   int _currentIndex = 0;

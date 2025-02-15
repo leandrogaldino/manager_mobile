@@ -2,7 +2,6 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
 class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable {
@@ -55,8 +54,7 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(int lastSync) async {
-    int count = 0;
+  Future<void> syncronize(int lastSync) async {
     final remoteResult = await _remoteDatabase.get(collection: 'persons', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var data in remoteResult) {
       final bool exists = await _localDatabase.isSaved('person', id: data['id']);
@@ -66,8 +64,6 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
       } else {
         await _localDatabase.insert('person', data);
       }
-      count += 1;
     }
-    return SyncronizeResultModel(uploaded: 0, downloaded: count);
   }
 }

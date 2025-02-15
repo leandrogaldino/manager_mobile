@@ -3,7 +3,6 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
 class CompressorRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Syncronizable {
@@ -48,8 +47,7 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(int lastSync) async {
-    int count = 0;
+  Future<void> syncronize(int lastSync) async {
     final remoteResult = await _remoteDatabase.get(collection: 'compressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var data in remoteResult) {
       final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);
@@ -59,8 +57,6 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
       } else {
         await _localDatabase.insert('compressor', data);
       }
-      count += 1;
     }
-    return SyncronizeResultModel(uploaded: 0, downloaded: count);
   }
 }

@@ -3,7 +3,6 @@ import 'package:manager_mobile/interfaces/childable.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
 class CompressorService implements Readable<CompressorModel>, Childable<CompressorModel>, Syncronizable {
@@ -34,7 +33,7 @@ class CompressorService implements Readable<CompressorModel>, Childable<Compress
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(int lastSync) async {
-    return _repository.syncronize(lastSync);
+  Future<void> syncronize(int lastSync) async {
+    await _repository.syncronize(lastSync);
   }
 }

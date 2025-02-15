@@ -5,11 +5,9 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
@@ -52,8 +50,7 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  final result = await _homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'Sincronizando'));
-                  _showSyncResultSnackbar(result);
+                  await _homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'Sincronizando'));
                 },
                 child: ListenableBuilder(
                   listenable: _homeController,
@@ -105,24 +102,5 @@ class _HomePageState extends State<HomePage> {
                 : SizedBox.shrink();
           }),
     );
-  }
-
-  void _showSyncResultSnackbar(SyncronizeResultModel result) {
-    String message = '';
-
-    if (result.uploaded > 0) {
-      message += result.uploaded == 1 ? 'Enviado: ${result.uploaded}' : 'Enviados: ${result.uploaded}';
-    }
-
-    if (result.downloaded > 0) {
-      if (message.isNotEmpty) message += ' ';
-      message += result.downloaded == 1 ? 'Baixado: ${result.downloaded}' : 'Baixados: ${result.downloaded}';
-    }
-
-    if (result.downloaded + result.uploaded > 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Message.showSuccessSnackbar(context: context, message: message);
-      });
-    }
   }
 }

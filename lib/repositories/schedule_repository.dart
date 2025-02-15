@@ -2,7 +2,6 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/models/syncronize_result_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
@@ -53,10 +52,9 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
   }
 
   @override
-  Future<SyncronizeResultModel> syncronize(int lastSync) async {
-    int uploaded = await _syncronizeFromLocalToCloud(lastSync);
-    int downloaded = await _syncronizeFromCloudToLocal(lastSync);
-    return SyncronizeResultModel(uploaded: uploaded, downloaded: downloaded);
+  Future<void> syncronize(int lastSync) async {
+    await _syncronizeFromLocalToCloud(lastSync);
+    await _syncronizeFromCloudToLocal(lastSync);
   }
 
   Future<Map<String, Object?>> _processSchedule(Map<String, Object?> scheduleData) async {
