@@ -10,6 +10,10 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
 
   ScheduleService({required ScheduleRepository repository}) : _repository = repository;
 
+  Future<void> updateStatus(int scheduleId, int statusId) async {
+    _repository.updateStatus(scheduleId, statusId);
+  }
+
   @override
   Future<List<ScheduleModel>> getAll() async {
     final data = await _repository.getAll();
@@ -26,9 +30,8 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
     }
   }
 
-  @override
-  Future<List<ScheduleModel>> getByLastUpdate(DateTime lastUpdate) async {
-    final data = await _repository.getByLastUpdate(lastUpdate);
+  Future<List<ScheduleModel>> getByStatus(int statusId) async {
+    final data = await _repository.getByStatus(statusId);
     return data.map((item) => ScheduleModel.fromMap(item)).toList();
   }
 

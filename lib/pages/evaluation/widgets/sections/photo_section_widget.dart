@@ -100,7 +100,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 if (!isPhotoTaken && _evaluationController.source != EvaluationSource.fromSaved) {
                   final File? file = await Navigator.pushNamed<File?>(context, Routes.evaluationPhoto);
                   if (file != null) {
-                    _evaluationController.addPhoto(EvaluationPhotoModel(id: 0, path: file.path));
+                    _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
                     await _evaluationController.updateImagesBytes();
                   }
                 }

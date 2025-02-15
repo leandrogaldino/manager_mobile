@@ -1,15 +1,13 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:manager_mobile/models/coalescent_model.dart';
 
 class EvaluationCoalescentModel {
-  final int id;
+  final int? id;
   final CoalescentModel coalescent;
   final DateTime? nextChange;
 
   EvaluationCoalescentModel({
-    required this.id,
+    this.id,
     required this.coalescent,
     this.nextChange,
   });
@@ -46,14 +44,14 @@ class EvaluationCoalescentModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'coalescent': coalescent.toMap(),
+      'coalescentid': coalescent.id,
       'nextchange': nextChange?.millisecondsSinceEpoch,
     };
   }
 
   factory EvaluationCoalescentModel.fromMap(Map<String, dynamic> map) {
     return EvaluationCoalescentModel(
-      id: (map['id'] ?? 0) as int,
+      id: map['id'] != null ? map['id'] as int : null,
       coalescent: CoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
       nextChange: map['nextchange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
     );

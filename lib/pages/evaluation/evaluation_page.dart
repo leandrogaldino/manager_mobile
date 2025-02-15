@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
+import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
@@ -27,12 +29,14 @@ class EvaluationPage extends StatefulWidget {
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> _formKey;
   late final EvaluationController _evaluationController;
+  late final HomeController _homeController;
 
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
     _evaluationController = Locator.get<EvaluationController>();
+    _homeController = Locator.get<HomeController>();
     if (_evaluationController.source == EvaluationSource.fromSaved) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
         await _evaluationController.updateImagesBytes();
@@ -182,9 +186,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       }
                       if (!_validateCoalescentsNextChange()) return;
                       if (!_validateSignature()) return;
-
                       await _evaluationController.save();
+                      await _homeController.fetchData();
                       if (!context.mounted) return;
+                      Navigator.pop<EvaluationModel>(context);
                     },
                     child: Text(
                       'Salvar',

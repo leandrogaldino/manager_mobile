@@ -1,12 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class EvaluationPhotoModel {
-  final int id;
+  final int? id;
   final String path;
 
   EvaluationPhotoModel({
-    required this.id,
+    this.id,
     required this.path,
   });
 
@@ -29,7 +28,7 @@ class EvaluationPhotoModel {
 
   factory EvaluationPhotoModel.fromMap(Map<String, dynamic> map) {
     return EvaluationPhotoModel(
-      id: (map['id'] ?? 0) as int,
+      id: map['id'] != null ? map['id'] as int : null,
       path: (map['path'] ?? '') as String,
     );
   }

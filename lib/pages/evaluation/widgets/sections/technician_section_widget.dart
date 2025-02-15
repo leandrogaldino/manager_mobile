@@ -40,7 +40,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       PersonModel? technician = await TechnicianPicker.pick(context: context);
-                      if (technician != null) _evaluationController.addTechnician(EvaluationTechnicianModel(id: 0, isMain: false, technician: technician));
+                      if (technician != null) _evaluationController.addTechnician(EvaluationTechnicianModel(isMain: false, technician: technician));
                     },
                     child: Text('Incluir Técnico'),
                   ),

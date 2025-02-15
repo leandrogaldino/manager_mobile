@@ -226,7 +226,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 controller: _airFilterEC,
                                 readOnly: _evaluationController.source == EvaluationSource.fromSaved,
                                 textAlign: TextAlign.center,
-                                keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
                                 validator: Validatorless.multiple(
                                   [
                                     Validatorless.required('Campo obrigatório'),

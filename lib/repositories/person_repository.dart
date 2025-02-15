@@ -55,16 +55,6 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
   }
 
   @override
-  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    var persons = await _localDatabase.query('person', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
-    for (var person in persons) {
-      var compressors = await _compressorRepository.getByParentId(person['id'] as int);
-      person['compressors'] = compressors;
-    }
-    return persons;
-  }
-
-  @override
   Future<SyncronizeResultModel> syncronize(int lastSync) async {
     int count = 0;
     final remoteResult = await _remoteDatabase.get(collection: 'persons', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);

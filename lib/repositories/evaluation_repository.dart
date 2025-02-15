@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
@@ -72,27 +73,43 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   @override
-  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
-    for (var evaluation in evaluations) {
-      evaluation = await _processEvaluation(evaluation);
-    }
-    return evaluations;
-  }
-
-  //TODO: Fazer o tratamento das listas...
-  @override
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
-    data.remove('info');
-    if (data['id'] == '') {
+    data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
+    data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
+
+    var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
+    data.remove('coalescents');
+    var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
+    data.remove('technicians');
+    var photosMap = data['photos'] as List<Map<String, Object?>>;
+    data.remove('photos');
+
+    if (data['id'] == null || data['id'] == '') {
       data['id'] = _getEvaluationId(data);
       await _localDatabase.insert('evaluation', data);
 
+      for (var coalescentMap in coalescentsMap) {
+        coalescentMap['evaluationid'] = data['id'];
+        coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
+      }
+
+      for (var technicianMap in techniciansMap) {
+        technicianMap['evaluationid'] = data['id'];
+        technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
+      }
+
+      for (var photoMap in photosMap) {
+        photoMap['evaluationid'] = data['id'];
+        photoMap = await _evaluationPhotoRepository.save(photoMap);
+      }
+      data['coalescents'] = coalescentsMap;
+      data['technicians'] = techniciansMap;
+      data['photos'] = photosMap;
+
+      data = await _processEvaluation(data);
       return data;
     } else {
-      await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [data['id']]);
-
-      return data;
+      throw Exception('Essa avaliação já foi salva.');
     }
   }
 
@@ -105,7 +122,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
   String _getEvaluationId(Map<String, Object?> data) {
     String id = '';
-    id = '${data['customerid']}${data['compressorid']}${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
+    id = '${data['compressorid']}_${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
     return id;
   }
 
@@ -144,7 +161,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         photoMap['path'] = photoPath;
       }
       evaluationMap['photos'] = photosListMap;
-      var techniciansMap = await _localDatabase.query('evaluationtechnician', columns: ['id', 'personid'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+      var techniciansMap = await _localDatabase.query('evaluationtechnician', columns: ['id', 'ismain', 'personid'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['technicians'] = techniciansMap;
       var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['coalescents'] = coalescentsMap;
@@ -159,7 +176,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
-      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
+      evaluationMap['importedid'] = evaluationMap['importedid'];
       evaluationMap.remove('info');
 
       var technicians = evaluationMap['technicians'];

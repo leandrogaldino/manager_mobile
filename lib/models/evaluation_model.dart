@@ -57,7 +57,7 @@ class EvaluationModel {
     List<EvaluationCoalescentModel> coalescents = [];
     if (schedule != null) {
       for (var coalescent in schedule.compressor.coalescents) {
-        coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent));
+        coalescents.add(EvaluationCoalescentModel(coalescent: coalescent));
       }
     }
 
@@ -150,7 +150,7 @@ class EvaluationModel {
       'advice': advice,
       'signaturepath': signaturePath,
       'importedid': importedId,
-      'lastUpdate': lastUpdate?.millisecondsSinceEpoch,
+      'lastupdate': lastUpdate?.millisecondsSinceEpoch,
     };
   }
 

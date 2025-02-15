@@ -37,12 +37,6 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
   }
 
   @override
-  Future<List<PersonModel>> getByLastUpdate(DateTime lastUpdate) async {
-    final data = await _repository.getByLastUpdate(lastUpdate);
-    return data.map((item) => PersonModel.fromMap(item)).toList();
-  }
-
-  @override
   Future<SyncronizeResultModel> syncronize(lastSync) async {
     return _repository.syncronize(lastSync);
   }

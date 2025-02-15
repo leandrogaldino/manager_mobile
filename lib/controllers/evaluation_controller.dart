@@ -7,15 +7,41 @@ import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
 import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
+import 'package:manager_mobile/services/schedule_service.dart';
 
 class EvaluationController extends ChangeNotifier {
   final EvaluationService evaluationService;
+  final ScheduleService scheduleService;
   final PersonService personService;
-  EvaluationController({required this.evaluationService, required this.personService});
+
+  EvaluationController({required this.evaluationService, required this.scheduleService, required this.personService});
+
+  EvaluationModel? _evaluation;
+  EvaluationModel? get evaluation => _evaluation;
+  EvaluationSource? _source;
+  EvaluationSource? get source => _source;
+  void setEvaluation(EvaluationModel? evaluation, EvaluationSource source) {
+    _evaluation = evaluation;
+    _source = source;
+    _signatureBytes = null;
+    notifyListeners();
+  }
+
+  ScheduleModel? _schedule;
+  ScheduleModel? get schedule => _schedule;
+  void setSchedule(ScheduleModel? schedule) {
+    _schedule = schedule;
+    notifyListeners();
+  }
+
+  Future<void> updateSchedule(int scheduleId, int statusId) async {
+    await scheduleService.updateStatus(scheduleId, statusId);
+  }
 
   Future<void> updateImagesBytes() async {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
@@ -36,6 +62,7 @@ class EvaluationController extends ChangeNotifier {
     await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
     await evaluationService.save(evaluation!);
+    if (_schedule != null) await scheduleService.updateStatus(_schedule!.id, 2);
     notifyListeners();
   }
 
@@ -74,20 +101,6 @@ class EvaluationController extends ChangeNotifier {
 
   void removePhoto(EvaluationPhotoModel photo) {
     _evaluation!.photos.remove(photo);
-    notifyListeners();
-  }
-
-  EvaluationModel? _evaluation;
-  EvaluationModel? get evaluation => _evaluation;
-
-  EvaluationSource? _source;
-
-  EvaluationSource? get source => _source;
-
-  void setEvaluation(EvaluationModel? evaluation, EvaluationSource source) {
-    _evaluation = evaluation;
-    _source = source;
-    _signatureBytes = null;
     notifyListeners();
   }
 
@@ -146,7 +159,7 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.coalescents.clear();
     if (compressor != null) {
       for (var coalescent in evaluation!.compressor!.coalescents) {
-        _evaluation!.coalescents.add(EvaluationCoalescentModel(id: 0, coalescent: coalescent));
+        _evaluation!.coalescents.add(EvaluationCoalescentModel(coalescent: coalescent));
       }
     }
     notifyListeners();

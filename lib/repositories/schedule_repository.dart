@@ -21,6 +21,10 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
         _compressorRepository = compressorRepository,
         _personRepository = personRepository;
 
+  Future<void> updateStatus(int scheduleId, int statusId) async {
+    await _localDatabase.update('schedule', {'statusid': statusId, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+  }
+
   @override
   Future<List<Map<String, Object?>>> getAll() async {
     List<Map<String, Object?>> schedules = await _localDatabase.query('schedule');
@@ -40,9 +44,8 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     return schedule;
   }
 
-  @override
-  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
+  Future<List<Map<String, Object?>>> getByStatus(int statusId) async {
+    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'statusid = ?', whereArgs: [statusId]);
     for (var schedule in schedules) {
       schedule = await _processSchedule(schedule);
     }

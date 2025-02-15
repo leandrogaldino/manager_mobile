@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () async {
                       var evaluation = EvaluationModel.fromScheduleOrNew();
                       var loggedTechnician = await _loginController.currentLoggedUser;
-                      if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: loggedTechnician));
+                      if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: loggedTechnician));
                       _evaluationController.setEvaluation(evaluation, EvaluationSource.fromNew);
                       if (!context.mounted) return;
                       Navigator.of(context).pushNamed(Routes.evaluation);

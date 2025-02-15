@@ -52,7 +52,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       final filePath = '${photosDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(photoBytes);
-      return EvaluationPhotoModel(id: 0, path: file.path);
+      return EvaluationPhotoModel(path: file.path);
     } catch (e) {
       throw Exception('Erro ao salvar a imagem: $e');
     }
@@ -77,12 +77,6 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     } else {
       throw ServiceException('Avaliação com o id $id não encontrada.');
     }
-  }
-
-  @override
-  Future<List<EvaluationModel>> getByLastUpdate(DateTime lastUpdate) async {
-    final data = await _evaluationRepository.getByLastUpdate(lastUpdate);
-    return data.map((item) => EvaluationModel.fromMap(item)).toList();
   }
 
   @override

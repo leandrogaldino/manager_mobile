@@ -26,12 +26,6 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<List<Map<String, Object?>>> getByLastUpdate(DateTime lastUpdate) async {
-    final result = await _localDatabase.query('coalescent', where: 'lastupdate = ?', whereArgs: [lastUpdate]);
-    return result;
-  }
-
-  @override
   Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     final result = await _localDatabase.query('coalescent', where: 'personcompressorid = ?', whereArgs: [parentId]);
     return result;

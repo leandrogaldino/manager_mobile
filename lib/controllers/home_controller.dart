@@ -62,7 +62,7 @@ class HomeController extends ChangeNotifier {
 
   Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
-      _schedules = await _scheduleService.getAll();
+      _schedules = await _scheduleService.getByStatus(0);
       _evaluations = await _evaluationService.getAll();
 
       if (customerOrCompressor != null && customerOrCompressor.isNotEmpty) {

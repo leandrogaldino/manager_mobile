@@ -1,15 +1,13 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:manager_mobile/models/person_model.dart';
 
 class EvaluationTechnicianModel {
-  final int id;
+  final int? id;
   final bool isMain;
   final PersonModel technician;
 
   EvaluationTechnicianModel({
-    required this.id,
+    this.id,
     required this.isMain,
     required this.technician,
   });
@@ -36,7 +34,7 @@ class EvaluationTechnicianModel {
 
   factory EvaluationTechnicianModel.fromMap(Map<String, dynamic> map) {
     return EvaluationTechnicianModel(
-      id: (map['id'] ?? 0) as int,
+      id: map['id'] != null ? map['id'] as int : null,
       isMain: map['ismain'] == 0 ? false : true,
       technician: PersonModel.fromMap(map['technician'] as Map<String, dynamic>),
     );

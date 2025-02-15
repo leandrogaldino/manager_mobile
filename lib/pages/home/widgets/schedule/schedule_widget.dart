@@ -25,6 +25,7 @@ class ScheduleWidget extends StatefulWidget {
 class _ScheduleWidgetState extends State<ScheduleWidget> {
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
+
   @override
   void initState() {
     super.initState();
@@ -137,9 +138,10 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                 onPressed: () async {
                   var evaluation = EvaluationModel.fromScheduleOrNew(schedule: widget.schedule);
                   PersonModel? technician = await _loginController.currentLoggedUser;
-                  if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(id: 0, isMain: true, technician: technician));
+                  if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: technician));
                   if (!context.mounted) return;
                   _evaluationController.setEvaluation(evaluation, EvaluationSource.fromSchedule);
+                  _evaluationController.setSchedule(widget.schedule);
                   Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: widget.schedule.instructions);
                 },
                 child: Text('Iniciar Avaliação'),
