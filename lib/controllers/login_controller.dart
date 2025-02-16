@@ -24,14 +24,6 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _obscurePassword = true;
-  bool get obscurePassword => _obscurePassword;
-
-  void toggleObscurePassword() {
-    _obscurePassword = !_obscurePassword;
-    notifyListeners();
-  }
-
   Future<void> singIn(String email, String password) async {
     await Future.delayed(Duration(seconds: 2));
     try {
