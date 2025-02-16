@@ -8,7 +8,7 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                       var evaluation = EvaluationModel.fromScheduleOrNew();
                       var loggedTechnician = await _loginController.currentLoggedUser;
                       if (loggedTechnician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: loggedTechnician));
-                      _evaluationController.setEvaluation(evaluation, EvaluationSource.fromNew);
+                      _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
                       if (!context.mounted) return;
                       Navigator.of(context).pushNamed(Routes.evaluation);
                     },

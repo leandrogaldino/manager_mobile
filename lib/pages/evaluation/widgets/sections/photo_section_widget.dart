@@ -5,7 +5,7 @@ import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 
 //TODO: Mudar o estado pela controller.
 class PhotoSectionWidget extends StatefulWidget {
@@ -26,7 +26,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final int maxPhotos = _evaluationController.source != EvaluationSource.fromSaved ? 6 : _evaluationController.evaluation!.photos.length; // Número máximo de fotos
+    final int maxPhotos = _evaluationController.source != SourceTypes.fromSaved ? 6 : _evaluationController.evaluation!.photos.length; // Número máximo de fotos
     const int crossAxisCount = 3;
     const double spacing = 8;
 
@@ -97,7 +97,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                     }),
               ),
               onTap: () async {
-                if (!isPhotoTaken && _evaluationController.source != EvaluationSource.fromSaved) {
+                if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
                   final File? file = await Navigator.pushNamed<File?>(context, Routes.evaluationPhoto);
                   if (file != null) {
                     _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
@@ -106,7 +106,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 }
               },
               onLongPress: () async {
-                if (isPhotoTaken && _evaluationController.source != EvaluationSource.fromSaved) {
+                if (isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
                   final bool isYes = await YesNoPicker.pick(
                         context: context,
                         question: 'Deseja excluir essa foto?',

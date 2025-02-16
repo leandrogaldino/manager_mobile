@@ -4,7 +4,7 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 
 class EvaluationTileWidget extends StatelessWidget {
   const EvaluationTileWidget({
@@ -48,7 +48,7 @@ class EvaluationTileWidget extends StatelessWidget {
                 ),
           ),
           onTap: () {
-            evaluationController.setEvaluation(evaluation, EvaluationSource.fromSaved);
+            evaluationController.setEvaluation(evaluation, SourceTypes.fromSaved);
             Navigator.of(context).pushNamed(Routes.evaluation);
           },
         ),

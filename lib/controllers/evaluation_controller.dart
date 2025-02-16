@@ -8,8 +8,8 @@ import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
-import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
+import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
@@ -23,9 +23,9 @@ class EvaluationController extends ChangeNotifier {
 
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;
-  EvaluationSource? _source;
-  EvaluationSource? get source => _source;
-  void setEvaluation(EvaluationModel? evaluation, EvaluationSource source) {
+  SourceTypes? _source;
+  SourceTypes? get source => _source;
+  void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
     _evaluation = evaluation;
     _source = source;
     _signatureBytes = null;

@@ -4,7 +4,7 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_widget.dart';
@@ -37,7 +37,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _formKey = GlobalKey<FormState>();
     _evaluationController = Locator.get<EvaluationController>();
     _homeController = Locator.get<HomeController>();
-    if (_evaluationController.source == EvaluationSource.fromSaved) {
+    if (_evaluationController.source == SourceTypes.fromSaved) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
         await _evaluationController.updateImagesBytes();
       });
@@ -47,7 +47,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _evaluationController.source == EvaluationSource.fromSaved,
+      canPop: _evaluationController.source == SourceTypes.fromSaved,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
@@ -68,7 +68,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: _evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == SourceTypes.fromSchedule && widget.instructions != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
                     title: Text('Instruções'),
@@ -80,11 +80,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
                 Visibility(
-                  visible: _evaluationController.source == EvaluationSource.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == SourceTypes.fromSchedule && widget.instructions != null,
                   child: SizedBox(height: 5),
                 ),
                 Visibility(
-                  visible: _evaluationController.source == EvaluationSource.fromSaved,
+                  visible: _evaluationController.source == SourceTypes.fromSaved,
                   child: ExpandableSectionWidget(
                     title: Text('Cabeçalho'),
                     children: [
@@ -93,7 +93,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
                 Visibility(
-                  visible: _evaluationController.source == EvaluationSource.fromSaved,
+                  visible: _evaluationController.source == SourceTypes.fromSaved,
                   child: SizedBox(height: 5),
                 ),
                 ListenableBuilder(
@@ -142,7 +142,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
                         child: ExpandableSectionWidget(
                           title: Text('Fotos'),
                           children: [
@@ -155,7 +155,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (_evaluationController.source == EvaluationSource.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != EvaluationSource.fromSaved),
+                        visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
                         child: SizedBox(height: 5),
                       );
                     }),
@@ -169,7 +169,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             ),
           ),
         ),
-        bottomNavigationBar: _evaluationController.source != EvaluationSource.fromSaved
+        bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved
             ? Container(
                 color: Theme.of(context).colorScheme.secondaryContainer,
                 child: Padding(

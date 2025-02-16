@@ -4,7 +4,7 @@ import 'package:manager_mobile/core/helper/Pickers/technician_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 
 class TechnicianSectionWidget extends StatefulWidget {
   const TechnicianSectionWidget({super.key});
@@ -35,7 +35,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != EvaluationSource.fromSaved,
+                  visible: _evaluationController.source != SourceTypes.fromSaved,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
@@ -66,7 +66,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                           SizedBox(
                             height: 40,
                             child: Offstage(
-                              offstage: index == 0 || _evaluationController.source == EvaluationSource.fromSaved,
+                              offstage: index == 0 || _evaluationController.source == SourceTypes.fromSaved,
                               child: IconButton(
                                   onPressed: () {
                                     _evaluationController.removeTechnician(_evaluationController.evaluation!.technicians[index]);

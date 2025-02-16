@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/pages/evaluation/enums/evaluation_source.dart';
+import 'package:manager_mobile/core/enums/source_types.dart';
 
 class CoalescentSectionWidget extends StatefulWidget {
   const CoalescentSectionWidget({
@@ -45,7 +45,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                             builder: (context, child) {
                               return TextButton(
                                 isSemanticButton: true,
-                                onPressed: _evaluationController.source == EvaluationSource.fromSaved
+                                onPressed: _evaluationController.source == SourceTypes.fromSaved
                                     ? null
                                     : () async {
                                         FocusScope.of(context).requestFocus(FocusNode());
