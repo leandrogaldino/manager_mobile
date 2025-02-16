@@ -11,31 +11,33 @@ import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 
 class EvaluationModel {
-  String? id; // O ID DA AVALIAÇÃO NO ESCOPO DA NUVEM E CELULAR DO TECNICO (UM TEXTO ALEATORIO GERADO PELO SISTEMA NA HORA DE SALVAR)
-  int? importedId; //O ID RETORNADO PRA NUVEM E PARA O CELULAR, ESSE ID É O MESMO ID DO GERENCIADOR QUANDO A GENTE SALVAR A AVALIAÇÃO
-  bool existsInCloud; //UMA FLAG PARA SINALIZAR SE A AVALIAÇÃO JÁ FOI ENVIADA PRA NUVEM OU SE ESTA APENAS NO CELULAR DE QUEM A FEZ
-  bool needProposal; //UMA FLAG PARA SINALIZAR SE A AVALIAÇÃO NECESSITA DE PROPOSTA
-  CallTypes callType; //UMA FLAG PARA SINALIZAR QUAL E O TIPO DESSA AVALIAÇÃO: PREVENTIVA, CORRETIVA, CONTRATO, LEVANTAMENTO
-  PersonModel? customer; //O CLIENTE
-  CompressorModel? compressor; //O COMPRESSOR DO CLIENTE
-  DateTime? creationDate; //A DATA DE CRIAÇÃO DA AVALIAÇÃO
-  TimeOfDay? startTime; //A HORA DE INICIO DA AVALIAÇÃO
-  TimeOfDay? endTime; //A HORA DE FIM DA AVALIAÇÃO
-  int? horimeter; //O HORIMETRO DO COMPRESSOR
-  OilTypes? oilType; //O TIPO DE OLEO QUE O COMPRESSOR ESTA USANDO
-  int? airFilter; //QUANDO FALTA PRA VENDER O FILTRO DE AR
-  int? oilFilter; //QUANDO FALTA PRA VENDER O FILTRO DE OLEO
-  int? separator; //QUANDO FALTA PRA VENDER O SEPARADOR
-  int? oil; //QUANDO FALTA PRA VENDER O OLEO
-  List<EvaluationCoalescentModel> coalescents; //OS COALESCENTES CADASTRADOS NO COMPRESSOR ACIMA
-  List<EvaluationTechnicianModel> technicians; //OS TECNICOS QUE PARTICIPARAM DESSA AVALIAÇÃO/SERVICO
-  List<EvaluationPhotoModel> photos; //AS FOTOS DO COMPRESSOR ACIMA SE NECESSARIO
-  String? responsible; //A PESSOA QUE ACOMPANHOU A AVALIAÇÃO/SERVICO
-  String? signaturePath; //O CAMINHO PARA A IMAGEM DA ASSINATURA DO RESPONSAVEL
-  String? advice; //O PARECER TECNICO
-  DateTime? lastUpdate; //A ULTIMA VEZ QUE HOUVE ALTERACAO NA AVALIACAO
+  String? id;
+  bool visible;
+  int? importedId;
+  bool existsInCloud;
+  bool needProposal;
+  CallTypes callType;
+  PersonModel? customer;
+  CompressorModel? compressor;
+  DateTime? creationDate;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+  int? horimeter;
+  OilTypes? oilType;
+  int? airFilter;
+  int? oilFilter;
+  int? separator;
+  int? oil;
+  List<EvaluationCoalescentModel> coalescents;
+  List<EvaluationTechnicianModel> technicians;
+  List<EvaluationPhotoModel> photos;
+  String? responsible;
+  String? signaturePath;
+  String? advice;
+  DateTime? lastUpdate;
   EvaluationModel({
     this.id,
+    this.visible = true,
     this.importedId,
     this.existsInCloud = false,
     this.needProposal = false,
@@ -70,6 +72,7 @@ class EvaluationModel {
     }
     return EvaluationModel(
       id: null,
+      visible: true,
       importedId: null,
       existsInCloud: false,
       needProposal: false,
@@ -97,6 +100,7 @@ class EvaluationModel {
 
   EvaluationModel copyWith({
     String? id,
+    bool? visible,
     int? importedId,
     bool? existsInCloud,
     bool? needProposal,
@@ -122,6 +126,7 @@ class EvaluationModel {
   }) {
     return EvaluationModel(
       id: id ?? this.id,
+      visible: visible ?? this.visible,
       importedId: importedId ?? this.importedId,
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
@@ -150,6 +155,7 @@ class EvaluationModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'visible': visible,
       'importedid': importedId,
       'existsincloud': existsInCloud,
       'needproposal': needProposal,
@@ -177,6 +183,7 @@ class EvaluationModel {
   factory EvaluationModel.fromMap(Map<String, dynamic> map) {
     return EvaluationModel(
       id: map['id'] != null ? map['id'] as String : null,
+      visible: map['visible'] == 0 ? false : true,
       importedId: map['importedid'] != null ? map['importedid'] as int : null,
       existsInCloud: map['existsincloud'] == 0 ? false : true,
       needProposal: map['needproposal'] == 0 ? false : true,
@@ -220,7 +227,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -228,6 +235,7 @@ class EvaluationModel {
     if (identical(this, other)) return true;
 
     return other.id == id &&
+        other.visible == visible &&
         other.importedId == importedId &&
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
@@ -255,6 +263,7 @@ class EvaluationModel {
   @override
   int get hashCode {
     return id.hashCode ^
+        visible.hashCode ^
         importedId.hashCode ^
         existsInCloud.hashCode ^
         needProposal.hashCode ^

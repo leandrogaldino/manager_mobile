@@ -87,6 +87,7 @@ class SQLScripts {
   static const String createTableEvaluation = '''
     CREATE TABLE evaluation (
       id TEXT PRIMARY KEY,
+      visible INTEGER NOT NULL,
       importedid INTEGER,
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
@@ -143,8 +144,8 @@ class SQLScripts {
   static const String createTableSchedule = '''
     CREATE TABLE schedule (
       id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
       compressorid INT NOT NULL,
-      statusid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       visitdate INTEGER NOT NULL,
       calltypeid INT NOT NULL,

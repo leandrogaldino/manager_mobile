@@ -5,7 +5,7 @@ import 'package:manager_mobile/models/person_model.dart';
 
 class ScheduleModel {
   final int id;
-  final int statusId;
+  final bool visible;
   final int userId;
   final DateTime creationDate;
   final DateTime visitDate;
@@ -16,7 +16,7 @@ class ScheduleModel {
   final DateTime lastUpdate;
   ScheduleModel({
     required this.id,
-    required this.statusId,
+    required this.visible,
     required this.userId,
     required this.creationDate,
     required this.visitDate,
@@ -29,7 +29,7 @@ class ScheduleModel {
 
   ScheduleModel copyWith({
     int? id,
-    int? statusId,
+    bool? visible,
     int? userId,
     DateTime? creationDate,
     DateTime? visitDate,
@@ -41,7 +41,7 @@ class ScheduleModel {
   }) {
     return ScheduleModel(
       id: id ?? this.id,
-      statusId: statusId ?? this.statusId,
+      visible: visible ?? this.visible,
       userId: userId ?? this.userId,
       creationDate: creationDate ?? this.creationDate,
       visitDate: visitDate ?? this.visitDate,
@@ -56,7 +56,7 @@ class ScheduleModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'statusid': statusId,
+      'visible': visible,
       'userid': userId,
       'creationdate': creationDate.millisecondsSinceEpoch,
       'visitdate': visitDate.millisecondsSinceEpoch,
@@ -71,7 +71,7 @@ class ScheduleModel {
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
     return ScheduleModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusid'] ?? 0) as int,
+      visible: map['visible'] == 0 ? false : true,
       userId: (map['userid'] ?? 0) as int,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       visitDate: DateTime.fromMillisecondsSinceEpoch((map['visitdate'] ?? 0) as int),
@@ -89,7 +89,7 @@ class ScheduleModel {
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, statusId: $statusId, userId: $userId, creationdate: $creationDate, visitDate: $visitDate, callType: ${callType.stringValue}, customer: $customer, compressor: $compressor, instructions: $instructions, lastUpdate: $lastUpdate)';
+    return 'ScheduleModel(id: $id, visible: $visible, userId: $userId, creationdate: $creationDate, visitDate: $visitDate, callType: ${callType.stringValue}, customer: $customer, compressor: $compressor, instructions: $instructions, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -97,7 +97,7 @@ class ScheduleModel {
     if (identical(this, other)) return true;
 
     return other.id == id &&
-        other.statusId == statusId &&
+        other.visible == visible &&
         other.userId == userId &&
         other.creationDate == creationDate &&
         other.visitDate == visitDate &&
@@ -110,6 +110,6 @@ class ScheduleModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ userId.hashCode ^ creationDate.hashCode ^ visitDate.hashCode ^ callType.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ userId.hashCode ^ creationDate.hashCode ^ visitDate.hashCode ^ callType.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
   }
 }
