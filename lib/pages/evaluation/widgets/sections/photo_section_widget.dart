@@ -7,7 +7,6 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
-//TODO: Mudar o estado pela controller.
 class PhotoSectionWidget extends StatefulWidget {
   const PhotoSectionWidget({super.key});
 
