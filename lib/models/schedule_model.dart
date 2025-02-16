@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
@@ -8,7 +9,7 @@ class ScheduleModel {
   final int userId;
   final DateTime creationDate;
   final DateTime visitDate;
-  final int visitTypeId;
+  final CallTypes callType;
   final PersonModel customer;
   final CompressorModel compressor;
   final String instructions;
@@ -19,7 +20,7 @@ class ScheduleModel {
     required this.userId,
     required this.creationDate,
     required this.visitDate,
-    required this.visitTypeId,
+    required this.callType,
     required this.customer,
     required this.compressor,
     required this.instructions,
@@ -32,7 +33,7 @@ class ScheduleModel {
     int? userId,
     DateTime? creationDate,
     DateTime? visitDate,
-    int? visitTypeId,
+    CallTypes? callType,
     PersonModel? customer,
     CompressorModel? compressor,
     String? instructions,
@@ -44,7 +45,7 @@ class ScheduleModel {
       userId: userId ?? this.userId,
       creationDate: creationDate ?? this.creationDate,
       visitDate: visitDate ?? this.visitDate,
-      visitTypeId: visitTypeId ?? this.visitTypeId,
+      callType: callType ?? this.callType,
       customer: customer ?? this.customer,
       compressor: compressor ?? this.compressor,
       instructions: instructions ?? this.instructions,
@@ -59,7 +60,7 @@ class ScheduleModel {
       'userid': userId,
       'creationdate': creationDate.millisecondsSinceEpoch,
       'visitdate': visitDate.millisecondsSinceEpoch,
-      'visittypeid': visitTypeId,
+      'visittypeid': callType,
       'customer': customer.toMap(),
       'compressor': compressor.toMap(),
       'instructions': instructions,
@@ -74,7 +75,7 @@ class ScheduleModel {
       userId: (map['userid'] ?? 0) as int,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       visitDate: DateTime.fromMillisecondsSinceEpoch((map['visitdate'] ?? 0) as int),
-      visitTypeId: (map['visittypeid'] ?? 0) as int,
+      callType: CallTypes.values[map['calltypeid'] as int],
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
       compressor: CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       instructions: (map['instructions'] ?? '') as String,
@@ -86,24 +87,9 @@ class ScheduleModel {
 
   factory ScheduleModel.fromJson(String source) => ScheduleModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  String get visitTypeString {
-    switch (visitTypeId) {
-      case 0:
-        return 'Levantamento';
-      case 1:
-        return 'Preventiva';
-      case 2:
-        return 'Chamado';
-      case 3:
-        return 'Contrato';
-      default:
-        return '';
-    }
-  }
-
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, statusId: $statusId, userId: $userId, creationdate: $creationDate, visitDate: $visitDate, visitTypeId: $visitTypeId, customer: $customer, compressor: $compressor, instructions: $instructions, lastUpdate: $lastUpdate)';
+    return 'ScheduleModel(id: $id, statusId: $statusId, userId: $userId, creationdate: $creationDate, visitDate: $visitDate, callType: ${callType.stringValue}, customer: $customer, compressor: $compressor, instructions: $instructions, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -115,7 +101,7 @@ class ScheduleModel {
         other.userId == userId &&
         other.creationDate == creationDate &&
         other.visitDate == visitDate &&
-        other.visitTypeId == visitTypeId &&
+        other.callType == callType &&
         other.customer == customer &&
         other.compressor == compressor &&
         other.instructions == instructions &&
@@ -124,6 +110,6 @@ class ScheduleModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ userId.hashCode ^ creationDate.hashCode ^ visitDate.hashCode ^ visitTypeId.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ statusId.hashCode ^ userId.hashCode ^ creationDate.hashCode ^ visitDate.hashCode ^ callType.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
   }
 }

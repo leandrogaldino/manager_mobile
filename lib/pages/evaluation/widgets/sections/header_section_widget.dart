@@ -40,7 +40,7 @@ class HeaderSectionWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: DateFormat('dd/MM/yyyy').format(evaluationController.evaluation!.creationDate),
+                      text: DateFormat('dd/MM/yyyy').format(evaluationController.evaluation!.creationDate!),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -60,7 +60,7 @@ class HeaderSectionWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: evaluationController.evaluation!.startTime.format(context),
+                      text: evaluationController.evaluation!.startTime!.format(context),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],

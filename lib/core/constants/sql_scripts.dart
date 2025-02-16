@@ -87,6 +87,10 @@ class SQLScripts {
   static const String createTableEvaluation = '''
     CREATE TABLE evaluation (
       id TEXT PRIMARY KEY,
+      importedid INTEGER,
+      existsincloud INTEGER NOT NULL,
+      needproposal INTEGER NOT NULL,
+      calltypeid INTEGER NOT NULL,
       compressorid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       starttime TEXT NOT NULL,
@@ -97,10 +101,9 @@ class SQLScripts {
       oilfilter INTEGER NOT NULL,
       separator INTEGER NOT NULL,
       oil INTEGER NOT NULL,
-      responsible TEXT NOT NULL,
-      advice TEXT,
+      responsible TEXT NOT NULL,      
       signaturepath TEXT NOT NULL,
-      importedid INTEGER,
+      advice TEXT,
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
@@ -144,7 +147,7 @@ class SQLScripts {
       statusid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       visitdate INTEGER NOT NULL,
-      visittypeid INT NOT NULL,
+      calltypeid INT NOT NULL,
       instructions TEXT,
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT

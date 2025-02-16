@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
@@ -15,12 +16,6 @@ import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-
-//TODO: LIDAR COM OS DOIS CAMPOS CRIADOS NA AVALIACAO EXISTSINCLOUD E NEEDPROPOSAL
-//PRECISA VIR DA NUVEM O NEEDPROPOSAL
-//O EXISTS IN CLOUD DEVE VIR TRUE PARA SINCRONIZADOS DA NUVEM
-//CRIAR O CAMPO EVALUATIONTYPE
 
 class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
   final RemoteDatabase _remoteDatabase;
@@ -89,7 +84,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     data.remove('photos');
 
     if (data['id'] == null || data['id'] == '') {
-      data['id'] = _getEvaluationId(data);
+      data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
       await _localDatabase.insert('evaluation', data);
 
       for (var coalescentMap in coalescentsMap) {
@@ -121,12 +116,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   Future<void> syncronize(int lastSync) async {
     await _syncronizeFromLocalToCloud(lastSync);
     await _syncronizeFromCloudToLocal(lastSync);
-  }
-
-  String _getEvaluationId(Map<String, Object?> data) {
-    String id = '';
-    id = '${data['compressorid']}_${DateTime.now().millisecondsSinceEpoch.toString()}${Uuid().v4()}';
-    return id;
   }
 
   Future<String> _saveImage(Uint8List imageData, String fileName) async {
@@ -228,6 +217,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       } else {
         evaluationMap['signaturepath'] = '';
       }
+      evaluationMap['existsincloud'] = true;
 
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {

@@ -79,13 +79,13 @@ class HomeController extends ChangeNotifier {
       if (dateRange != null) {
         if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
           _schedules = _schedules.where((schedule) => schedule.visitDate.isAtSameMomentAs(dateRange.start)).toList();
-          _evaluations = _evaluations.where((evaluation) => evaluation.creationDate.isAtSameMomentAs(dateRange.start)).toList();
+          _evaluations = _evaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
         } else {
           _schedules = _schedules.where((schedule) {
             return (schedule.visitDate.isAfter(dateRange.start) || schedule.visitDate.isAtSameMomentAs(dateRange.start)) && (schedule.visitDate.isBefore(dateRange.end) || schedule.visitDate.isAtSameMomentAs(dateRange.end));
           }).toList();
           _evaluations = _evaluations.where((evaluation) {
-            return (evaluation.creationDate.isAfter(dateRange.start) || evaluation.creationDate.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate.isBefore(dateRange.end) || evaluation.creationDate.isAtSameMomentAs(dateRange.end));
+            return (evaluation.creationDate!.isAfter(dateRange.start) || evaluation.creationDate!.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate!.isBefore(dateRange.end) || evaluation.creationDate!.isAtSameMomentAs(dateRange.end));
           }).toList();
         }
       }

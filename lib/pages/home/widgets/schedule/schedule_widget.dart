@@ -62,7 +62,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: widget.schedule.visitTypeString,
+                    text: widget.schedule.callType.stringValue,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],

@@ -52,7 +52,7 @@ class App extends StatelessWidget {
                   cameraSide: CameraSide.front,
                   onFile: (file) async {
                     final dir = file.parent;
-                    final fileName = StringHelper.getRandomFileName('jpg');
+                    final fileName = StringHelper.getUniqueString(suffix: '.jpg');
                     final newPath = '${dir.path}/$fileName';
                     file.rename(newPath);
                     Navigator.pop(context, File(newPath));

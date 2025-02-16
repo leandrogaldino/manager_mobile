@@ -3,6 +3,5 @@ import 'package:uuid/uuid.dart';
 
 class StringHelper {
   StringHelper._();
-
-  static String getRandomFileName(String extension) => '${Uuid().v4()}_${DateFormat('ddMMyyyy_HHmmssSSS').format(DateTime.now())}.$extension';
+  static String getUniqueString({String prefix = '', String suffix = ''}) => '$prefix${Uuid().v4()}_${DateFormat('ddMMyyyy_HHmmssSSS').format(DateTime.now())}$suffix';
 }

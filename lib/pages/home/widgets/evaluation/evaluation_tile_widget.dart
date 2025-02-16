@@ -17,6 +17,7 @@ class EvaluationTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final evaluationController = Locator.get<EvaluationController>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -26,7 +27,7 @@ class EvaluationTileWidget extends StatelessWidget {
         ),
         child: ListTile(
           leading: Icon(
-            Icons.cloud_off,
+            evaluation.existsInCloud ? Icons.cloud_done : Icons.cloud_off,
             color: Theme.of(context).colorScheme.surface,
           ),
           title: Text(
@@ -42,7 +43,7 @@ class EvaluationTileWidget extends StatelessWidget {
             ),
           ),
           trailing: Text(
-            DateFormat('dd/MM/yyyy').format(evaluation.creationDate),
+            DateFormat('dd/MM/yyyy').format(evaluation.creationDate!),
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
                   color: Theme.of(context).colorScheme.surface,
                 ),

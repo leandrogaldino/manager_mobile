@@ -54,6 +54,7 @@ dependencies:
   camera_camera: ^3.0.0
   flutter_localizations:
     sdk: flutter
+  image: ^4.5.2
 
   
 dev_dependencies:

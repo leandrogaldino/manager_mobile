@@ -9,8 +9,8 @@ import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
-
 import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as img;
 
 class EvaluationService implements Readable<EvaluationModel>, Writable<EvaluationModel>, Deletable, Syncronizable {
   final EvaluationRepository _evaluationRepository;
@@ -27,8 +27,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       if (!await signatureDirectory.exists()) {
         await signatureDirectory.create(recursive: true);
       }
-      final String fileName = StringHelper.getRandomFileName('png');
-
+      final String fileName = StringHelper.getUniqueString(suffix: '.png');
       final filePath = '${signatureDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);
@@ -42,15 +41,19 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     try {
       final rootDirectory = await getApplicationDocumentsDirectory();
       final photosDirectory = Directory('${rootDirectory.path}/photos');
-
       if (!await photosDirectory.exists()) {
         await photosDirectory.create(recursive: true);
       }
-
-      final String fileName = StringHelper.getRandomFileName('jpg');
+      img.Image? image = img.decodeImage(photoBytes);
+      if (image == null) throw Exception('Não foi possível processar a imagem');
+      if (image.width > 1024 || image.height > 768) {
+        image = img.copyResize(image, width: 1024, height: 768, maintainAspect: true);
+      }
+      final Uint8List resizedBytes = Uint8List.fromList(img.encodeJpg(image, quality: 85));
+      final String fileName = StringHelper.getUniqueString(suffix: '.jpg');
       final filePath = '${photosDirectory.path}/$fileName';
       final file = File(filePath);
-      await file.writeAsBytes(photoBytes);
+      await file.writeAsBytes(resizedBytes);
       return EvaluationPhotoModel(path: file.path);
     } catch (e) {
       throw Exception('Erro ao salvar a imagem: $e');
