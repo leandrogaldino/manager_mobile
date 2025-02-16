@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/pages/evaluation/enums/oil_types.dart';
-import 'package:manager_mobile/pages/evaluation/enums/part_types.dart';
+import 'package:manager_mobile/core/enums/oil_types.dart';
+import 'package:manager_mobile/core/enums/part_types.dart';
 
 class EvaluationValidators {
   EvaluationValidators._();

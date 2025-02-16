@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController passwordEC;
   late final LoginController loginController;
   late final AppController appController;
-
+  bool obscurePassword = true;
   @override
   void initState() {
     super.initState();
@@ -68,25 +68,22 @@ class _LoginPageState extends State<LoginPage> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 18),
-                      ListenableBuilder(
-                        listenable: loginController,
-                        builder: (context, child) {
-                          return TextFormField(
-                            obscureText: loginController.obscurePassword,
-                            controller: passwordEC,
-                            validator: Validatorless.required('Senha obrigatória'),
-                            decoration: InputDecoration(
-                              labelText: 'Senha',
-                              suffixIcon: IconButton(
-                                onPressed: loginController.toggleObscurePassword,
-                                icon: Icon(
-                                  loginController.obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                ),
-                              ),
+                      TextFormField(
+                        obscureText: obscurePassword,
+                        controller: passwordEC,
+                        validator: Validatorless.required('Senha obrigatória'),
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          suffixIcon: IconButton(
+                            onPressed: () => setState(() {
+                              obscurePassword = !obscurePassword;
+                            }),
+                            icon: Icon(
+                              obscurePassword ? Icons.visibility : Icons.visibility_off,
                             ),
-                            textAlign: TextAlign.center,
-                          );
-                        },
+                          ),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
                       ListenableBuilder(
