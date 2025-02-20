@@ -1,7 +1,6 @@
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/login/widgets/app_title_widget.dart';
@@ -9,7 +8,6 @@ import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/states/login_state.dart';
 import 'package:validatorless/validatorless.dart';
 
-//TODO: deslogar, desligar a internet, esperar dar erro, e depois clicar para mostrar e esconder senha
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -18,26 +16,26 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late final GlobalKey<FormState> formKey;
-  late final TextEditingController emailEC;
-  late final TextEditingController passwordEC;
-  late final LoginController loginController;
-  late final AppController appController;
+  late final GlobalKey<FormState> _formKey;
+  late final TextEditingController _emailEC;
+  late final TextEditingController _passwordEC;
+  late final LoginController _loginController;
+  bool _hasShownError = false;
+
   bool obscurePassword = true;
   @override
   void initState() {
     super.initState();
-    formKey = GlobalKey<FormState>();
-    emailEC = TextEditingController();
-    passwordEC = TextEditingController();
-    loginController = GetIt.I<LoginController>();
-    appController = GetIt.I<AppController>();
+    _formKey = GlobalKey<FormState>();
+    _emailEC = TextEditingController();
+    _passwordEC = TextEditingController();
+    _loginController = GetIt.I<LoginController>();
   }
 
   @override
   void dispose() {
-    emailEC.dispose();
-    passwordEC.dispose();
+    _emailEC.dispose();
+    _passwordEC.dispose();
     super.dispose();
   }
 
@@ -56,11 +54,11 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Form(
-                  key: formKey,
+                  key: _formKey,
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: emailEC,
+                        controller: _emailEC,
                         validator: Validatorless.multiple([
                           Validatorless.required('Usuário obrigatório'),
                         ]),
@@ -70,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 18),
                       TextFormField(
                         obscureText: obscurePassword,
-                        controller: passwordEC,
+                        controller: _passwordEC,
                         validator: Validatorless.required('Senha obrigatória'),
                         decoration: InputDecoration(
                           labelText: 'Senha',
@@ -87,12 +85,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       ListenableBuilder(
-                        listenable: loginController,
+                        listenable: _loginController,
                         builder: (context, child) {
-                          if (loginController.state is LoginStateError) {
+                          final state = _loginController.state;
+                          if (state is LoginStateError && !_hasShownError) {
+                            _hasShownError = true;
                             WidgetsBinding.instance.addPostFrameCallback((_) {
-                              final errorState = loginController.state as LoginStateError;
-                              Message.showErrorSnackbar(context: context, message: errorState.message);
+                              Message.showErrorSnackbar(context: context, message: state.message);
                             });
                           }
 
@@ -101,9 +100,10 @@ class _LoginPageState extends State<LoginPage> {
                             height: 42,
                             child: ElevatedButton(
                               onPressed: () async {
-                                final valid = formKey.currentState?.validate() ?? false;
+                                final valid = _formKey.currentState?.validate() ?? false;
                                 if (valid) {
-                                  await loginController.singIn('${emailEC.text}@manager.com', passwordEC.text).asyncLoader(
+                                  _hasShownError = false;
+                                  await _loginController.singIn('${_emailEC.text}@manager.com', _passwordEC.text).asyncLoader(
                                         customLoader: const LoaderWidget(message: 'Entrando'),
                                       );
                                 }

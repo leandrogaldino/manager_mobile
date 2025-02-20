@@ -81,6 +81,11 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     }
   }
 
+  Future<List<EvaluationModel>> getVisibles() async {
+    final data = await _evaluationRepository.getVisibles();
+    return data.map((item) => EvaluationModel.fromMap(item)).toList();
+  }
+
   @override
   Future<EvaluationModel> save(EvaluationModel model) async {
     final evaluationMap = model.toMap();

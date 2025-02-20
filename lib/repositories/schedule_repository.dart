@@ -43,8 +43,8 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     return schedule;
   }
 
-  Future<List<Map<String, Object?>>> getByStatus(int statusId) async {
-    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'statusid = ?', whereArgs: [statusId]);
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
     for (var schedule in schedules) {
       schedule = await _processSchedule(schedule);
     }

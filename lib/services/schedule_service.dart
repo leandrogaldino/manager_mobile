@@ -29,8 +29,8 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
     }
   }
 
-  Future<List<ScheduleModel>> getByStatus(int statusId) async {
-    final data = await _repository.getByStatus(statusId);
+  Future<List<ScheduleModel>> getVisibles() async {
+    final data = await _repository.getVisibles();
     return data.map((item) => ScheduleModel.fromMap(item)).toList();
   }
 

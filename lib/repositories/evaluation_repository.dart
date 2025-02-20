@@ -71,6 +71,14 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     return evaluation;
   }
 
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1]);
+    for (var evaluation in evaluations) {
+      evaluation = await _processEvaluation(evaluation);
+    }
+    return evaluations;
+  }
+
   @override
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';

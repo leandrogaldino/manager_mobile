@@ -61,9 +61,8 @@ class HomeController extends ChangeNotifier {
 
   Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
-      _schedules = await _scheduleService.getByStatus(0);
-      _evaluations = await _evaluationService.getAll();
-
+      _schedules = await _scheduleService.getVisibles();
+      _evaluations = await _evaluationService.getVisibles();
       if (customerOrCompressor != null && customerOrCompressor.isNotEmpty) {
         _schedules = _schedules.where(
           (schedule) {
@@ -89,43 +88,45 @@ class HomeController extends ChangeNotifier {
           }).toList();
         }
       }
-
       _state = HomeStateSuccess(schedules, evaluations);
     } on Exception catch (e) {
       _state = HomeStateError(e.toString());
+    } finally {
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> syncronize() async {
-    await _appPreferences.setSynchronizing(true);
-    int lastSync = await _appPreferences.lastSynchronize;
-
-    log('Sincronizando Coalescentes');
-    await _coalescentService.syncronize(lastSync);
-
-    log('Sincronizando Compressores');
-    await _compressorService.syncronize(lastSync);
-
-    log('Sincronizando Pessoas');
-    await _personService.syncronize(lastSync);
-
-    log('Sincronizando Agendamentos');
-    await _scheduleService.syncronize(lastSync);
-
-    log('Sincronizando Avaliações');
-    await _evaluationService.syncronize(lastSync);
-
-    await _appPreferences.updateLastSynchronize();
-    await _appPreferences.setSynchronizing(false);
-    await _customerController.fetchCustomers();
-    await _customerController.fetchTechnicians();
-    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
+    try {
+      await _appPreferences.setSynchronizing(true);
+      int lastSync = await _appPreferences.lastSynchronize;
+      log('Sincronizando Coalescentes');
+      await _coalescentService.syncronize(lastSync);
+      log('Sincronizando Compressores');
+      await _compressorService.syncronize(lastSync);
+      log('Sincronizando Pessoas');
+      await _personService.syncronize(lastSync);
+      log('Sincronizando Agendamentos');
+      await _scheduleService.syncronize(lastSync);
+      log('Sincronizando Avaliações');
+      await _evaluationService.syncronize(lastSync);
+      await _appPreferences.updateLastSynchronize();
+      await _appPreferences.setSynchronizing(false);
+      await _customerController.fetchCustomers();
+      await _customerController.fetchTechnicians();
+      await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
+      if (_state is! HomeStateError) {
+        _state = HomeStateSuccess(schedules, evaluations);
+      }
+    } catch (e) {
+      _state = HomeStateError(e.toString());
+    } finally {
+      notifyListeners();
+    }
   }
 
   int _currentIndex = 0;
   int get currentIndex => _currentIndex;
-
   void setCurrentIndex(int index) {
     _currentIndex = index;
     notifyListeners();
