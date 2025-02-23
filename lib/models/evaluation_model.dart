@@ -15,7 +15,7 @@ class EvaluationModel {
   bool visible;
   int? importedId;
   bool existsInCloud;
-  bool needProposal;
+  bool? needProposal;
   CallTypes callType;
   PersonModel? customer;
   CompressorModel? compressor;
@@ -40,7 +40,7 @@ class EvaluationModel {
     this.visible = true,
     this.importedId,
     this.existsInCloud = false,
-    this.needProposal = false,
+    this.needProposal,
     this.callType = CallTypes.none,
     this.customer,
     this.compressor,
@@ -75,7 +75,7 @@ class EvaluationModel {
       visible: true,
       importedId: null,
       existsInCloud: false,
-      needProposal: false,
+      needProposal: null,
       callType: schedule != null ? schedule.callType : CallTypes.none,
       customer: schedule?.customer,
       compressor: schedule?.compressor,
@@ -186,7 +186,7 @@ class EvaluationModel {
       visible: map['visible'] == 0 ? false : true,
       importedId: map['importedid'] != null ? map['importedid'] as int : null,
       existsInCloud: map['existsincloud'] == 0 ? false : true,
-      needProposal: map['needproposal'] == 0 ? false : true,
+      needProposal: map['needproposal'] == null ? null : (map['needproposal'] == 0 ? false : true),
       callType: CallTypes.values[map['calltypeid'] as int],
       advice: map['advice'] != null ? map['advice'] as String : null,
       customer: map['customer'] != null ? PersonModel.fromMap(map['customer'] as Map<String, dynamic>) : null,

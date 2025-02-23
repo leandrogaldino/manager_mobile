@@ -184,6 +184,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         );
                         return;
                       }
+                      if (!_validadeNeedProposal()) return;
                       if (!_validateCoalescentsNextChange()) return;
                       if (!_validateSignature()) return;
                       await _evaluationController.save();
@@ -204,6 +205,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
             : null,
       ),
     );
+  }
+
+  bool _validadeNeedProposal() {
+    final bool valid = _evaluationController.evaluation!.needProposal != null;
+    if (!valid) {
+      Message.showInfoSnackbar(context: context, message: 'É necessário informar se há necessidade de fazer um orçamento.');
+    }
+    return valid;
   }
 
   bool _validateSignature() {

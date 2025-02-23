@@ -109,6 +109,11 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateNeedProposal(bool? needProposal) {
+    _evaluation!.needProposal = needProposal;
+    notifyListeners();
+  }
+
   void updateResponsible(String responsible) {
     _evaluation!.responsible = responsible;
     notifyListeners();
