@@ -22,13 +22,13 @@ class App extends StatelessWidget {
     TextTheme textTheme = AppTheme.appTextTheme;
     AppTheme appTheme = AppTheme(textTheme);
     AppController controller = GetIt.I<AppController>();
-
     return ListenableBuilder(
       listenable: controller,
       builder: (context, child) => AsyncStateBuilder(
         enableLog: true,
         customLoader: const LoaderWidget(),
         builder: (observer) => MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Gerenciador',
           theme: appTheme.light(),
           darkTheme: appTheme.dark(),
