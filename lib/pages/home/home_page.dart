@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -6,7 +8,7 @@ import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/core/widgets/loader_widget.dart';
+import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
@@ -27,6 +29,9 @@ class _HomePageState extends State<HomePage> {
   late final HomeController _homeController;
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
+  late NetworkConnection _networkConnection;
+  late Timer _timer;
+
   bool _hasShownError = false;
 
   @override
@@ -35,9 +40,28 @@ class _HomePageState extends State<HomePage> {
     _homeController = Locator.get<HomeController>();
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
+    _networkConnection = NetworkConnection();
+    _timer = Timer.periodic(Duration(minutes: 5), (_) async {
+      try {
+        log('Sincronização Automática iniciada.');
+        bool hasConnection = await _networkConnection.hasConnection();
+        if (hasConnection) {
+          await _homeController.syncronize();
+        }
+        log('Sincronização Automática finalizada.');
+      } catch (e, s) {
+        log('Erro ao executar a sincronização automática: $e', stackTrace: s);
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.syncronize().asyncLoader();
     });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -53,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               child: RefreshIndicator(
                 onRefresh: () async {
                   _hasShownError = false;
-                  await _homeController.syncronize().asyncLoader(customLoader: LoaderWidget(message: 'Sincronizando'));
+                  await _homeController.syncronize();
                 },
                 child: ListenableBuilder(
                   listenable: _homeController,
@@ -65,13 +89,10 @@ class _HomePageState extends State<HomePage> {
                         Message.showErrorSnackbar(context: context, message: state.errorMessage);
                       });
                     }
-
                     if (state is HomeStateSuccess) {
                       _hasShownError = false;
                       return _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations);
                     }
-
-                    // Caso o estado não seja sucesso, exibir um Container vazio
                     return ListView();
                   },
                 ),

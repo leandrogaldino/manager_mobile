@@ -39,8 +39,8 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateSchedule(int scheduleId, int statusId) async {
-    await scheduleService.updateStatus(scheduleId, statusId);
+  Future<void> updateSchedule(int scheduleId, bool isVisible) async {
+    await scheduleService.updateVisibility(scheduleId, isVisible);
   }
 
   Future<void> updateImagesBytes() async {
@@ -62,7 +62,7 @@ class EvaluationController extends ChangeNotifier {
     await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
     await evaluationService.save(evaluation!);
-    if (_schedule != null) await scheduleService.updateStatus(_schedule!.id, 2);
+    if (_schedule != null) await scheduleService.updateVisibility(_schedule!.id, false);
     notifyListeners();
   }
 
@@ -188,5 +188,17 @@ class EvaluationController extends ChangeNotifier {
   void removeCoalescent(EvaluationCoalescentModel coalescent) {
     _evaluation!.coalescents.remove(coalescent);
     notifyListeners();
+  }
+
+  Future<int> clean() async {
+    int count = 0;
+    var allEvaluations = await evaluationService.getAll();
+    for (var evaluation in allEvaluations) {
+      if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
+        await evaluationService.delete(evaluation.id);
+        count += 1;
+      }
+    }
+    return count;
   }
 }

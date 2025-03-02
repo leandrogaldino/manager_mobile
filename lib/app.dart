@@ -22,6 +22,7 @@ class App extends StatelessWidget {
     TextTheme textTheme = AppTheme.appTextTheme;
     AppTheme appTheme = AppTheme(textTheme);
     AppController controller = GetIt.I<AppController>();
+
     return ListenableBuilder(
       listenable: controller,
       builder: (context, child) => AsyncStateBuilder(

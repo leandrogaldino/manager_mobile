@@ -4,6 +4,7 @@ import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/syncronizable.dart';
 
+//TODO: Continuar o tratamento de erros dos Repositories como feito no ScheduleRepository.
 class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Syncronizable {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;

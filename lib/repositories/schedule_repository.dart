@@ -1,3 +1,6 @@
+import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
@@ -20,41 +23,73 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
         _compressorRepository = compressorRepository,
         _personRepository = personRepository;
 
-  Future<void> updateStatus(int scheduleId, int statusId) async {
-    await _localDatabase.update('schedule', {'statusid': statusId, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+  Future<void> updateVisibility(int scheduleId, bool isVisible) async {
+    try {
+      await _localDatabase.update('schedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('Erro ao atualizar: $e');
+    }
   }
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
-    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule');
-    for (var schedule in schedules) {
-      schedule = await _processSchedule(schedule);
+    try {
+      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule');
+      for (var schedule in schedules) {
+        schedule = await _processSchedule(schedule);
+      }
+      return schedules;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('Erro ao obter os dados: $e');
     }
-    return schedules;
   }
 
   @override
   Future<Map<String, Object?>> getById(dynamic id) async {
-    Map<String, Object?> schedule = await _localDatabase.query('schedule', where: 'id = ?', whereArgs: [id]).then((list) {
-      if (list.isEmpty) return {};
-      return list[0];
-    });
-    schedule = await _processSchedule(schedule);
-    return schedule;
+    try {
+      Map<String, Object?> schedule = await _localDatabase.query('schedule', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+      schedule = await _processSchedule(schedule);
+      return schedule;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('Erro ao obter os dados: $e');
+    }
   }
 
   Future<List<Map<String, Object?>>> getVisibles() async {
-    List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
-    for (var schedule in schedules) {
-      schedule = await _processSchedule(schedule);
+    try {
+      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
+      for (var schedule in schedules) {
+        schedule = await _processSchedule(schedule);
+      }
+      return schedules;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('Erro ao obter os dados: $e');
     }
-    return schedules;
   }
 
   @override
   Future<void> syncronize(int lastSync) async {
-    await _syncronizeFromLocalToCloud(lastSync);
-    await _syncronizeFromCloudToLocal(lastSync);
+    try {
+      await _syncronizeFromLocalToCloud(lastSync);
+      await _syncronizeFromCloudToLocal(lastSync);
+    } on LocalDatabaseException {
+      rethrow;
+    } on RemoteDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('Erro ao obter os dados: $e');
+    }
   }
 
   Future<Map<String, Object?>> _processSchedule(Map<String, Object?> scheduleData) async {

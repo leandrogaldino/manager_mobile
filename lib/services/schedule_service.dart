@@ -9,8 +9,8 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
 
   ScheduleService({required ScheduleRepository repository}) : _repository = repository;
 
-  Future<void> updateStatus(int scheduleId, int statusId) async {
-    _repository.updateStatus(scheduleId, statusId);
+  Future<void> updateVisibility(int scheduleId, bool isVisible) async {
+    _repository.updateVisibility(scheduleId, isVisible);
   }
 
   @override

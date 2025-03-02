@@ -344,9 +344,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   value: true,
                                   groupValue: _evaluationController.evaluation!.needProposal,
                                   onChanged: (bool? value) {
-                                    setState(() {
+                                    if (_evaluationController.source == SourceTypes.fromSaved) {
+                                      null;
+                                    } else {
                                       _evaluationController.updateNeedProposal(value!);
-                                    });
+                                    }
                                   },
                                 ),
                               ),
@@ -356,9 +358,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   value: false,
                                   groupValue: _evaluationController.evaluation!.needProposal,
                                   onChanged: (bool? value) {
-                                    setState(() {
+                                    if (_evaluationController.source == SourceTypes.fromSaved) {
+                                      null;
+                                    } else {
                                       _evaluationController.updateNeedProposal(value!);
-                                    });
+                                    }
                                   },
                                 ),
                               ),
