@@ -33,7 +33,7 @@ class CoalescentService implements Readable<CoalescentModel>, Childable<Coalesce
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
-    await _repository.syncronize(lastSync);
+  Future<void> synchronize(int lastSync) async {
+    await _repository.synchronize(lastSync);
   }
 }

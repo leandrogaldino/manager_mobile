@@ -1,3 +1,3 @@
 abstract class Syncronizable {
-  Future<void> syncronize(int lastSync);
+  Future<void> synchronize(int lastSync);
 }

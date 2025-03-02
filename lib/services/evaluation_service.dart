@@ -94,7 +94,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
   }
 
   @override
-  Future<void> syncronize(lastSync) async {
-    await _evaluationRepository.syncronize(lastSync);
+  Future<void> synchronize(lastSync) async {
+    await _evaluationRepository.synchronize(lastSync);
   }
 }

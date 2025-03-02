@@ -121,9 +121,9 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
-    await _syncronizeFromLocalToCloud(lastSync);
-    await _syncronizeFromCloudToLocal(lastSync);
+  Future<void> synchronize(int lastSync) async {
+    await _synchronizeFromLocalToCloud(lastSync);
+    await _synchronizeFromCloudToLocal(lastSync);
   }
 
   Future<String> _saveImage(Uint8List imageData, String fileName) async {
@@ -138,7 +138,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     }
   }
 
-  Future<void> _syncronizeFromLocalToCloud(int lastSync) async {
+  Future<void> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
@@ -168,7 +168,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     }
   }
 
-  Future<void> _syncronizeFromCloudToLocal(int lastSync) async {
+  Future<void> _synchronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {

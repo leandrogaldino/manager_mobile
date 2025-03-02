@@ -33,7 +33,7 @@ class CompressorService implements Readable<CompressorModel>, Childable<Compress
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
-    await _repository.syncronize(lastSync);
+  Future<void> synchronize(int lastSync) async {
+    await _repository.synchronize(lastSync);
   }
 }

@@ -54,7 +54,7 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
+  Future<void> synchronize(int lastSync) async {
     final remoteResult = await _remoteDatabase.get(collection: 'persons', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var data in remoteResult) {
       final bool exists = await _localDatabase.isSaved('person', id: data['id']);

@@ -36,7 +36,7 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
   }
 
   @override
-  Future<void> syncronize(lastSync) async {
-    await _repository.syncronize(lastSync);
+  Future<void> synchronize(lastSync) async {
+    await _repository.synchronize(lastSync);
   }
 }

@@ -47,7 +47,7 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Childable<
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
+  Future<void> synchronize(int lastSync) async {
     final remoteResult = await _remoteDatabase.get(collection: 'compressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var data in remoteResult) {
       final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);

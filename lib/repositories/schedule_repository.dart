@@ -79,10 +79,10 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
   }
 
   @override
-  Future<void> syncronize(int lastSync) async {
+  Future<void> synchronize(int lastSync) async {
     try {
-      await _syncronizeFromLocalToCloud(lastSync);
-      await _syncronizeFromCloudToLocal(lastSync);
+      await _synchronizeFromLocalToCloud(lastSync);
+      await _synchronizeFromCloudToLocal(lastSync);
     } on LocalDatabaseException {
       rethrow;
     } on RemoteDatabaseException {
@@ -101,7 +101,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     return scheduleData;
   }
 
-  Future<int> _syncronizeFromLocalToCloud(int lastSync) async {
+  Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     int uploadedData = 0;
     final localResult = await _localDatabase.query('schedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
@@ -111,7 +111,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     return uploadedData;
   }
 
-  Future<int> _syncronizeFromCloudToLocal(int lastSync) async {
+  Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     int downloadedData = 0;
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'schedules', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);

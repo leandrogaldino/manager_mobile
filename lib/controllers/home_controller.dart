@@ -96,20 +96,20 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  Future<void> syncronize() async {
+  Future<void> synchronize() async {
     try {
       await _appPreferences.setSynchronizing(true);
       int lastSync = await _appPreferences.lastSynchronize;
       log('Sincronizando Coalescentes');
-      await _coalescentService.syncronize(lastSync);
+      await _coalescentService.synchronize(lastSync);
       log('Sincronizando Compressores');
-      await _compressorService.syncronize(lastSync);
+      await _compressorService.synchronize(lastSync);
       log('Sincronizando Pessoas');
-      await _personService.syncronize(lastSync);
+      await _personService.synchronize(lastSync);
       log('Sincronizando Agendamentos');
-      await _scheduleService.syncronize(lastSync);
+      await _scheduleService.synchronize(lastSync);
       log('Sincronizando Avaliações');
-      await _evaluationService.syncronize(lastSync);
+      await _evaluationService.synchronize(lastSync);
       await _appPreferences.updateLastSynchronize();
       await _appPreferences.setSynchronizing(false);
       await _customerController.fetchCustomers();

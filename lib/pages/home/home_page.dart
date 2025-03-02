@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         log('Sincronização Automática iniciada.');
         bool hasConnection = await _networkConnection.hasConnection();
         if (hasConnection) {
-          await _homeController.syncronize();
+          await _homeController.synchronize();
         }
         log('Sincronização Automática finalizada.');
       } catch (e, s) {
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _homeController.syncronize().asyncLoader();
+      await _homeController.synchronize().asyncLoader();
     });
   }
 
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               child: RefreshIndicator(
                 onRefresh: () async {
                   _hasShownError = false;
-                  await _homeController.syncronize();
+                  await _homeController.synchronize();
                 },
                 child: ListenableBuilder(
                   listenable: _homeController,
