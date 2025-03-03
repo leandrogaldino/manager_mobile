@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Import necessário para kReleaseMode
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/locator.dart';
@@ -18,7 +19,6 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
   Locator.setup();
   await Locator.get<LocalDatabase>().init();
   await Locator.get<AppController>().clearOldTemporaryFiles();
@@ -26,7 +26,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await GetIt.I<AppController>().loadTheme();
-
+  await Locator.get<EvaluationController>().clean();
   if (kReleaseMode) {
     runZonedGuarded(
       () {

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -7,10 +6,8 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/timers/clean_timer.dart';
 import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
@@ -32,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
   late Timer _synchronizeTimer;
-  late Timer _cleanTimer;
   bool _hasShownError = false;
 
   @override
@@ -45,14 +41,12 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize().asyncLoader();
       _synchronizeTimer = await SynchronizeTimer.init();
-      _cleanTimer = await CleanTimer.init();
     });
   }
 
   @override
   void dispose() {
     _synchronizeTimer.cancel();
-    _cleanTimer.cancel();
     super.dispose();
   }
 
