@@ -7,6 +7,8 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/timers/clean_timer.dart';
+import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -29,9 +31,8 @@ class _HomePageState extends State<HomePage> {
   late final HomeController _homeController;
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
-  late NetworkConnection _networkConnection;
-  late Timer _timer;
-
+  late Timer _synchronizeTimer;
+  late Timer _cleanTimer;
   bool _hasShownError = false;
 
   @override
@@ -40,27 +41,18 @@ class _HomePageState extends State<HomePage> {
     _homeController = Locator.get<HomeController>();
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
-    _networkConnection = NetworkConnection();
-    _timer = Timer.periodic(Duration(minutes: 5), (_) async {
-      try {
-        log('Sincronização Automática iniciada.');
-        bool hasConnection = await _networkConnection.hasConnection();
-        if (hasConnection) {
-          await _homeController.synchronize();
-        }
-        log('Sincronização Automática finalizada.');
-      } catch (e, s) {
-        log('Erro ao executar a sincronização automática: $e', stackTrace: s);
-      }
-    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize().asyncLoader();
+      _synchronizeTimer = await SynchronizeTimer.init();
+      _cleanTimer = await CleanTimer.init();
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _synchronizeTimer.cancel();
+    _cleanTimer.cancel();
     super.dispose();
   }
 
