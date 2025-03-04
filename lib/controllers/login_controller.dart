@@ -9,10 +9,6 @@ class LoginController extends ChangeNotifier {
       : _authService = service,
         _connection = connection;
 
-  Future<PersonModel?> get currentLoggedUser async {
-    return await _authService.currentLoggedUser;
-  }
-
   final Auth _authService;
   final Connection _connection;
 
@@ -22,6 +18,10 @@ class LoginController extends ChangeNotifier {
   void _setState(LoginState newState) {
     _state = newState;
     notifyListeners();
+  }
+
+  Future<PersonModel?> get currentLoggedUser async {
+    return await _authService.currentLoggedUser;
   }
 
   Future<void> singIn(String email, String password) async {
@@ -34,7 +34,7 @@ class LoginController extends ChangeNotifier {
       }
       await _authService.signIn(email: email, password: password);
     } catch (e) {
-      _setState(LoginStateError('Erro ao fazer login: ${e.toString()}'));
+      _setState(LoginStateError(e.toString()));
     }
   }
 

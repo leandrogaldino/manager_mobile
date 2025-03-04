@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
+import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/photos/photos_page.dart';
 import 'package:manager_mobile/pages/signature/signature_signature_page.dart';
@@ -22,9 +23,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     TextTheme textTheme = AppTheme.appTextTheme;
     AppTheme appTheme = AppTheme(textTheme);
-    AppController controller = GetIt.I<AppController>();
+    AppController appController = GetIt.I<AppController>();
     return ListenableBuilder(
-      listenable: controller,
+      listenable: appController,
       builder: (context, child) => AsyncStateBuilder(
         enableLog: true,
         customLoader: const LoaderWidget(),
@@ -33,7 +34,7 @@ class App extends StatelessWidget {
           title: 'Gerenciador',
           theme: appTheme.light(),
           darkTheme: appTheme.dark(),
-          themeMode: controller.themeMode,
+          themeMode: appController.themeMode,
           home: const AuthStateListenerWidget(),
           navigatorObservers: [observer],
           onGenerateRoute: (settings) {

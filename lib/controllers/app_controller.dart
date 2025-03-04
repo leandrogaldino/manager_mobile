@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
-
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
+import 'package:manager_mobile/states/app_state.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppController extends ChangeNotifier {
@@ -12,21 +12,33 @@ class AppController extends ChangeNotifier {
     required appPreferences,
   }) : _appPreferences = appPreferences;
 
+  AppState _state = AppStateInitial();
+  AppState get state => _state;
+
+  void _setState(AppState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+
   ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
 
   Future<void> changeTheme(ThemeMode themeMode) async {
-    _themeMode = themeMode;
-    await _appPreferences.setThemeMode(themeMode);
-    notifyListeners();
+    try {
+      _themeMode = themeMode;
+      await _appPreferences.setThemeMode(themeMode);
+      _setState(AppStateSuccess());
+    } on Exception catch (e) {
+      _setState(AppStateError(e.toString()));
+    }
   }
 
   Future<void> loadTheme() async {
     try {
       _themeMode = await _appPreferences.themeMode;
-      notifyListeners();
+      _setState(AppStateSuccess());
     } catch (e) {
-      throw Exception('Erro ao carregar o tema: $e');
+      _setState(AppStateError(e.toString()));
     }
   }
 
@@ -55,7 +67,6 @@ class AppController extends ChangeNotifier {
   Future<void> clearOldTemporaryFiles() async {
     final tempDir = await getTemporaryDirectory();
     final files = tempDir.listSync();
-
     for (var fileOrDir in files) {
       if (fileOrDir is File) {
         try {

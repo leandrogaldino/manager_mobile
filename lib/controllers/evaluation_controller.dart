@@ -26,9 +26,12 @@ class EvaluationController extends ChangeNotifier {
   SourceTypes? _source;
   SourceTypes? get source => _source;
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
+    _signatureBytes = null;
+    _selectedPhotoIndex = 0;
+    _photosBytes.clear();
+    _schedule = null;
     _evaluation = evaluation;
     _source = source;
-    _signatureBytes = null;
     notifyListeners();
   }
 
@@ -53,7 +56,6 @@ class EvaluationController extends ChangeNotifier {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
     _signatureBytes = signatureFile != null ? await signatureFile.readAsBytes() : null;
     _signatureBytes = signatureBytes;
-
     _photosBytes.clear();
     for (var photo in _evaluation!.photos) {
       final File photoFile = File(photo.path);
@@ -92,10 +94,10 @@ class EvaluationController extends ChangeNotifier {
   Uint8List? _signatureBytes;
   Uint8List? get signatureBytes => _signatureBytes;
 
-  void updateSignaturePath(String signaturePath) {
-    _evaluation!.signaturePath = signaturePath;
-    notifyListeners();
-  }
+  // void updateSignaturePath(String signaturePath) {
+  //   _evaluation!.signaturePath = signaturePath;
+  //   notifyListeners();
+  // }
 
   final List<Uint8List> _photosBytes = [];
   List<Uint8List> get photosBytes => _photosBytes;
@@ -196,6 +198,7 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+//TODO: Mudar para AppController.
   Future<int> clean() async {
     int count = 0;
     var allEvaluations = await evaluationService.getAll();

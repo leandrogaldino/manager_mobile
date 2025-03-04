@@ -26,7 +26,7 @@ class HomeController extends ChangeNotifier {
         _scheduleService = scheduleService,
         _evaluationService = evaluationService,
         _appPreferences = appPreferences,
-        _customerController = customerController;
+        _personController = customerController;
 
   final CoalescentService _coalescentService;
   final CompressorService _compressorService;
@@ -34,7 +34,7 @@ class HomeController extends ChangeNotifier {
   final ScheduleService _scheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
-  final PersonController _customerController;
+  final PersonController _personController;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -112,8 +112,8 @@ class HomeController extends ChangeNotifier {
       await _evaluationService.synchronize(lastSync);
       await _appPreferences.updateLastSynchronize();
       await _appPreferences.setSynchronizing(false);
-      await _customerController.fetchCustomers();
-      await _customerController.fetchTechnicians();
+      await _personController.fetchCustomers();
+      await _personController.fetchTechnicians();
       await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
       if (_state is! HomeStateError) {
         _state = HomeStateSuccess(schedules, evaluations);
