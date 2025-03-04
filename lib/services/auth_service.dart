@@ -19,15 +19,15 @@ class AuthService implements Auth {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
-          throw AuthException('Usuário inválido');
+          throw AuthException('AUT001', 'Usuário inválido');
         case 'invalid-credential':
-          throw AuthException('Usuário e/ou senha incorretos');
+          throw AuthException('AUT002', 'Usuário e/ou senha incorretos');
         case 'too-many-requests':
-          throw AuthException('O número máximo de requisições foi excedido, aguarde alguns minuitos e tente novamente.');
+          throw AuthException('AUT003', 'O número máximo de requisições foi excedido, aguarde alguns minuitos e tente novamente.');
         case 'user-disabled':
-          throw AuthException('Usuário desativado');
+          throw AuthException('AUT004', 'Usuário desativado');
         default:
-          throw AuthException('Erro: ${e.code}');
+          throw AuthException('AUT005', 'Erro: ${e.code}');
       }
     } catch (e) {
       rethrow;
@@ -39,7 +39,7 @@ class AuthService implements Auth {
     try {
       await _auth.signOut();
     } catch (e) {
-      throw AuthException('Erro ao sair: ${e.toString()}');
+      throw AuthException('AUT006', 'Erro ao sair: ${e.toString()}');
     }
   }
 

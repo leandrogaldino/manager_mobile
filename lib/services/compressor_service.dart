@@ -22,7 +22,7 @@ class CompressorService implements Readable<CompressorModel>, Childable<Compress
     if (data.isNotEmpty) {
       return CompressorModel.fromMap(data);
     } else {
-      throw ServiceException('Compressor com o id $id não encontrado.');
+      throw ServiceException('COM005', 'Compressor com o id $id não encontrado.');
     }
   }
 

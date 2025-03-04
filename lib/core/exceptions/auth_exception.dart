@@ -1,5 +1,5 @@
 import 'package:manager_mobile/interfaces/app_exception.dart';
 
 class AuthException extends AppException {
-  AuthException(super.message);
+  AuthException(super.code, super.message);
 }

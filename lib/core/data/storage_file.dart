@@ -14,7 +14,7 @@ class StorageFile implements Storage {
       final downloadUrl = await ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      throw StorageException('Erro ao fazer upload do arquivo.');
+      throw StorageException('STO001', 'Erro ao fazer upload do arquivo.');
     }
   }
 
@@ -25,7 +25,7 @@ class StorageFile implements Storage {
       final Uint8List? fileData = await ref.getData();
       return fileData;
     } catch (e) {
-      throw StorageException('Erro ao fazer download do arquivo.');
+      throw StorageException('STO002', 'Erro ao fazer download do arquivo.');
     }
   }
 
@@ -35,7 +35,7 @@ class StorageFile implements Storage {
       final ref = _storage.ref(path);
       await ref.delete();
     } catch (e) {
-      throw StorageException('Erro ao deletar o arquivo.');
+      throw StorageException('STO003', 'Erro ao deletar o arquivo.');
     }
   }
 
@@ -49,7 +49,7 @@ class StorageFile implements Storage {
       if (e is FirebaseException && e.code == 'object-not-found') {
         return false;
       }
-      throw StorageException('Erro ao verificar existência do arquivo: $e');
+      throw StorageException('STO004', 'Erro ao verificar existência do arquivo: $e');
     }
   }
 
@@ -67,7 +67,7 @@ class StorageFile implements Storage {
         'updatedTime': metadata.updated,
       };
     } catch (e) {
-      throw StorageException('Erro ao obter os metadados do arquivo.');
+      throw StorageException('STO005', 'Erro ao obter os metadados do arquivo.');
     }
   }
 }

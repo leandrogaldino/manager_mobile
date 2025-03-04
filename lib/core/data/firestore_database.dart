@@ -21,7 +21,7 @@ class FirestoreDatabase implements RemoteDatabase {
       }).toList();
       return result;
     } catch (e) {
-      throw RemoteDatabaseException('Ocorreu um erro ao consultar o registro na núvem: $e');
+      throw RemoteDatabaseException('RDB001', 'Ocorreu um erro ao consultar o registro na núvem: $e');
     }
   }
 
@@ -70,22 +70,34 @@ class FirestoreDatabase implements RemoteDatabase {
 
   @override
   Future<void> set({required String collection, required Map<String, dynamic> data, String? id, bool merge = false}) async {
-    final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
-    await docRef.set(data, SetOptions(merge: merge));
+    try {
+      final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
+      await docRef.set(data, SetOptions(merge: merge));
+    } catch (e) {
+      throw RemoteDatabaseException('RDB002', 'Ocorreu um erro ao salvar o registro na núvem: $e');
+    }
   }
 
   @override
   Future<void> delete({required String collection, required List<RemoteDatabaseFilter> filters}) async {
-    Query query = _db.collection(collection);
-    query = _proccessFilters(query, filters);
-    final querySnapshot = await query.get();
-    for (var doc in querySnapshot.docs) {
-      await doc.reference.delete();
+    try {
+      Query query = _db.collection(collection);
+      query = _proccessFilters(query, filters);
+      final querySnapshot = await query.get();
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      throw RemoteDatabaseException('RDB003', 'Ocorreu um erro ao excluir o registro na núvem: $e');
     }
   }
 
   @override
   Future<void> update({required collection, required String id, required Map<String, dynamic> data}) async {
-    await _db.collection(collection).doc(id).update(data);
+    try {
+      await _db.collection(collection).doc(id).update(data);
+    } catch (e) {
+      throw RemoteDatabaseException('RDB001', 'Ocorreu um erro ao atualizar o registro na núvem: $e');
+    }
   }
 }

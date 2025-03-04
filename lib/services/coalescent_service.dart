@@ -22,7 +22,7 @@ class CoalescentService implements Readable<CoalescentModel>, Childable<Coalesce
     if (data.isNotEmpty) {
       return CoalescentModel.fromMap(data);
     } else {
-      throw ServiceException('Coalescente com o id $id não encontrado.');
+      throw ServiceException('COA005', 'Coalescente com o id $id não encontrado.');
     }
   }
 

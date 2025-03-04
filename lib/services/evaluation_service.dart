@@ -33,7 +33,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       await file.writeAsBytes(signatureBytes);
       return filePath;
     } catch (e) {
-      throw Exception('Erro ao salvar a imagem: $e');
+      throw ServiceException('EVA009', 'Erro ao salvar a imagem: $e');
     }
   }
 
@@ -56,7 +56,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       await file.writeAsBytes(resizedBytes);
       return EvaluationPhotoModel(path: file.path);
     } catch (e) {
-      throw Exception('Erro ao salvar a imagem: $e');
+      throw ServiceException('EVA010', 'Erro ao salvar a imagem: $e');
     }
   }
 
@@ -77,7 +77,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     if (data.isNotEmpty) {
       return EvaluationModel.fromMap(data);
     } else {
-      throw ServiceException('Avaliação com o id $id não encontrada.');
+      throw ServiceException('EVA011', 'Avaliação com o id $id não encontrada.');
     }
   }
 

@@ -25,7 +25,7 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
     if (data.isNotEmpty) {
       return ScheduleModel.fromMap(data);
     } else {
-      throw ServiceException('Visita com o id $id não encontrada.');
+      throw ServiceException('SCH006', 'Visita com o id $id não encontrada.');
     }
   }
 

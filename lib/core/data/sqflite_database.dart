@@ -29,7 +29,7 @@ class SqfliteDatabase implements LocalDatabase {
         },
       );
     } on DatabaseException catch (e) {
-      throw LocalDatabaseException('Falha ao inicializar o banco de dados: $e');
+      throw LocalDatabaseException('LDB001', 'Falha ao inicializar o banco de dados: $e');
     } catch (e) {
       rethrow;
     }
@@ -41,7 +41,7 @@ class SqfliteDatabase implements LocalDatabase {
       int deletedRows = await _database.delete(table, where: where, whereArgs: whereArgs);
       return deletedRows;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao excluir: $e');
+      throw LocalDatabaseException('LDB002', 'Erro ao excluir: $e');
     }
   }
 
@@ -51,7 +51,7 @@ class SqfliteDatabase implements LocalDatabase {
       dynamic lastInsertedId = await _database.insert(table, values);
       return lastInsertedId;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao salvar: $e');
+      throw LocalDatabaseException('LDB003', 'Erro ao salvar: $e');
     }
   }
 
@@ -61,7 +61,7 @@ class SqfliteDatabase implements LocalDatabase {
       int changes = await _database.update(table, values, where: where, whereArgs: whereArgs);
       return changes;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao atualizar: $e');
+      throw LocalDatabaseException('LDB004', 'Erro ao atualizar: $e');
     }
   }
 
@@ -71,7 +71,7 @@ class SqfliteDatabase implements LocalDatabase {
       List<Map<String, Object?>> result = await _database.query(table, distinct: distinct, columns: columns, where: where, whereArgs: whereArgs, groupBy: groupBy, having: having, orderBy: orderBy, limit: limit, offset: offset);
       return _resultSetToRawResult(result);
     } catch (e) {
-      throw LocalDatabaseException('Erro ao consultar: $e');
+      throw LocalDatabaseException('LDB005', 'Erro ao consultar: $e');
     }
   }
 
@@ -81,7 +81,7 @@ class SqfliteDatabase implements LocalDatabase {
       int deletedRows = await _database.rawDelete(sql, arguments);
       return deletedRows;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao deletar: $e');
+      throw LocalDatabaseException('LDB006', 'Erro ao deletar: $e');
     }
   }
 
@@ -91,7 +91,7 @@ class SqfliteDatabase implements LocalDatabase {
       int lastinsertedidd = await _database.rawInsert(sql, arguments);
       return lastinsertedidd;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao salvar: $e');
+      throw LocalDatabaseException('LDB007', 'Erro ao salvar: $e');
     }
   }
 
@@ -101,7 +101,7 @@ class SqfliteDatabase implements LocalDatabase {
       List<Map<String, Object?>> result = await _database.rawQuery(sql, arguments);
       return _resultSetToRawResult(result);
     } catch (e) {
-      throw LocalDatabaseException('Erro ao consultar: $e');
+      throw LocalDatabaseException('LDB008', 'Erro ao consultar: $e');
     }
   }
 
@@ -111,7 +111,7 @@ class SqfliteDatabase implements LocalDatabase {
       int changes = await _database.rawUpdate(sql, arguments);
       return changes;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao atualizar: $e');
+      throw LocalDatabaseException('LDB009', 'Erro ao atualizar: $e');
     }
   }
 
@@ -122,7 +122,7 @@ class SqfliteDatabase implements LocalDatabase {
       if (data.isEmpty) return false;
       return true;
     } catch (e) {
-      throw LocalDatabaseException('Erro ao verificar a existencia do registro: $e');
+      throw LocalDatabaseException('LDB010', 'Erro ao verificar a existencia do registro: $e');
     }
   }
 

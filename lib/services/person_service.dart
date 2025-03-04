@@ -31,7 +31,7 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
     if (data.isNotEmpty) {
       return PersonModel.fromMap(data);
     } else {
-      throw ServiceException('Pessoa com o id $id não encontrada.');
+      throw ServiceException('PER006', 'Pessoa com o id $id não encontrada.');
     }
   }
 

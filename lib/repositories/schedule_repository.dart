@@ -29,7 +29,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('Erro ao atualizar: $e');
+      throw RepositoryException('SHC001', 'Erro ao atualizar: $e');
     }
   }
 
@@ -44,7 +44,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('Erro ao obter os dados: $e');
+      throw RepositoryException('SHC002', 'Erro ao obter os dados: $e');
     }
   }
 
@@ -60,7 +60,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('Erro ao obter os dados: $e');
+      throw RepositoryException('SHC003', 'Erro ao obter os dados: $e');
     }
   }
 
@@ -74,7 +74,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('Erro ao obter os dados: $e');
+      throw RepositoryException('SHC004', 'Erro ao obter os dados: $e');
     }
   }
 
@@ -88,7 +88,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('Erro ao obter os dados: $e');
+      throw RepositoryException('SHC005', 'Erro ao sincronizar os dados: $e');
     }
   }
 

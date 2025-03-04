@@ -12,7 +12,7 @@ class NetworkConnection implements Connection {
       }
       return false;
     } catch (e) {
-      throw ConnectionException('Erro ao testar a conexão.');
+      throw ConnectionException('CON001', 'Erro ao testar a conexão.');
     }
   }
 }

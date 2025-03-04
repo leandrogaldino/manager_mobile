@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
@@ -49,81 +52,113 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
   @override
   Future<int> delete(dynamic id) async {
-    return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
+    try {
+      return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA001', 'Erro ao deletar os dados: $e');
+    }
   }
 
   @override
   Future<List<Map<String, Object?>>> getAll() async {
-    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
-    for (var evaluation in evaluations) {
-      evaluation = await _processEvaluation(evaluation);
+    try {
+      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
+      for (var evaluation in evaluations) {
+        evaluation = await _processEvaluation(evaluation);
+      }
+      return evaluations;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA002', 'Erro ao obter os dados: $e');
     }
-    return evaluations;
   }
 
   @override
   Future<Map<String, Object?>> getById(dynamic id) async {
-    Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
-      if (list.isEmpty) return {};
-      return list[0];
-    });
-    evaluation = await _processEvaluation(evaluation);
-    return evaluation;
+    try {
+      Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+      evaluation = await _processEvaluation(evaluation);
+      return evaluation;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA003', 'Erro ao obter os dados: $e');
+    }
   }
 
   Future<List<Map<String, Object?>>> getVisibles() async {
-    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
-    for (var evaluation in evaluations) {
-      evaluation = await _processEvaluation(evaluation);
+    try {
+      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
+      for (var evaluation in evaluations) {
+        evaluation = await _processEvaluation(evaluation);
+      }
+      return evaluations;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
     }
-    return evaluations;
   }
 
   @override
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
-    data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
-    data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
-
-    var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
-    data.remove('coalescents');
-    var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
-    data.remove('technicians');
-    var photosMap = data['photos'] as List<Map<String, Object?>>;
-    data.remove('photos');
-
-    if (data['id'] == null || data['id'] == '') {
-      data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
-      await _localDatabase.insert('evaluation', data);
-
-      for (var coalescentMap in coalescentsMap) {
-        coalescentMap['evaluationid'] = data['id'];
-        coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
+    try {
+      data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
+      data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
+      var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
+      data.remove('coalescents');
+      var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
+      data.remove('technicians');
+      var photosMap = data['photos'] as List<Map<String, Object?>>;
+      data.remove('photos');
+      if (data['id'] == null || data['id'] == '') {
+        data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
+        await _localDatabase.insert('evaluation', data);
+        for (var coalescentMap in coalescentsMap) {
+          coalescentMap['evaluationid'] = data['id'];
+          coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
+        }
+        for (var technicianMap in techniciansMap) {
+          technicianMap['evaluationid'] = data['id'];
+          technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
+        }
+        for (var photoMap in photosMap) {
+          photoMap['evaluationid'] = data['id'];
+          photoMap = await _evaluationPhotoRepository.save(photoMap);
+        }
+        data['coalescents'] = coalescentsMap;
+        data['technicians'] = techniciansMap;
+        data['photos'] = photosMap;
+        data = await _processEvaluation(data);
+        return data;
+      } else {
+        throw RepositoryException('EVA005', 'Essa avaliação já foi salva.');
       }
-
-      for (var technicianMap in techniciansMap) {
-        technicianMap['evaluationid'] = data['id'];
-        technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
-      }
-
-      for (var photoMap in photosMap) {
-        photoMap['evaluationid'] = data['id'];
-        photoMap = await _evaluationPhotoRepository.save(photoMap);
-      }
-      data['coalescents'] = coalescentsMap;
-      data['technicians'] = techniciansMap;
-      data['photos'] = photosMap;
-
-      data = await _processEvaluation(data);
-      return data;
-    } else {
-      throw Exception('Essa avaliação já foi salva.');
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA006', 'Erro ao salvar os dados: $e');
     }
   }
 
   @override
   Future<void> synchronize(int lastSync) async {
-    await _synchronizeFromLocalToCloud(lastSync);
-    await _synchronizeFromCloudToLocal(lastSync);
+    try {
+      await _synchronizeFromLocalToCloud(lastSync);
+      await _synchronizeFromCloudToLocal(lastSync);
+    } on LocalDatabaseException {
+      rethrow;
+    } on RemoteDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA007', 'Erro ao sincronizar os dados: $e');
+    }
   }
 
   Future<String> _saveImage(Uint8List imageData, String fileName) async {
@@ -134,7 +169,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       await file.writeAsBytes(imageData);
       return filePath;
     } catch (e) {
-      throw FileSystemException('Falha ao salvar a imagem no disco.');
+      throw RepositoryException('EVA008', 'Falha ao salvar a imagem no dispositivo.');
     }
   }
 
@@ -199,26 +234,22 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       for (var photo in photos) {
         exists = await _localDatabase.isSaved('evaluationphoto', id: photo['id'] as int);
         photo['evaluationid'] = evaluationMap['id'];
-
         var photoData = await _storage.downloadFile(photo['path']);
         if (photoData != null) {
           photo['path'] = await _saveImage(photoData, photo['path'].toString().split('/').last);
         } else {
           photo['path'] = '';
         }
-
         if (exists) {
           await _localDatabase.update('evaluationphoto', photo, where: 'id = ?', whereArgs: [evaluationMap['id']]);
         } else {
           await _localDatabase.insert('evaluationphoto', photo);
         }
       }
-
       evaluationMap.remove('documentid');
       evaluationMap.remove('technicians');
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
-
       var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
       if (signData != null) {
         evaluationMap['signaturepath'] = await _saveImage(signData, evaluationMap['signaturepath'].toString().split('/').last);

@@ -1,10 +1,11 @@
 abstract class AppException implements Exception {
+  final String code;
   final String message;
 
-  AppException(this.message);
+  AppException(this.code, this.message);
 
   @override
   String toString() {
-    return message;
+    return '$code: $message';
   }
 }
