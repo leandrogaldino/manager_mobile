@@ -48,9 +48,9 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateSchedule(int scheduleId, bool isVisible) async {
-    await scheduleService.updateVisibility(scheduleId, isVisible);
-  }
+  // Future<void> updateSchedule(int scheduleId, bool isVisible) async {
+  //   await scheduleService.updateVisibility(scheduleId, isVisible);
+  // }
 
   Future<void> updateImagesBytes() async {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
