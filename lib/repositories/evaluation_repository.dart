@@ -72,7 +72,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   Future<List<Map<String, Object?>>> getVisibles() async {
-    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1]);
+    List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
     for (var evaluation in evaluations) {
       evaluation = await _processEvaluation(evaluation);
     }
