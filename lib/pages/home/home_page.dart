@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   late final HomeController _homeController;
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
-  late Timer _synchronizeTimer;
+  late final Timer _synchronizeTimer;
   bool _hasShownError = false;
 
   @override

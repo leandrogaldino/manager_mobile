@@ -32,6 +32,12 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  int? _selectedPhotoIndex;
+  int? get selectedPhotoIndex => _selectedPhotoIndex;
+  void setSelectedPhotoIndex(int? index) {
+    _selectedPhotoIndex = index;
+  }
+
   ScheduleModel? _schedule;
   ScheduleModel? get schedule => _schedule;
   void setSchedule(ScheduleModel? schedule) {

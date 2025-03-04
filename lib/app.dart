@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
+import 'package:manager_mobile/pages/photos/photos_page.dart';
 import 'package:manager_mobile/pages/signature/signature_signature_page.dart';
 import 'package:manager_mobile/pages/home/home_page.dart';
 import 'package:manager_mobile/pages/login/login_page.dart';
@@ -46,7 +47,7 @@ class App extends StatelessWidget {
                 ),
               );
             }
-            if (settings.name == Routes.evaluationPhoto) {
+            if (settings.name == Routes.takePhoto) {
               return MaterialPageRoute<File?>(
                 builder: (context) => CameraCamera(
                   enableZoom: false,
@@ -66,7 +67,8 @@ class App extends StatelessWidget {
           routes: {
             Routes.login: (context) => const LoginPage(),
             Routes.home: (context) => const HomePage(),
-            Routes.evaluationSignature: (context) => const EvaluationSignaturePage(),
+            Routes.captureSignature: (context) => const EvaluationSignaturePage(),
+            Routes.viewPhoto: (context) => const PhotosPage(),
           },
           locale: Locale('pt', 'BR'),
           supportedLocales: [Locale('pt', 'BR')],

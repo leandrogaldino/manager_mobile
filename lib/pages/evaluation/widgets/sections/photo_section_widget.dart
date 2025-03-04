@@ -28,9 +28,8 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     final int maxPhotos = _evaluationController.source != SourceTypes.fromSaved ? 6 : _evaluationController.evaluation!.photos.length; // Número máximo de fotos
     const int crossAxisCount = 3;
     const double spacing = 8;
-
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;
-    final double cellHeight = cellWidth * 1.1;
+    final double cellHeight = cellWidth * 1.8;
     final List<String?> photoPaths = List.generate(
       maxPhotos,
       (index) => index < _evaluationController.evaluation!.photos.length ? _evaluationController.evaluation!.photos[index].path : null,
@@ -96,11 +95,17 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                     }),
               ),
               onTap: () async {
-                if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
-                  final File? file = await Navigator.pushNamed<File?>(context, Routes.evaluationPhoto);
-                  if (file != null) {
-                    _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
-                    await _evaluationController.updateImagesBytes();
+                if (isPhotoTaken) {
+                  _evaluationController.setSelectedPhotoIndex(index);
+                  await Navigator.pushNamed(context, Routes.viewPhoto);
+                  _evaluationController.setSelectedPhotoIndex(null);
+                } else {
+                  if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
+                    final File? file = await Navigator.pushNamed<File?>(context, Routes.takePhoto);
+                    if (file != null) {
+                      _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
+                      await _evaluationController.updateImagesBytes();
+                    }
                   }
                 }
               },
