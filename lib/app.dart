@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
-import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/photos/photos_page.dart';
 import 'package:manager_mobile/pages/signature/signature_signature_page.dart';

@@ -23,6 +23,9 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
       var persons = await _localDatabase.query('person');
       for (var person in persons) {
         var compressors = await _compressorRepository.getByParentId(person['id'] as int);
+        for (var compressor in compressors) {
+          compressor['owner'] = null;
+        }
         person['compressors'] = compressors;
       }
       return persons;
@@ -38,6 +41,9 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
       var persons = await _localDatabase.query('person', where: 'iscustomer = ?', whereArgs: ['1']);
       for (var person in persons) {
         var compressors = await _compressorRepository.getByParentId(person['id'] as int);
+        for (var compressor in compressors) {
+          compressor['owner'] = person;
+        }
         person['compressors'] = compressors;
       }
       return persons;
@@ -71,6 +77,9 @@ class PersonRepository implements Readable<Map<String, Object?>>, Syncronizable 
         return list[0];
       });
       var compressors = await _compressorRepository.getByParentId(person['id'] as int);
+      for (var compressor in compressors) {
+        compressor['owner'] = person;
+      }
       person['compressors'] = compressors;
       return person;
     } on LocalDatabaseException {
