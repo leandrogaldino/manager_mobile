@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // Import necessário para kReleaseMode
+import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';

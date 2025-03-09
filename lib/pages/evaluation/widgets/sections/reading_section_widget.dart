@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
@@ -25,7 +24,6 @@ class ReadingSectionWidget extends StatefulWidget {
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
-  late final PersonController _personController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
   late final TextEditingController _serialNumberEC;
@@ -56,7 +54,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void initState() {
     super.initState();
     _evaluationController = Locator.get<EvaluationController>();
-    _personController = Locator.get<PersonController>();
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
       if (_evaluationController.evaluation!.customer != null && _customerEC.text != _evaluationController.evaluation!.customer!.shortName) {
@@ -127,8 +124,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       FocusScope.of(context).requestFocus(FocusNode());
                       CompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
-                        var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                        _evaluationController.updateCustomer(customer);
+                        // var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
+                        //_evaluationController.updateCustomer(customer);
                         _evaluationController.updateCompressor(compressor);
                       }
                     },

@@ -12,7 +12,7 @@ class CompressorPickerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PersonController personController = Locator.get<PersonController>();
-    List<CompressorModel> compressors = personController.customers.expand((customer) => customer.compressors).toList();
+    List<CompressorModel> compressors = []; //personController.customers.expand((customer) => customer.compressors).toList();
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

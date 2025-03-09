@@ -25,7 +25,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
     super.initState();
     _customerOrCompressorEC = TextEditingController();
     _personController = Locator.get<PersonController>();
-    filteredCompressors = _personController.customers.expand((customer) => customer.compressors).toList();
+    filteredCompressors = []; // _personController.customers.expand((customer) => customer.compressors).toList();
   }
 
   @override
@@ -43,11 +43,8 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           decoration: InputDecoration(labelText: 'Cliente/Compressor'),
           onChanged: (value) {
             setState(() {
-              filteredCompressors = _personController.customers.expand((customer) {
-                return customer.compressors.where((compressor) {
-                  return compressor.compressorName.toLowerCase().contains(value.toLowerCase()) || compressor.serialNumber.toLowerCase().contains(value.toLowerCase()) || compressor.sector.toLowerCase().contains(value.toLowerCase()) || customer.shortName.toLowerCase().contains(value.toLowerCase());
-                }).toList();
-              }).toList();
+              filteredCompressors =
+                  []; //_personController.customers.expand((customer) {                return customer.compressors.where((compressor) {                  return compressor.compressorName.toLowerCase().contains(value.toLowerCase()) || compressor.serialNumber.toLowerCase().contains(value.toLowerCase()) || compressor.sector.toLowerCase().contains(value.toLowerCase()) || customer.shortName.toLowerCase().contains(value.toLowerCase());                }).toList();              }).toList();
             });
           },
         ),
@@ -56,9 +53,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           child: ListView.builder(
               itemCount: filteredCompressors.length,
               itemBuilder: (context, index) {
-                PersonModel customer = _personController.customers.firstWhere(
-                  (customer) => customer.compressors.contains(filteredCompressors[index]),
-                );
+                PersonModel customer; // = _personController.customers.firstWhere(                  (customer) => customer.compressors.contains(filteredCompressors[index]),                );
                 return ListTile(
                   title: Text(filteredCompressors[index].compressorName),
                   subtitle: Column(
@@ -68,7 +63,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
                         offstage: filteredCompressors[index].serialNumber == '',
                         child: Text(filteredCompressors[index].serialNumber),
                       ),
-                      Text(customer.shortName),
+                      //Text(customer.shortName),
                       Offstage(
                         offstage: filteredCompressors[index].sector == '',
                         child: Text(filteredCompressors[index].sector),

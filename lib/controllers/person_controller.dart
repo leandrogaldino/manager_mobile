@@ -12,12 +12,12 @@ class PersonController {
 
   List<PersonModel> _customers = [];
   List<PersonModel> get customers => _customers;
+
   Future<void> fetchCustomers() async {
     _customers = await personService.getCustomers();
     _customers = _customers.where((person) => person.statusId == 0).toList();
-
     List<CompressorModel> compressors = await compressorService.getAll();
-
+    compressors = compressors.where((compressor) => compressor.statusId == 0 && compressor.owner.statusId == 0).toList();
     log(compressors.length.toString());
   }
 

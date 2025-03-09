@@ -87,6 +87,7 @@ class Locator {
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
         coalescentRepository: _getIt.get<CoalescentRepository>(),
+        personRepository: _getIt.get<PersonRepository>(),
       ),
     );
 
@@ -100,7 +101,6 @@ class Locator {
       () => PersonRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
-        compressorRepository: _getIt.get<CompressorRepository>(),
       ),
     );
 
