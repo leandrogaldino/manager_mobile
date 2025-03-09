@@ -34,7 +34,7 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
     super.didChangeDependencies();
     if (_signatureController != null) return;
     _signatureController = SignatureController(
-      penColor: Theme.of(context).colorScheme.onSecondary,
+      penStrokeWidth: 2,
     );
   }
 

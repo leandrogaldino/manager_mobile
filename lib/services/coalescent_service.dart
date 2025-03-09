@@ -6,19 +6,19 @@ import 'package:manager_mobile/models/coalescent_model.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 
 class CoalescentService implements Readable<CoalescentModel>, Childable<CoalescentModel>, Syncronizable {
-  final CoalescentRepository _repository;
+  final CoalescentRepository _coalescentRepository;
 
-  CoalescentService({required CoalescentRepository repository}) : _repository = repository;
+  CoalescentService({required CoalescentRepository coalescentRepository}) : _coalescentRepository = coalescentRepository;
 
   @override
   Future<List<CoalescentModel>> getAll() async {
-    final data = await _repository.getAll();
+    final data = await _coalescentRepository.getAll();
     return data.map((item) => CoalescentModel.fromMap(item)).toList();
   }
 
   @override
   Future<CoalescentModel> getById(dynamic id) async {
-    final data = await _repository.getById(id);
+    final data = await _coalescentRepository.getById(id);
     if (data.isNotEmpty) {
       return CoalescentModel.fromMap(data);
     } else {
@@ -28,12 +28,12 @@ class CoalescentService implements Readable<CoalescentModel>, Childable<Coalesce
 
   @override
   Future<List<CoalescentModel>> getByParentId(dynamic parentId) async {
-    final data = await _repository.getByParentId(parentId);
+    final data = await _coalescentRepository.getByParentId(parentId);
     return data.map((item) => CoalescentModel.fromMap(item)).toList();
   }
 
   @override
   Future<void> synchronize(int lastSync) async {
-    await _repository.synchronize(lastSync);
+    await _coalescentRepository.synchronize(lastSync);
   }
 }

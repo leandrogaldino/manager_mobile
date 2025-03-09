@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
@@ -19,7 +19,7 @@ class HomeController extends ChangeNotifier {
     required ScheduleService scheduleService,
     required EvaluationService evaluationService,
     required AppPreferences appPreferences,
-    required PersonController customerController,
+    required DataController customerController,
   })  : _coalescentService = coalescentService,
         _compressorService = compressorService,
         _personService = personService,
@@ -34,7 +34,7 @@ class HomeController extends ChangeNotifier {
   final ScheduleService _scheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
-  final PersonController _personController;
+  final DataController _personController;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -66,12 +66,15 @@ class HomeController extends ChangeNotifier {
       if (customerOrCompressor != null && customerOrCompressor.isNotEmpty) {
         _schedules = _schedules.where(
           (schedule) {
-            return schedule.customer.shortName.toLowerCase().contains(customerOrCompressor) || schedule.compressor.compressorName.toLowerCase().contains(customerOrCompressor) || schedule.compressor.serialNumber.toLowerCase().contains(customerOrCompressor);
+            return schedule.customer.shortName.toLowerCase().contains(customerOrCompressor) ||
+                schedule.compressor.compressorName.toLowerCase().contains(customerOrCompressor) ||
+                schedule.compressor.serialNumber.toLowerCase().contains(customerOrCompressor) ||
+                schedule.compressor.sector.toLowerCase().contains(customerOrCompressor);
           },
         ).toList();
         _evaluations = _evaluations.where(
           (evaluation) {
-            return evaluation.customer!.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.serialNumber.toLowerCase().contains(customerOrCompressor);
+            return evaluation.compressor!.owner.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.sector.toLowerCase().contains(customerOrCompressor);
           },
         ).toList();
       }
@@ -112,7 +115,7 @@ class HomeController extends ChangeNotifier {
       await _evaluationService.synchronize(lastSync);
       await _appPreferences.updateLastSynchronize();
       await _appPreferences.setSynchronizing(false);
-      await _personController.fetchCustomers();
+      await _personController.fetchCompressors();
       await _personController.fetchTechnicians();
       await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
       if (_state is! HomeStateError) {

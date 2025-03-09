@@ -43,6 +43,28 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Syncroniza
     }
   }
 
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    try {
+      var compressors = await _localDatabase.rawQuery('''
+        SELECT c.id, c.personid, c.visible, c.compressorid, c.compressorname, c.serialnumber, c.sector, c.lastupdate
+        FROM compressor c
+        INNER JOIN person p ON p.id = c.personid
+        WHERE c.visible = 1 AND p.visible = 1
+        ''');
+      for (var compressor in compressors) {
+        var owner = await _personRepository.getById(compressor['personid'] as int);
+        compressor['owner'] = owner;
+        var coalescents = await _coalescentRepository.getByParentId(compressor['id'] as int);
+        compressor['coalescents'] = coalescents;
+      }
+      return compressors;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
+    }
+  }
+
   @override
   Future<Map<String, Object?>> getById(dynamic id) async {
     try {

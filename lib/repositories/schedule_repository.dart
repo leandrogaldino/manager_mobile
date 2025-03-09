@@ -93,9 +93,9 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
   }
 
   Future<Map<String, Object?>> _processSchedule(Map<String, Object?> scheduleData) async {
-    var compressor = await _compressorRepository.getById(scheduleData['compressorid'] as int);
+    var compressor = await _compressorRepository.getById(scheduleData['personcompressorid'] as int);
     scheduleData['compressor'] = compressor;
-    scheduleData.remove('compressorid');
+    scheduleData.remove('personcompressorid');
     var customer = await _personRepository.getById(compressor['personid'] as int);
     scheduleData['customer'] = customer;
     return scheduleData;

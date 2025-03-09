@@ -2,25 +2,25 @@ import 'dart:convert';
 
 class CoalescentModel {
   final int id;
-  final int statusId;
+  final bool visible;
   final String coalescentName;
   final DateTime lastUpdate;
   CoalescentModel({
     required this.id,
-    required this.statusId,
+    required this.visible,
     required this.coalescentName,
     required this.lastUpdate,
   });
 
   CoalescentModel copyWith({
     int? id,
-    int? statusId,
+    bool? visible,
     String? coalescentName,
     DateTime? lastUpdate,
   }) {
     return CoalescentModel(
       id: id ?? this.id,
-      statusId: statusId ?? this.statusId,
+      visible: visible ?? this.visible,
       coalescentName: coalescentName ?? this.coalescentName,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
@@ -29,7 +29,7 @@ class CoalescentModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'statusid': statusId,
+      'visible': visible,
       'coalescentname': coalescentName,
       'lastupdate': lastUpdate.millisecondsSinceEpoch,
     };
@@ -38,7 +38,7 @@ class CoalescentModel {
   factory CoalescentModel.fromMap(Map<String, dynamic> map) {
     return CoalescentModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusid'] ?? 0) as int,
+      visible: map['visible'] as int == 0 ? false : true,
       coalescentName: (map['coalescentname'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
@@ -50,18 +50,18 @@ class CoalescentModel {
 
   @override
   String toString() {
-    return 'CoalescentModel(id: $id, statusId: $statusId, coalescentName: $coalescentName, lastUpdate: $lastUpdate)';
+    return 'CoalescentModel(id: $id, visible: $visible, coalescentName: $coalescentName, lastUpdate: $lastUpdate)';
   }
 
   @override
   bool operator ==(covariant CoalescentModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.statusId == statusId && other.coalescentName == coalescentName && other.lastUpdate == lastUpdate;
+    return other.id == id && other.visible == visible && other.coalescentName == coalescentName && other.lastUpdate == lastUpdate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ coalescentName.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ coalescentName.hashCode ^ lastUpdate.hashCode;
   }
 }

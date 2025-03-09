@@ -12,6 +12,9 @@ class ScheduleTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String subtitle = schedule.compressor.compressorName;
+    schedule.compressor.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.serialNumber}' : null;
+    schedule.compressor.sector.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.sector}' : null;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -27,7 +30,7 @@ class ScheduleTileWidget extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            '${schedule.compressor.compressorName} - ${schedule.compressor.serialNumber}',
+            subtitle,
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
             ),

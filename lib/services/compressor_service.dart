@@ -5,19 +5,24 @@ import 'package:manager_mobile/models/compressor_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
 class CompressorService implements Readable<CompressorModel>, Syncronizable {
-  final CompressorRepository _repository;
+  final CompressorRepository _compressorRepository;
 
-  CompressorService({required CompressorRepository repository}) : _repository = repository;
+  CompressorService({required CompressorRepository compressorRepository}) : _compressorRepository = compressorRepository;
 
   @override
   Future<List<CompressorModel>> getAll() async {
-    final data = await _repository.getAll();
+    final data = await _compressorRepository.getAll();
+    return data.map((item) => CompressorModel.fromMap(item)).toList();
+  }
+
+  Future<List<CompressorModel>> getVisibles() async {
+    final data = await _compressorRepository.getVisibles();
     return data.map((item) => CompressorModel.fromMap(item)).toList();
   }
 
   @override
   Future<CompressorModel> getById(dynamic id) async {
-    final data = await _repository.getById(id);
+    final data = await _compressorRepository.getById(id);
     if (data.isNotEmpty) {
       return CompressorModel.fromMap(data);
     } else {
@@ -27,6 +32,6 @@ class CompressorService implements Readable<CompressorModel>, Syncronizable {
 
   @override
   Future<void> synchronize(int lastSync) async {
-    await _repository.synchronize(lastSync);
+    await _compressorRepository.synchronize(lastSync);
   }
 }

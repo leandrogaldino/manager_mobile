@@ -5,23 +5,23 @@ import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
 
 class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
-  final ScheduleRepository _repository;
+  final ScheduleRepository _scheduleRepository;
 
-  ScheduleService({required ScheduleRepository repository}) : _repository = repository;
+  ScheduleService({required ScheduleRepository scheduleRepository}) : _scheduleRepository = scheduleRepository;
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
-    _repository.updateVisibility(scheduleId, isVisible);
+    _scheduleRepository.updateVisibility(scheduleId, isVisible);
   }
 
   @override
   Future<List<ScheduleModel>> getAll() async {
-    final data = await _repository.getAll();
+    final data = await _scheduleRepository.getAll();
     return data.map((item) => ScheduleModel.fromMap(item)).toList();
   }
 
   @override
   Future<ScheduleModel> getById(dynamic id) async {
-    final data = await _repository.getById(id);
+    final data = await _scheduleRepository.getById(id);
     if (data.isNotEmpty) {
       return ScheduleModel.fromMap(data);
     } else {
@@ -30,12 +30,12 @@ class ScheduleService implements Readable<ScheduleModel>, Syncronizable {
   }
 
   Future<List<ScheduleModel>> getVisibles() async {
-    final data = await _repository.getVisibles();
+    final data = await _scheduleRepository.getVisibles();
     return data.map((item) => ScheduleModel.fromMap(item)).toList();
   }
 
   @override
   Future<void> synchronize(int lastSync) async {
-    await _repository.synchronize(lastSync);
+    await _scheduleRepository.synchronize(lastSync);
   }
 }

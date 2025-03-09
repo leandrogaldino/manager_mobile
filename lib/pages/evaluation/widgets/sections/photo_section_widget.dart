@@ -25,7 +25,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final int maxPhotos = _evaluationController.source != SourceTypes.fromSaved ? 6 : _evaluationController.evaluation!.photos.length; // Número máximo de fotos
+    final int maxPhotos = _evaluationController.source != SourceTypes.fromSaved ? 6 : _evaluationController.evaluation!.photos.length;
     const int crossAxisCount = 3;
     const double spacing = 8;
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;

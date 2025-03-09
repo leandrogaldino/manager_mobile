@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_dialog.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -10,7 +10,7 @@ class TechnicianPicker {
     required BuildContext context,
     List<PersonModel>? hide,
   }) async {
-    PersonController personController = Locator.get<PersonController>();
+    DataController personController = Locator.get<DataController>();
     EvaluationController evaluationController = Locator.get<EvaluationController>();
     PersonModel? person;
 

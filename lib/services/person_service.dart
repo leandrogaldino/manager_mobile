@@ -5,29 +5,29 @@ import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
 class PersonService implements Readable<PersonModel>, Syncronizable {
-  final PersonRepository _repository;
+  final PersonRepository _personRepository;
 
-  PersonService({required PersonRepository repository}) : _repository = repository;
+  PersonService({required PersonRepository personRepository}) : _personRepository = personRepository;
 
   @override
   Future<List<PersonModel>> getAll() async {
-    final data = await _repository.getAll();
+    final data = await _personRepository.getAll();
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
   Future<List<PersonModel>> getCustomers() async {
-    final data = await _repository.getCustomers();
+    final data = await _personRepository.getCustomers();
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
   Future<List<PersonModel>> getTechnicians() async {
-    final data = await _repository.getTechnicians();
+    final data = await _personRepository.getTechnicians();
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
   @override
   Future<PersonModel> getById(dynamic id) async {
-    final data = await _repository.getById(id);
+    final data = await _personRepository.getById(id);
     if (data.isNotEmpty) {
       return PersonModel.fromMap(data);
     } else {
@@ -37,6 +37,6 @@ class PersonService implements Readable<PersonModel>, Syncronizable {
 
   @override
   Future<void> synchronize(lastSync) async {
-    await _repository.synchronize(lastSync);
+    await _personRepository.synchronize(lastSync);
   }
 }

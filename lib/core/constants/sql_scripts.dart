@@ -50,7 +50,7 @@ class SQLScripts {
   static const String createTablePerson = '''
     CREATE TABLE person (
       id INTEGER PRIMARY KEY,
-      statusid INTEGER NOT NULL,
+      visible INTEGER NOT NULL,
       document TEXT NOT NULL,
       shortname TEXT NOT NULL,
       iscustomer INTEGER NOT NULL,
@@ -63,7 +63,7 @@ class SQLScripts {
     CREATE TABLE compressor (
       id INTEGER PRIMARY KEY,
       personid INTEGER NOT NULL,
-      statusid INTEGER NOT NULL,
+      visible INTEGER NOT NULL,
       compressorid INTEGER NOT NULL,
       compressorname TEXT NOT NULL,
       serialnumber TEXT NOT NULL,
@@ -76,7 +76,7 @@ class SQLScripts {
   static const String createTableCoalescent = '''
     CREATE TABLE coalescent (
       id INTEGER PRIMARY KEY,
-      statusid INTEGER NOT NULL,
+      visible INTEGER NOT NULL,
       personcompressorid INT NOT NULL,
       coalescentname TEXT NOT NULL,
       lastupdate INTEGER NOT NULL,
@@ -92,7 +92,7 @@ class SQLScripts {
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
       calltypeid INTEGER NOT NULL,
-      compressorid INT NOT NULL,
+      personcompressorid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       starttime TEXT NOT NULL,
       endtime TEXT NOT NULL,
@@ -106,7 +106,7 @@ class SQLScripts {
       signaturepath TEXT NOT NULL,
       advice TEXT,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';
 
@@ -145,13 +145,13 @@ class SQLScripts {
     CREATE TABLE schedule (
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
-      compressorid INT NOT NULL,
+      personcompressorid INT NOT NULL,
       creationdate INTEGER NOT NULL,
       visitdate INTEGER NOT NULL,
       calltypeid INT NOT NULL,
       instructions TEXT,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE RESTRICT
     );
   ''';
 }

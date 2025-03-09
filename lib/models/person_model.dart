@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class PersonModel {
   final int id;
-  final int statusId;
+  final bool visible;
   final String document;
   final bool isCustomer;
   final bool isTechnician;
@@ -10,7 +10,7 @@ class PersonModel {
   final String shortName;
   PersonModel({
     required this.id,
-    required this.statusId,
+    required this.visible,
     required this.document,
     required this.isCustomer,
     required this.isTechnician,
@@ -20,7 +20,7 @@ class PersonModel {
 
   PersonModel copyWith({
     int? id,
-    int? statusId,
+    bool? visible,
     String? document,
     bool? isCustomer,
     bool? isTechnician,
@@ -29,7 +29,7 @@ class PersonModel {
   }) {
     return PersonModel(
       id: id ?? this.id,
-      statusId: statusId ?? this.statusId,
+      visible: visible ?? this.visible,
       document: document ?? this.document,
       isCustomer: isCustomer ?? this.isCustomer,
       isTechnician: isTechnician ?? this.isTechnician,
@@ -41,7 +41,7 @@ class PersonModel {
   factory PersonModel.fromMap(Map<String, dynamic> map) {
     return PersonModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusid'] ?? 0) as int,
+      visible: map['visible'] as int == 0 ? false : true,
       document: (map['document'] ?? '') as String,
       isCustomer: map['iscustomer'] == 0 ? false : true,
       isTechnician: map['istechnician'] == 0 ? false : true,
@@ -52,25 +52,25 @@ class PersonModel {
 
   @override
   String toString() {
-    return 'PersonModel(id: $id, statusId: $statusId, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName)';
+    return 'PersonModel(id: $id, visible: $visible, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName)';
   }
 
   @override
   bool operator ==(covariant PersonModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.statusId == statusId && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName;
+    return other.id == id && other.visible == visible && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode;
+    return id.hashCode ^ visible.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode;
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'statusid': statusId,
+      'visible': visible,
       'document': document,
       'iscustomer': isCustomer == false ? 0 : 1,
       'istechnician': isTechnician == false ? 0 : 1,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
-import 'package:manager_mobile/models/person_model.dart';
 
 class CompressorPickerWidget extends StatefulWidget {
   const CompressorPickerWidget({
@@ -17,15 +16,15 @@ class CompressorPickerWidget extends StatefulWidget {
 
 class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
   late final TextEditingController _customerOrCompressorEC;
-  late final PersonController _personController;
+  late final DataController _dataController;
   late List<CompressorModel> filteredCompressors;
 
   @override
   void initState() {
     super.initState();
     _customerOrCompressorEC = TextEditingController();
-    _personController = Locator.get<PersonController>();
-    filteredCompressors = []; // _personController.customers.expand((customer) => customer.compressors).toList();
+    _dataController = Locator.get<DataController>();
+    filteredCompressors = _dataController.compressors;
   }
 
   @override
@@ -43,8 +42,13 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           decoration: InputDecoration(labelText: 'Cliente/Compressor'),
           onChanged: (value) {
             setState(() {
-              filteredCompressors =
-                  []; //_personController.customers.expand((customer) {                return customer.compressors.where((compressor) {                  return compressor.compressorName.toLowerCase().contains(value.toLowerCase()) || compressor.serialNumber.toLowerCase().contains(value.toLowerCase()) || compressor.sector.toLowerCase().contains(value.toLowerCase()) || customer.shortName.toLowerCase().contains(value.toLowerCase());                }).toList();              }).toList();
+              filteredCompressors = _dataController.compressors.where((compressor) {
+                return compressor.compressorName.toLowerCase().contains(value) ||
+                    compressor.serialNumber.toLowerCase().contains(value) ||
+                    compressor.sector.toLowerCase().contains(value) ||
+                    compressor.owner.shortName.toLowerCase().contains(value) ||
+                    compressor.owner.document.toLowerCase().contains(value);
+              }).toList();
             });
           },
         ),
@@ -53,7 +57,6 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           child: ListView.builder(
               itemCount: filteredCompressors.length,
               itemBuilder: (context, index) {
-                PersonModel customer; // = _personController.customers.firstWhere(                  (customer) => customer.compressors.contains(filteredCompressors[index]),                );
                 return ListTile(
                   title: Text(filteredCompressors[index].compressorName),
                   subtitle: Column(
@@ -63,7 +66,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
                         offstage: filteredCompressors[index].serialNumber == '',
                         child: Text(filteredCompressors[index].serialNumber),
                       ),
-                      //Text(customer.shortName),
+                      Text(filteredCompressors[index].owner.shortName),
                       Offstage(
                         offstage: filteredCompressors[index].sector == '',
                         child: Text(filteredCompressors[index].sector),

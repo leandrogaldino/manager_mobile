@@ -6,7 +6,6 @@ import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
@@ -159,11 +158,6 @@ class EvaluationController extends ChangeNotifier {
 
   void updateHorimeter(int horimeter) {
     _evaluation!.horimeter = horimeter;
-    notifyListeners();
-  }
-
-  void updateCustomer(PersonModel? customer) {
-    _evaluation!.customer = customer;
     notifyListeners();
   }
 

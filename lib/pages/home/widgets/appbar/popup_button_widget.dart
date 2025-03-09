@@ -6,6 +6,7 @@ import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
+import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 
 class PopupButtonWidget extends StatefulWidget {
@@ -75,6 +76,19 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
               await _loginController.signOut().asyncLoader(
                     customLoader: const LoaderWidget(message: 'Saindo'),
                   );
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Resetar LocalDB'),
+            onTap: () async {
+              Navigator.pop(context);
+
+              var db = Locator.get<LocalDatabase>();
+              await db.delete('schedule');
+              await db.delete('evaluation');
             },
           ),
         ),

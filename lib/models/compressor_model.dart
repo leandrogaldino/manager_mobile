@@ -7,7 +7,7 @@ import 'package:manager_mobile/models/person_model.dart';
 
 class CompressorModel {
   final int id;
-  final int statusId;
+  final bool visible;
   final int compressorId;
   final String compressorName;
   final DateTime lastUpdate;
@@ -18,7 +18,7 @@ class CompressorModel {
 
   CompressorModel({
     required this.id,
-    required this.statusId,
+    required this.visible,
     required this.compressorId,
     required this.compressorName,
     required this.lastUpdate,
@@ -30,7 +30,7 @@ class CompressorModel {
 
   CompressorModel copyWith({
     int? id,
-    int? statusId,
+    bool? visible,
     int? compressorId,
     String? compressorName,
     DateTime? lastUpdate,
@@ -41,7 +41,7 @@ class CompressorModel {
   }) {
     return CompressorModel(
       id: id ?? this.id,
-      statusId: statusId ?? this.statusId,
+      visible: visible ?? this.visible,
       compressorId: compressorId ?? this.compressorId,
       compressorName: compressorName ?? this.compressorName,
       lastUpdate: lastUpdate ?? this.lastUpdate,
@@ -55,7 +55,7 @@ class CompressorModel {
   factory CompressorModel.fromMap(Map<String, dynamic> map) {
     return CompressorModel(
       id: (map['id'] ?? 0) as int,
-      statusId: (map['statusid'] ?? 0) as int,
+      visible: map['visible'] as int == 0 ? false : true,
       compressorId: (map['compressorid'] ?? 0) as int,
       compressorName: (map['compressorname'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
@@ -72,7 +72,7 @@ class CompressorModel {
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, statusId: $statusId, compressorId: $compressorId, compressorName: $compressorName, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, coalescents: $coalescents)';
+    return 'CompressorModel(id: $id, visible: $visible, compressorId: $compressorId, compressorName: $compressorName, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, coalescents: $coalescents)';
   }
 
   @override
@@ -80,7 +80,7 @@ class CompressorModel {
     if (identical(this, other)) return true;
 
     return other.id == id &&
-        other.statusId == statusId &&
+        other.visible == visible &&
         other.compressorId == compressorId &&
         other.compressorName == compressorName &&
         other.lastUpdate == lastUpdate &&
@@ -92,13 +92,13 @@ class CompressorModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ statusId.hashCode ^ compressorId.hashCode ^ compressorName.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ owner.hashCode ^ coalescents.hashCode;
+    return id.hashCode ^ visible.hashCode ^ compressorId.hashCode ^ compressorName.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ owner.hashCode ^ coalescents.hashCode;
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'statusid': statusId,
+      'visible': visible,
       'compressorid': compressorId,
       'compressorname': compressorName,
       'lastupdate': lastUpdate.millisecondsSinceEpoch,

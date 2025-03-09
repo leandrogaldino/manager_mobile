@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/controllers/person_controller.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
@@ -78,7 +78,7 @@ class Locator {
 
     _getIt.registerLazySingleton(
       () => CoalescentService(
-        repository: _getIt.get<CoalescentRepository>(),
+        coalescentRepository: _getIt.get<CoalescentRepository>(),
       ),
     );
 
@@ -93,7 +93,7 @@ class Locator {
 
     _getIt.registerLazySingleton(
       () => CompressorService(
-        repository: _getIt.get<CompressorRepository>(),
+        compressorRepository: _getIt.get<CompressorRepository>(),
       ),
     );
 
@@ -106,7 +106,7 @@ class Locator {
 
     _getIt.registerLazySingleton(
       () => PersonService(
-        repository: _getIt.get<PersonRepository>(),
+        personRepository: _getIt.get<PersonRepository>(),
       ),
     );
 
@@ -176,15 +176,15 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => ScheduleService(repository: _getIt.get<ScheduleRepository>()),
+      () => ScheduleService(scheduleRepository: _getIt.get<ScheduleRepository>()),
     );
 
     _getIt.registerLazySingleton<AppController>(() => AppController(
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
-    _getIt.registerLazySingleton<PersonController>(
-      () => PersonController(
+    _getIt.registerLazySingleton<DataController>(
+      () => DataController(
         personService: _getIt.get<PersonService>(),
         compressorService: _getIt.get<CompressorService>(),
       ),
@@ -197,7 +197,7 @@ class Locator {
           scheduleService: _getIt.get<ScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
           appPreferences: _getIt.get<AppPreferences>(),
-          customerController: _getIt.get<PersonController>(),
+          customerController: _getIt.get<DataController>(),
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());

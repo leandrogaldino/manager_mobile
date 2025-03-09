@@ -56,8 +56,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController = Locator.get<EvaluationController>();
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
-      if (_evaluationController.evaluation!.customer != null && _customerEC.text != _evaluationController.evaluation!.customer!.shortName) {
-        _evaluationController.evaluation!.customer = null;
+      if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.owner.shortName)) {
         _evaluationController.updateCompressor(null);
         _compressorEC.text = '';
         _serialNumberEC.text = '';
@@ -83,7 +82,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   }
 
   _fillForm() {
-    _customerEC.text = _evaluationController.evaluation!.customer!.shortName;
+    _customerEC.text = _evaluationController.evaluation!.compressor!.owner.shortName;
     _compressorEC.text = _evaluationController.evaluation!.compressor!.compressorName;
     _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
     _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
@@ -97,7 +96,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _customerEC.text = _evaluationController.evaluation!.customer?.shortName ?? '';
+    _customerEC.text = _evaluationController.evaluation!.compressor?.owner.shortName ?? '';
     _compressorEC.text = _evaluationController.evaluation!.compressor?.compressorName ?? '';
     final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
     final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
@@ -124,8 +123,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       FocusScope.of(context).requestFocus(FocusNode());
                       CompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
-                        // var customer = _personController.customers.firstWhere((customer) => customer.compressors.contains(compressor));
-                        //_evaluationController.updateCustomer(customer);
                         _evaluationController.updateCompressor(compressor);
                       }
                     },

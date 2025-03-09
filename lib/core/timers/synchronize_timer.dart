@@ -9,7 +9,7 @@ class SynchronizeTimer {
   static Future<Timer> init() async {
     NetworkConnection connection = NetworkConnection();
     HomeController homeController = Locator.get<HomeController>();
-    return Timer.periodic(Duration(minutes: 5), (_) async {
+    return Timer.periodic(Duration(minutes: 1), (_) async {
       try {
         log('Sincronização Automática iniciada.');
         bool hasConnection = await connection.hasConnection();

@@ -48,6 +48,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
                     ),
                     child: _evaluationController.signatureBytes == null
                         ? Center(

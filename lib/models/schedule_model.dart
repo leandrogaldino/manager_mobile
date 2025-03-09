@@ -60,7 +60,7 @@ class ScheduleModel {
       'userid': userId,
       'creationdate': creationDate.millisecondsSinceEpoch,
       'visitdate': visitDate.millisecondsSinceEpoch,
-      'visittypeid': callType,
+      'calltype': callType.index,
       'customer': customer.toMap(),
       'compressor': compressor.toMap(),
       'instructions': instructions,
@@ -71,7 +71,7 @@ class ScheduleModel {
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
     return ScheduleModel(
       id: (map['id'] ?? 0) as int,
-      visible: map['visible'] == 0 ? false : true,
+      visible: map['visible'] as int == 0 ? false : true,
       userId: (map['userid'] ?? 0) as int,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       visitDate: DateTime.fromMillisecondsSinceEpoch((map['visitdate'] ?? 0) as int),

@@ -118,7 +118,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       var photosMap = data['photos'] as List<Map<String, Object?>>;
       data.remove('photos');
       if (data['id'] == null || data['id'] == '') {
-        data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
+        data['id'] = StringHelper.getUniqueString(prefix: data['personcompressorid'].toString());
         await _localDatabase.insert('evaluation', data);
         for (var coalescentMap in coalescentsMap) {
           coalescentMap['evaluationid'] = data['id'];
@@ -136,6 +136,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         data['technicians'] = techniciansMap;
         data['photos'] = photosMap;
         data = await _processEvaluation(data);
+
         return data;
       } else {
         throw RepositoryException('EVA005', 'Essa avaliação já foi salva.');
@@ -176,7 +177,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   Future<void> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
-      int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
+      int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['personcompressorid']]).then((v) => v[0]['personid'] as int);
       String customerDocument = await _localDatabase.query('person', columns: ['document'], where: 'id = ?', whereArgs: [customerId]).then((v) => v[0]['document'].toString());
       customerDocument = customerDocument.replaceAll('.', '').replaceFirst('/', '').replaceFirst('-', '');
       String rootPath = '$customerDocument/${evaluationMap['id']}';
@@ -199,6 +200,15 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       evaluationMap['technicians'] = techniciansMap;
       var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
       evaluationMap['coalescents'] = coalescentsMap;
+      evaluationMap.remove('existsincloud');
+      evaluationMap.remove('importedid');
+      evaluationMap['info'] = {
+        'importedid': null,
+        'importingdate': null,
+        'importingby': null,
+        'importedby': null,
+        'importeddate': null,
+      };
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
     }
   }
@@ -207,9 +217,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
-      evaluationMap['importedid'] = evaluationMap['importedid'];
-      evaluationMap.remove('info');
-
       var technicians = evaluationMap['technicians'];
       for (var technician in technicians) {
         exists = await _localDatabase.isSaved('evaluationtechnician', id: technician['id'] as int);
@@ -256,7 +263,10 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       } else {
         evaluationMap['signaturepath'] = '';
       }
-      evaluationMap['existsincloud'] = true;
+      evaluationMap['existsincloud'] = 1;
+
+      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
+      evaluationMap.remove('info');
 
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {
@@ -268,11 +278,9 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
-    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
+    var compressor = await _compressorRepository.getById(evaluationData['personcompressorid'] as int);
     evaluationData['compressor'] = compressor;
-    evaluationData.remove('compressorid');
-    var customer = await _personRepository.getById(compressor['personid'] as int);
-    evaluationData['customer'] = customer;
+    evaluationData.remove('personcompressorid');
     var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
     for (var evaluationCoalescent in evaluationCoalescents) {
       var coalescent = await _coalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
