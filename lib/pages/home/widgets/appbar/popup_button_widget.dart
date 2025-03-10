@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -7,6 +9,7 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
+import 'package:manager_mobile/models/year_month_model.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/year_month_picker_widget.dart';
 
@@ -100,18 +103,18 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
               Navigator.pop(context);
 
               showDialog(
+                barrierDismissible: false,
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    content: SizedBox(
-                      height: 255,
-                      child: YearMonthPickerWidget(
-                        startYear: 2023,
-                        endYear: 2025,
-                        onSelected: (year, month) {
-                          print("Selecionado: $month de $year");
-                        },
-                      ),
+                    contentPadding: EdgeInsets.zero,
+                    content: YearMonthPickerWidget(
+                      startYear: 2023,
+                      endYear: 2025,
+                      selectedYearMonth: YearMonthModel(year: 2024, month: 8),
+                      onSelected: (yearmonth) {
+                        log("Selecionado: ${yearmonth.monthName} de ${yearmonth.year}");
+                      },
                     ),
                   );
                 },
