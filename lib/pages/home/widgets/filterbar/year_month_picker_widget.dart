@@ -30,69 +30,90 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    return Column(
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 150,
-            child: ListWheelScrollView.useDelegate(
-              itemExtent: 40,
-              perspective: 0.005,
-              diameterRatio: 1.2,
-              physics: const FixedExtentScrollPhysics(),
-              onSelectedItemChanged: (index) {
-                setState(() {
-                  selectedMonth = months[index];
-                  widget.onSelected(selectedYear, selectedMonth);
-                });
-              },
-              childDelegate: ListWheelChildBuilderDelegate(
-                builder: (context, index) {
-                  return Center(
-                    child: Text(
-                      months[index],
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        //color: selectedMonth == months[index] ? Colors.red: Colors.black,
-                      ),
-                    ),
-                  );
-                },
-                childCount: months.length,
+        Text('Selecione o Mês/Ano', style: textTheme.titleSmall),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 150,
+                child: ListWheelScrollView.useDelegate(
+                  itemExtent: 40,
+                  perspective: 0.005,
+                  diameterRatio: 1.2,
+                  physics: const FixedExtentScrollPhysics(),
+                  onSelectedItemChanged: (index) {
+                    setState(() {
+                      selectedMonth = months[index];
+                      widget.onSelected(selectedYear, selectedMonth);
+                    });
+                  },
+                  childDelegate: ListWheelChildBuilderDelegate(
+                    builder: (context, index) {
+                      return Center(
+                        child: Text(
+                          months[index],
+                          style: textTheme.bodyLarge!.copyWith(
+                            color: selectedMonth == months[index] ? colorScheme.secondary : colorScheme.onSecondary,
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: months.length,
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: SizedBox(
+                height: 180,
+                child: ListWheelScrollView.useDelegate(
+                  itemExtent: 40,
+                  perspective: 0.005,
+                  diameterRatio: 1.2,
+                  physics: const FixedExtentScrollPhysics(),
+                  onSelectedItemChanged: (index) {
+                    setState(() {
+                      selectedYear = years[index];
+                      widget.onSelected(selectedYear, selectedMonth);
+                    });
+                  },
+                  childDelegate: ListWheelChildBuilderDelegate(
+                    builder: (context, index) {
+                      return Center(
+                        child: Text(
+                          years[index].toString(),
+                          style: textTheme.bodyLarge!.copyWith(
+                            color: selectedYear == years[index] ? colorScheme.secondary : colorScheme.onSecondary,
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: years.length,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: SizedBox(
-            height: 150,
-            child: ListWheelScrollView.useDelegate(
-              itemExtent: 40,
-              perspective: 0.005,
-              diameterRatio: 1.2,
-              physics: const FixedExtentScrollPhysics(),
-              onSelectedItemChanged: (index) {
-                setState(() {
-                  selectedYear = years[index];
-                  widget.onSelected(selectedYear, selectedMonth);
-                });
-              },
-              childDelegate: ListWheelChildBuilderDelegate(
-                builder: (context, index) {
-                  return Center(
-                    child: Text(
-                      years[index].toString(),
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  );
-                },
-                childCount: years.length,
-              ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {},
+              child: Text('Cancelar'),
             ),
-          ),
+            TextButton(
+              onPressed: () {},
+              child: Text('Confirmar'),
+            )
+          ],
         ),
       ],
     );

@@ -104,7 +104,7 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
                 builder: (context) {
                   return AlertDialog(
                     content: SizedBox(
-                      height: 200,
+                      height: 255,
                       child: YearMonthPickerWidget(
                         startYear: 2023,
                         endYear: 2025,
