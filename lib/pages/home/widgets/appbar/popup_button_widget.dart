@@ -8,6 +8,7 @@ import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
+import 'package:manager_mobile/pages/home/widgets/filterbar/year_month_picker_widget.dart';
 
 class PopupButtonWidget extends StatefulWidget {
   const PopupButtonWidget({super.key});
@@ -85,10 +86,36 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
             title: const Text('Resetar LocalDB'),
             onTap: () async {
               Navigator.pop(context);
-
               var db = Locator.get<LocalDatabase>();
               await db.delete('schedule');
               await db.delete('evaluation');
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Filtro data'),
+            onTap: () async {
+              Navigator.pop(context);
+
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: SizedBox(
+                      height: 200,
+                      child: YearMonthPickerWidget(
+                        startYear: 2023,
+                        endYear: 2025,
+                        onSelected: (year, month) {
+                          print("Selecionado: $month de $year");
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
             },
           ),
         ),
