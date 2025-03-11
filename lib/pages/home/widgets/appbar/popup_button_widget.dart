@@ -109,8 +109,10 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
                   return AlertDialog(
                     contentPadding: EdgeInsets.zero,
                     content: YearMonthPickerWidget(
-                      startYear: 2023,
-                      endYear: 2025,
+                      dataSet: {
+                        2024: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        2025: [1, 2, 3]
+                      },
                       selectedYearMonth: YearMonthModel(year: 2024, month: 8),
                       onSelected: (yearmonth) {
                         log("Selecionado: ${yearmonth.monthName} de ${yearmonth.year}");

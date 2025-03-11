@@ -316,6 +316,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           ),
                         ],
                       ),
+
+                      //TODO: Colocar um botão para auto falante: transcrever voz para texto.
                       TextFormField(
                         controller: _adviceEC,
                         readOnly: _evaluationController.source == SourceTypes.fromSaved,

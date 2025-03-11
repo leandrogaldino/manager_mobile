@@ -59,6 +59,20 @@ class HomeController extends ChangeNotifier {
     await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
   }
 
+  int get firstYear {
+    if (schedules.isEmpty || evaluations.isEmpty) return 0;
+    int minScheduleYear = schedules.map((s) => s.creationDate.year).reduce((a, b) => a < b ? a : b);
+    int minEvaluationYear = evaluations.map((e) => e.creationDate!.year).reduce((a, b) => a < b ? a : b);
+    return minScheduleYear < minEvaluationYear ? minScheduleYear : minEvaluationYear;
+  }
+
+  int get lastYear {
+    if (schedules.isEmpty || evaluations.isEmpty) return 0;
+    int maxScheduleYear = schedules.map((s) => s.creationDate.year).reduce((a, b) => a > b ? a : b);
+    int maxEvaluationYear = evaluations.map((e) => e.creationDate!.year).reduce((a, b) => a > b ? a : b);
+    return maxScheduleYear > maxEvaluationYear ? maxScheduleYear : maxEvaluationYear;
+  }
+
   Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
       _schedules = await _scheduleService.getVisibles();

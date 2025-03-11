@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/models/year_month_model.dart';
+import 'package:sqflite/sqflite.dart';
 
 class YearMonthPickerWidget extends StatefulWidget {
-  final int startYear;
-  final int endYear;
+  final Map<int, List<int>> dataSet;
   final YearMonthModel selectedYearMonth;
 
   final Function(YearMonthModel yearMonth) onSelected;
 
   const YearMonthPickerWidget({
     super.key,
-    required this.startYear,
-    required this.endYear,
+    required this.dataSet,
     required this.selectedYearMonth,
     required this.onSelected,
   });
@@ -31,7 +30,11 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
   void initState() {
     super.initState();
     yearMonth = widget.selectedYearMonth;
-    years = List.generate(widget.endYear - widget.startYear + 1, (index) => widget.startYear + index);
+
+    int minYear = widget.dataSet.keys.reduce((a, b) => a < b ? a : b);
+    int maxYear = widget.dataSet.keys.reduce((a, b) => a > b ? a : b);
+
+    years = List.generate(maxYear - minYear + 1, (index) => minYear + index);
 
     yearController = FixedExtentScrollController(
       initialItem: years.indexOf(yearMonth.year),
@@ -73,6 +76,7 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
                         onSelectedItemChanged: (index) {
                           setState(() {
                             yearMonth.year = years[index];
+
                             //widget.onSelected(yearMonth);
                           });
                         },
