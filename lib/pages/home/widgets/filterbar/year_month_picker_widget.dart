@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/year_month_model.dart';
-import 'package:sqflite/sqflite.dart';
 
 class YearMonthPickerWidget extends StatefulWidget {
   final Map<int, List<int>> dataSet;
@@ -20,7 +22,7 @@ class YearMonthPickerWidget extends StatefulWidget {
 }
 
 class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
-  final List<String> months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  late List<String> months;
   late List<int> years;
   late YearMonthModel yearMonth;
   late FixedExtentScrollController yearController;
@@ -31,17 +33,29 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
     super.initState();
     yearMonth = widget.selectedYearMonth;
 
+    months = StringHelper.getMonthNames(widget.dataSet[yearMonth.year] ?? []);
     int minYear = widget.dataSet.keys.reduce((a, b) => a < b ? a : b);
     int maxYear = widget.dataSet.keys.reduce((a, b) => a > b ? a : b);
 
     years = List.generate(maxYear - minYear + 1, (index) => minYear + index);
+
+    if (years.isEmpty) {
+      months = [];
+    } else {
+      for (var year in List.from(years.reversed)) {
+        var monthsOfYear = widget.dataSet[year] ?? [];
+        if (monthsOfYear.isEmpty) {
+          years.remove(year);
+        }
+      }
+    }
 
     yearController = FixedExtentScrollController(
       initialItem: years.indexOf(yearMonth.year),
     );
 
     monthController = FixedExtentScrollController(
-      initialItem: yearMonth.month - 1, // Índices começam em 0
+      initialItem: yearMonth.month - 1,
     );
   }
 
@@ -59,78 +73,86 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
             Text('Selecione o Ano/Mês', style: textTheme.titleSmall),
             SizedBox(height: 10),
             Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                spacing: 20,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 150,
-                      child: ListWheelScrollView.useDelegate(
-                        controller: yearController,
-                        itemExtent: 40,
-                        diameterRatio: 100,
-                        physics: const FixedExtentScrollPhysics(),
-                        onSelectedItemChanged: (index) {
-                          setState(() {
-                            yearMonth.year = years[index];
-
-                            //widget.onSelected(yearMonth);
-                          });
-                        },
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          builder: (context, index) {
-                            return Center(
-                              child: Text(
-                                years[index].toString(),
-                                style: textTheme.bodyLarge!.copyWith(
-                                  color: yearMonth.year == years[index] ? colorScheme.secondary : colorScheme.onSecondary,
-                                ),
-                              ),
-                            );
-                          },
-                          childCount: years.length,
-                        ),
+            years.isEmpty
+                ? Expanded(
+                    child: Center(
+                      child: Text(
+                        'Não há datas disponíveis para filtrar.',
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 150,
-                      child: ListWheelScrollView.useDelegate(
-                        controller: monthController,
-                        itemExtent: 40,
-                        diameterRatio: 100,
-                        physics: const FixedExtentScrollPhysics(),
-                        onSelectedItemChanged: (index) {
-                          setState(() {
-                            yearMonth = YearMonthModel(year: yearMonth.year, month: index + 1);
-                          });
-                        },
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          builder: (context, index) {
-                            return Center(
-                              child: Text(
-                                months[index],
-                                style: textTheme.bodyLarge!.copyWith(
-                                  color: yearMonth.monthName == months[index] ? colorScheme.secondary : colorScheme.onSecondary,
-                                ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      spacing: 20,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 150,
+                            child: ListWheelScrollView.useDelegate(
+                              controller: yearController,
+                              itemExtent: 40,
+                              diameterRatio: 100,
+                              physics: const FixedExtentScrollPhysics(),
+                              onSelectedItemChanged: (index) {
+                                setState(() {
+                                  yearMonth.year = years[index];
+                                  months = StringHelper.getMonthNames(widget.dataSet[yearMonth.year] ?? []);
+                                });
+                              },
+                              childDelegate: ListWheelChildBuilderDelegate(
+                                builder: (context, index) {
+                                  return Center(
+                                    child: Text(
+                                      years[index].toString(),
+                                      style: textTheme.bodyLarge!.copyWith(
+                                        color: yearController.selectedItem == index ? colorScheme.secondary : colorScheme.onSecondary,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                childCount: years.length,
                               ),
-                            );
-                          },
-                          childCount: months.length,
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: SizedBox(
+                            height: 150,
+                            child: ListWheelScrollView.useDelegate(
+                              controller: monthController,
+                              itemExtent: 40,
+                              diameterRatio: 100,
+                              physics: const FixedExtentScrollPhysics(),
+                              onSelectedItemChanged: (index) {
+                                setState(() {
+                                  yearMonth.month = index;
+                                });
+                              },
+                              childDelegate: ListWheelChildBuilderDelegate(
+                                builder: (context, index) {
+                                  return Center(
+                                    child: Text(
+                                      months[index],
+                                      style: textTheme.bodyLarge!.copyWith(
+                                        color: monthController.selectedItem == index ? colorScheme.secondary : colorScheme.onSecondary,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                childCount: months.length,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
             Divider(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: years.isEmpty ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
                   onPressed: () {
@@ -138,14 +160,17 @@ class _YearMonthPickerWidgetState extends State<YearMonthPickerWidget> {
                   },
                   child: Text('Cancelar'),
                 ),
-                TextButton(
-                  onPressed: () {
-                    final selectedYear = years[yearController.selectedItem];
-                    final selectedMonth = monthController.selectedItem + 1;
-                    widget.onSelected(YearMonthModel(year: selectedYear, month: selectedMonth));
-                    Navigator.pop(context);
-                  },
-                  child: Text('Confirmar'),
+                Offstage(
+                  offstage: years.isEmpty,
+                  child: TextButton(
+                    onPressed: () {
+                      final selectedYear = years[yearController.selectedItem];
+                      final selectedMonth = monthController.selectedItem;
+                      widget.onSelected(YearMonthModel(year: selectedYear, month: selectedMonth));
+                      Navigator.pop(context);
+                    },
+                    child: Text('Confirmar'),
+                  ),
                 )
               ],
             ),

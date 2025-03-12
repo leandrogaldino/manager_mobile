@@ -113,7 +113,7 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
                         2024: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                         2025: [1, 2, 3]
                       },
-                      selectedYearMonth: YearMonthModel(year: 2024, month: 8),
+                      selectedYearMonth: YearMonthModel(year: 2025, month: 2),
                       onSelected: (yearmonth) {
                         log("Selecionado: ${yearmonth.monthName} de ${yearmonth.year}");
                       },
