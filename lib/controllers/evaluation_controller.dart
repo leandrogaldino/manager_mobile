@@ -202,6 +202,15 @@ class EvaluationController extends ChangeNotifier {
         count += 1;
       }
     }
+
+    var allSchedules = await scheduleService.getAll();
+    for (var schedule in allSchedules) {
+      if (schedule.creationDate.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
+        await scheduleService.delete(schedule.id);
+        count += 1;
+      }
+    }
+
     return count;
   }
 }

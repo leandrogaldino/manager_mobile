@@ -3,12 +3,10 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/readable.dart';
-import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
-class CompressorRepository implements Readable<Map<String, Object?>>, Syncronizable {
+class CompressorRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CoalescentRepository _coalescentRepository;
@@ -24,18 +22,17 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Syncroniza
         _coalescentRepository = coalescentRepository,
         _personRepository = personRepository;
 
-  @override
-  Future<List<Map<String, Object?>>> getAll() async {
+  Future<Map<String, Object?>> getById(dynamic id) async {
     try {
-      var compressors = await _localDatabase.query('compressor');
-
-      for (var compressor in compressors) {
-        var owner = await _personRepository.getById(compressor['personid'] as int);
-        compressor['owner'] = owner;
-        var coalescents = await _coalescentRepository.getByParentId(compressor['id'] as int);
-        compressor['coalescents'] = coalescents;
-      }
-      return compressors;
+      final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+      var owner = await _personRepository.getById(compressor['personid'] as int);
+      compressor['owner'] = owner;
+      var coalescents = await _coalescentRepository.getByParentId(compressor['id'] as int);
+      compressor['coalescents'] = coalescents;
+      return compressor;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
@@ -61,30 +58,10 @@ class CompressorRepository implements Readable<Map<String, Object?>>, Syncroniza
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
+      throw RepositoryException('EVA002', 'Erro ao obter os dados: $e');
     }
   }
 
-  @override
-  Future<Map<String, Object?>> getById(dynamic id) async {
-    try {
-      final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
-        if (list.isEmpty) return {};
-        return list[0];
-      });
-      var owner = await _personRepository.getById(compressor['personid'] as int);
-      compressor['owner'] = owner;
-      var coalescents = await _coalescentRepository.getByParentId(compressor['id'] as int);
-      compressor['coalescents'] = coalescents;
-      return compressor;
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('COM002', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  @override
   Future<void> synchronize(int lastSync) async {
     try {
       final remoteResult = await _remoteDatabase.get(collection: 'compressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);

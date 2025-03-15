@@ -2,17 +2,13 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
-import 'package:manager_mobile/interfaces/deletable.dart';
-import 'package:manager_mobile/interfaces/readable.dart';
-import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 
-class EvaluationService implements Readable<EvaluationModel>, Writable<EvaluationModel>, Deletable, Syncronizable {
+class EvaluationService {
   final EvaluationRepository _evaluationRepository;
 
   EvaluationService({
@@ -33,7 +29,7 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       await file.writeAsBytes(signatureBytes);
       return filePath;
     } catch (e) {
-      throw ServiceException('EVA009', 'Erro ao salvar a imagem: $e');
+      throw ServiceException('EVA008', 'Erro ao salvar a imagem: $e');
     }
   }
 
@@ -56,29 +52,17 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
       await file.writeAsBytes(resizedBytes);
       return EvaluationPhotoModel(path: file.path);
     } catch (e) {
-      throw ServiceException('EVA010', 'Erro ao salvar a imagem: $e');
+      throw ServiceException('EVA009', 'Erro ao salvar a imagem: $e');
     }
   }
 
-  @override
   Future<int> delete(dynamic id) async {
     return await _evaluationRepository.delete(id as int);
   }
 
-  @override
   Future<List<EvaluationModel>> getAll() async {
     final data = await _evaluationRepository.getAll();
     return data.map((item) => EvaluationModel.fromMap(item)).toList();
-  }
-
-  @override
-  Future<EvaluationModel> getById(dynamic id) async {
-    final data = await _evaluationRepository.getById(id);
-    if (data.isNotEmpty) {
-      return EvaluationModel.fromMap(data);
-    } else {
-      throw ServiceException('EVA011', 'Avaliação com o id $id não encontrada.');
-    }
   }
 
   Future<List<EvaluationModel>> getVisibles() async {
@@ -86,14 +70,12 @@ class EvaluationService implements Readable<EvaluationModel>, Writable<Evaluatio
     return data.map((item) => EvaluationModel.fromMap(item)).toList();
   }
 
-  @override
   Future<EvaluationModel> save(EvaluationModel model) async {
     final evaluationMap = model.toMap();
     var savedMap = await _evaluationRepository.save(evaluationMap);
     return EvaluationModel.fromMap(savedMap);
   }
 
-  @override
   Future<void> synchronize(lastSync) async {
     await _evaluationRepository.synchronize(lastSync);
   }

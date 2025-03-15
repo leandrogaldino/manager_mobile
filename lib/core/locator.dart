@@ -26,10 +26,8 @@ import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
-import 'package:manager_mobile/services/evaluation_coalescent_service.dart';
-import 'package:manager_mobile/services/evaluation_photo_service.dart';
+
 import 'package:manager_mobile/services/evaluation_service.dart';
-import 'package:manager_mobile/services/evaluation_technician_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
 
@@ -139,24 +137,6 @@ class Locator {
         evaluationCoalescentRepository: _getIt.get<EvaluationCoalescentRepository>(),
         evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
         evaluationPhotoRepository: _getIt.get<EvaluationPhotoRepository>(),
-      ),
-    );
-
-    _getIt.registerLazySingleton(
-      () => EvaluationCoalescentService(
-        repository: _getIt.get<EvaluationCoalescentRepository>(),
-      ),
-    );
-
-    _getIt.registerLazySingleton(
-      () => EvaluationTechnicianService(
-        repository: _getIt.get<EvaluationTechnicianRepository>(),
-      ),
-    );
-
-    _getIt.registerLazySingleton(
-      () => EvaluationPhotoService(
-        repository: _getIt.get<EvaluationPhotoRepository>(),
       ),
     );
 

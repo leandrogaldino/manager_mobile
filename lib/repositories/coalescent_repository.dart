@@ -1,13 +1,11 @@
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
-import 'package:manager_mobile/interfaces/childable.dart';
+
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/readable.dart';
-import 'package:manager_mobile/interfaces/syncronizable.dart';
 
-class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<Map<String, Object?>>, Syncronizable {
+class CoalescentRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
 
@@ -15,18 +13,6 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
       : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase;
 
-  @override
-  Future<List<Map<String, Object?>>> getAll() async {
-    try {
-      return _localDatabase.query('coalescent');
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('COA001', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  @override
   Future<Map<String, Object?>> getById(dynamic id) async {
     try {
       final result = await _localDatabase.query('coalescent', where: 'id = ?', whereArgs: [id]);
@@ -35,11 +21,10 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('COA002', 'Erro ao obter os dados: $e');
+      throw RepositoryException('COA001', 'Erro ao obter os dados: $e');
     }
   }
 
-  @override
   Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     try {
       final result = await _localDatabase.query('coalescent', where: 'personcompressorid = ?', whereArgs: [parentId]);
@@ -47,11 +32,10 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('COA003', 'Erro ao obter os dados: $e');
+      throw RepositoryException('COA002', 'Erro ao obter os dados: $e');
     }
   }
 
-  @override
   Future<void> synchronize(int lastSync) async {
     try {
       final remoteResult = await _remoteDatabase.get(collection: 'coalescents', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
@@ -69,7 +53,7 @@ class CoalescentRepository implements Readable<Map<String, Object?>>, Childable<
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('COA004', 'Erro ao sincronizar os dados: $e');
+      throw RepositoryException('COA003', 'Erro ao sincronizar os dados: $e');
     }
   }
 }

@@ -5,22 +5,18 @@ import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
-import 'package:manager_mobile/interfaces/deletable.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
-import 'package:manager_mobile/interfaces/syncronizable.dart';
-import 'package:manager_mobile/interfaces/writable.dart';
 import 'package:manager_mobile/repositories/coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:path_provider/path_provider.dart';
 
-class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<Map<String, Object?>>, Deletable, Syncronizable {
+class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
@@ -50,63 +46,6 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
-  @override
-  Future<int> delete(dynamic id) async {
-    try {
-      return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA001', 'Erro ao deletar os dados: $e');
-    }
-  }
-
-  @override
-  Future<List<Map<String, Object?>>> getAll() async {
-    try {
-      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
-      for (var evaluation in evaluations) {
-        evaluation = await _processEvaluation(evaluation);
-      }
-      return evaluations;
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA002', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  @override
-  Future<Map<String, Object?>> getById(dynamic id) async {
-    try {
-      Map<String, Object?> evaluation = await _localDatabase.query('evaluation', where: 'id = ?', whereArgs: [id]).then((list) {
-        if (list.isEmpty) return {};
-        return list[0];
-      });
-      evaluation = await _processEvaluation(evaluation);
-      return evaluation;
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA003', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  Future<List<Map<String, Object?>>> getVisibles() async {
-    try {
-      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
-      for (var evaluation in evaluations) {
-        evaluation = await _processEvaluation(evaluation);
-      }
-      return evaluations;
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  @override
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
       data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
@@ -139,16 +78,53 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
 
         return data;
       } else {
-        throw RepositoryException('EVA005', 'Essa avaliação já foi salva.');
+        throw RepositoryException('EVA001', 'Essa avaliação já foi salva.');
       }
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('EVA006', 'Erro ao salvar os dados: $e');
+      throw RepositoryException('EVA002', 'Erro ao salvar os dados: $e');
     }
   }
 
-  @override
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    try {
+      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
+      for (var evaluation in evaluations) {
+        evaluation = await _processEvaluation(evaluation);
+      }
+      return evaluations;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA003', 'Erro ao obter os dados: $e');
+    }
+  }
+
+  Future<List<Map<String, Object?>>> getAll() async {
+    try {
+      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation');
+      for (var evaluation in evaluations) {
+        evaluation = await _processEvaluation(evaluation);
+      }
+      return evaluations;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
+    }
+  }
+
+  Future<int> delete(dynamic id) async {
+    try {
+      return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('EVA005', 'Erro ao deletar os dados: $e');
+    }
+  }
+
   Future<void> synchronize(int lastSync) async {
     try {
       await _synchronizeFromLocalToCloud(lastSync);
@@ -158,7 +134,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('EVA007', 'Erro ao sincronizar os dados: $e');
+      throw RepositoryException('EVA006', 'Erro ao sincronizar os dados: $e');
     }
   }
 
@@ -170,7 +146,7 @@ class EvaluationRepository implements Readable<Map<String, Object?>>, Writable<M
       await file.writeAsBytes(imageData);
       return filePath;
     } catch (e) {
-      throw RepositoryException('EVA008', 'Falha ao salvar a imagem no dispositivo.');
+      throw RepositoryException('EVA007', 'Falha ao salvar a imagem no dispositivo.');
     }
   }
 

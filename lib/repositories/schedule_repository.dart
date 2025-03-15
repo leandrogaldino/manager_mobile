@@ -2,13 +2,11 @@ import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/interfaces/readable.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/interfaces/syncronizable.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
-class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizable {
+class ScheduleRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final CompressorRepository _compressorRepository;
@@ -23,17 +21,20 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
         _compressorRepository = compressorRepository,
         _personRepository = personRepository;
 
-  Future<void> updateVisibility(int scheduleId, bool isVisible) async {
+  Future<List<Map<String, Object?>>> getVisibles() async {
     try {
-      await _localDatabase.update('schedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
+      for (var schedule in schedules) {
+        schedule = await _processSchedule(schedule);
+      }
+      return schedules;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('SHC001', 'Erro ao atualizar: $e');
+      throw RepositoryException('SHC001', 'Erro ao obter os dados: $e');
     }
   }
 
-  @override
   Future<List<Map<String, Object?>>> getAll() async {
     try {
       List<Map<String, Object?>> schedules = await _localDatabase.query('schedule');
@@ -48,37 +49,16 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     }
   }
 
-  @override
-  Future<Map<String, Object?>> getById(dynamic id) async {
+  Future<int> delete(dynamic id) async {
     try {
-      Map<String, Object?> schedule = await _localDatabase.query('schedule', where: 'id = ?', whereArgs: [id]).then((list) {
-        if (list.isEmpty) return {};
-        return list[0];
-      });
-      schedule = await _processSchedule(schedule);
-      return schedule;
+      return await _localDatabase.delete('schedule', where: 'id = ?', whereArgs: [id as String]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('SHC003', 'Erro ao obter os dados: $e');
+      throw RepositoryException('SHC003', 'Erro ao deletar os dados: $e');
     }
   }
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
-    try {
-      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
-      for (var schedule in schedules) {
-        schedule = await _processSchedule(schedule);
-      }
-      return schedules;
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC004', 'Erro ao obter os dados: $e');
-    }
-  }
-
-  @override
   Future<void> synchronize(int lastSync) async {
     try {
       await _synchronizeFromLocalToCloud(lastSync);
@@ -88,7 +68,7 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('SHC005', 'Erro ao sincronizar os dados: $e');
+      throw RepositoryException('SHC004', 'Erro ao sincronizar os dados: $e');
     }
   }
 
@@ -127,5 +107,15 @@ class ScheduleRepository implements Readable<Map<String, Object?>>, Syncronizabl
     }
 
     return downloadedData;
+  }
+
+  Future<void> updateVisibility(int scheduleId, bool isVisible) async {
+    try {
+      await _localDatabase.update('schedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('SHC005', 'Erro ao atualizar: $e');
+    }
   }
 }
