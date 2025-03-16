@@ -29,7 +29,6 @@ class App extends StatelessWidget {
         enableLog: true,
         customLoader: const LoaderWidget(),
         builder: (observer) => MaterialApp(
-          debugShowCheckedModeBanner: false,
           title: 'Gerenciador',
           theme: appTheme.light(),
           darkTheme: appTheme.dark(),

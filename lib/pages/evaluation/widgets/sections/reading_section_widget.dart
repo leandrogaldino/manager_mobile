@@ -8,6 +8,7 @@ import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/enums/part_types.dart';
 import 'package:manager_mobile/pages/evaluation/validation/evaluation_validators.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/voice_button.dart';
 import 'package:validatorless/validatorless.dart';
 
 class ReadingSectionWidget extends StatefulWidget {
@@ -34,6 +35,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final TextEditingController _oilEC;
   late final TextEditingController _adviceEC;
   late final TextEditingController _responsibleEC;
+  late final FocusNode _adviceFocusNode;
 
   @override
   void dispose() {
@@ -47,6 +49,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _oilEC.dispose();
     _adviceEC.dispose();
     _responsibleEC.dispose();
+    _adviceFocusNode.dispose();
     super.dispose();
   }
 
@@ -76,8 +79,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _separatorEC = TextEditingController();
     _oilEC = TextEditingController();
     _adviceEC = TextEditingController();
-    _responsibleEC = TextEditingController();
 
+    _responsibleEC = TextEditingController();
+    _adviceFocusNode = FocusNode();
+    _adviceFocusNode.addListener(() {
+      setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
+    });
     if (_evaluationController.source != SourceTypes.fromNew) _fillForm();
   }
 
@@ -316,13 +323,42 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           ),
                         ],
                       ),
-
-                      //TODO: Colocar um botão para auto falante: transcrever voz para texto.
                       TextFormField(
                         controller: _adviceEC,
+                        focusNode: _adviceFocusNode,
                         readOnly: _evaluationController.source == SourceTypes.fromSaved,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(labelText: 'Parecer Técnico'),
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'Parecer Técnico',
+                          suffixIcon: _adviceFocusNode.hasFocus
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: VoiceButton(
+                                      onListeningEnd: (value) {
+                                        if (value == null || value.isEmpty) return;
+                                        int currentPosition = _adviceEC.selection.end;
+                                        int finalPosition = _adviceEC.text.length;
+                                        String text = _adviceEC.text;
+                                        text = '${_adviceEC.text.substring(0, currentPosition)}$value';
+                                        int selectionPos = text.length;
+                                        if (_adviceEC.text.isNotEmpty) {
+                                          text = '$text${_adviceEC.text.substring(currentPosition, finalPosition)}';
+                                        }
+                                        text = text.toUpperCase();
+                                        _adviceEC.text = text;
+                                        _adviceEC.selection = TextSelection.fromPosition(TextPosition(offset: selectionPos));
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
                         maxLines: 5,
                         onChanged: (value) => _evaluationController.updateAdvice(value),
                       ),
@@ -369,7 +405,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       TextFormField(
                         controller: _responsibleEC,
                         readOnly: _evaluationController.source == SourceTypes.fromSaved,
-                        textCapitalization: TextCapitalization.words,
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
+                        ],
                         validator: Validatorless.required('Campo obrigatório'),
                         decoration: InputDecoration(labelText: 'Responsável'),
                         onChanged: (value) => _evaluationController.updateResponsible(value),
