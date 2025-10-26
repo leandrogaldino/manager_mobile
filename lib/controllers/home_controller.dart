@@ -47,14 +47,14 @@ class HomeController extends ChangeNotifier {
 
   String _customerOrCompressor = '';
   String get customerOrCompressor => _customerOrCompressor;
-  Future<void> setcustomerOrCompressorFilter(String query) async {
+  Future<void> setCustomerOrCompressorFilter(String query) async {
     _customerOrCompressor = query;
     await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
   }
 
   DateTimeRange? _dateRange;
   DateTimeRange? get dateRange => _dateRange;
-  Future<void> setdateRangeFilter(DateTimeRange? query) async {
+  Future<void> setDateRangeFilter(DateTimeRange? query) async {
     _dateRange = query;
     await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
   }

@@ -9,7 +9,7 @@ class AppController extends ChangeNotifier {
   final AppPreferences _appPreferences;
 
   AppController({
-    required appPreferences,
+    required AppPreferences appPreferences,
   }) : _appPreferences = appPreferences;
 
   AppState _state = AppStateInitial();

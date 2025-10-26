@@ -88,7 +88,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     if (_evaluationController.source != SourceTypes.fromNew) _fillForm();
   }
 
-  _fillForm() {
+  void _fillForm() {
     _customerEC.text = _evaluationController.evaluation!.compressor!.owner.shortName;
     _compressorEC.text = _evaluationController.evaluation!.compressor!.compressorName;
     _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
@@ -197,7 +197,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: DropdownButtonFormField<OilTypes>(
                               alignment: AlignmentDirectional.center,
-                              value: _evaluationController.evaluation!.oilType,
+                              initialValue: _evaluationController.evaluation!.oilType,
                               decoration: InputDecoration(
                                 labelText: 'Tipo de Óleo',
                               ),
@@ -371,33 +371,22 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Row(
                             children: [
                               Expanded(
-                                child: RadioListTile<bool>(
-                                  title: Text("Sim"),
-                                  value: true,
-                                  groupValue: _evaluationController.evaluation!.needProposal,
-                                  onChanged: (bool? value) {
-                                    if (_evaluationController.source == SourceTypes.fromSaved) {
-                                      null;
-                                    } else {
-                                      _evaluationController.updateNeedProposal(value!);
-                                    }
-                                  },
+                                  child: RadioGroup(
+                                groupValue: _evaluationController.evaluation!.needProposal,
+                                onChanged: (bool? value) {
+                                  if (_evaluationController.source == SourceTypes.fromSaved) {
+                                    null;
+                                  } else {
+                                    _evaluationController.updateNeedProposal(value!);
+                                  }
+                                },
+                                child: Column(
+                                  children: [
+                                    RadioListTile<bool>(title: Text("Sim"), value: true),
+                                    RadioListTile<bool>(title: Text("Não"), value: false),
+                                  ],
                                 ),
-                              ),
-                              Expanded(
-                                child: RadioListTile<bool>(
-                                  title: Text("Não"),
-                                  value: false,
-                                  groupValue: _evaluationController.evaluation!.needProposal,
-                                  onChanged: (bool? value) {
-                                    if (_evaluationController.source == SourceTypes.fromSaved) {
-                                      null;
-                                    } else {
-                                      _evaluationController.updateNeedProposal(value!);
-                                    }
-                                  },
-                                ),
-                              ),
+                              ))
                             ],
                           )
                         ],
