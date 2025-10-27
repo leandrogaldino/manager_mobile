@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
@@ -16,7 +16,7 @@ class EvaluationModel {
   bool existsInCloud;
   bool? needProposal;
   CallTypes callType;
-  CompressorModel? compressor;
+  PersonCompressorModel? compressor;
   DateTime? creationDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
@@ -101,7 +101,7 @@ class EvaluationModel {
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
-    CompressorModel? compressor,
+    PersonCompressorModel? compressor,
     DateTime? creationDate,
     TimeOfDay? startTime,
     TimeOfDay? endTime,
@@ -183,7 +183,7 @@ class EvaluationModel {
       needProposal: map['needproposal'] == null ? null : (map['needproposal'] == 0 ? false : true),
       callType: CallTypes.values[map['calltypeid'] as int],
       advice: map['advice'] != null ? map['advice'] as String : null,
-      compressor: map['compressor'] != null ? CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>) : null,
+      compressor: map['compressor'] != null ? PersonCompressorModel.fromMap(map['compressor'] as Map<String, dynamic>) : null,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),

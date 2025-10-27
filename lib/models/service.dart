@@ -1,28 +1,28 @@
 import 'dart:convert';
 
-class CompressorModel {
+class Service {
   final int id;
-  final String shortName;
   final bool visible;
+  final String name;
   final DateTime lastUpdate;
 
-  CompressorModel({
+  Service({
     required this.id,
-    required this.shortName,
     required this.visible,
+    required this.name,
     required this.lastUpdate,
   });
 
-  CompressorModel copyWith({
+  Service copyWith({
     int? id,
-    String? shortName,
     bool? visible,
+    String? name,
     DateTime? lastUpdate,
   }) {
-    return CompressorModel(
+    return Service(
       id: id ?? this.id,
-      shortName: shortName ?? this.shortName,
       visible: visible ?? this.visible,
+      name: name ?? this.name,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
   }
@@ -30,39 +30,39 @@ class CompressorModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'shortName': shortName,
       'visible': visible,
+      'name': name,
       'lastUpdate': lastUpdate.millisecondsSinceEpoch,
     };
   }
 
-  factory CompressorModel.fromMap(Map<String, dynamic> map) {
-    return CompressorModel(
+  factory Service.fromMap(Map<String, dynamic> map) {
+    return Service(
       id: (map['id'] ?? 0) as int,
-      shortName: (map['shortName'] ?? '') as String,
       visible: (map['visible'] ?? false) as bool,
+      name: (map['name'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CompressorModel.fromJson(String source) => CompressorModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Service.fromJson(String source) => Service.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, shortName: $shortName, visible: $visible, lastUpdate: $lastUpdate)';
+    return 'Service(id: $id, visible: $visible, name: $name, lastUpdate: $lastUpdate)';
   }
 
   @override
-  bool operator ==(covariant CompressorModel other) {
+  bool operator ==(covariant Service other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.shortName == shortName && other.visible == visible && other.lastUpdate == lastUpdate;
+    return other.id == id && other.visible == visible && other.name == name && other.lastUpdate == lastUpdate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ shortName.hashCode ^ visible.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ name.hashCode ^ lastUpdate.hashCode;
   }
 }

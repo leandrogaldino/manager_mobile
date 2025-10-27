@@ -33,7 +33,7 @@ class EvaluationTileWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
           ),
           title: Text(
-            evaluation.compressor!.owner.shortName,
+            evaluation.compressor!.person.shortName,
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
             ),

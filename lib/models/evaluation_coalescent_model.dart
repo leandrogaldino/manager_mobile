@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:manager_mobile/models/coalescent_model.dart';
+import 'package:manager_mobile/models/personcompressorcoalescent_model.dart';
 
 class EvaluationCoalescentModel {
   final int? id;
-  final CoalescentModel coalescent;
+  final PersonCompressorCoalescentModel coalescent;
   final DateTime? nextChange;
 
   EvaluationCoalescentModel({
@@ -14,7 +14,7 @@ class EvaluationCoalescentModel {
 
   EvaluationCoalescentModel copyWith({
     int? id,
-    CoalescentModel? coalescent,
+    PersonCompressorCoalescentModel? coalescent,
     DateTime? nextChange,
   }) {
     return EvaluationCoalescentModel(
@@ -52,7 +52,7 @@ class EvaluationCoalescentModel {
   factory EvaluationCoalescentModel.fromMap(Map<String, dynamic> map) {
     return EvaluationCoalescentModel(
       id: map['id'] != null ? map['id'] as int : null,
-      coalescent: CoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
+      coalescent: PersonCompressorCoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
       nextChange: map['nextchange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
     );
   }

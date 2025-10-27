@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:manager_mobile/core/enums/call_types.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 
 class ScheduleModel {
@@ -11,7 +11,7 @@ class ScheduleModel {
   final DateTime visitDate;
   final CallTypes callType;
   final PersonModel customer;
-  final CompressorModel compressor;
+  final PersonCompressorModel compressor;
   final String instructions;
   final DateTime lastUpdate;
   ScheduleModel({
@@ -35,7 +35,7 @@ class ScheduleModel {
     DateTime? visitDate,
     CallTypes? callType,
     PersonModel? customer,
-    CompressorModel? compressor,
+    PersonCompressorModel? compressor,
     String? instructions,
     DateTime? lastUpdate,
   }) {
@@ -77,7 +77,7 @@ class ScheduleModel {
       visitDate: DateTime.fromMillisecondsSinceEpoch((map['visitdate'] ?? 0) as int),
       callType: CallTypes.values[map['calltypeid'] as int],
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
-      compressor: CompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
+      compressor: PersonCompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       instructions: (map['instructions'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
     );

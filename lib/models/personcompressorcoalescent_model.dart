@@ -1,24 +1,24 @@
 import 'dart:convert';
 
-class CoalescentModel {
+class PersonCompressorCoalescentModel {
   final int id;
   final bool visible;
   final String coalescentName;
   final DateTime lastUpdate;
-  CoalescentModel({
+  PersonCompressorCoalescentModel({
     required this.id,
     required this.visible,
     required this.coalescentName,
     required this.lastUpdate,
   });
 
-  CoalescentModel copyWith({
+  PersonCompressorCoalescentModel copyWith({
     int? id,
     bool? visible,
     String? coalescentName,
     DateTime? lastUpdate,
   }) {
-    return CoalescentModel(
+    return PersonCompressorCoalescentModel(
       id: id ?? this.id,
       visible: visible ?? this.visible,
       coalescentName: coalescentName ?? this.coalescentName,
@@ -35,8 +35,8 @@ class CoalescentModel {
     };
   }
 
-  factory CoalescentModel.fromMap(Map<String, dynamic> map) {
-    return CoalescentModel(
+  factory PersonCompressorCoalescentModel.fromMap(Map<String, dynamic> map) {
+    return PersonCompressorCoalescentModel(
       id: (map['id'] ?? 0) as int,
       visible: map['visible'] as int == 0 ? false : true,
       coalescentName: (map['coalescentname'] ?? '') as String,
@@ -46,7 +46,7 @@ class CoalescentModel {
 
   String toJson() => json.encode(toMap());
 
-  factory CoalescentModel.fromJson(String source) => CoalescentModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory PersonCompressorCoalescentModel.fromJson(String source) => PersonCompressorCoalescentModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -54,7 +54,7 @@ class CoalescentModel {
   }
 
   @override
-  bool operator ==(covariant CoalescentModel other) {
+  bool operator ==(covariant PersonCompressorCoalescentModel other) {
     if (identical(this, other)) return true;
 
     return other.id == id && other.visible == visible && other.coalescentName == coalescentName && other.lastUpdate == lastUpdate;

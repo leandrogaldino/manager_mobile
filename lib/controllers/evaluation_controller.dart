@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
@@ -161,7 +161,7 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCompressor(CompressorModel? compressor) {
+  void updateCompressor(PersonCompressorModel? compressor) {
     _evaluation!.compressor = compressor;
     _evaluation!.coalescents.clear();
     if (compressor != null) {

@@ -1,4 +1,4 @@
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 
 class CompressorService {
@@ -6,9 +6,9 @@ class CompressorService {
 
   CompressorService({required CompressorRepository compressorRepository}) : _compressorRepository = compressorRepository;
 
-  Future<List<CompressorModel>> getVisibles() async {
+  Future<List<PersonCompressorModel>> getVisibles() async {
     final data = await _compressorRepository.getVisibles();
-    return data.map((item) => CompressorModel.fromMap(item)).toList();
+    return data.map((item) => PersonCompressorModel.fromMap(item)).toList();
   }
 
   Future<void> synchronize(int lastSync) async {

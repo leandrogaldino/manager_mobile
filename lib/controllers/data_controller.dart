@@ -1,4 +1,4 @@
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
@@ -8,8 +8,8 @@ class DataController {
   final PersonService personService;
   final CompressorService compressorService;
 
-  List<CompressorModel> _compressors = [];
-  List<CompressorModel> get compressors => _compressors;
+  List<PersonCompressorModel> _compressors = [];
+  List<PersonCompressorModel> get compressors => _compressors;
   Future<void> fetchCompressors() async {
     _compressors = await compressorService.getVisibles();
   }

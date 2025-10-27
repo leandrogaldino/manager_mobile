@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/enums/part_types.dart';
@@ -59,7 +59,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController = Locator.get<EvaluationController>();
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.owner.shortName)) {
+      if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.person.shortName)) {
         _evaluationController.updateCompressor(null);
         _compressorEC.text = '';
         _serialNumberEC.text = '';
@@ -89,7 +89,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   }
 
   void _fillForm() {
-    _customerEC.text = _evaluationController.evaluation!.compressor!.owner.shortName;
+    _customerEC.text = _evaluationController.evaluation!.compressor!.person.shortName;
     _compressorEC.text = _evaluationController.evaluation!.compressor!.compressorName;
     _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
     _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
@@ -103,7 +103,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _customerEC.text = _evaluationController.evaluation!.compressor?.owner.shortName ?? '';
+    _customerEC.text = _evaluationController.evaluation!.compressor?.person.shortName ?? '';
     _compressorEC.text = _evaluationController.evaluation!.compressor?.compressorName ?? '';
     final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
     final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
@@ -128,7 +128,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
-                      CompressorModel? compressor = await CompressorPicker.pick(context: context);
+                      PersonCompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
                         _evaluationController.updateCompressor(compressor);
                       }

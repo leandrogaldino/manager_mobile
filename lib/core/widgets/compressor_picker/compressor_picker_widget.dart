@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/models/compressor_model.dart';
+import 'package:manager_mobile/models/personcompressor_model.dart';
 
 class CompressorPickerWidget extends StatefulWidget {
   const CompressorPickerWidget({
     super.key,
     required this.onCompressorSelected,
   });
-  final ValueChanged<CompressorModel> onCompressorSelected;
+  final ValueChanged<PersonCompressorModel> onCompressorSelected;
 
   @override
   State<CompressorPickerWidget> createState() => _CompressorPickerWidgetState();
@@ -17,7 +17,7 @@ class CompressorPickerWidget extends StatefulWidget {
 class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
   late final TextEditingController _customerOrCompressorEC;
   late final DataController _dataController;
-  late List<CompressorModel> filteredCompressors;
+  late List<PersonCompressorModel> filteredCompressors;
 
   @override
   void initState() {
@@ -46,8 +46,8 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
                 return compressor.compressorName.toLowerCase().contains(value) ||
                     compressor.serialNumber.toLowerCase().contains(value) ||
                     compressor.sector.toLowerCase().contains(value) ||
-                    compressor.owner.shortName.toLowerCase().contains(value) ||
-                    compressor.owner.document.toLowerCase().contains(value);
+                    compressor.person.shortName.toLowerCase().contains(value) ||
+                    compressor.person.document.toLowerCase().contains(value);
               }).toList();
             });
           },
@@ -66,7 +66,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
                         offstage: filteredCompressors[index].serialNumber == '',
                         child: Text(filteredCompressors[index].serialNumber),
                       ),
-                      Text(filteredCompressors[index].owner.shortName),
+                      Text(filteredCompressors[index].person.shortName),
                       Offstage(
                         offstage: filteredCompressors[index].sector == '',
                         child: Text(filteredCompressors[index].sector),
