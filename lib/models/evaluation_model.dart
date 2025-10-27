@@ -16,7 +16,7 @@ class EvaluationModel {
   bool existsInCloud;
   bool? needProposal;
   CallTypes callType;
-  PersonCompressorModel? compressor;
+  PersonCompressorModel? personCompressor;
   DateTime? creationDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
@@ -40,7 +40,7 @@ class EvaluationModel {
     this.existsInCloud = false,
     this.needProposal,
     this.callType = CallTypes.none,
-    this.compressor,
+    this.personCompressor,
     DateTime? creationDate,
     TimeOfDay? startTime,
     this.endTime,
@@ -74,7 +74,7 @@ class EvaluationModel {
       existsInCloud: false,
       needProposal: null,
       callType: schedule != null ? schedule.callType : CallTypes.none,
-      compressor: schedule?.compressor,
+      personCompressor: schedule?.compressor,
       creationDate: DateTime.now(),
       startTime: TimeOfDay.now(),
       endTime: null,
@@ -101,7 +101,7 @@ class EvaluationModel {
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
-    PersonCompressorModel? compressor,
+    PersonCompressorModel? personCompressor,
     DateTime? creationDate,
     TimeOfDay? startTime,
     TimeOfDay? endTime,
@@ -126,7 +126,7 @@ class EvaluationModel {
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
       callType: callType ?? this.callType,
-      compressor: compressor ?? this.compressor,
+      personCompressor: personCompressor ?? this.personCompressor,
       creationDate: creationDate ?? this.creationDate,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
@@ -154,7 +154,7 @@ class EvaluationModel {
       'existsincloud': existsInCloud,
       'needproposal': needProposal,
       'calltypeid': callType.index,
-      'personcompressorid': compressor?.id,
+      'personcompressorid': personCompressor?.id,
       'creationdate': creationDate?.millisecondsSinceEpoch,
       'starttime': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}',
       'endtime': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}',
@@ -183,7 +183,7 @@ class EvaluationModel {
       needProposal: map['needproposal'] == null ? null : (map['needproposal'] == 0 ? false : true),
       callType: CallTypes.values[map['calltypeid'] as int],
       advice: map['advice'] != null ? map['advice'] as String : null,
-      compressor: map['compressor'] != null ? PersonCompressorModel.fromMap(map['compressor'] as Map<String, dynamic>) : null,
+      personCompressor: map['personCompressor'] != null ? PersonCompressorModel.fromMap(map['personCompressor']) : null,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
@@ -220,7 +220,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, personCompressor: $personCompressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -233,7 +233,7 @@ class EvaluationModel {
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
         other.callType == callType &&
-        other.compressor == compressor &&
+        other.personCompressor == personCompressor &&
         other.creationDate == creationDate &&
         other.startTime == startTime &&
         other.endTime == endTime &&
@@ -260,7 +260,7 @@ class EvaluationModel {
         existsInCloud.hashCode ^
         needProposal.hashCode ^
         callType.hashCode ^
-        compressor.hashCode ^
+        personCompressor.hashCode ^
         creationDate.hashCode ^
         startTime.hashCode ^
         endTime.hashCode ^

@@ -59,7 +59,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _evaluationController = Locator.get<EvaluationController>();
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.person.shortName)) {
+      if (_evaluationController.evaluation!.personCompressor != null && (_customerEC.text != _evaluationController.evaluation!.personCompressor!.person.shortName)) {
         _evaluationController.updateCompressor(null);
         _compressorEC.text = '';
         _serialNumberEC.text = '';
@@ -67,7 +67,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     });
     _compressorEC = TextEditingController();
     _compressorEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _evaluationController.evaluation!.compressor!.compressorName) {
+      if (_evaluationController.evaluation!.personCompressor != null && _compressorEC.text != _evaluationController.evaluation!.personCompressor!.compressor.name) {
         _evaluationController.updateCompressor(null);
         _serialNumberEC.text = '';
       }
@@ -89,9 +89,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   }
 
   void _fillForm() {
-    _customerEC.text = _evaluationController.evaluation!.compressor!.person.shortName;
-    _compressorEC.text = _evaluationController.evaluation!.compressor!.compressorName;
-    _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
+    _customerEC.text = _evaluationController.evaluation!.personCompressor!.person.shortName;
+    _compressorEC.text = _evaluationController.evaluation!.personCompressor!.compressor.name;
+    _serialNumberEC.text = _evaluationController.evaluation!.personCompressor!.serialNumber;
     _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
     _airFilterEC.text = _evaluationController.evaluation!.airFilter == null ? '' : _evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = _evaluationController.evaluation!.oilFilter == null ? '' : _evaluationController.evaluation!.oilFilter.toString();
@@ -103,10 +103,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _customerEC.text = _evaluationController.evaluation!.compressor?.person.shortName ?? '';
-    _compressorEC.text = _evaluationController.evaluation!.compressor?.compressorName ?? '';
-    final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
-    final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
+    _customerEC.text = _evaluationController.evaluation!.personCompressor?.person.shortName ?? '';
+    _compressorEC.text = _evaluationController.evaluation!.personCompressor?.compressor.name ?? '';
+    final String serialNumber = _evaluationController.evaluation!.personCompressor?.serialNumber ?? '';
+    final String sector = _evaluationController.evaluation!.personCompressor?.sector ?? '';
     final String separator = serialNumber != '' && sector != '' ? '/' : '';
     final String serialNumberAndSector = '$serialNumber$separator$sector';
     _serialNumberEC.text = serialNumberAndSector;

@@ -81,14 +81,14 @@ class HomeController extends ChangeNotifier {
         _schedules = _schedules.where(
           (schedule) {
             return schedule.customer.shortName.toLowerCase().contains(customerOrCompressor) ||
-                schedule.compressor.compressorName.toLowerCase().contains(customerOrCompressor) ||
+                schedule.compressor.compressor.name.toLowerCase().contains(customerOrCompressor) ||
                 schedule.compressor.serialNumber.toLowerCase().contains(customerOrCompressor) ||
                 schedule.compressor.sector.toLowerCase().contains(customerOrCompressor);
           },
         ).toList();
         _evaluations = _evaluations.where(
           (evaluation) {
-            return evaluation.compressor!.person.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.compressorName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.sector.toLowerCase().contains(customerOrCompressor);
+            return evaluation.personCompressor!.person.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.personCompressor!.compressor.name.toLowerCase().contains(customerOrCompressor) || evaluation.personCompressor!.sector.toLowerCase().contains(customerOrCompressor);
           },
         ).toList();
       }

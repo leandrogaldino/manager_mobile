@@ -12,7 +12,7 @@ class ScheduleTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String subtitle = schedule.compressor.compressorName;
+    String subtitle = schedule.compressor.compressor.name;
     schedule.compressor.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.serialNumber}' : null;
     schedule.compressor.sector.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.sector}' : null;
     return Padding(

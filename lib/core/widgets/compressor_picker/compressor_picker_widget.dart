@@ -43,7 +43,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           onChanged: (value) {
             setState(() {
               filteredCompressors = _dataController.compressors.where((compressor) {
-                return compressor.compressorName.toLowerCase().contains(value) ||
+                return compressor.compressor.name.toLowerCase().contains(value) ||
                     compressor.serialNumber.toLowerCase().contains(value) ||
                     compressor.sector.toLowerCase().contains(value) ||
                     compressor.person.shortName.toLowerCase().contains(value) ||
@@ -58,7 +58,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
               itemCount: filteredCompressors.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(filteredCompressors[index].compressorName),
+                  title: Text(filteredCompressors[index].compressor.name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

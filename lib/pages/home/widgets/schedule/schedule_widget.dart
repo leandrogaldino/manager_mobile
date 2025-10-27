@@ -110,7 +110,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: widget.schedule.compressor.compressorName,
+                    text: widget.schedule.compressor.compressor.name,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],

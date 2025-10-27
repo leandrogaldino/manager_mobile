@@ -37,7 +37,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                     Column(
                       children: [
                         Text(
-                          _evaluationController.evaluation!.coalescents[index].coalescent.coalescentName,
+                          _evaluationController.evaluation!.coalescents[index].coalescent.product.name,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         ListenableBuilder(
