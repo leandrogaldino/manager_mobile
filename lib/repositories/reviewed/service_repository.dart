@@ -1,0 +1,63 @@
+import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
+import 'package:manager_mobile/core/exceptions/repository_exception.dart';
+import 'package:manager_mobile/interfaces/local_database.dart';
+import 'package:manager_mobile/interfaces/remote_database.dart';
+
+class ServiceRepository {
+  final RemoteDatabase _remoteDatabase;
+  final LocalDatabase _localDatabase;
+
+  ServiceRepository({
+    required RemoteDatabase remoteDatabase,
+    required LocalDatabase localDatabase,
+  })  : _remoteDatabase = remoteDatabase,
+        _localDatabase = localDatabase;
+
+  Future<Map<String, Object?>> getById(dynamic id) async {
+    try {
+      final Map<String, Object?> service = await _localDatabase.query('service', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+
+      return service;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('SER001', 'Erro ao obter os dados: $e');
+    }
+  }
+
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    try {
+      var services = await _localDatabase.query('service', where: 'visible = ?', whereArgs: [1]);
+      return services;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('SER002', 'Erro ao obter os dados: $e');
+    }
+  }
+
+  Future<void> synchronize(int lastSync) async {
+    try {
+      final remoteResult = await _remoteDatabase.get(collection: 'services', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
+      for (var data in remoteResult) {
+        final bool exists = await _localDatabase.isSaved('service', id: data['id']);
+        data.remove('documentid');
+        if (exists) {
+          await _localDatabase.update('service', data, where: 'id = ?', whereArgs: [data['id']]);
+        } else {
+          await _localDatabase.insert('service', data);
+        }
+      }
+    } on LocalDatabaseException {
+      rethrow;
+    } on RemoteDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('SER003', 'Erro ao sincronizar os dados: $e');
+    }
+  }
+}

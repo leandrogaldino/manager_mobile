@@ -6,22 +6,22 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
-import 'package:manager_mobile/repositories/coalescent_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/repositories/compressor_repository.dart';
-import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
-  final CoalescentRepository _coalescentRepository;
-  final CompressorRepository _compressorRepository;
+  final PersonCompressorCoalescentRepository _coalescentRepository;
+  final PersonCompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
   final EvaluationCoalescentRepository _evaluationCoalescentRepository;
   final EvaluationTechnicianRepository _evaluationTechnicianRepository;
@@ -30,8 +30,8 @@ class EvaluationRepository {
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
     required Storage storage,
-    required CoalescentRepository coalescentRepository,
-    required CompressorRepository compressorRepository,
+    required PersonCompressorCoalescentRepository coalescentRepository,
+    required PersonCompressorRepository compressorRepository,
     required PersonRepository personRepository,
     required EvaluationCoalescentRepository evaluationCoalescentRepository,
     required EvaluationTechnicianRepository evaluationTechnicianRepository,

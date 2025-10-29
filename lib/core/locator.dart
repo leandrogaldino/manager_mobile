@@ -12,13 +12,13 @@ import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
-import 'package:manager_mobile/repositories/coalescent_repository.dart';
-import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
-import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
@@ -68,7 +68,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => CoalescentRepository(
+      () => PersonCompressorCoalescentRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
@@ -76,22 +76,22 @@ class Locator {
 
     _getIt.registerLazySingleton(
       () => CoalescentService(
-        coalescentRepository: _getIt.get<CoalescentRepository>(),
+        coalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
       ),
     );
 
     _getIt.registerLazySingleton(
-      () => CompressorRepository(
+      () => PersonCompressorRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
-        coalescentRepository: _getIt.get<CoalescentRepository>(),
+        personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
       ),
     );
 
     _getIt.registerLazySingleton(
       () => CompressorService(
-        compressorRepository: _getIt.get<CompressorRepository>(),
+        compressorRepository: _getIt.get<PersonCompressorRepository>(),
       ),
     );
 
@@ -131,8 +131,8 @@ class Locator {
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
         storage: _getIt.get<Storage>(),
-        coalescentRepository: _getIt.get<CoalescentRepository>(),
-        compressorRepository: _getIt.get<CompressorRepository>(),
+        coalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
+        compressorRepository: _getIt.get<PersonCompressorRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
         evaluationCoalescentRepository: _getIt.get<EvaluationCoalescentRepository>(),
         evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
@@ -150,7 +150,7 @@ class Locator {
       () => ScheduleRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
-        compressorRepository: _getIt.get<CompressorRepository>(),
+        compressorRepository: _getIt.get<PersonCompressorRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
       ),
     );

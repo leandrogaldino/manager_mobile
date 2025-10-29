@@ -1,9 +1,9 @@
-import 'package:manager_mobile/repositories/coalescent_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
 
 class CoalescentService {
-  final CoalescentRepository _coalescentRepository;
+  final PersonCompressorCoalescentRepository _coalescentRepository;
 
-  CoalescentService({required CoalescentRepository coalescentRepository}) : _coalescentRepository = coalescentRepository;
+  CoalescentService({required PersonCompressorCoalescentRepository coalescentRepository}) : _coalescentRepository = coalescentRepository;
 
   Future<void> synchronize(int lastSync) async {
     await _coalescentRepository.synchronize(lastSync);

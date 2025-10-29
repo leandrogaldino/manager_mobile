@@ -11,7 +11,6 @@ class PersonCompressorModel {
   final DateTime lastUpdate;
   final String serialNumber;
   final String sector;
-  final PersonModel person;
   final List<PersonCompressorCoalescentModel> coalescents;
 
   PersonCompressorModel({
@@ -21,7 +20,6 @@ class PersonCompressorModel {
     required this.lastUpdate,
     required this.serialNumber,
     required this.sector,
-    required this.person,
     required this.coalescents,
   });
 
@@ -42,7 +40,6 @@ class PersonCompressorModel {
       lastUpdate: lastUpdate ?? this.lastUpdate,
       serialNumber: serialNumber ?? this.serialNumber,
       sector: sector ?? this.sector,
-      person: person ?? this.person,
       coalescents: coalescents ?? this.coalescents,
     );
   }
@@ -55,7 +52,6 @@ class PersonCompressorModel {
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
       serialNumber: (map['serialnumber'] ?? '') as String,
       sector: (map['sector'] ?? '') as String,
-      person: PersonModel.fromMap(map['person']),
       coalescents: List<PersonCompressorCoalescentModel>.from(
         (map['coalescents'] as List<Map<String, dynamic>>).map<PersonCompressorCoalescentModel>(
           (x) => PersonCompressorCoalescentModel.fromMap(x),
@@ -66,19 +62,19 @@ class PersonCompressorModel {
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, visible: $visible, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, person: $person, coalescents: $coalescents)';
+    return 'CompressorModel(id: $id, visible: $visible, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector,  coalescents: $coalescents)';
   }
 
   @override
   bool operator ==(covariant PersonCompressorModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.visible == visible && other.compressor == compressor && other.lastUpdate == lastUpdate && other.serialNumber == serialNumber && other.sector == sector && other.person == person && listEquals(other.coalescents, coalescents);
+    return other.id == id && other.visible == visible && other.compressor == compressor && other.lastUpdate == lastUpdate && other.serialNumber == serialNumber && other.sector == sector && listEquals(other.coalescents, coalescents);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ person.hashCode ^ coalescents.hashCode;
+    return id.hashCode ^ visible.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ coalescents.hashCode;
   }
 
   Map<String, dynamic> toMap() {

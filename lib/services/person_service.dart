@@ -1,6 +1,6 @@
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
 
 class PersonService {
   final PersonRepository _personRepository;

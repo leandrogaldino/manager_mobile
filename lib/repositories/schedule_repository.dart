@@ -3,18 +3,18 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/repositories/compressor_repository.dart';
-import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
 
 class ScheduleRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
-  final CompressorRepository _compressorRepository;
+  final PersonCompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
   ScheduleRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
-    required CompressorRepository compressorRepository,
+    required PersonCompressorRepository compressorRepository,
     required PersonRepository personRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,

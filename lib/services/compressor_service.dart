@@ -1,10 +1,10 @@
 import 'package:manager_mobile/models/personcompressor_model.dart';
-import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
 
 class CompressorService {
-  final CompressorRepository _compressorRepository;
+  final PersonCompressorRepository _compressorRepository;
 
-  CompressorService({required CompressorRepository compressorRepository}) : _compressorRepository = compressorRepository;
+  CompressorService({required PersonCompressorRepository compressorRepository}) : _compressorRepository = compressorRepository;
 
   Future<List<PersonCompressorModel>> getVisibles() async {
     final data = await _compressorRepository.getVisibles();

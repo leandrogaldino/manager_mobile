@@ -62,25 +62,62 @@ class SQLScripts {
   static const String createTableCompressor = '''
     CREATE TABLE compressor (
       id INTEGER PRIMARY KEY,
-      personid INTEGER NOT NULL,
-      visible INTEGER NOT NULL,
-      compressorid INTEGER NOT NULL,
-      compressorname TEXT NOT NULL,
-      serialnumber TEXT NOT NULL,
-      sector TEXT NOT NULL,
-      lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE
+      name TEXT NOT NULL,
+      visible INTEGER NOT NULL,    
+      lastupdate INTEGER NOT NULL
     );
   ''';
 
-  static const String createTableCoalescent = '''
-    CREATE TABLE coalescent (
+  static const String createTablePersonCompressor = '''
+    CREATE TABLE personcompressor (
+      id INTEGER PRIMARY KEY,
+      personid INTEGER NOT NULL,
+      visible INTEGER NOT NULL,
+      compressorid INTEGER NOT NULL,
+      serialnumber TEXT NOT NULL,
+      patrimony TEXT NOT NULL,
+      sector TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE,
+      FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+    );
+  ''';
+
+  static const String createTableProduct = '''
+    CREATE TABLE product (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL
+    );
+  ''';
+  static const String createTableProductCode = '''
+    CREATE TABLE productcode (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      code TEXT NOT NULL,
+      productid INT NOT NULL,
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
+    );
+  ''';
+  static const String createTableService = '''
+    CREATE TABLE service (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      lastupdate INTEGER NOT NULL
+    );
+  ''';
+  static const String createTablePersonCompressorCoalescent = '''
+    CREATE TABLE personcompressorcoalescent (
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
       personcompressorid INT NOT NULL,
-      coalescentname TEXT NOT NULL,
+      productid INT NOT NULL,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE CASCADE
+      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE CASCADE,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE RESTRICT
     );
   ''';
 
@@ -113,10 +150,10 @@ class SQLScripts {
   static const String createTableEvaluationCoalescent = '''
     CREATE TABLE evaluationcoalescent (    
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      coalescentid INT NOT NULL,
+      personcompressorcoalescentid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       nextchange INTEGER NOT NULL,
-      FOREIGN KEY (coalescentid) REFERENCES coalescent (id) ON DELETE RESTRICT,
+      FOREIGN KEY (personcompressorcoalescentid) REFERENCES coalescent (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';

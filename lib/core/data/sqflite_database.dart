@@ -16,7 +16,11 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTablePreferences);
           await db.execute(SQLScripts.createTablePerson);
           await db.execute(SQLScripts.createTableCompressor);
-          await db.execute(SQLScripts.createTableCoalescent);
+          await db.execute(SQLScripts.createTablePersonCompressor);
+          await db.execute(SQLScripts.createTableProduct);
+          await db.execute(SQLScripts.createTableProductCode);
+          await db.execute(SQLScripts.createTableService);
+          await db.execute(SQLScripts.createTablePersonCompressorCoalescent);
           await db.execute(SQLScripts.createTableEvaluation);
           await db.execute(SQLScripts.createTableEvaluationTechnician);
           await db.execute(SQLScripts.createTableEvaluationCoalescent);

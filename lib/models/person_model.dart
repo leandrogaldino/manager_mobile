@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 
@@ -11,7 +10,7 @@ class PersonModel {
   final bool isTechnician;
   final DateTime lastUpdate;
   final String shortName;
-  final List<PersonCompressorModel> compressors;
+  final List<PersonCompressorModel> personCompressors;
 
   PersonModel({
     required this.id,
@@ -21,7 +20,7 @@ class PersonModel {
     required this.isTechnician,
     required this.lastUpdate,
     required this.shortName,
-    required this.compressors,
+    required this.personCompressors,
   });
 
   PersonModel copyWith({
@@ -32,7 +31,7 @@ class PersonModel {
     bool? isTechnician,
     DateTime? lastUpdate,
     String? shortName,
-    List<PersonCompressorModel>? compressors,
+    List<PersonCompressorModel>? personCompressors,
   }) {
     return PersonModel(
       id: id ?? this.id,
@@ -42,7 +41,7 @@ class PersonModel {
       isTechnician: isTechnician ?? this.isTechnician,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       shortName: shortName ?? this.shortName,
-      compressors: compressors ?? this.compressors,
+      personCompressors: personCompressors ?? this.personCompressors,
     );
   }
 
@@ -55,8 +54,8 @@ class PersonModel {
       isTechnician: map['istechnician'] == 0 ? false : true,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
       shortName: (map['shortname'] ?? '') as String,
-      compressors: List<PersonCompressorModel>.from(
-        (map['compressors'] as List<Map<String, dynamic>>).map<PersonCompressorModel>(
+      personCompressors: List<PersonCompressorModel>.from(
+        (map['personcompressors'] as List<Map<String, dynamic>>).map<PersonCompressorModel>(
           (x) => PersonCompressorModel.fromMap(x),
         ),
       ),
@@ -65,18 +64,18 @@ class PersonModel {
 
   @override
   String toString() {
-    return 'PersonModel(id: $id, visible: $visible, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName, compressors: $compressors)';
+    return 'PersonModel(id: $id, visible: $visible, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName, personCompressors: $personCompressors)';
   }
 
   @override
   bool operator ==(covariant PersonModel other) {
     if (identical(this, other)) return true;
-    return other.id == id && other.visible == visible && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName && listEquals(other.compressors, compressors);
+    return other.id == id && other.visible == visible && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName && listEquals(other.personCompressors, personCompressors);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode ^ compressors.hashCode;
+    return id.hashCode ^ visible.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode ^ personCompressors.hashCode;
   }
 
   Map<String, dynamic> toMap() {
