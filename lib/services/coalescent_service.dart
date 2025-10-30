@@ -1,4 +1,4 @@
-import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
+import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 
 class CoalescentService {
   final PersonCompressorCoalescentRepository _coalescentRepository;

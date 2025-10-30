@@ -12,13 +12,15 @@ import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
-import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
-import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
+import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
+import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
-import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
+import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
@@ -71,6 +73,7 @@ class Locator {
       () => PersonCompressorCoalescentRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
+        productRepository: _getIt.get<ProductRepository>(),
       ),
     );
 
@@ -84,8 +87,9 @@ class Locator {
       () => PersonCompressorRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
-        personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
+        compressorRepository: _getIt.get<CompressorRepository>(),
+        personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
       ),
     );
 

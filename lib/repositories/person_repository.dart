@@ -3,20 +3,16 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
 
 class PersonRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
-  final PersonCompressorRepository _personCompressorRepository;
 
   PersonRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
-    required PersonCompressorRepository personCompressorRepository,
   })  : _remoteDatabase = remoteDatabase,
-        _localDatabase = localDatabase,
-        _personCompressorRepository = personCompressorRepository;
+        _localDatabase = localDatabase;
 
   Future<Map<String, Object?>> getById(int id) async {
     try {
@@ -24,8 +20,6 @@ class PersonRepository {
         if (list.isEmpty) return {};
         return list[0];
       });
-      var personCompressors = await _personCompressorRepository.getByPersonId(id);
-      person['personcompressors'] = personCompressors;
       return person;
     } on LocalDatabaseException {
       rethrow;

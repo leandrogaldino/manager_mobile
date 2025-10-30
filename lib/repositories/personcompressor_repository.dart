@@ -3,9 +3,9 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
-import 'package:manager_mobile/repositories/reviewed/compressor_repository.dart';
-import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
-import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
+import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 
 class PersonCompressorRepository {
   final RemoteDatabase _remoteDatabase;
@@ -25,6 +25,30 @@ class PersonCompressorRepository {
         _personRepository = personRepository,
         _compressorRepository = compressorRepository,
         _personCompressorCoalescentRepository = personCompressorCoalescentRepository;
+
+  Future<List<Map<String, Object?>>> getVisibles() async {
+    try {
+      var personcompressors = await _localDatabase.query('personcompressor', where: 'visible = ?', whereArgs: [1]);
+      for (var personCompressor in personcompressors) {
+        final compressorId = personCompressor['compressorid'] as int;
+        personCompressor.remove('compressorid');
+        final compressor = await _compressorRepository.getById(compressorId);
+        personCompressor['compressor'] = compressor;
+        var personId = personCompressor['personid'] as int;
+        personCompressor.remove('personid');
+        var person = await _personRepository.getById(personId);
+        personCompressor['person'] = person;
+        var personCompressorId = personCompressor['id'] as int;
+        var coalescents = await _personCompressorCoalescentRepository.getByPersonCompressorId(personCompressorId);
+        personCompressor['coalescents'] = coalescents;
+      }
+      return personcompressors;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('PRO002', 'Erro ao obter os dados: $e');
+    }
+  }
 
   Future<Map<String, Object?>> getById(int id) async {
     try {
@@ -54,7 +78,6 @@ class PersonCompressorRepository {
   Future<List<Map<String, Object?>>> getByPersonId(int personId) async {
     try {
       final personcompressors = await _localDatabase.query('personcompressor', where: 'personid = ?', whereArgs: [personId]);
-
       for (var personCompressor in personcompressors) {
         final compressorId = personCompressor['compressorid'] as int;
         personCompressor.remove('compressorid');

@@ -1,5 +1,5 @@
 import 'package:manager_mobile/models/personcompressor_model.dart';
-import 'package:manager_mobile/repositories/reviewed/personcompressor_repository.dart';
+import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 
 class CompressorService {
   final PersonCompressorRepository _compressorRepository;

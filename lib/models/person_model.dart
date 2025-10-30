@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:manager_mobile/models/personcompressor_model.dart';
 
 class PersonModel {
   final int id;
