@@ -52,6 +52,10 @@ class PersonCompressorModel {
   }
 
   factory PersonCompressorModel.fromMap(Map<String, dynamic> map) {
+    if (!map['visible'] is int) {
+      print('É int!');
+    }
+
     return PersonCompressorModel(
       id: (map['id'] ?? 0) as int,
       visible: map['visible'] as int == 0 ? false : true,

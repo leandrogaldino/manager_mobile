@@ -4,37 +4,49 @@ import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/schedule_model.dart';
-import 'package:manager_mobile/services/coalescent_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
+import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
+import 'package:manager_mobile/services/product_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
+import 'package:manager_mobile/services/service_service.dart';
 import 'package:manager_mobile/states/home_state.dart';
 
 class HomeController extends ChangeNotifier {
-  HomeController({
-    required CoalescentService coalescentService,
-    required CompressorService compressorService,
-    required PersonService personService,
-    required ScheduleService scheduleService,
-    required EvaluationService evaluationService,
-    required AppPreferences appPreferences,
-    required DataController customerController,
-  })  : _coalescentService = coalescentService,
-        _compressorService = compressorService,
-        _personService = personService,
-        _scheduleService = scheduleService,
-        _evaluationService = evaluationService,
-        _appPreferences = appPreferences,
-        _personController = customerController;
-
-  final CoalescentService _coalescentService;
+  final ProductService _productService;
+  final ServiceService _serviceService;
   final CompressorService _compressorService;
+  final PersonCompressorCoalescentService _personCompressorcoalescentService;
+  final PersonCompressorService _personCompressorService;
   final PersonService _personService;
   final ScheduleService _scheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
   final DataController _personController;
+
+  HomeController({
+    required ProductService productService,
+    required ServiceService serviceService,
+    required CompressorService compressorService,
+    required PersonCompressorCoalescentService personCompressorcoalescentService,
+    required PersonCompressorService personCompressorService,
+    required PersonService personService,
+    required ScheduleService scheduleService,
+    required EvaluationService evaluationService,
+    required AppPreferences appPreferences,
+    required DataController customerController,
+  })  : _productService = productService,
+        _serviceService = serviceService,
+        _compressorService = compressorService,
+        _personCompressorcoalescentService = personCompressorcoalescentService,
+        _personCompressorService = personCompressorService,
+        _personService = personService,
+        _scheduleService = scheduleService,
+        _evaluationService = evaluationService,
+        _appPreferences = appPreferences,
+        _personController = customerController;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -117,10 +129,16 @@ class HomeController extends ChangeNotifier {
     try {
       await _appPreferences.setSynchronizing(true);
       int lastSync = await _appPreferences.lastSynchronize;
-      log('Sincronizando Coalescentes');
-      await _coalescentService.synchronize(lastSync);
+      log('Sincronizando Produtos');
+      await _productService.synchronize(lastSync);
+      log('Sincronizando Serviços');
+      await _serviceService.synchronize(lastSync);
       log('Sincronizando Compressores');
       await _compressorService.synchronize(lastSync);
+      log('Sincronizando Coalescentes dos Compressores da Pessoa');
+      await _personCompressorcoalescentService.synchronize(lastSync);
+      log('Sincronizando Compressores da Pessoa');
+      await _personCompressorService.synchronize(lastSync);
       log('Sincronizando Pessoas');
       await _personService.synchronize(lastSync);
       log('Sincronizando Agendamentos');
