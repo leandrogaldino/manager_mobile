@@ -22,6 +22,7 @@ import 'package:manager_mobile/repositories/evaluation_technician_repository.dar
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
+import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
@@ -66,6 +67,27 @@ class Locator {
       () => LoginController(
         service: _getIt.get<Auth>(),
         connection: _getIt.get<Connection>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => ProductRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => ServiceRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => CompressorRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
