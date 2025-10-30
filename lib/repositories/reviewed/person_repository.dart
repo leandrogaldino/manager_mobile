@@ -18,7 +18,7 @@ class PersonRepository {
         _localDatabase = localDatabase,
         _personCompressorRepository = personCompressorRepository;
 
-  Future<Map<String, Object?>> getById(dynamic id) async {
+  Future<Map<String, Object?>> getById(int id) async {
     try {
       final Map<String, Object?> person = await _localDatabase.query('person', where: 'id = ?', whereArgs: [id]).then((list) {
         if (list.isEmpty) return {};

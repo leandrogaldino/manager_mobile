@@ -14,7 +14,7 @@ class CompressorRepository {
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase;
 
-  Future<Map<String, Object?>> getById(dynamic id) async {
+  Future<Map<String, Object?>> getById(int id) async {
     try {
       final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
         if (list.isEmpty) return {};
