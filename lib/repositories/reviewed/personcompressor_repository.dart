@@ -4,35 +4,69 @@ import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/reviewed/compressor_repository.dart';
+import 'package:manager_mobile/repositories/reviewed/person_repository.dart';
 import 'package:manager_mobile/repositories/reviewed/personcompressorcoalescent_repository.dart';
 
 class PersonCompressorRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
+  final PersonRepository _personRepository;
   final CompressorRepository _compressorRepository;
   final PersonCompressorCoalescentRepository _personCompressorCoalescentRepository;
 
   PersonCompressorRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
+    required PersonRepository personRepository,
     required CompressorRepository compressorRepository,
     required PersonCompressorCoalescentRepository personCompressorCoalescentRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
+        _personRepository = personRepository,
         _compressorRepository = compressorRepository,
         _personCompressorCoalescentRepository = personCompressorCoalescentRepository;
 
-  Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
+  Future<Map<String, Object?>> getById(int id) async {
     try {
-      final personcompressors = await _localDatabase.query('personcompressor', where: 'personid = ?', whereArgs: [parentId]);
+      final Map<String, Object?> personCompressor = await _localDatabase.query('personcompressor', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+      final compressorId = personCompressor['compressorid'] as int;
+      personCompressor.remove('compressorid');
+      final compressor = await _compressorRepository.getById(compressorId);
+      personCompressor['compressor'] = compressor;
+      var personId = personCompressor['personid'] as int;
+      personCompressor.remove('personid');
+      var person = await _personRepository.getById(personId);
+      personCompressor['person'] = person;
+      var personCompressorId = personCompressor['id'] as int;
+      var coalescents = await _personCompressorCoalescentRepository.getByPersonCompressorId(personCompressorId);
+      personCompressor['coalescents'] = coalescents;
+      return personCompressor;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('PER001', 'Erro ao obter os dados: $e');
+    }
+  }
 
-      for (var personcompressor in personcompressors) {
-        final compressorId = personcompressor['compressorid'];
+  Future<List<Map<String, Object?>>> getByPersonId(int personId) async {
+    try {
+      final personcompressors = await _localDatabase.query('personcompressor', where: 'personid = ?', whereArgs: [personId]);
+
+      for (var personCompressor in personcompressors) {
+        final compressorId = personCompressor['compressorid'] as int;
+        personCompressor.remove('compressorid');
         final compressor = await _compressorRepository.getById(compressorId);
-        personcompressor['compressor'] = compressor;
-        var personCompressorId = personcompressor['id'];
-        var coalescents = await _personCompressorCoalescentRepository.getByParentId(personCompressorId);
-        personcompressor['coalescents'] = coalescents;
+        personCompressor['compressor'] = compressor;
+        var personId = personCompressor['personid'] as int;
+        personCompressor.remove('personid');
+        var person = await _personRepository.getById(personId);
+        personCompressor['person'] = person;
+        var personCompressorId = personCompressor['id'] as int;
+        var coalescents = await _personCompressorCoalescentRepository.getByPersonCompressorId(personCompressorId);
+        personCompressor['coalescents'] = coalescents;
       }
       return personcompressors;
     } on LocalDatabaseException {

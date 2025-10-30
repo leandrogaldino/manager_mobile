@@ -18,9 +18,27 @@ class PersonCompressorCoalescentRepository {
         _localDatabase = localDatabase,
         _productRepository = productRepository;
 
-  Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
+  Future<Map<String, Object?>> getById(int id) async {
     try {
-      final personCompressorCoalescents = await _localDatabase.query('personcompressorcoalescent', where: 'personcompressorid = ?', whereArgs: [parentId]);
+      final Map<String, Object?> personCompressorCoalescent = await _localDatabase.query('personcompressorcoalescent', where: 'id = ?', whereArgs: [id]).then((list) {
+        if (list.isEmpty) return {};
+        return list[0];
+      });
+      final productId = personCompressorCoalescent['productid'];
+      final product = await _productRepository.getById(productId);
+      personCompressorCoalescent['product'] = product;
+      personCompressorCoalescent.remove('productid');
+      return personCompressorCoalescent;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('PER001', 'Erro ao obter os dados: $e');
+    }
+  }
+
+  Future<List<Map<String, Object?>>> getByPersonCompressorId(int personCompressorId) async {
+    try {
+      final personCompressorCoalescents = await _localDatabase.query('personcompressorcoalescent', where: 'personcompressorid = ?', whereArgs: [personCompressorId]);
       for (var personCompressorCoalescent in personCompressorCoalescents) {
         final productId = personCompressorCoalescent['productid'];
         final product = await _productRepository.getById(productId);

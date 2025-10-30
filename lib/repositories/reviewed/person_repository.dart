@@ -24,7 +24,7 @@ class PersonRepository {
         if (list.isEmpty) return {};
         return list[0];
       });
-      var personCompressors = await _personCompressorRepository.getByParentId(id);
+      var personCompressors = await _personCompressorRepository.getByPersonId(id);
       person['personcompressors'] = personCompressors;
       return person;
     } on LocalDatabaseException {
@@ -37,7 +37,6 @@ class PersonRepository {
   Future<List<Map<String, Object?>>> getTechnicians() async {
     try {
       var persons = await _localDatabase.query('person', where: 'istechnician = ?', whereArgs: ['1']);
-
       return persons;
     } on LocalDatabaseException {
       rethrow;

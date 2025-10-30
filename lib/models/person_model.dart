@@ -10,7 +10,6 @@ class PersonModel {
   final bool isTechnician;
   final DateTime lastUpdate;
   final String shortName;
-  final List<PersonCompressorModel> personCompressors;
 
   PersonModel({
     required this.id,
@@ -20,7 +19,6 @@ class PersonModel {
     required this.isTechnician,
     required this.lastUpdate,
     required this.shortName,
-    required this.personCompressors,
   });
 
   PersonModel copyWith({
@@ -31,7 +29,6 @@ class PersonModel {
     bool? isTechnician,
     DateTime? lastUpdate,
     String? shortName,
-    List<PersonCompressorModel>? personCompressors,
   }) {
     return PersonModel(
       id: id ?? this.id,
@@ -41,7 +38,6 @@ class PersonModel {
       isTechnician: isTechnician ?? this.isTechnician,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       shortName: shortName ?? this.shortName,
-      personCompressors: personCompressors ?? this.personCompressors,
     );
   }
 
@@ -54,28 +50,23 @@ class PersonModel {
       isTechnician: map['istechnician'] == 0 ? false : true,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
       shortName: (map['shortname'] ?? '') as String,
-      personCompressors: List<PersonCompressorModel>.from(
-        (map['personcompressors'] as List<Map<String, dynamic>>).map<PersonCompressorModel>(
-          (x) => PersonCompressorModel.fromMap(x),
-        ),
-      ),
     );
   }
 
   @override
   String toString() {
-    return 'PersonModel(id: $id, visible: $visible, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName, personCompressors: $personCompressors)';
+    return 'PersonModel(id: $id, visible: $visible, document: $document, isCustomer: $isCustomer, isTechnician: $isTechnician, lastUpdate: $lastUpdate, shortName: $shortName )';
   }
 
   @override
   bool operator ==(covariant PersonModel other) {
     if (identical(this, other)) return true;
-    return other.id == id && other.visible == visible && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName && listEquals(other.personCompressors, personCompressors);
+    return other.id == id && other.visible == visible && other.document == document && other.isCustomer == isCustomer && other.isTechnician == isTechnician && other.lastUpdate == lastUpdate && other.shortName == shortName;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode ^ personCompressors.hashCode;
+    return id.hashCode ^ visible.hashCode ^ document.hashCode ^ isCustomer.hashCode ^ isTechnician.hashCode ^ lastUpdate.hashCode ^ shortName.hashCode;
   }
 
   Map<String, dynamic> toMap() {
