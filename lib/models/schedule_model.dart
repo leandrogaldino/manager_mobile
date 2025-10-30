@@ -79,7 +79,7 @@ class ScheduleModel {
       customer: PersonModel.fromMap(map['customer'] as Map<String, dynamic>),
       compressor: PersonCompressorModel.fromMap(map['compressor'] as Map<String, dynamic>),
       instructions: (map['instructions'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

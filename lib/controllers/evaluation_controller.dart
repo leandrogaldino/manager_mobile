@@ -162,10 +162,10 @@ class EvaluationController extends ChangeNotifier {
   }
 
   void updateCompressor(PersonCompressorModel? compressor) {
-    _evaluation!.personCompressor = compressor;
+    _evaluation!.compressor = compressor;
     _evaluation!.coalescents.clear();
     if (compressor != null) {
-      for (var coalescent in evaluation!.personCompressor!.coalescents) {
+      for (var coalescent in evaluation!.compressor!.coalescents) {
         _evaluation!.coalescents.add(EvaluationCoalescentModel(coalescent: coalescent));
       }
     }

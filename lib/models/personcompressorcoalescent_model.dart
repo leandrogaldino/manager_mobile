@@ -5,11 +5,13 @@ import 'package:manager_mobile/models/product_model.dart';
 class PersonCompressorCoalescentModel {
   final int id;
   final bool visible;
+  final PersonCompressorModel compressor;
   final ProductModel product;
   final DateTime lastUpdate;
   PersonCompressorCoalescentModel({
     required this.id,
     required this.visible,
+    required this.compressor,
     required this.product,
     required this.lastUpdate,
   });
@@ -17,13 +19,14 @@ class PersonCompressorCoalescentModel {
   PersonCompressorCoalescentModel copyWith({
     int? id,
     bool? visible,
-    PersonCompressorModel? personCompressor,
+    PersonCompressorModel? compressor,
     ProductModel? product,
     DateTime? lastUpdate,
   }) {
     return PersonCompressorCoalescentModel(
       id: id ?? this.id,
       visible: visible ?? this.visible,
+      compressor: compressor ?? this.compressor,
       product: product ?? this.product,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
@@ -33,6 +36,7 @@ class PersonCompressorCoalescentModel {
     return <String, dynamic>{
       'id': id,
       'visible': visible,
+      'compressor': compressor.toMap(),
       'product': product.toMap(),
       'lastUpdate': lastUpdate.millisecondsSinceEpoch,
     };
@@ -42,8 +46,9 @@ class PersonCompressorCoalescentModel {
     return PersonCompressorCoalescentModel(
       id: (map['id'] ?? 0) as int,
       visible: (map['visible'] ?? false) as bool,
+      compressor: PersonCompressorModel.fromMap(map['compressor']),
       product: ProductModel.fromMap(map['product']),
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 
@@ -53,18 +58,18 @@ class PersonCompressorCoalescentModel {
 
   @override
   String toString() {
-    return 'PersonCompressorCoalescentModel(id: $id, visible: $visible,  product: $product, lastUpdate: $lastUpdate)';
+    return 'PersonCompressorCoalescentModel(id: $id, visible: $visible, compressor: $compressor,  product: $product, lastUpdate: $lastUpdate)';
   }
 
   @override
   bool operator ==(covariant PersonCompressorCoalescentModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.visible == visible && other.product == product && other.lastUpdate == lastUpdate;
+    return other.id == id && other.visible == visible && other.compressor == compressor && other.product == product && other.lastUpdate == lastUpdate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ product.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ compressor.hashCode ^ product.hashCode ^ lastUpdate.hashCode;
   }
 }

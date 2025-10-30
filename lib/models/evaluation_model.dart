@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
@@ -16,7 +17,8 @@ class EvaluationModel {
   bool existsInCloud;
   bool? needProposal;
   CallTypes callType;
-  PersonCompressorModel? personCompressor;
+  PersonModel? customer;
+  PersonCompressorModel? compressor;
   DateTime? creationDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
@@ -40,7 +42,8 @@ class EvaluationModel {
     this.existsInCloud = false,
     this.needProposal,
     this.callType = CallTypes.none,
-    this.personCompressor,
+    this.customer,
+    this.compressor,
     DateTime? creationDate,
     TimeOfDay? startTime,
     this.endTime,
@@ -74,7 +77,8 @@ class EvaluationModel {
       existsInCloud: false,
       needProposal: null,
       callType: schedule != null ? schedule.callType : CallTypes.none,
-      personCompressor: schedule?.compressor,
+      customer: schedule?.customer,
+      compressor: schedule?.compressor,
       creationDate: DateTime.now(),
       startTime: TimeOfDay.now(),
       endTime: null,
@@ -101,7 +105,8 @@ class EvaluationModel {
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
-    PersonCompressorModel? personCompressor,
+    PersonModel? customer,
+    PersonCompressorModel? compressor,
     DateTime? creationDate,
     TimeOfDay? startTime,
     TimeOfDay? endTime,
@@ -126,7 +131,8 @@ class EvaluationModel {
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
       callType: callType ?? this.callType,
-      personCompressor: personCompressor ?? this.personCompressor,
+      customer: customer ?? this.customer,
+      compressor: compressor ?? this.compressor,
       creationDate: creationDate ?? this.creationDate,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
@@ -154,7 +160,8 @@ class EvaluationModel {
       'existsincloud': existsInCloud,
       'needproposal': needProposal,
       'calltypeid': callType.index,
-      'personcompressorid': personCompressor?.id,
+      'customerid': customer?.toMap(),
+      'compressorid': compressor?.toMap(),
       'creationdate': creationDate?.millisecondsSinceEpoch,
       'starttime': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}',
       'endtime': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}',
@@ -183,7 +190,8 @@ class EvaluationModel {
       needProposal: map['needproposal'] == null ? null : (map['needproposal'] == 0 ? false : true),
       callType: CallTypes.values[map['calltypeid'] as int],
       advice: map['advice'] != null ? map['advice'] as String : null,
-      personCompressor: map['personCompressor'] != null ? PersonCompressorModel.fromMap(map['personCompressor']) : null,
+      customer: map['customer'] != null ? PersonModel.fromMap(map['customer']) : null,
+      compressor: map['compressor'] != null ? PersonCompressorModel.fromMap(map['compressor']) : null,
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
@@ -220,7 +228,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, personCompressor: $personCompressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -233,7 +241,8 @@ class EvaluationModel {
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
         other.callType == callType &&
-        other.personCompressor == personCompressor &&
+        other.customer == customer &&
+        other.compressor == compressor &&
         other.creationDate == creationDate &&
         other.startTime == startTime &&
         other.endTime == endTime &&
@@ -260,7 +269,8 @@ class EvaluationModel {
         existsInCloud.hashCode ^
         needProposal.hashCode ^
         callType.hashCode ^
-        personCompressor.hashCode ^
+        customer.hashCode ^
+        compressor.hashCode ^
         creationDate.hashCode ^
         startTime.hashCode ^
         endTime.hashCode ^

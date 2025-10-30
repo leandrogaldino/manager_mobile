@@ -17,9 +17,9 @@ class EvaluationTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final evaluationController = Locator.get<EvaluationController>();
-    String subtitle = evaluation.personCompressor!.compressor.name;
-    evaluation.personCompressor!.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${evaluation.personCompressor!.serialNumber}' : null;
-    evaluation.personCompressor!.sector.isNotEmpty ? subtitle = '$subtitle - ${evaluation.personCompressor!.sector}' : null;
+    String subtitle = evaluation.compressor!.compressor.name;
+    evaluation.compressor!.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${evaluation.compressor!.serialNumber}' : null;
+    evaluation.compressor!.sector.isNotEmpty ? subtitle = '$subtitle - ${evaluation.compressor!.sector}' : null;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -33,7 +33,7 @@ class EvaluationTileWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
           ),
           title: Text(
-            evaluation.personCompressor!.person.shortName,
+            evaluation.compressor!.person.shortName,
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
             ),
