@@ -1,25 +1,25 @@
 import 'dart:convert';
 
-class Service {
+class ServiceModel {
   final int id;
   final bool visible;
   final String name;
   final DateTime lastUpdate;
 
-  Service({
+  ServiceModel({
     required this.id,
     required this.visible,
     required this.name,
     required this.lastUpdate,
   });
 
-  Service copyWith({
+  ServiceModel copyWith({
     int? id,
     bool? visible,
     String? name,
     DateTime? lastUpdate,
   }) {
-    return Service(
+    return ServiceModel(
       id: id ?? this.id,
       visible: visible ?? this.visible,
       name: name ?? this.name,
@@ -32,22 +32,22 @@ class Service {
       'id': id,
       'visible': visible,
       'name': name,
-      'lastUpdate': lastUpdate.millisecondsSinceEpoch,
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
     };
   }
 
-  factory Service.fromMap(Map<String, dynamic> map) {
-    return Service(
+  factory ServiceModel.fromMap(Map<String, dynamic> map) {
+    return ServiceModel(
       id: (map['id'] ?? 0) as int,
       visible: (map['visible'] ?? false) as bool,
       name: (map['name'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Service.fromJson(String source) => Service.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ServiceModel.fromJson(String source) => ServiceModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -55,7 +55,7 @@ class Service {
   }
 
   @override
-  bool operator ==(covariant Service other) {
+  bool operator ==(covariant ServiceModel other) {
     if (identical(this, other)) return true;
 
     return other.id == id && other.visible == visible && other.name == name && other.lastUpdate == lastUpdate;

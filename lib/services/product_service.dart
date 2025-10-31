@@ -4,7 +4,9 @@ import 'package:manager_mobile/repositories/product_repository.dart';
 class ProductService {
   final ProductRepository _productRepository;
 
-  ProductService({required ProductRepository productRepository}) : _productRepository = productRepository;
+  ProductService({
+    required ProductRepository productRepository,
+  }) : _productRepository = productRepository;
 
   Future<List<PersonCompressorModel>> getVisibles() async {
     final data = await _productRepository.getVisibles();

@@ -3,7 +3,9 @@ import 'package:manager_mobile/repositories/personcompressorcoalescent_repositor
 class PersonCompressorCoalescentService {
   final PersonCompressorCoalescentRepository _coalescentRepository;
 
-  PersonCompressorCoalescentService({required PersonCompressorCoalescentRepository coalescentRepository}) : _coalescentRepository = coalescentRepository;
+  PersonCompressorCoalescentService({
+    required PersonCompressorCoalescentRepository coalescentRepository,
+  }) : _coalescentRepository = coalescentRepository;
 
   Future<void> synchronize(int lastSync) async {
     await _coalescentRepository.synchronize(lastSync);

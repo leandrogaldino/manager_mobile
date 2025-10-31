@@ -3,25 +3,33 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
+import 'package:manager_mobile/repositories/productcode_repository.dart';
 
 class ProductRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
+  final ProductCodeRepository _productCodeRepository;
 
   ProductRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
+    required ProductCodeRepository productCodeRepository,
   })  : _remoteDatabase = remoteDatabase,
-        _localDatabase = localDatabase;
+        _localDatabase = localDatabase,
+        _productCodeRepository = productCodeRepository;
 
-  Future<Map<String, Object?>> getById(dynamic id) async {
+  Future<Map<String, Object?>> getById(int id) async {
     try {
-      final Map<String, Object?> service = await _localDatabase.query('product', where: 'id = ?', whereArgs: [id]).then((list) {
+      final Map<String, Object?> product = await _localDatabase.query('product', where: 'id = ?', whereArgs: [id]).then((list) {
         if (list.isEmpty) return {};
         return list[0];
       });
 
-      return service;
+      var codes = await _productCodeRepository.getByProductId(id);
+
+      product['codes'] = codes;
+
+      return product;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {

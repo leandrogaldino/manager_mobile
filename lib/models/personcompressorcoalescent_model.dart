@@ -32,14 +32,14 @@ class PersonCompressorCoalescentModel {
       'id': id,
       'visible': visible,
       'product': product.toMap(),
-      'lastUpdate': lastUpdate.millisecondsSinceEpoch,
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
     };
   }
 
   factory PersonCompressorCoalescentModel.fromMap(Map<String, dynamic> map) {
     return PersonCompressorCoalescentModel(
       id: (map['id'] ?? 0) as int,
-      visible: (map['visible'] ?? false) as bool,
+      visible: map['visible'] == 0 ? false : true,
       product: ProductModel.fromMap(map['product']),
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );

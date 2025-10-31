@@ -1,19 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/models/productcode_model.dart';
 
 class ProductModel {
   final int id;
   final bool visible;
   final String name;
-  final ProductCodeModel code;
+  final List<ProductCodeModel> codes;
   final DateTime lastUpdate;
 
   ProductModel({
     required this.id,
     required this.visible,
     required this.name,
-    required this.code,
+    required this.codes,
     required this.lastUpdate,
   });
 
@@ -21,15 +22,29 @@ class ProductModel {
     int? id,
     bool? visible,
     String? name,
-    ProductCodeModel? code,
+    List<ProductCodeModel>? codes,
     DateTime? lastUpdate,
   }) {
     return ProductModel(
       id: id ?? this.id,
       visible: visible ?? this.visible,
       name: name ?? this.name,
-      code: code ?? this.code,
+      codes: codes ?? this.codes,
       lastUpdate: lastUpdate ?? this.lastUpdate,
+    );
+  }
+
+  factory ProductModel.fromMap(Map<String, dynamic> map) {
+    return ProductModel(
+      id: (map['id'] ?? 0) as int,
+      visible: map['visible'] == 0 ? false : true,
+      name: (map['name'] ?? '') as String,
+      codes: List<ProductCodeModel>.from(
+        (map['codes'] as List<Map<String, dynamic>>).map<ProductCodeModel>(
+          (x) => ProductCodeModel.fromMap(x),
+        ),
+      ),
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 
@@ -38,18 +53,9 @@ class ProductModel {
       'id': id,
       'visible': visible,
       'name': name,
-      'lastUpdate': lastUpdate.millisecondsSinceEpoch,
+      'codes': codes.map((x) => x.toMap),
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
     };
-  }
-
-  factory ProductModel.fromMap(Map<String, dynamic> map) {
-    return ProductModel(
-      id: (map['id'] ?? 0) as int,
-      visible: (map['visible'] ?? false) as bool,
-      name: (map['name'] ?? '') as String,
-      code: ProductCodeModel.fromMap(map['code']),
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
-    );
   }
 
   String toJson() => json.encode(toMap());
@@ -58,18 +64,17 @@ class ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(id: $id, visible: $visible, name: $name, code: $code, lastUpdate: $lastUpdate)';
+    return 'ProductModel(id: $id, visible: $visible, name: $name, code: $codes, lastUpdate: $lastUpdate)';
   }
 
   @override
   bool operator ==(covariant ProductModel other) {
     if (identical(this, other)) return true;
-
-    return other.id == id && other.visible == visible && other.name == name && other.code == code && other.lastUpdate == lastUpdate;
+    return other.id == id && other.visible == visible && other.name == name && listEquals(other.codes, codes) && other.lastUpdate == lastUpdate;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ name.hashCode ^ code.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ name.hashCode ^ codes.hashCode ^ lastUpdate.hashCode;
   }
 }

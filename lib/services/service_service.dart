@@ -4,7 +4,9 @@ import 'package:manager_mobile/repositories/service_repository.dart';
 class ServiceService {
   final ServiceRepository _serviceRepository;
 
-  ServiceService({required ServiceRepository serviceRepository}) : _serviceRepository = serviceRepository;
+  ServiceService({
+    required ServiceRepository serviceRepository,
+  }) : _serviceRepository = serviceRepository;
 
   Future<List<PersonCompressorModel>> getVisibles() async {
     final data = await _serviceRepository.getVisibles();

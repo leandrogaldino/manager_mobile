@@ -18,7 +18,6 @@ class EvaluationService {
   Future<String> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
     try {
       final rootDirectory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
-
       final signatureDirectory = asTemporary ? rootDirectory : Directory('${rootDirectory.path}/signatures');
       if (!await signatureDirectory.exists()) {
         await signatureDirectory.create(recursive: true);

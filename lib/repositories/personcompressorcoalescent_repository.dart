@@ -24,7 +24,7 @@ class PersonCompressorCoalescentRepository {
         if (list.isEmpty) return {};
         return list[0];
       });
-      final productId = personCompressorCoalescent['productid'];
+      final productId = personCompressorCoalescent['productid'] as int;
       final product = await _productRepository.getById(productId);
       personCompressorCoalescent['product'] = product;
       personCompressorCoalescent.remove('productid');
@@ -40,7 +40,7 @@ class PersonCompressorCoalescentRepository {
     try {
       final personCompressorCoalescents = await _localDatabase.query('personcompressorcoalescent', where: 'personcompressorid = ?', whereArgs: [personCompressorId]);
       for (var personCompressorCoalescent in personCompressorCoalescents) {
-        final productId = personCompressorCoalescent['productid'];
+        final productId = personCompressorCoalescent['productid'] as int;
         final product = await _productRepository.getById(productId);
         personCompressorCoalescent['product'] = product;
       }

@@ -4,14 +4,16 @@ import 'package:manager_mobile/repositories/schedule_repository.dart';
 class ScheduleService {
   final ScheduleRepository _scheduleRepository;
 
-  ScheduleService({required ScheduleRepository scheduleRepository}) : _scheduleRepository = scheduleRepository;
+  ScheduleService({
+    required ScheduleRepository scheduleRepository,
+  }) : _scheduleRepository = scheduleRepository;
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
     _scheduleRepository.updateVisibility(scheduleId, isVisible);
   }
 
-  Future<int> delete(dynamic id) async {
-    return await _scheduleRepository.delete(id as int);
+  Future<int> delete(int id) async {
+    return await _scheduleRepository.delete(id);
   }
 
   Future<List<ScheduleModel>> getAll() async {

@@ -52,13 +52,9 @@ class PersonCompressorModel {
   }
 
   factory PersonCompressorModel.fromMap(Map<String, dynamic> map) {
-    if (!map['visible'] is int) {
-      print('É int!');
-    }
-
     return PersonCompressorModel(
       id: (map['id'] ?? 0) as int,
-      visible: map['visible'] as int == 0 ? false : true,
+      visible: map['visible'] == 0 ? false : true,
       person: PersonModel.fromMap(map['person']),
       compressor: CompressorModel.fromMap(map['compressor']),
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
@@ -71,6 +67,19 @@ class PersonCompressorModel {
         ),
       ),
     );
+  }
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'visible': visible,
+      'person': person.toMap(),
+      'compressor': compressor.toMap(),
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
+      'serialnumber': serialNumber,
+      'sector': sector,
+      'patrimony': patrimony,
+      'coalescents': coalescents.map((x) => x.toMap),
+    };
   }
 
   @override
@@ -98,10 +107,6 @@ class PersonCompressorModel {
   @override
   int get hashCode {
     return id.hashCode ^ visible.hashCode ^ person.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ patrimony.hashCode ^ coalescents.hashCode;
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{'id': id, 'visible': visible, 'person': person.toMap(), 'compressor': compressor.toMap(), 'lastupdate': lastUpdate.millisecondsSinceEpoch, 'serialnumber': serialNumber, 'sector': sector, 'patrimony': patrimony, 'coalescents': coalescents.map((x) => x.toMap)};
   }
 
   String toJson() => json.encode(toMap());

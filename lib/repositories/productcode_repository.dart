@@ -4,41 +4,37 @@ import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 
-class CompressorRepository {
+class ProductCodeRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
 
-  CompressorRepository({
+  ProductCodeRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase;
 
-  Future<Map<String, Object?>> getById(int id) async {
+  Future<List<Map<String, Object?>>> getByProductId(int productId) async {
     try {
-      final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
-        if (list.isEmpty) return {};
-        return list[0];
-      });
-
-      return compressor;
+      final productCodes = await _localDatabase.query('productcode', where: 'productid = ?', whereArgs: [productId]);
+      return productCodes;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('COM001', 'Erro ao obter os dados: $e');
+      throw RepositoryException('PCO001', 'Erro ao obter os dados: $e');
     }
   }
 
   Future<void> synchronize(int lastSync) async {
     try {
-      final remoteResult = await _remoteDatabase.get(collection: 'compressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
+      final remoteResult = await _remoteDatabase.get(collection: 'productcodes', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
       for (var data in remoteResult) {
-        final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);
+        final bool exists = await _localDatabase.isSaved('productcode', id: data['id']);
         data.remove('documentid');
         if (exists) {
-          await _localDatabase.update('compressor', data, where: 'id = ?', whereArgs: [data['id']]);
+          await _localDatabase.update('productcode', data, where: 'id = ?', whereArgs: [data['id']]);
         } else {
-          await _localDatabase.insert('compressor', data);
+          await _localDatabase.insert('productcode', data);
         }
       }
     } on LocalDatabaseException {
@@ -46,7 +42,7 @@ class CompressorRepository {
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('COM002', 'Erro ao sincronizar os dados: $e');
+      throw RepositoryException('PCO002', 'Erro ao sincronizar os dados: $e');
     }
   }
 }

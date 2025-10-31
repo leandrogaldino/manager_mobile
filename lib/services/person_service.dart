@@ -12,7 +12,7 @@ class PersonService {
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
-  Future<PersonModel> getById(dynamic id) async {
+  Future<PersonModel> getById(int id) async {
     final data = await _personRepository.getById(id);
     if (data.isNotEmpty) {
       return PersonModel.fromMap(data);

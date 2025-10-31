@@ -10,12 +10,14 @@ import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/product_service.dart';
+import 'package:manager_mobile/services/productcode_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
 import 'package:manager_mobile/states/home_state.dart';
 
 class HomeController extends ChangeNotifier {
   final ProductService _productService;
+  final ProductCodeService _productCodeService;
   final ServiceService _serviceService;
   final CompressorService _compressorService;
   final PersonCompressorCoalescentService _personCompressorcoalescentService;
@@ -28,6 +30,7 @@ class HomeController extends ChangeNotifier {
 
   HomeController({
     required ProductService productService,
+    required ProductCodeService productCodeService,
     required ServiceService serviceService,
     required CompressorService compressorService,
     required PersonCompressorCoalescentService personCompressorcoalescentService,
@@ -38,6 +41,7 @@ class HomeController extends ChangeNotifier {
     required AppPreferences appPreferences,
     required DataController customerController,
   })  : _productService = productService,
+        _productCodeService = productCodeService,
         _serviceService = serviceService,
         _compressorService = compressorService,
         _personCompressorcoalescentService = personCompressorcoalescentService,
@@ -131,6 +135,8 @@ class HomeController extends ChangeNotifier {
       int lastSync = await _appPreferences.lastSynchronize;
       log('Sincronizando Produtos');
       await _productService.synchronize(lastSync);
+      log('Sincronizando Códigos de Produtos');
+      await _productCodeService.synchronize(lastSync);
       log('Sincronizando Serviços');
       await _serviceService.synchronize(lastSync);
       log('Sincronizando Compressores');

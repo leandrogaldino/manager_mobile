@@ -49,7 +49,7 @@ class ScheduleRepository {
     }
   }
 
-  Future<int> delete(dynamic id) async {
+  Future<int> delete(int id) async {
     try {
       return await _localDatabase.delete('schedule', where: 'id = ?', whereArgs: [id as String]);
     } on LocalDatabaseException {

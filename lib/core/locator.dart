@@ -21,6 +21,7 @@ import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
+import 'package:manager_mobile/repositories/productcode_repository.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
@@ -34,6 +35,7 @@ import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/product_service.dart';
+import 'package:manager_mobile/services/productcode_service.dart';
 import 'package:manager_mobile/services/schedule_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
 
@@ -73,16 +75,28 @@ class Locator {
       ),
     );
 
+    _getIt.registerLazySingleton(() => ProductRepository(
+          remoteDatabase: _getIt.get<RemoteDatabase>(),
+          localDatabase: _getIt.get<LocalDatabase>(),
+          productCodeRepository: _getIt.get<ProductCodeRepository>(),
+        ));
+
     _getIt.registerLazySingleton(
-      () => ProductRepository(
+      () => ProductService(
+        productRepository: _getIt.get<ProductRepository>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => ProductCodeRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
     _getIt.registerLazySingleton(
-      () => ProductService(
-        productRepository: _getIt.get<ProductRepository>(),
+      () => ProductCodeService(
+        productCodeRepository: _getIt.get<ProductCodeRepository>(),
       ),
     );
 
@@ -218,6 +232,7 @@ class Locator {
 
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
           productService: _getIt.get<ProductService>(),
+          productCodeService: _getIt.get<ProductCodeService>(),
           serviceService: _getIt.get<ServiceService>(),
           compressorService: _getIt.get<CompressorService>(),
           personCompressorcoalescentService: _getIt.get<PersonCompressorCoalescentService>(),

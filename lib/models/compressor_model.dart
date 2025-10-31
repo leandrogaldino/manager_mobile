@@ -32,7 +32,7 @@ class CompressorModel {
       'id': id,
       'name': name,
       'visible': visible,
-      'lastUpdate': lastUpdate.millisecondsSinceEpoch,
+      'lastupdate': lastUpdate.millisecondsSinceEpoch,
     };
   }
 
@@ -40,8 +40,8 @@ class CompressorModel {
     return CompressorModel(
       id: (map['id'] ?? 0) as int,
       name: (map['name'] ?? '') as String,
-      visible: (map['visible'] ?? false) as bool,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
+      visible: map['visible'] == 0 ? false : true,
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 
