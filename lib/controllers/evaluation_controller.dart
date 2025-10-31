@@ -47,9 +47,9 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> updateSchedule(int scheduleId, bool isVisible) async {
-  //   await scheduleService.updateVisibility(scheduleId, isVisible);
-  // }
+   Future<void> updateSchedule(int scheduleId, bool isVisible) async {
+     await scheduleService.updateVisibility(scheduleId, isVisible);
+  }
 
   Future<void> updateImagesBytes() async {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
@@ -93,10 +93,10 @@ class EvaluationController extends ChangeNotifier {
   Uint8List? _signatureBytes;
   Uint8List? get signatureBytes => _signatureBytes;
 
-  // void updateSignaturePath(String signaturePath) {
-  //   _evaluation!.signaturePath = signaturePath;
-  //   notifyListeners();
-  // }
+   //void updateSignaturePath(String signaturePath) {
+     //_evaluation!.signaturePath = signaturePath;
+     //notifyListeners();
+   //}
 
   final List<Uint8List> _photosBytes = [];
   List<Uint8List> get photosBytes => _photosBytes;

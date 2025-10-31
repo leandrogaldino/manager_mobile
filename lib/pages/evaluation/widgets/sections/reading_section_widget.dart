@@ -368,27 +368,23 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             "Necessário orçamento?",
                             style: theme.textTheme.bodyLarge,
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: RadioGroup(
-                                groupValue: _evaluationController.evaluation!.needProposal,
-                                onChanged: (bool? value) {
-                                  if (_evaluationController.source == SourceTypes.fromSaved) {
-                                    null;
-                                  } else {
-                                    _evaluationController.updateNeedProposal(value!);
-                                  }
-                                },
-                                child: Column(
-                                  children: [
-                                    RadioListTile<bool>(title: Text("Sim"), value: true),
-                                    RadioListTile<bool>(title: Text("Não"), value: false),
-                                  ],
-                                ),
-                              ))
-                            ],
-                          )
+                          
+                               RadioGroup(
+                            groupValue: _evaluationController.evaluation!.needProposal,
+                            onChanged: (bool? value) {
+                              if (_evaluationController.source == SourceTypes.fromSaved) {
+                                null;
+                              } else {
+                                _evaluationController.updateNeedProposal(value!);
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                Expanded(child: RadioListTile<bool>(title: Text("Sim"), value: true)),
+                                Expanded(child: RadioListTile<bool>(title: Text("Não"), value: false)),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       TextFormField(
