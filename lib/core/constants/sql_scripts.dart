@@ -116,7 +116,7 @@ class SQLScripts {
       personcompressorid INT NOT NULL,
       productid INT NOT NULL,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE CASCADE,
+      FOREIGN KEY (personcompressorid) REFERENCES personcompressor (id) ON DELETE CASCADE,
       FOREIGN KEY (productid) REFERENCES product (id) ON DELETE RESTRICT
     );
   ''';

@@ -159,6 +159,7 @@ class HomeController extends ChangeNotifier {
       if (_state is! HomeStateError) {
         _state = HomeStateSuccess(schedules, evaluations);
       }
+      log('Sincronização concluída com sucesso');
     } catch (e) {
       _state = HomeStateError(e.toString());
     } finally {
