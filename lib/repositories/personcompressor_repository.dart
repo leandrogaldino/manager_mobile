@@ -99,7 +99,8 @@ class PersonCompressorRepository {
     }
   }
 
-  Future<void> synchronize(int lastSync) async {
+  Future<int> synchronize(int lastSync) async {
+    int count=0;
     try {
       final remoteResult = await _remoteDatabase.get(collection: 'personcompressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
       for (var data in remoteResult) {
@@ -110,7 +111,9 @@ class PersonCompressorRepository {
         } else {
           await _localDatabase.insert('personcompressor', data);
         }
+        count+=1;
       }
+      return count;
     } on LocalDatabaseException {
       rethrow;
     } on RemoteDatabaseException {

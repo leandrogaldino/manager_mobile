@@ -11,7 +11,7 @@ class PersonCompressorService {
     return data.map((item) => PersonCompressorModel.fromMap(item)).toList();
   }
 
-  Future<void> synchronize(int lastSync) async {
-    await _personCompressorRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _personCompressorRepository.synchronize(lastSync);
   }
 }

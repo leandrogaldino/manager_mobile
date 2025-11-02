@@ -13,7 +13,7 @@ class ServiceService {
     return data.map((item) => PersonCompressorModel.fromMap(item)).toList();
   }
 
-  Future<void> synchronize(int lastSync) async {
-    await _serviceRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _serviceRepository.synchronize(lastSync);
   }
 }

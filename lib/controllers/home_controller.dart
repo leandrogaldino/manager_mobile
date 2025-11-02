@@ -134,27 +134,33 @@ class HomeController extends ChangeNotifier {
       await _appPreferences.setSynchronizing(true);
       int lastSync = await _appPreferences.lastSynchronize;
       log('Sincronizando Produtos');
-      await _productService.synchronize(lastSync);
+      int countProduct = await _productService.synchronize(lastSync);
       log('Sincronizando Códigos de Produtos');
-      await _productCodeService.synchronize(lastSync);
+      int countProductCode = await _productCodeService.synchronize(lastSync);
       log('Sincronizando Serviços');
-      await _serviceService.synchronize(lastSync);
+      int countService = await _serviceService.synchronize(lastSync);
       log('Sincronizando Compressores');
-      await _compressorService.synchronize(lastSync);
+      int countCompressor = await _compressorService.synchronize(lastSync);
       log('Sincronizando Coalescentes dos Compressores da Pessoa');
-      await _personCompressorcoalescentService.synchronize(lastSync);
+      int countPersonCompressorCoalescent = await _personCompressorcoalescentService.synchronize(lastSync);
       log('Sincronizando Compressores da Pessoa');
-      await _personCompressorService.synchronize(lastSync);
+      int countPersonCompressor = await _personCompressorService.synchronize(lastSync);
       log('Sincronizando Pessoas');
-      await _personService.synchronize(lastSync);
+      int countPerson = await _personService.synchronize(lastSync);
       log('Sincronizando Agendamentos');
       await _scheduleService.synchronize(lastSync);
       log('Sincronizando Avaliações');
       await _evaluationService.synchronize(lastSync);
       await _appPreferences.updateLastSynchronize();
       await _appPreferences.setSynchronizing(false);
-      await _personController.fetchCompressors();
-      await _personController.fetchTechnicians();
+
+      int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson;
+      //Se houve qualquer sincronizacao, atualizar compressores
+      if (totalCount > 0 || _personController.compressors.isEmpty) await _personController.fetchCompressors();
+
+      //Se houve alteracao em sincronizacao, atualizar tecnicos
+      if (countPerson > 0 || _personController.technicians.isEmpty) await _personController.fetchTechnicians();
+
       await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
       if (_state is! HomeStateError) {
         _state = HomeStateSuccess(schedules, evaluations);

@@ -81,7 +81,7 @@ class EvaluationRepository {
         throw RepositoryException('EVA001', 'Essa avaliação já foi salva.');
       }
     } on LocalDatabaseException {
-      rethrow;
+        rethrow;
     } on Exception catch (e) {
       throw RepositoryException('EVA002', 'Erro ao salvar os dados: $e');
     }

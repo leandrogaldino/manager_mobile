@@ -7,7 +7,7 @@ class PersonCompressorCoalescentService {
     required PersonCompressorCoalescentRepository coalescentRepository,
   }) : _coalescentRepository = coalescentRepository;
 
-  Future<void> synchronize(int lastSync) async {
-    await _coalescentRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _coalescentRepository.synchronize(lastSync);
   }
 }

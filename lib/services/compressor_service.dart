@@ -5,7 +5,7 @@ class CompressorService {
 
   CompressorService({required CompressorRepository compressorRepository}) : _compressorRepository = compressorRepository;
 
-  Future<void> synchronize(int lastSync) async {
-    await _compressorRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _compressorRepository.synchronize(lastSync);
   }
 }

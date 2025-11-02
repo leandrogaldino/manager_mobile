@@ -21,7 +21,7 @@ class PersonService {
     }
   }
 
-  Future<void> synchronize(int lastSync) async {
-    await _personRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _personRepository.synchronize(lastSync);
   }
 }

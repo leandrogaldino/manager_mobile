@@ -25,7 +25,8 @@ class ProductCodeRepository {
     }
   }
 
-  Future<void> synchronize(int lastSync) async {
+  Future<int> synchronize(int lastSync) async {
+    int count=0;
     try {
       final remoteResult = await _remoteDatabase.get(collection: 'productcodes', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
       for (var data in remoteResult) {
@@ -36,7 +37,9 @@ class ProductCodeRepository {
         } else {
           await _localDatabase.insert('productcode', data);
         }
+        count+=1;
       }
+      return count;
     } on LocalDatabaseException {
       rethrow;
     } on RemoteDatabaseException {

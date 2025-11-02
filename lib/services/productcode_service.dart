@@ -7,7 +7,7 @@ class ProductCodeService {
     required ProductCodeRepository productCodeRepository,
   }) : _productCodeRepository = productCodeRepository;
 
-  Future<void> synchronize(int lastSync) async {
-    await _productCodeRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _productCodeRepository.synchronize(lastSync);
   }
 }
