@@ -15,6 +15,7 @@ class SynchronizeTimer {
         bool hasConnection = await connection.hasConnection();
         if (hasConnection) {
           await homeController.synchronize();
+          //await homeController.fetchData(customerOrCompressor: homeController.customerOrCompressor, dateRange: homeController.dateRange);
         }
         log('Sincronização Automática finalizada.');
       } catch (e, s) {

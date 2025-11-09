@@ -7,7 +7,7 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class ScheduleWidget extends StatefulWidget {
@@ -16,7 +16,7 @@ class ScheduleWidget extends StatefulWidget {
     required this.schedule,
   });
 
-  final ScheduleModel schedule;
+  final VisitScheduleModel schedule;
 
   @override
   State<ScheduleWidget> createState() => _ScheduleWidgetState();
@@ -78,7 +78,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         ),
                   ),
                   TextSpan(
-                    text: DateFormat('dd/MM/yyyy').format(widget.schedule.visitDate),
+                    text: DateFormat('dd/MM/yyyy').format(widget.schedule.scheduleDate),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],

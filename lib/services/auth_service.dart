@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/exceptions/auth_exception.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
@@ -11,11 +12,17 @@ class AuthService implements Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final RemoteDatabase _remoteDatabase = Locator.get<RemoteDatabase>();
   final PersonService _personService = Locator.get<PersonService>();
-
+  final AppPreferences _appPreferences = Locator.get<AppPreferences>();
   @override
   Future<void> signIn({required String email, required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (_auth.currentUser == null) return;
+      String userId = _auth.currentUser!.uid;
+      var result = await _remoteDatabase.get(collection: 'users', filters: [RemoteDatabaseFilter(field: 'userid', operator: FilterOperator.isEqualTo, value: userId)]);
+      if (result.isEmpty) throw Exception('Usuario não vinculado com a pessoa.');
+      var personId = int.parse(result[0]['personid']);
+      await _appPreferences.setLoggedTechnicianId(personId);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
@@ -45,11 +52,6 @@ class AuthService implements Auth {
 
   @override
   Future<PersonModel?> get currentLoggedUser async {
-    if (_auth.currentUser == null) return null;
-    String userId = _auth.currentUser!.uid;
-    var result = await _remoteDatabase.get(collection: 'users', filters: [RemoteDatabaseFilter(field: 'userid', operator: FilterOperator.isEqualTo, value: userId)]);
-    if (result.isEmpty) throw Exception('Usuario não vinculado com a pessoa.');
-    var personId = int.parse(result[0]['personid']);
-    return _personService.getById(personId);
+    return await _personService.getById(await _appPreferences.loggedTechnicianId);
   }
 }

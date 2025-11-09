@@ -23,7 +23,7 @@ class ScheduleRepository {
 
   Future<List<Map<String, Object?>>> getVisibles() async {
     try {
-      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule', where: 'visible = ?', whereArgs: [1]);
+      List<Map<String, Object?>> schedules = await _localDatabase.query('visitschedule', where: 'visible = ?', whereArgs: [1]);
       for (var schedule in schedules) {
         schedule = await _processSchedule(schedule);
       }
@@ -37,7 +37,7 @@ class ScheduleRepository {
 
   Future<List<Map<String, Object?>>> getAll() async {
     try {
-      List<Map<String, Object?>> schedules = await _localDatabase.query('schedule');
+      List<Map<String, Object?>> schedules = await _localDatabase.query('visitschedule');
       for (var schedule in schedules) {
         schedule = await _processSchedule(schedule);
       }
@@ -51,7 +51,7 @@ class ScheduleRepository {
 
   Future<int> delete(int id) async {
     try {
-      return await _localDatabase.delete('schedule', where: 'id = ?', whereArgs: [id as String]);
+      return await _localDatabase.delete('visitschedule', where: 'id = ?', whereArgs: [id as String]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
@@ -73,19 +73,23 @@ class ScheduleRepository {
   }
 
   Future<Map<String, Object?>> _processSchedule(Map<String, Object?> scheduleData) async {
-    var compressor = await _compressorRepository.getById(scheduleData['personcompressorid'] as int);
+    var technician = await _personRepository.getById(scheduleData['technicianid'] as int);
+    scheduleData['technician'] = technician;
+    scheduleData.remove('technicianid');
+    var compressor = await _compressorRepository.getById(scheduleData['compressorid'] as int);
     scheduleData['compressor'] = compressor;
-    scheduleData.remove('personcompressorid');
-    var customer = await _personRepository.getById(compressor['personid'] as int);
+    scheduleData.remove('compressorid');
+    var customer = await _personRepository.getById(scheduleData['customerid'] as int);
     scheduleData['customer'] = customer;
+    scheduleData.remove('customerid');
     return scheduleData;
   }
 
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     int uploadedData = 0;
-    final localResult = await _localDatabase.query('schedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
+    final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
-      await _remoteDatabase.set(collection: 'schedules', data: scheduleMap, id: scheduleMap['id'].toString());
+      await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
       uploadedData += 1;
     }
     return uploadedData;
@@ -94,14 +98,14 @@ class ScheduleRepository {
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     int downloadedData = 0;
     bool exists = false;
-    final remoteResult = await _remoteDatabase.get(collection: 'schedules', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
+    final remoteResult = await _remoteDatabase.get(collection: 'visitschedules', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var scheduleMap in remoteResult) {
       scheduleMap.remove('documentid');
-      exists = await _localDatabase.isSaved('schedule', id: scheduleMap['id']);
+      exists = await _localDatabase.isSaved('visitschedule', id: scheduleMap['id']);
       if (exists) {
-        await _localDatabase.update('schedule', scheduleMap, where: 'id = ?', whereArgs: [scheduleMap['id']]);
+        await _localDatabase.update('visitschedule', scheduleMap, where: 'id = ?', whereArgs: [scheduleMap['id']]);
       } else {
-        await _localDatabase.insert('schedule', scheduleMap);
+        await _localDatabase.insert('visitschedule', scheduleMap);
       }
       downloadedData += 1;
     }
@@ -111,7 +115,7 @@ class ScheduleRepository {
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
     try {
-      await _localDatabase.update('schedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+      await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {

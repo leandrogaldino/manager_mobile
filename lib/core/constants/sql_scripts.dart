@@ -179,16 +179,21 @@ class SQLScripts {
   ''';
 
   static const String createTableSchedule = '''
-    CREATE TABLE schedule (
+    CREATE TABLE visitschedule (
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
-      personcompressorid INT NOT NULL,
-      creationdate INTEGER NOT NULL,
-      visitdate INTEGER NOT NULL,
       calltypeid INT NOT NULL,
+      creationdate INTEGER NOT NULL,
+      scheduleddate INTEGER NOT NULL,
+      performeddate INTEGER,
+      technicianid INTEGER NOT NULL,
+      customerid INTEGER NOT NULL,
+      compressorid INT NOT NULL,      
       instructions TEXT,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+      FOREIGN KEY (technicianid) REFERENCES person (id) ON DELETE RESTRICT,
+      FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT,
+      FOREIGN KEY (compressorid) REFERENCES personcompressor (id) ON DELETE RESTRICT
     );
   ''';
 }

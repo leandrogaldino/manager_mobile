@@ -8,7 +8,7 @@ import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/models/visitschedule_model.dart';
 
 class EvaluationModel {
   String? id;
@@ -63,7 +63,7 @@ class EvaluationModel {
   })  : creationDate = creationDate ?? DateTime.now(),
         startTime = startTime ?? TimeOfDay.now();
 
-  factory EvaluationModel.fromScheduleOrNew({ScheduleModel? schedule}) {
+  factory EvaluationModel.fromScheduleOrNew({VisitScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
     if (schedule != null) {
       for (var coalescent in schedule.compressor.coalescents) {

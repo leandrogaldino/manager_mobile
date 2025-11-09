@@ -6,7 +6,7 @@ import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
-import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -40,15 +40,15 @@ class EvaluationController extends ChangeNotifier {
     _selectedPhotoIndex = index;
   }
 
-  ScheduleModel? _schedule;
-  ScheduleModel? get schedule => _schedule;
-  void setSchedule(ScheduleModel? schedule) {
+  VisitScheduleModel? _schedule;
+  VisitScheduleModel? get schedule => _schedule;
+  void setSchedule(VisitScheduleModel? schedule) {
     _schedule = schedule;
     notifyListeners();
   }
 
-   Future<void> updateSchedule(int scheduleId, bool isVisible) async {
-     await scheduleService.updateVisibility(scheduleId, isVisible);
+  Future<void> updateSchedule(int scheduleId, bool isVisible) async {
+    await scheduleService.updateVisibility(scheduleId, isVisible);
   }
 
   Future<void> updateImagesBytes() async {
@@ -93,10 +93,10 @@ class EvaluationController extends ChangeNotifier {
   Uint8List? _signatureBytes;
   Uint8List? get signatureBytes => _signatureBytes;
 
-   //void updateSignaturePath(String signaturePath) {
-     //_evaluation!.signaturePath = signaturePath;
-     //notifyListeners();
-   //}
+  //void updateSignaturePath(String signaturePath) {
+  //_evaluation!.signaturePath = signaturePath;
+  //notifyListeners();
+  //}
 
   final List<Uint8List> _photosBytes = [];
   List<Uint8List> get photosBytes => _photosBytes;

@@ -46,7 +46,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
-                  spacing: 5,
+                  spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_filterController.filtering)
@@ -75,7 +75,8 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       controller: _customerControllerEC,
                       onChanged: (text) async {
                         _filterController.setCustomerOrCompressorText(text);
-                        await _homeController.fetchData(customerOrCompressor: _customerControllerEC.text, dateRange: _filterController.selectedDateRange);
+                        _homeController.setCustomerOrCompressorFilter(text);                       
+                        await _homeController.fetchData(customerOrCompressor: _homeController.customerOrCompressor, dateRange: _homeController.dateRange);
                       },
                       decoration: InputDecoration(
                         labelText: "Cliente/Compressor",
@@ -99,8 +100,9 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                           initialDateRange: _filterController.selectedDateRange,
                         );
                         _filterController.setSelectedDateRange(picked);
+                        _homeController.setDateRangeFilter(picked);
                         _dateControllerEC.text = _filterController.selectedDateRangeText;
-                        await _homeController.fetchData(customerOrCompressor: _customerControllerEC.text, dateRange: _filterController.selectedDateRange);
+                        await _homeController.fetchData(customerOrCompressor: _homeController.customerOrCompressor, dateRange: _homeController.dateRange);
                       },
                     ),
                     Divider(),

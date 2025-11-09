@@ -30,18 +30,35 @@ class CompressorRepository {
   }
 
   Future<int> synchronize(int lastSync) async {
-    int count=0;
+    int count = 0;
     try {
-      final remoteResult = await _remoteDatabase.get(collection: 'compressors', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
-      for (var data in remoteResult) {
-        final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);
-        data.remove('documentid');
-        if (exists) {
-          await _localDatabase.update('compressor', data, where: 'id = ?', whereArgs: [data['id']]);
-        } else {
-          await _localDatabase.insert('compressor', data);
+      bool hasMore = true;
+      while (hasMore) {
+        final int startTime = DateTime.now().millisecondsSinceEpoch;
+        final remoteResult = await _remoteDatabase.get(
+          collection: 'compressors',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
+        );
+        if (remoteResult.isEmpty) {
+          hasMore = false;
+          break;
         }
-        count+=1;
+        for (var data in remoteResult) {
+          final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);
+          data.remove('documentid');
+          if (exists) {
+            await _localDatabase.update('compressor', data, where: 'id = ?', whereArgs: [data['id']]);
+          } else {
+            await _localDatabase.insert('compressor', data);
+          }
+          count += 1;
+        }
+        lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
+        final newer = await _remoteDatabase.get(
+          collection: 'compressors',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: startTime)],
+        );
+        hasMore = newer.isNotEmpty;
       }
       return count;
     } on LocalDatabaseException {

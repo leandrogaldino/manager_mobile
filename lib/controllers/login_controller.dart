@@ -33,6 +33,7 @@ class LoginController extends ChangeNotifier {
         return;
       }
       await _authService.signIn(email: email, password: password);
+
     } catch (e) {
       _setState(LoginStateError(e.toString()));
     }

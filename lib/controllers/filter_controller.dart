@@ -14,14 +14,13 @@ class FilterController extends ChangeNotifier {
   void setFilterBarHeight() {
     if (filterBarVisible) {
       if (filtering) {
-        _filterBarHeight = 150;
+        _filterBarHeight = 170;
       } else {
-        _filterBarHeight = 130;
+        _filterBarHeight = 145;
       }
     } else {
       _filterBarHeight = 0;
     }
-
     notifyListeners();
   }
 
@@ -52,7 +51,6 @@ class FilterController extends ChangeNotifier {
 
   String _typedCustomerOrCompressorText = '';
   String get typedCustomerOrCompressorText => _typedCustomerOrCompressorText;
-
   void setCustomerOrCompressorText(String text) {
     _typedCustomerOrCompressorText = text;
     if (_selectedDateRange != null || _typedCustomerOrCompressorText != '') {

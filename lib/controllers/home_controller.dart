@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/schedule_model.dart';
+import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
@@ -55,10 +55,10 @@ class HomeController extends ChangeNotifier {
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
 
-  List<ScheduleModel> _schedules = [];
+  List<VisitScheduleModel> _schedules = [];
   List<EvaluationModel> _evaluations = [];
 
-  List<ScheduleModel> get schedules => _schedules;
+  List<VisitScheduleModel> get schedules => _schedules;
   List<EvaluationModel> get evaluations => _evaluations;
 
   String _customerOrCompressor = '';
@@ -110,11 +110,11 @@ class HomeController extends ChangeNotifier {
       }
       if (dateRange != null) {
         if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
-          _schedules = _schedules.where((schedule) => schedule.visitDate.isAtSameMomentAs(dateRange.start)).toList();
+          _schedules = _schedules.where((schedule) => schedule.scheduleDate.isAtSameMomentAs(dateRange.start)).toList();
           _evaluations = _evaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
         } else {
           _schedules = _schedules.where((schedule) {
-            return (schedule.visitDate.isAfter(dateRange.start) || schedule.visitDate.isAtSameMomentAs(dateRange.start)) && (schedule.visitDate.isBefore(dateRange.end) || schedule.visitDate.isAtSameMomentAs(dateRange.end));
+            return (schedule.scheduleDate.isAfter(dateRange.start) || schedule.scheduleDate.isAtSameMomentAs(dateRange.start)) && (schedule.scheduleDate.isBefore(dateRange.end) || schedule.scheduleDate.isAtSameMomentAs(dateRange.end));
           }).toList();
           _evaluations = _evaluations.where((evaluation) {
             return (evaluation.creationDate!.isAfter(dateRange.start) || evaluation.creationDate!.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate!.isBefore(dateRange.end) || evaluation.creationDate!.isAtSameMomentAs(dateRange.end));
@@ -131,6 +131,10 @@ class HomeController extends ChangeNotifier {
 
   Future<void> synchronize() async {
     try {
+      if(await _appPreferences.synchronizing) {
+        log('Sincronização já está em andamento');
+        return;
+      }
       await _appPreferences.setSynchronizing(true);
       int lastSync = await _appPreferences.lastSynchronize;
       log('Sincronizando Produtos');
