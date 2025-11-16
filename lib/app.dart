@@ -55,8 +55,8 @@ class App extends StatelessWidget {
                     final dir = file.parent;
                     final fileName = StringHelper.getUniqueString(suffix: '.jpg');
                     final newPath = '${dir.path}/$fileName';
-                    file.rename(newPath);
-                    Navigator.pop(context, File(newPath));
+                    final renamed = await file.rename(newPath);
+                    if (context.mounted) Navigator.pop(context, renamed);
                   },
                 ),
               );

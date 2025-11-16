@@ -89,6 +89,7 @@ class ScheduleRepository {
     int uploadedData = 0;
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
+      //TODO: o lastupdate deve ser o now;
       await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
       uploadedData += 1;
     }
@@ -96,21 +97,44 @@ class ScheduleRepository {
   }
 
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
-    int downloadedData = 0;
-    bool exists = false;
-    final remoteResult = await _remoteDatabase.get(collection: 'visitschedules', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
-    for (var scheduleMap in remoteResult) {
-      scheduleMap.remove('documentid');
-      exists = await _localDatabase.isSaved('visitschedule', id: scheduleMap['id']);
-      if (exists) {
-        await _localDatabase.update('visitschedule', scheduleMap, where: 'id = ?', whereArgs: [scheduleMap['id']]);
-      } else {
-        await _localDatabase.insert('visitschedule', scheduleMap);
+     int count = 0;
+    try {
+      bool hasMore = true;
+      while (hasMore) {
+        final int startTime = DateTime.now().millisecondsSinceEpoch;
+        final remoteResult = await _remoteDatabase.get(
+          collection: 'visitschedules',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
+        );
+        if (remoteResult.isEmpty) {
+          hasMore = false;
+          break;
+        }
+        for (var data in remoteResult) {
+          final bool exists = await _localDatabase.isSaved('visitschedule', id: data['id']);
+          data.remove('documentid');
+          if (exists) {
+            await _localDatabase.update('visitschedule', data, where: 'id = ?', whereArgs: [data['id']]);
+          } else {
+            await _localDatabase.insert('visitschedule', data);
+          }
+          count += 1;
+        }
+        lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
+        final newer = await _remoteDatabase.get(
+          collection: 'visitschedules',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: startTime)],
+        );
+        hasMore = newer.isNotEmpty;
       }
-      downloadedData += 1;
+      return count;
+    } on LocalDatabaseException {
+      rethrow;
+    } on RemoteDatabaseException {
+      rethrow;
+    } on Exception catch (e) {
+      throw RepositoryException('SHC005', 'Erro ao sincronizar os dados: $e');
     }
-
-    return downloadedData;
   }
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
@@ -119,7 +143,7 @@ class ScheduleRepository {
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('SHC005', 'Erro ao atualizar: $e');
+      throw RepositoryException('SHC006', 'Erro ao atualizar: $e');
     }
   }
 }

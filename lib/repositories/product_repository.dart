@@ -48,19 +48,36 @@ class ProductRepository {
     }
   }
 
-  Future<int> synchronize(int lastSync) async {
-    int count=0;
+   Future<int> synchronize(int lastSync) async {
+    int count = 0;
     try {
-      final remoteResult = await _remoteDatabase.get(collection: 'products', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
-      for (var data in remoteResult) {
-        final bool exists = await _localDatabase.isSaved('product', id: data['id']);
-        data.remove('documentid');
-        if (exists) {
-          await _localDatabase.update('product', data, where: 'id = ?', whereArgs: [data['id']]);
-        } else {
-          await _localDatabase.insert('product', data);
+      bool hasMore = true;
+      while (hasMore) {
+        final int startTime = DateTime.now().millisecondsSinceEpoch;
+        final remoteResult = await _remoteDatabase.get(
+          collection: 'products',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
+        );
+        if (remoteResult.isEmpty) {
+          hasMore = false;
+          break;
         }
-        count+=1;
+        for (var data in remoteResult) {
+          final bool exists = await _localDatabase.isSaved('product', id: data['id']);
+          data.remove('documentid');
+          if (exists) {
+            await _localDatabase.update('product', data, where: 'id = ?', whereArgs: [data['id']]);
+          } else {
+            await _localDatabase.insert('product', data);
+          }
+          count += 1;
+        }
+        lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
+        final newer = await _remoteDatabase.get(
+          collection: 'products',
+          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: startTime)],
+        );
+        hasMore = newer.isNotEmpty;
       }
       return count;
     } on LocalDatabaseException {
@@ -68,7 +85,7 @@ class ProductRepository {
     } on RemoteDatabaseException {
       rethrow;
     } on Exception catch (e) {
-      throw RepositoryException('PRO003', 'Erro ao sincronizar os dados: $e');
+      throw RepositoryException('PRO002', 'Erro ao sincronizar os dados: $e');
     }
   }
 }

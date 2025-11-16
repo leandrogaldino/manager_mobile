@@ -17,6 +17,9 @@ class EvaluationModel {
   bool existsInCloud;
   bool? needProposal;
   CallTypes callType;
+  String? unitName;
+  int? temperature;
+  double? pressure;
   PersonModel? customer;
   PersonCompressorModel? compressor;
   DateTime? creationDate;
@@ -289,3 +292,5 @@ class EvaluationModel {
         lastUpdate.hashCode;
   }
 }
+
+

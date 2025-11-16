@@ -18,12 +18,10 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Locator.setup();
   await Locator.get<LocalDatabase>().init();
   await Locator.get<AppController>().clearOldTemporaryFiles();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   await GetIt.I<AppController>().loadTheme();
   await Locator.get<EvaluationController>().clean();
   if (kReleaseMode) {

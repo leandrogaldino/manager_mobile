@@ -12,13 +12,20 @@ class AuthStateListenerWidget extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
+        // Enquanto o stream está carregando pela primeira vez
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const LoaderWidget(message: 'Entrando');
-        } else if (snapshot.hasData && snapshot.data != null) {
-          return const HomePage();
-        } else {
-          return const LoginPage();
         }
+
+        final user = snapshot.data;
+
+        // Usuário logado
+        if (user != null) {
+          return const HomePage();
+        }
+
+        // Usuário deslogado
+        return const LoginPage();
       },
     );
   }

@@ -79,9 +79,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _separatorEC = TextEditingController();
     _oilEC = TextEditingController();
     _adviceEC = TextEditingController();
-
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
+    print(_evaluationController.source);
+
     _adviceFocusNode.addListener(() {
       setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
     });
