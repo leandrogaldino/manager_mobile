@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
@@ -28,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   late final HomeController _homeController;
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
-  late final Timer _synchronizeTimer;
+  Timer? _synchronizeTimer;
   bool _hasShownError = false;
 
   @override
@@ -38,14 +37,14 @@ class _HomePageState extends State<HomePage> {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _homeController.synchronize().asyncLoader();
-      _synchronizeTimer = await SynchronizeTimer.init().asyncLoader();
+      await _homeController.synchronize(true);
+      _synchronizeTimer = await SynchronizeTimer.init();
     });
   }
 
   @override
   void dispose() {
-    _synchronizeTimer.cancel();
+    _synchronizeTimer?.cancel();
     super.dispose();
   }
 
@@ -53,42 +52,46 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            FilterBarWidget(),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  _hasShownError = false;
-                  await _homeController.synchronize();
-                },
-                child: ListenableBuilder(
-                  listenable: _homeController,
-                  builder: (context, child) {
-                    final state = _homeController.state;
-                    if (state is HomeStateError && !_hasShownError) {
-                      _hasShownError = true;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Message.showErrorSnackbar(context: context, message: state.errorMessage);
-                      });
-                    }
-                    if (state is HomeStateSuccess) {
-                      _hasShownError = false;
-                      return _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations);
-                    }
-                    return ListView();
-                  },
+      body: ListenableBuilder(
+          listenable: _homeController,
+          builder: (context, child) {
+            final state = _homeController.state;
+            if (state is HomeStateError && !_hasShownError) {
+              _hasShownError = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Message.showErrorSnackbar(context: context, message: state.errorMessage);
+              });
+            }
+            if (state is HomeStateLoading) {
+              return Center(child: CircularProgressIndicator(strokeWidth: 2));
+            }
+            if (state is HomeStateSuccess) {
+              _hasShownError = false;
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    FilterBarWidget(),
+                    Expanded(
+                      child: RefreshIndicator(
+                          onRefresh: () async {
+                            _hasShownError = false;
+                            await _homeController.synchronize(false);
+                          },
+                          child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations)),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
+              );
+            }
+            return ListView();
+          }),
       bottomNavigationBar: ListenableBuilder(
         listenable: _homeController,
         builder: (context, child) {
+          final state = _homeController.state;
+          if (state is HomeStateLoading)             return SizedBox.shrink();
+          
           return BottomNavigationBar(
             currentIndex: _homeController.currentIndex,
             onTap: (index) {

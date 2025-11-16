@@ -82,7 +82,7 @@ class VisitScheduleModel {
       visible:  map['visible'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
       creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
-      scheduleDate: DateTime.fromMillisecondsSinceEpoch((map['scheduledate'] ?? 0) as int),
+      scheduleDate: DateTime.fromMillisecondsSinceEpoch((map['scheduleddate'] ?? 0) as int),
       performedDate: map['performedDate'] != null ? DateTime.fromMillisecondsSinceEpoch((map['performeddate'] ?? 0) as int) : null,
       technician: PersonModel.fromMap(map['technician']),
       customer: PersonModel.fromMap(map['customer']),

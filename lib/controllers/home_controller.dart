@@ -54,6 +54,10 @@ class HomeController extends ChangeNotifier {
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
+  void _setState(HomeState newState) {
+    _state = newState;
+    notifyListeners();
+  }
 
   List<VisitScheduleModel> _schedules = [];
   List<EvaluationModel> _evaluations = [];
@@ -129,9 +133,12 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  Future<void> synchronize() async {
+  Future<void> synchronize(bool showLoading) async {
     try {
-      if(await _appPreferences.synchronizing) {
+      if (showLoading) {
+        _setState(HomeStateLoading());
+      }
+      if (await _appPreferences.synchronizing) {
         log('Sincronização já está em andamento');
         return;
       }
@@ -170,8 +177,9 @@ class HomeController extends ChangeNotifier {
         _state = HomeStateSuccess(schedules, evaluations);
       }
       log('Sincronização concluída com sucesso');
+      _setState(HomeStateSuccess(schedules, evaluations));
     } catch (e) {
-      _state = HomeStateError(e.toString());
+      _setState(HomeStateError(e.toString()));
     } finally {
       notifyListeners();
     }

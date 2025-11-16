@@ -37,9 +37,7 @@ dependencies:
   firebase_core: ^4.2.0
   firebase_auth: ^6.1.1
   get_it: ^8.0.3
-  path_provider: ^2.1.5
-  asyncstate: ^2.1.0
-  loading_animation_widget: ^1.3.0
+  path_provider: ^2.1.5  
   validatorless: ^1.2.4
   connectivity_plus: ^7.0.0
   sqflite: ^2.4.1

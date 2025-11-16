@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:asyncstate/asyncstate.dart';
 import 'package:camera_camera/camera_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,7 +13,6 @@ import 'package:manager_mobile/pages/login/login_page.dart';
 import 'package:manager_mobile/core/app_theme.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/widgets/auth_state_listener_widget.dart';
-import 'package:manager_mobile/core/widgets/loader_widget.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,16 +23,12 @@ class App extends StatelessWidget {
     AppController appController = GetIt.I<AppController>();
     return ListenableBuilder(
       listenable: appController,
-      builder: (context, child) => AsyncStateBuilder(
-        enableLog: true,
-        customLoader: const LoaderWidget(),
-        builder: (observer) => MaterialApp(
+      builder: (context, child) => MaterialApp(
           title: 'Gerenciador',
           theme: appTheme.light(),
           darkTheme: appTheme.dark(),
           themeMode: appController.themeMode,
           home: const AuthStateListenerWidget(),
-          navigatorObservers: [observer],
           onGenerateRoute: (settings) {
             if (settings.name == Routes.evaluation) {
               final String? args = settings.arguments as String?;
@@ -77,7 +71,6 @@ class App extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
         ),
-      ),
     );
   }
 }

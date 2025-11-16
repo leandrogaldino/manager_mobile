@@ -97,7 +97,7 @@ class FirestoreDatabase implements RemoteDatabase {
     try {
       await _db.collection(collection).doc(id).update(data);
     } catch (e) {
-      throw RemoteDatabaseException('RDB001', 'Ocorreu um erro ao atualizar o registro na núvem: $e');
+      throw RemoteDatabaseException('RDB004', 'Ocorreu um erro ao atualizar o registro na núvem: $e');
     }
   }
 }

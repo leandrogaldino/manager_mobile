@@ -1,13 +1,10 @@
 import 'dart:developer';
-
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/models/year_month_model.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
@@ -77,9 +74,7 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
             title: const Text('Sair'),
             onTap: () async {
               Navigator.pop(context);
-              await _loginController.signOut().asyncLoader(
-                    customLoader: const LoaderWidget(message: 'Saindo'),
-                  );
+              await _loginController.signOut();
             },
           ),
         ),

@@ -1,12 +1,11 @@
-import 'package:asyncstate/asyncstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/login/widgets/app_title_widget.dart';
-import 'package:manager_mobile/core/widgets/loader_widget.dart';
 import 'package:manager_mobile/states/login_state.dart';
 import 'package:validatorless/validatorless.dart';
+import 'package:manager_mobile/core/constants/routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,12 +19,14 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _emailEC;
   late final TextEditingController _passwordEC;
   late final LoginController _loginController;
-  bool _hasShownError = false;
 
   bool obscurePassword = true;
+  bool _hasShownError = false;
+
   @override
   void initState() {
     super.initState();
+
     _formKey = GlobalKey<FormState>();
     _emailEC = TextEditingController();
     _passwordEC = TextEditingController();
@@ -39,10 +40,12 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
     final theme = Theme.of(context);
+    final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Center(
@@ -57,63 +60,91 @@ class _LoginPageState extends State<LoginPage> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      // EMAIL
                       TextFormField(
                         controller: _emailEC,
-                        validator: Validatorless.multiple([
-                          Validatorless.required('Usuário obrigatório'),
-                        ]),
-                        decoration: const InputDecoration(labelText: 'Usuário'),
+                        validator: Validatorless.required('Usuário obrigatório'),
                         textAlign: TextAlign.center,
+                        decoration: const InputDecoration(labelText: 'Usuário'),
                       ),
+
                       const SizedBox(height: 18),
+
+                      // SENHA
                       TextFormField(
-                        obscureText: obscurePassword,
                         controller: _passwordEC,
+                        obscureText: obscurePassword,
                         validator: Validatorless.required('Senha obrigatória'),
+                        textAlign: TextAlign.center,
                         decoration: InputDecoration(
                           labelText: 'Senha',
                           suffixIcon: IconButton(
-                            onPressed: () => setState(() {
-                              obscurePassword = !obscurePassword;
-                            }),
+                            onPressed: () => setState(() => obscurePassword = !obscurePassword),
                             icon: Icon(
                               obscurePassword ? Icons.visibility : Icons.visibility_off,
                             ),
                           ),
                         ),
-                        textAlign: TextAlign.center,
                       ),
+
                       const SizedBox(height: 24),
+
+                      // BOTÃO COM ESTADO
                       ListenableBuilder(
                         listenable: _loginController,
-                        builder: (context, child) {
+                        builder: (context, _) {
                           final state = _loginController.state;
+
+                          // ---- ERRO ----
                           if (state is LoginStateError && !_hasShownError) {
                             _hasShownError = true;
+
                             WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Message.showErrorSnackbar(context: context, message: state.message);
+                              Message.showErrorSnackbar(
+                                context: context,
+                                message: state.message,
+                              );
                             });
                           }
+
+                          // ---- SUCESSO ----
+                          if (state is LoginStateSuccess) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              Navigator.pushReplacementNamed(context, Routes.home);
+                            });
+                          }
+
+                          final loading = state is LoginStateLoading;
 
                           return SizedBox(
                             width: screenSize.width * 0.5,
                             height: 42,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                final valid = _formKey.currentState?.validate() ?? false;
-                                if (valid) {
-                                  _hasShownError = false;
-                                  await _loginController.singIn('${_emailEC.text}@manager.com', _passwordEC.text).asyncLoader(
-                                        customLoader: const LoaderWidget(message: 'Entrando'),
+                              onPressed: loading
+                                  ? null
+                                  : () async {
+                                      final valid = _formKey.currentState?.validate() ?? false;
+                                      if (!valid) return;
+
+                                      _hasShownError = false;
+
+                                      await _loginController.signIn(
+                                        '${_emailEC.text}@manager.com',
+                                        _passwordEC.text,
                                       );
-                                }
-                              },
-                              child: Text(
-                                'Login',
-                                style: theme.textTheme.titleLarge!.copyWith(
-                                  color: theme.colorScheme.onPrimary,
-                                ),
-                              ),
+                                    },
+                              child: loading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : Text(
+                                      'Login',
+                                      style: theme.textTheme.titleLarge!.copyWith(
+                                        color: theme.colorScheme.onPrimary,
+                                      ),
+                                    ),
                             ),
                           );
                         },

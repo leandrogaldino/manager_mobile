@@ -72,6 +72,7 @@ class Locator {
       () => LoginController(
         service: _getIt.get<Auth>(),
         connection: _getIt.get<Connection>(),
+        appPreferences: _getIt.get<AppPreferences>(),
       ),
     );
 
