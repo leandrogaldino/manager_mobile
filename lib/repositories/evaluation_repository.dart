@@ -81,7 +81,7 @@ class EvaluationRepository {
         throw RepositoryException('EVA001', 'Essa avaliação já foi salva.');
       }
     } on LocalDatabaseException {
-        rethrow;
+      rethrow;
     } on Exception catch (e) {
       throw RepositoryException('EVA002', 'Erro ao salvar os dados: $e');
     }
@@ -254,7 +254,7 @@ class EvaluationRepository {
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
-    var compressor = await _compressorRepository.getById(evaluationData['personcompressorid'] as int);
+    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
     evaluationData['compressor'] = compressor;
     evaluationData.remove('personcompressorid');
     var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());

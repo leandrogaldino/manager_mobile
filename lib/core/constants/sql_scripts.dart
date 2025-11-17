@@ -129,7 +129,8 @@ class SQLScripts {
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
       calltypeid INTEGER NOT NULL,
-      personcompressorid INT NOT NULL,
+      customerid INT NOT NULL,
+      compressorid INT NOT NULL,      
       creationdate INTEGER NOT NULL,
       starttime TEXT NOT NULL,
       endtime TEXT NOT NULL,
@@ -143,17 +144,18 @@ class SQLScripts {
       signaturepath TEXT NOT NULL,
       advice TEXT,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (personcompressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+      FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT
+      FOREIGN KEY (compressorid) REFERENCES personcompressor (id) ON DELETE RESTRICT
     );
   ''';
 
   static const String createTableEvaluationCoalescent = '''
     CREATE TABLE evaluationcoalescent (    
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      personcompressorcoalescentid INT NOT NULL,
+      coalescentid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       nextchange INTEGER NOT NULL,
-      FOREIGN KEY (personcompressorcoalescentid) REFERENCES coalescent (id) ON DELETE RESTRICT,
+      FOREIGN KEY (coalescentid) REFERENCES personcompressorcoalescent (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';

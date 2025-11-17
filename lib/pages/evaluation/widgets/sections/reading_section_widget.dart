@@ -8,7 +8,6 @@ import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/enums/part_types.dart';
 import 'package:manager_mobile/pages/evaluation/validation/evaluation_validators.dart';
-import 'package:manager_mobile/pages/evaluation/widgets/voice_button.dart';
 import 'package:validatorless/validatorless.dart';
 
 class ReadingSectionWidget extends StatefulWidget {
@@ -332,31 +331,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ],
                         decoration: InputDecoration(
                           labelText: 'Parecer Técnico',
-                          suffixIcon: _adviceFocusNode.hasFocus
-                              ? Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: VoiceButton(
-                                      onListeningEnd: (value) {
-                                        if (value == null || value.isEmpty) return;
-                                        int currentPosition = _adviceEC.selection.end;
-                                        int finalPosition = _adviceEC.text.length;
-                                        String text = _adviceEC.text;
-                                        text = '${_adviceEC.text.substring(0, currentPosition)}$value';
-                                        int selectionPos = text.length;
-                                        if (_adviceEC.text.isNotEmpty) {
-                                          text = '$text${_adviceEC.text.substring(currentPosition, finalPosition)}';
-                                        }
-                                        text = text.toUpperCase();
-                                        _adviceEC.text = text;
-                                        _adviceEC.selection = TextSelection.fromPosition(TextPosition(offset: selectionPos));
-                                      },
-                                    ),
-                                  ),
-                                )
-                              : null,
                         ),
                         maxLines: 5,
                         onChanged: (value) => _evaluationController.updateAdvice(value),
@@ -367,8 +341,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             "Necessário orçamento?",
                             style: theme.textTheme.bodyLarge,
                           ),
-                          
-                               RadioGroup(
+                          RadioGroup(
                             groupValue: _evaluationController.evaluation!.needProposal,
                             onChanged: (bool? value) {
                               if (_evaluationController.source == SourceTypes.fromSaved) {

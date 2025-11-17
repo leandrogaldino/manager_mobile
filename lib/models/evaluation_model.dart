@@ -163,8 +163,8 @@ class EvaluationModel {
       'existsincloud': existsInCloud,
       'needproposal': needProposal,
       'calltypeid': callType.index,
-      'customerid': customer?.toMap(),
-      'compressorid': compressor?.toMap(),
+      'customerid': customer?.id,
+      'compressorid': compressor?.id,
       'creationdate': creationDate?.millisecondsSinceEpoch,
       'starttime': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}',
       'endtime': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}',
@@ -292,5 +292,3 @@ class EvaluationModel {
         lastUpdate.hashCode;
   }
 }
-
-
