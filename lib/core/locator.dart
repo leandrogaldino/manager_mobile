@@ -243,6 +243,7 @@ class Locator {
           evaluationService: _getIt.get<EvaluationService>(),
           appPreferences: _getIt.get<AppPreferences>(),
           customerController: _getIt.get<DataController>(),
+          filterController: _getIt.get<FilterController>(),
         ));
 
     _getIt.registerLazySingleton<FilterController>(() => FilterController());

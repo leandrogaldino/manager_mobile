@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/data_controller.dart';
+import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
@@ -27,6 +28,7 @@ class HomeController extends ChangeNotifier {
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
   final DataController _personController;
+  final FilterController _filterController;
 
   HomeController({
     required ProductService productService,
@@ -40,6 +42,7 @@ class HomeController extends ChangeNotifier {
     required EvaluationService evaluationService,
     required AppPreferences appPreferences,
     required DataController customerController,
+    required FilterController filterController,
   })  : _productService = productService,
         _productCodeService = productCodeService,
         _serviceService = serviceService,
@@ -50,7 +53,18 @@ class HomeController extends ChangeNotifier {
         _scheduleService = scheduleService,
         _evaluationService = evaluationService,
         _appPreferences = appPreferences,
-        _personController = customerController;
+        _personController = customerController,
+        _filterController = filterController {
+    _filterController.addListener(_onFilterChanged);
+  }
+
+  void _onFilterChanged() {
+    // Exemplo: chamar fetchData quando qualquer filtro mudar
+    fetchData(
+      customerOrCompressor: _filterController.typedCustomerOrCompressorText,
+      dateRange: _filterController.selectedDateRange,
+    );
+  }
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -64,34 +78,6 @@ class HomeController extends ChangeNotifier {
 
   List<VisitScheduleModel> get schedules => _schedules;
   List<EvaluationModel> get evaluations => _evaluations;
-
-  String _customerOrCompressor = '';
-  String get customerOrCompressor => _customerOrCompressor;
-  Future<void> setCustomerOrCompressorFilter(String query) async {
-    _customerOrCompressor = query;
-    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
-  }
-
-  DateTimeRange? _dateRange;
-  DateTimeRange? get dateRange => _dateRange;
-  Future<void> setDateRangeFilter(DateTimeRange? query) async {
-    _dateRange = query;
-    await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
-  }
-
-  int get firstYear {
-    if (schedules.isEmpty || evaluations.isEmpty) return 0;
-    int minScheduleYear = schedules.map((s) => s.creationDate.year).reduce((a, b) => a < b ? a : b);
-    int minEvaluationYear = evaluations.map((e) => e.creationDate!.year).reduce((a, b) => a < b ? a : b);
-    return minScheduleYear < minEvaluationYear ? minScheduleYear : minEvaluationYear;
-  }
-
-  int get lastYear {
-    if (schedules.isEmpty || evaluations.isEmpty) return 0;
-    int maxScheduleYear = schedules.map((s) => s.creationDate.year).reduce((a, b) => a > b ? a : b);
-    int maxEvaluationYear = evaluations.map((e) => e.creationDate!.year).reduce((a, b) => a > b ? a : b);
-    return maxScheduleYear > maxEvaluationYear ? maxScheduleYear : maxEvaluationYear;
-  }
 
   Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
     try {
@@ -172,7 +158,7 @@ class HomeController extends ChangeNotifier {
       //Se houve alteracao em sincronizacao, atualizar tecnicos
       if (countPerson > 0 || _personController.technicians.isEmpty) await _personController.fetchTechnicians();
 
-      await fetchData(customerOrCompressor: customerOrCompressor, dateRange: dateRange);
+      await fetchData(customerOrCompressor: _filterController.typedCustomerOrCompressorText, dateRange: _filterController.selectedDateRange);
       if (_state is! HomeStateError) {
         _state = HomeStateSuccess(schedules, evaluations);
       }
@@ -190,5 +176,11 @@ class HomeController extends ChangeNotifier {
   void setCurrentIndex(int index) {
     _currentIndex = index;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _filterController.removeListener(_onFilterChanged);
+    super.dispose();
   }
 }
