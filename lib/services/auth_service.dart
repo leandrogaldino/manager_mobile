@@ -43,13 +43,9 @@ class AuthService implements Auth {
 
   @override
   Future<void> signOut() async {
-    try {
-      while (await _appPreferences.synchronizing) {
-        await Future.delayed(const Duration(milliseconds: 1000));
-      }
-      await _appPreferences.setLoggedTechnicianId(0);
-      await _appPreferences.setSynchronizing(false);
-      await _auth.signOut();
+    try { 
+        await _auth.signOut();
+          await _appPreferences.setLoggedTechnicianId(0);
     } catch (e) {
       throw AuthException('AUT006', 'Erro ao sair: ${e.toString()}');
     }

@@ -27,16 +27,6 @@ class SQLScripts {
     );
   ''';
 
-  static const String insertSyncronizingPreference = '''
-    INSERT INTO preferences (
-      key,
-      value
-    ) VALUES (
-      'synchronizing',
-      '0'
-    );
-  ''';
-
   static const String insertloggedTechnicianIdPreference = '''
     INSERT INTO preferences (
       key,

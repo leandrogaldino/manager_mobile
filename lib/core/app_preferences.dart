@@ -20,15 +20,6 @@ class AppPreferences {
     return lastSync;
   }
 
-  Future<void> setSynchronizing(bool synchronizing) async {
-    await _database.update('preferences', {'value': synchronizing == false ? 0 : 1}, where: 'key = ?', whereArgs: ['synchronizing']);
-  }
-
-  Future<bool> get synchronizing async {
-    final result = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['synchronizing']);
-    return (result[0]['value'].toString() == '1');
-  }
-
   Future<void> setLoggedTechnicianId(int id) async {
     await _database.update('preferences', {'value': id}, where: 'key = ?', whereArgs: ['loggedtechnicianid']);
   }

@@ -2,68 +2,27 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
-import 'package:manager_mobile/core/app_preferences.dart';
+import 'package:manager_mobile/controllers/sync_controller.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
-import 'package:manager_mobile/services/compressor_service.dart';
-import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
-import 'package:manager_mobile/services/personcompressor_service.dart';
-import 'package:manager_mobile/services/evaluation_service.dart';
-import 'package:manager_mobile/services/person_service.dart';
-import 'package:manager_mobile/services/product_service.dart';
-import 'package:manager_mobile/services/productcode_service.dart';
-import 'package:manager_mobile/services/schedule_service.dart';
-import 'package:manager_mobile/services/service_service.dart';
 import 'package:manager_mobile/states/home_state.dart';
 
 class HomeController extends ChangeNotifier {
-  final ProductService _productService;
-  final ProductCodeService _productCodeService;
-  final ServiceService _serviceService;
-  final CompressorService _compressorService;
-  final PersonCompressorCoalescentService _personCompressorcoalescentService;
-  final PersonCompressorService _personCompressorService;
-  final PersonService _personService;
-  final ScheduleService _scheduleService;
-  final EvaluationService _evaluationService;
-  final AppPreferences _appPreferences;
-  final DataController _personController;
+  final SyncController _syncController;
+  final DataController _dataController;
   final FilterController _filterController;
-
   HomeController({
-    required ProductService productService,
-    required ProductCodeService productCodeService,
-    required ServiceService serviceService,
-    required CompressorService compressorService,
-    required PersonCompressorCoalescentService personCompressorcoalescentService,
-    required PersonCompressorService personCompressorService,
-    required PersonService personService,
-    required ScheduleService scheduleService,
-    required EvaluationService evaluationService,
-    required AppPreferences appPreferences,
-    required DataController customerController,
+    required SyncController syncController,
+    required DataController dataController,
     required FilterController filterController,
-  })  : _productService = productService,
-        _productCodeService = productCodeService,
-        _serviceService = serviceService,
-        _compressorService = compressorService,
-        _personCompressorcoalescentService = personCompressorcoalescentService,
-        _personCompressorService = personCompressorService,
-        _personService = personService,
-        _scheduleService = scheduleService,
-        _evaluationService = evaluationService,
-        _appPreferences = appPreferences,
-        _personController = customerController,
+  })  : _syncController = syncController,
+        _dataController = dataController,
         _filterController = filterController {
-    _filterController.addListener(_onFilterChanged);
+    _filterController.addListener(fetchData);
   }
 
   void _onFilterChanged() {
-    // Exemplo: chamar fetchData quando qualquer filtro mudar
-    fetchData(
-      customerOrCompressor: _filterController.typedCustomerOrCompressorText,
-      dateRange: _filterController.selectedDateRange,
-    );
+    fetchData();
   }
 
   HomeState _state = HomeStateInitial();
@@ -73,97 +32,81 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<VisitScheduleModel> _schedules = [];
-  List<EvaluationModel> _evaluations = [];
+  List<VisitScheduleModel> _filteredVisitSchedules = [];
+  List<EvaluationModel> _filteredEvaluations = [];
 
-  List<VisitScheduleModel> get schedules => _schedules;
-  List<EvaluationModel> get evaluations => _evaluations;
+  List<VisitScheduleModel> get filteredVisitSchedules => _filteredVisitSchedules;
+  List<EvaluationModel> get filteredEvaluations => _filteredEvaluations;
 
-  Future<void> fetchData({String? customerOrCompressor, DateTimeRange? dateRange}) async {
-    try {
-      _schedules = await _scheduleService.getVisibles();
-      _evaluations = await _evaluationService.getVisibles();
-      if (customerOrCompressor != null && customerOrCompressor.isNotEmpty) {
-        _schedules = _schedules.where(
+  Future<void> fetchData() async {
+    String? text = _filterController.typedCustomerOrCompressorText;
+    DateTimeRange? dateRange = _filterController.selectedDateRange;
+  
+      _filteredVisitSchedules = _dataController.visitSchedules.toList();
+      _filteredEvaluations = _dataController.evaluations.toList();
+      if (text.isNotEmpty) {
+        _filteredVisitSchedules = _filteredVisitSchedules.where(
           (schedule) {
-            return schedule.customer.shortName.toLowerCase().contains(customerOrCompressor) ||
-                schedule.compressor.compressor.name.toLowerCase().contains(customerOrCompressor) ||
-                schedule.compressor.serialNumber.toLowerCase().contains(customerOrCompressor) ||
-                schedule.compressor.sector.toLowerCase().contains(customerOrCompressor);
+            return schedule.customer.shortName.toLowerCase().contains(text) ||
+                schedule.compressor.compressor.name.toLowerCase().contains(text) ||
+                schedule.compressor.serialNumber.toLowerCase().contains(text) ||
+                schedule.compressor.sector.toLowerCase().contains(text) ||
+                schedule.technician.shortName.toLowerCase().contains(text);
           },
         ).toList();
-        _evaluations = _evaluations.where(
+        _filteredEvaluations = _filteredEvaluations.where(
           (evaluation) {
-            return evaluation.compressor!.person.shortName.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.compressor.name.toLowerCase().contains(customerOrCompressor) || evaluation.compressor!.sector.toLowerCase().contains(customerOrCompressor);
+            return evaluation.compressor!.person.shortName.toLowerCase().contains(text) ||
+                evaluation.compressor!.compressor.name.toLowerCase().contains(text) ||
+                evaluation.compressor!.sector.toLowerCase().contains(text) ||
+                evaluation.technicians.any((t) => t.technician.shortName.toLowerCase().contains(text));
           },
         ).toList();
       }
       if (dateRange != null) {
         if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
-          _schedules = _schedules.where((schedule) => schedule.scheduleDate.isAtSameMomentAs(dateRange.start)).toList();
-          _evaluations = _evaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
+          _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) => schedule.scheduleDate.isAtSameMomentAs(dateRange.start)).toList();
+          _filteredEvaluations = _filteredEvaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
         } else {
-          _schedules = _schedules.where((schedule) {
+          _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) {
             return (schedule.scheduleDate.isAfter(dateRange.start) || schedule.scheduleDate.isAtSameMomentAs(dateRange.start)) && (schedule.scheduleDate.isBefore(dateRange.end) || schedule.scheduleDate.isAtSameMomentAs(dateRange.end));
           }).toList();
-          _evaluations = _evaluations.where((evaluation) {
+          _filteredEvaluations = _filteredEvaluations.where((evaluation) {
             return (evaluation.creationDate!.isAfter(dateRange.start) || evaluation.creationDate!.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate!.isBefore(dateRange.end) || evaluation.creationDate!.isAtSameMomentAs(dateRange.end));
           }).toList();
         }
       }
-      _state = HomeStateSuccess(schedules, evaluations);
-    } on Exception catch (e) {
-      _state = HomeStateError(e.toString());
-    } finally {
-      notifyListeners();
-    }
+
   }
 
-  Future<void> synchronize(bool showLoading) async {
+  Future<void> synchronize(bool showLoading, bool hideFilterButton) async {
     try {
       if (showLoading) {
         _setState(HomeStateLoading());
       }
-      if (await _appPreferences.synchronizing) {
+      if (hideFilterButton) {
+        _filterController.setShowFilterButton(!hideFilterButton);
+      }
+      if (_syncController.isSyncing) {
         log('Sincronização já está em andamento');
         return;
       }
-      await _appPreferences.setSynchronizing(true);
-      int lastSync = await _appPreferences.lastSynchronize;
-      log('Sincronizando Produtos');
-      int countProduct = await _productService.synchronize(lastSync);
-      log('Sincronizando Códigos de Produtos');
-      int countProductCode = await _productCodeService.synchronize(lastSync);
-      log('Sincronizando Serviços');
-      int countService = await _serviceService.synchronize(lastSync);
-      log('Sincronizando Compressores');
-      int countCompressor = await _compressorService.synchronize(lastSync);
-      log('Sincronizando Coalescentes dos Compressores da Pessoa');
-      int countPersonCompressorCoalescent = await _personCompressorcoalescentService.synchronize(lastSync);
-      log('Sincronizando Compressores da Pessoa');
-      int countPersonCompressor = await _personCompressorService.synchronize(lastSync);
-      log('Sincronizando Pessoas');
-      int countPerson = await _personService.synchronize(lastSync);
-      log('Sincronizando Agendamentos');
-      await _scheduleService.synchronize(lastSync);
-      log('Sincronizando Avaliações');
-      await _evaluationService.synchronize(lastSync);
-      await _appPreferences.updateLastSynchronize();
-      await _appPreferences.setSynchronizing(false);
+      int totalCount = await _syncController.runSync();
 
-      int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson;
-      //Se houve qualquer sincronizacao, atualizar compressores
-      if (totalCount > 0 || _personController.compressors.isEmpty) await _personController.fetchCompressors();
+      //Se houve qualquer sincronizacao, atualizar
+      if (totalCount > 0 || _dataController.compressors.isEmpty) await _dataController.fetchCompressors();
+      if (totalCount > 0 || _dataController.technicians.isEmpty) await _dataController.fetchTechnicians();
+      if (totalCount > 0 || _dataController.evaluations.isEmpty) await _dataController.fetchEvaluations();
+      if (totalCount > 0 || _dataController.visitSchedules.isEmpty) await _dataController.fetchVisitSchedules();
 
-      //Se houve alteracao em sincronizacao, atualizar tecnicos
-      if (countPerson > 0 || _personController.technicians.isEmpty) await _personController.fetchTechnicians();
+      await fetchData();
 
-      await fetchData(customerOrCompressor: _filterController.typedCustomerOrCompressorText, dateRange: _filterController.selectedDateRange);
       if (_state is! HomeStateError) {
-        _state = HomeStateSuccess(schedules, evaluations);
+        _state = HomeStateSuccess(filteredVisitSchedules, filteredEvaluations);
       }
       log('Sincronização concluída com sucesso');
-      _setState(HomeStateSuccess(schedules, evaluations));
+      _setState(HomeStateSuccess(filteredVisitSchedules, filteredEvaluations));
+      _filterController.setShowFilterButton(true);
     } catch (e) {
       _setState(HomeStateError(e.toString()));
     } finally {

@@ -1,10 +1,10 @@
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/repositories/schedule_repository.dart';
 
-class ScheduleService {
+class VisitScheduleService {
   final ScheduleRepository _scheduleRepository;
 
-  ScheduleService({
+  VisitScheduleService({
     required ScheduleRepository scheduleRepository,
   }) : _scheduleRepository = scheduleRepository;
 

@@ -28,7 +28,6 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
-          await db.execute(SQLScripts.insertSyncronizingPreference);
           await db.execute(SQLScripts.insertloggedTechnicianIdPreference);
         },
       );

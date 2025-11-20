@@ -62,5 +62,11 @@ class FilterController extends ChangeNotifier {
     }
   }
 
-  
+  bool _showFilterButton = true;
+  bool get showFilterButton => _showFilterButton;
+
+  void setShowFilterButton(bool show) {
+    _showFilterButton = show;
+    notifyListeners();
+  }
 }

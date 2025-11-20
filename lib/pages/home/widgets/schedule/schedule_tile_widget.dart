@@ -15,6 +15,7 @@ class ScheduleTileWidget extends StatelessWidget {
     String subtitle = schedule.compressor.compressor.name;
     schedule.compressor.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.serialNumber}' : null;
     schedule.compressor.sector.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.sector}' : null;
+    String technician = schedule.technician.shortName;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -23,17 +24,30 @@ class ScheduleTileWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: ListTile(
+          isThreeLine: true,
           title: Text(
             schedule.customer.shortName,
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
             ),
           ),
-          subtitle: Text(
-            subtitle,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.surface,
-            ),
+          subtitle: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              ),
+              Text(
+                technician,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              ),
+            ],
           ),
           trailing: Text(
             DateFormat('dd/MM/yyyy').format(schedule.scheduleDate),

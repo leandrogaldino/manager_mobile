@@ -27,16 +27,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       elevation: 1,
-      actions: [
+      actions: [        
         ListenableBuilder(
             listenable: filterController,
             builder: (context, child) {
-              return IconButton(
+              return filterController.showFilterButton ? IconButton(
                 onPressed: () {
                   filterController.toggleFilterBarVisible();
                 },
                 icon: Icon(filterController.filtering ? Icons.filter_alt : Icons.filter_alt_off),
-              );
+              ) : SizedBox.shrink();
             }),
         PopupButtonWidget(),
       ],

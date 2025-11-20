@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _homeController.synchronize(true);
+      await _homeController.synchronize(true, true);
       _synchronizeTimer = await SynchronizeTimer.init();
     });
   }
@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: CustomAppBar(),
       body: ListenableBuilder(
@@ -63,7 +64,21 @@ class _HomePageState extends State<HomePage> {
               });
             }
             if (state is HomeStateLoading) {
-              return Center(child: CircularProgressIndicator(strokeWidth: 2));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 20,
+                  children: [
+                    CircularProgressIndicator(strokeWidth: 2),
+                    Text(
+                      'CARREGANDO, POR FAVOR AGUARDE',
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             if (state is HomeStateSuccess) {
               _hasShownError = false;
@@ -76,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                       child: RefreshIndicator(
                           onRefresh: () async {
                             _hasShownError = false;
-                            await _homeController.synchronize(false);
+                            await _homeController.synchronize(false, false);
                           },
                           child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations)),
                     ),
@@ -90,8 +105,8 @@ class _HomePageState extends State<HomePage> {
         listenable: _homeController,
         builder: (context, child) {
           final state = _homeController.state;
-          if (state is HomeStateLoading)             return SizedBox.shrink();
-          
+          if (state is HomeStateLoading) return SizedBox.shrink();
+
           return BottomNavigationBar(
             currentIndex: _homeController.currentIndex,
             onTap: (index) {

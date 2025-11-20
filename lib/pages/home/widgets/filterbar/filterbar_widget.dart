@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
@@ -12,6 +13,7 @@ class FilterBarWidget extends StatefulWidget {
 
 class _FilterBarWidgetState extends State<FilterBarWidget> {
   late final FilterController _filterController;
+  late final DataController _dataController;
   late final HomeController _homeController;
   late final TextEditingController _customerControllerEC;
   late final TextEditingController _dateControllerEC;
@@ -21,6 +23,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
     super.initState();
     _filterController = Locator.get<FilterController>();
     _homeController = Locator.get<HomeController>();
+    _dataController = Locator.get<DataController>();
     _customerControllerEC = TextEditingController();
     _dateControllerEC = TextEditingController();
   }
@@ -74,8 +77,8 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                     TextField(
                       controller: _customerControllerEC,
                       onChanged: (text) async {
-                        _filterController.setCustomerOrCompressorText(text);                    
-                        await _homeController.fetchData(customerOrCompressor: _filterController.selectedDateRangeText, dateRange: _filterController.selectedDateRange);
+                        _filterController.setCustomerOrCompressorText(text);
+                        await _homeController.fetchData();
                       },
                       decoration: InputDecoration(
                         labelText: "Cliente/Compressor",
@@ -94,13 +97,14 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       onTap: () async {
                         final DateTimeRange? picked = await showDateRangePicker(
                           context: context,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
+                          firstDate: _dataController.firstDate ?? DateTime(2000),
+                          lastDate: _dataController.lastDate ?? DateTime(2100),
                           initialDateRange: _filterController.selectedDateRange,
                         );
+
                         _filterController.setSelectedDateRange(picked);
                         _dateControllerEC.text = _filterController.selectedDateRangeText;
-                        await _homeController.fetchData(customerOrCompressor: _filterController.typedCustomerOrCompressorText, dateRange: _filterController.selectedDateRange);
+                        await _homeController.fetchData();
                       },
                     ),
                     Divider(),

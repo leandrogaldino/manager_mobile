@@ -11,11 +11,11 @@ import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
-import 'package:manager_mobile/services/schedule_service.dart';
+import 'package:manager_mobile/services/visit_schedule_service.dart';
 
 class EvaluationController extends ChangeNotifier {
   final EvaluationService evaluationService;
-  final ScheduleService scheduleService;
+  final VisitScheduleService scheduleService;
   final PersonService personService;
 
   EvaluationController({required this.evaluationService, required this.scheduleService, required this.personService});

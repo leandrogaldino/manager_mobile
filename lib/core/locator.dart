@@ -5,6 +5,7 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/controllers/sync_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
@@ -36,7 +37,7 @@ import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/product_service.dart';
 import 'package:manager_mobile/services/productcode_service.dart';
-import 'package:manager_mobile/services/schedule_service.dart';
+import 'package:manager_mobile/services/visit_schedule_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
 
 class Locator {
@@ -217,7 +218,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => ScheduleService(scheduleRepository: _getIt.get<ScheduleRepository>()),
+      () => VisitScheduleService(scheduleRepository: _getIt.get<ScheduleRepository>()),
     );
 
     _getIt.registerLazySingleton<AppController>(() => AppController(
@@ -226,12 +227,14 @@ class Locator {
 
     _getIt.registerLazySingleton<DataController>(
       () => DataController(
+        visitScheduleService: _getIt.get<VisitScheduleService>(),
+        evaluationService: _getIt.get<EvaluationService>(),
         personService: _getIt.get<PersonService>(),
         compressorService: _getIt.get<PersonCompressorService>(),
       ),
     );
 
-    _getIt.registerLazySingleton<HomeController>(() => HomeController(
+    _getIt.registerLazySingleton<SyncController>(() => SyncController(
           productService: _getIt.get<ProductService>(),
           productCodeService: _getIt.get<ProductCodeService>(),
           serviceService: _getIt.get<ServiceService>(),
@@ -239,10 +242,16 @@ class Locator {
           personCompressorcoalescentService: _getIt.get<PersonCompressorCoalescentService>(),
           personCompressorService: _getIt.get<PersonCompressorService>(),
           personService: _getIt.get<PersonService>(),
-          scheduleService: _getIt.get<ScheduleService>(),
-          evaluationService: _getIt.get<EvaluationService>(),
           appPreferences: _getIt.get<AppPreferences>(),
-          customerController: _getIt.get<DataController>(),
+          scheduleService: _getIt.get<VisitScheduleService>(),
+          evaluationService: _getIt.get<EvaluationService>(),
+          personController: _getIt.get<DataController>(),
+          filterController: _getIt.get<FilterController>(),
+        ));
+
+    _getIt.registerLazySingleton<HomeController>(() => HomeController(
+          syncController: _getIt.get<SyncController>(),
+          dataController: _getIt.get<DataController>(),
           filterController: _getIt.get<FilterController>(),
         ));
 
@@ -251,7 +260,7 @@ class Locator {
     _getIt.registerLazySingleton<EvaluationController>(
       () => EvaluationController(
         evaluationService: _getIt.get<EvaluationService>(),
-        scheduleService: _getIt.get<ScheduleService>(),
+        scheduleService: _getIt.get<VisitScheduleService>(),
         personService: _getIt.get<PersonService>(),
       ),
     );
