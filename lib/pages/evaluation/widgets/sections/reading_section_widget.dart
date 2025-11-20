@@ -26,7 +26,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
-  late final TextEditingController _serialNumberEC;
   late final TextEditingController _horimeterEC;
   late final TextEditingController _airFilterEC;
   late final TextEditingController _oilFilterEC;
@@ -40,7 +39,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void dispose() {
     _customerEC.dispose();
     _compressorEC.dispose();
-    _serialNumberEC.dispose();
     _horimeterEC.dispose();
     _airFilterEC.dispose();
     _oilFilterEC.dispose();
@@ -61,17 +59,14 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
       if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.person.shortName)) {
         _evaluationController.updateCompressor(null);
         _compressorEC.text = '';
-        _serialNumberEC.text = '';
       }
     });
     _compressorEC = TextEditingController();
     _compressorEC.addListener(() {
       if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _evaluationController.evaluation!.compressor!.compressor.name) {
         _evaluationController.updateCompressor(null);
-        _serialNumberEC.text = '';
       }
     });
-    _serialNumberEC = TextEditingController();
     _horimeterEC = TextEditingController();
     _airFilterEC = TextEditingController();
     _oilFilterEC = TextEditingController();
@@ -80,6 +75,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
+    //TODO: posso remover abaixo?
     _adviceFocusNode.addListener(() {
       setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
     });
@@ -87,9 +83,15 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   }
 
   void _fillForm() {
+    String compressor = _evaluationController.evaluation!.compressor!.compressor.name;
+    final String serialNumber = _evaluationController.evaluation!.compressor!.serialNumber;
+    final String patrimony = _evaluationController.evaluation!.compressor!.patrimony;
+    final String sector = _evaluationController.evaluation!.compressor!.sector;
+    compressor += serialNumber.isNotEmpty ? ' NS:$serialNumber' : '';
+    compressor += patrimony.isNotEmpty ? ' PAT:$patrimony' : '';
+    compressor += sector.isNotEmpty ? ' -$sector' : '';
     _customerEC.text = _evaluationController.evaluation!.compressor!.person.shortName;
-    _compressorEC.text = _evaluationController.evaluation!.compressor!.compressor.name;
-    _serialNumberEC.text = _evaluationController.evaluation!.compressor!.serialNumber;
+    _compressorEC.text = compressor;
     _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
     _airFilterEC.text = _evaluationController.evaluation!.airFilter == null ? '' : _evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = _evaluationController.evaluation!.oilFilter == null ? '' : _evaluationController.evaluation!.oilFilter.toString();
@@ -102,12 +104,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   @override
   Widget build(BuildContext context) {
     _customerEC.text = _evaluationController.evaluation!.compressor?.person.shortName ?? '';
+
     _compressorEC.text = _evaluationController.evaluation!.compressor?.compressor.name ?? '';
-    final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
-    final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
-    final String separator = serialNumber != '' && sector != '' ? '/' : '';
-    final String serialNumberAndSector = '$serialNumber$separator$sector';
-    _serialNumberEC.text = serialNumberAndSector;
 
     final theme = Theme.of(context);
 
@@ -149,29 +147,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         decoration: InputDecoration(labelText: 'Cliente'),
                         style: TextStyle(color: theme.colorScheme.primary),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 12,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: true,
-                              controller: _compressorEC,
-                              validator: Validatorless.required('Campo obrigatório'),
-                              decoration: InputDecoration(labelText: 'Compressor'),
-                              style: TextStyle(color: theme.colorScheme.primary),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _serialNumberEC,
-                              textAlign: TextAlign.center,
-                              readOnly: true,
-                              decoration: InputDecoration(labelText: 'Nº Série/Setor'),
-                              style: TextStyle(color: theme.colorScheme.primary),
-                            ),
-                          )
-                        ],
+                      TextFormField(
+                        readOnly: true,
+                        controller: _compressorEC,
+                        validator: Validatorless.required('Campo obrigatório'),
+                        decoration: InputDecoration(labelText: 'Compressor'),
+                        style: TextStyle(color: theme.colorScheme.primary),
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
