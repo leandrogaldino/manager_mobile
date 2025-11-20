@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
@@ -26,6 +27,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
+
+  late final TextEditingController _unitEC;
+  late final TextEditingController _temperatureEC;
+  late final TextEditingController _pressureEC;
+
   late final TextEditingController _horimeterEC;
   late final TextEditingController _airFilterEC;
   late final TextEditingController _oilFilterEC;
@@ -39,6 +45,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void dispose() {
     _customerEC.dispose();
     _compressorEC.dispose();
+
+    _unitEC.dispose();
+    _temperatureEC.dispose();
+    _pressureEC.dispose();
+
     _horimeterEC.dispose();
     _airFilterEC.dispose();
     _oilFilterEC.dispose();
@@ -63,10 +74,15 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     });
     _compressorEC = TextEditingController();
     _compressorEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _evaluationController.evaluation!.compressor!.compressor.name) {
+      if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _compressorFullName) {
         _evaluationController.updateCompressor(null);
       }
     });
+
+    _unitEC = TextEditingController();
+    _temperatureEC = TextEditingController();
+    _pressureEC = TextEditingController();
+
     _horimeterEC = TextEditingController();
     _airFilterEC = TextEditingController();
     _oilFilterEC = TextEditingController();
@@ -76,22 +92,20 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
     //TODO: posso remover abaixo?
-    _adviceFocusNode.addListener(() {
-      setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
-    });
+    //_adviceFocusNode.addListener(() {
+    //setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
+    //});
     if (_evaluationController.source != SourceTypes.fromNew) _fillForm();
   }
 
   void _fillForm() {
-    String compressor = _evaluationController.evaluation!.compressor!.compressor.name;
-    final String serialNumber = _evaluationController.evaluation!.compressor!.serialNumber;
-    final String patrimony = _evaluationController.evaluation!.compressor!.patrimony;
-    final String sector = _evaluationController.evaluation!.compressor!.sector;
-    compressor += serialNumber.isNotEmpty ? ' NS:$serialNumber' : '';
-    compressor += patrimony.isNotEmpty ? ' PAT:$patrimony' : '';
-    compressor += sector.isNotEmpty ? ' -$sector' : '';
     _customerEC.text = _evaluationController.evaluation!.compressor!.person.shortName;
-    _compressorEC.text = compressor;
+    _compressorEC.text = _compressorFullName;
+
+    _unitEC.text = _evaluationController.evaluation!.unitName == null ? '' : _evaluationController.evaluation!.unitName.toString();
+    _temperatureEC.text = _evaluationController.evaluation!.temperature == null ? '' : _evaluationController.evaluation!.temperature.toString();
+    _pressureEC.text = _evaluationController.evaluation!.pressure == null ? '' : _evaluationController.evaluation!.pressure.toString();
+
     _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
     _airFilterEC.text = _evaluationController.evaluation!.airFilter == null ? '' : _evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = _evaluationController.evaluation!.oilFilter == null ? '' : _evaluationController.evaluation!.oilFilter.toString();
@@ -101,14 +115,22 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _responsibleEC.text = _evaluationController.evaluation!.responsible ?? '';
   }
 
+  String get _compressorFullName {
+    String compressorFullName = _evaluationController.evaluation!.compressor?.compressor.name ?? '';
+    final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
+    final String patrimony = _evaluationController.evaluation!.compressor?.patrimony ?? '';
+    final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
+    compressorFullName += serialNumber.isNotEmpty ? ' NS: $serialNumber' : '';
+    compressorFullName += patrimony.isNotEmpty ? ' PAT: $patrimony' : '';
+    compressorFullName += sector.isNotEmpty ? ' - $sector' : '';
+    return compressorFullName;
+  }
+
   @override
   Widget build(BuildContext context) {
     _customerEC.text = _evaluationController.evaluation!.compressor?.person.shortName ?? '';
-
-    _compressorEC.text = _evaluationController.evaluation!.compressor?.compressor.name ?? '';
-
+    _compressorEC.text = _compressorFullName;
     final theme = Theme.of(context);
-
     return ListenableBuilder(
       listenable: _evaluationController,
       builder: (context, child) {
@@ -153,6 +175,102 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         validator: Validatorless.required('Campo obrigatório'),
                         decoration: InputDecoration(labelText: 'Compressor'),
                         style: TextStyle(color: theme.colorScheme.primary),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<CallTypes>(
+                              alignment: AlignmentDirectional.center,
+                              initialValue: _evaluationController.evaluation!.callType,
+                              decoration: InputDecoration(
+                                labelText: 'Tipo de Visita',
+                              ),
+                              items: CallTypes.values.map((callType) {
+                                return DropdownMenuItem<CallTypes>(
+                                  value: callType,
+                                  child: Text(
+                                    callType.stringValue,
+                                    style: theme.textTheme.bodyLarge!.copyWith(color: _evaluationController.source == SourceTypes.fromNew ? theme.colorScheme.onSurface : theme.colorScheme.primary),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: _evaluationController.source == SourceTypes.fromNew
+                                  ? (callType) {
+                                      _evaluationController.updateCallType(callType!);
+                                    }
+                                  : null,
+                            ),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _unitEC,
+                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
+                              ],
+                              validator: Validatorless.multiple(
+                                [
+                                  Validatorless.required('Campo obrigatório'),
+                                ],
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Unidade',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) => _evaluationController.updateUnit(value),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _temperatureEC,
+                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              validator: Validatorless.multiple(
+                                [
+                                  Validatorless.required('Campo obrigatório'),
+                                ],
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Temperatura (ºC)',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) => _evaluationController.updateTemperature(int.tryParse(value) ?? 0),
+                            ),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _pressureEC,
+                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              textAlign: TextAlign.center,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+(\.\d{0,1})?$'), // permite só 1 casa decimal
+                                ),
+                              ],
+                              validator: Validatorless.multiple([
+                                Validatorless.required('Campo obrigatório'),
+                              ]),
+                              decoration: const InputDecoration(
+                                labelText: 'Pressão (BAR)',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) => _evaluationController.updatePresure(double.tryParse(value) ?? 0),
+                            ),
+                          ),
+                        ],
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +331,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
+                                    _evaluationController.evaluation!.oilType,
                                     PartTypes.airFilter,
                                   ),
                                 ],
@@ -236,7 +354,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
+                                    _evaluationController.evaluation!.oilType,
                                     PartTypes.oilFilter,
                                   ),
                                 ],
@@ -265,7 +383,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
+                                    _evaluationController.evaluation!.oilType,
                                     PartTypes.separator,
                                   ),
                                 ],
@@ -288,7 +406,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType!,
+                                    _evaluationController.evaluation!.oilType,
                                     PartTypes.oil,
                                   ),
                                 ],
@@ -316,29 +434,21 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         maxLines: 5,
                         onChanged: (value) => _evaluationController.updateAdvice(value),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            "Necessário orçamento?",
-                            style: theme.textTheme.bodyLarge,
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.outlineVariant,
                           ),
-                          RadioGroup(
-                            groupValue: _evaluationController.evaluation!.needProposal,
-                            onChanged: (bool? value) {
-                              if (_evaluationController.source == SourceTypes.fromSaved) {
-                                null;
-                              } else {
-                                _evaluationController.updateNeedProposal(value!);
-                              }
-                            },
-                            child: Row(
-                              children: [
-                                Expanded(child: RadioListTile<bool>(title: Text("Sim"), value: true)),
-                                Expanded(child: RadioListTile<bool>(title: Text("Não"), value: false)),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
+                        child: SwitchListTile(
+                          title: Text("Necessário orçamento?"),
+                          value: _evaluationController.evaluation!.needProposal ?? false,
+                          onChanged: (bool? value) {
+                            if (_evaluationController.source == SourceTypes.fromSaved) return;
+                            _evaluationController.updateNeedProposal(value!);
+                          },
+                        ),
                       ),
                       TextFormField(
                         controller: _responsibleEC,

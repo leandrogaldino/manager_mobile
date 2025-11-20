@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -155,7 +156,25 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.oilType = oilType;
     notifyListeners();
   }
+    void updateUnit(String unit) {
+    _evaluation!.unitName = unit;
+    notifyListeners();
+  }
 
+    void updateTemperature(int temperature) {
+    _evaluation!.temperature = temperature;
+    notifyListeners();
+  }
+
+      void updatePresure(double pressure) {
+    _evaluation!.pressure = pressure;
+    notifyListeners();
+  }
+
+  void updateCallType(CallTypes callType) {
+    _evaluation!.callType = callType;
+    notifyListeners();
+  }
   void updateHorimeter(int horimeter) {
     _evaluation!.horimeter = horimeter;
     notifyListeners();

@@ -26,7 +26,7 @@ class EvaluationModel {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   int? horimeter;
-  OilTypes? oilType;
+  OilTypes oilType;
   int? airFilter;
   int? oilFilter;
   int? separator;
@@ -51,7 +51,7 @@ class EvaluationModel {
     TimeOfDay? startTime,
     this.endTime,
     this.horimeter,
-    this.oilType,
+    this.oilType= OilTypes.none,
     this.airFilter,
     this.oilFilter,
     this.separator,
@@ -86,7 +86,7 @@ class EvaluationModel {
       startTime: TimeOfDay.now(),
       endTime: null,
       horimeter: null,
-      oilType: OilTypes.semiSynthetic,
+      oilType: OilTypes.none,
       airFilter: null,
       oilFilter: null,
       separator: null,
@@ -169,7 +169,7 @@ class EvaluationModel {
       'starttime': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}',
       'endtime': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}',
       'horimeter': horimeter,
-      'oiltypeid': oilType?.index,
+      'oiltypeid': oilType.index,
       'airfilter': airFilter,
       'oilfilter': oilFilter,
       'separator': separator,

@@ -27,6 +27,8 @@ class EvaluationValidators {
           if (partType == PartTypes.separator && hours > 4000) return 'Máximo: 4000';
           if (partType == PartTypes.oil && hours > 8000) return 'Máximo: 8000';
           return null;
+        case OilTypes.none:
+          return null;
       }
     };
   }
