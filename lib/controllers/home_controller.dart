@@ -41,42 +41,41 @@ class HomeController extends ChangeNotifier {
   Future<void> fetchData() async {
     String? text = _filterController.typedCustomerOrCompressorText;
     DateTimeRange? dateRange = _filterController.selectedDateRange;
-  
-      _filteredVisitSchedules = _dataController.visitSchedules.toList();
-      _filteredEvaluations = _dataController.evaluations.toList();
-      if (text.isNotEmpty) {
-        _filteredVisitSchedules = _filteredVisitSchedules.where(
-          (schedule) {
-            return schedule.customer.shortName.toLowerCase().contains(text) ||
-                schedule.compressor.compressor.name.toLowerCase().contains(text) ||
-                schedule.compressor.serialNumber.toLowerCase().contains(text) ||
-                schedule.compressor.sector.toLowerCase().contains(text) ||
-                schedule.technician.shortName.toLowerCase().contains(text);
-          },
-        ).toList();
-        _filteredEvaluations = _filteredEvaluations.where(
-          (evaluation) {
-            return evaluation.compressor!.person.shortName.toLowerCase().contains(text) ||
-                evaluation.compressor!.compressor.name.toLowerCase().contains(text) ||
-                evaluation.compressor!.sector.toLowerCase().contains(text) ||
-                evaluation.technicians.any((t) => t.technician.shortName.toLowerCase().contains(text));
-          },
-        ).toList();
-      }
-      if (dateRange != null) {
-        if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
-          _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) => schedule.scheduleDate.isAtSameMomentAs(dateRange.start)).toList();
-          _filteredEvaluations = _filteredEvaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
-        } else {
-          _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) {
-            return (schedule.scheduleDate.isAfter(dateRange.start) || schedule.scheduleDate.isAtSameMomentAs(dateRange.start)) && (schedule.scheduleDate.isBefore(dateRange.end) || schedule.scheduleDate.isAtSameMomentAs(dateRange.end));
-          }).toList();
-          _filteredEvaluations = _filteredEvaluations.where((evaluation) {
-            return (evaluation.creationDate!.isAfter(dateRange.start) || evaluation.creationDate!.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate!.isBefore(dateRange.end) || evaluation.creationDate!.isAtSameMomentAs(dateRange.end));
-          }).toList();
-        }
-      }
 
+    _filteredVisitSchedules = _dataController.visitSchedules.toList();
+    _filteredEvaluations = _dataController.evaluations.toList();
+    if (text.isNotEmpty) {
+      _filteredVisitSchedules = _filteredVisitSchedules.where(
+        (schedule) {
+          return schedule.customer.shortName.toLowerCase().contains(text) ||
+              schedule.compressor.compressor.name.toLowerCase().contains(text) ||
+              schedule.compressor.serialNumber.toLowerCase().contains(text) ||
+              schedule.compressor.sector.toLowerCase().contains(text) ||
+              schedule.technician.shortName.toLowerCase().contains(text);
+        },
+      ).toList();
+      _filteredEvaluations = _filteredEvaluations.where(
+        (evaluation) {
+          return evaluation.compressor!.person.shortName.toLowerCase().contains(text) ||
+              evaluation.compressor!.compressor.name.toLowerCase().contains(text) ||
+              evaluation.compressor!.sector.toLowerCase().contains(text) ||
+              evaluation.technicians.any((t) => t.technician.shortName.toLowerCase().contains(text));
+        },
+      ).toList();
+    }
+    if (dateRange != null) {
+      if (dateRange.start.isAtSameMomentAs(dateRange.end)) {
+        _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) => schedule.scheduleDate.isAtSameMomentAs(dateRange.start)).toList();
+        _filteredEvaluations = _filteredEvaluations.where((evaluation) => evaluation.creationDate!.isAtSameMomentAs(dateRange.start)).toList();
+      } else {
+        _filteredVisitSchedules = _filteredVisitSchedules.where((schedule) {
+          return (schedule.scheduleDate.isAfter(dateRange.start) || schedule.scheduleDate.isAtSameMomentAs(dateRange.start)) && (schedule.scheduleDate.isBefore(dateRange.end) || schedule.scheduleDate.isAtSameMomentAs(dateRange.end));
+        }).toList();
+        _filteredEvaluations = _filteredEvaluations.where((evaluation) {
+          return (evaluation.creationDate!.isAfter(dateRange.start) || evaluation.creationDate!.isAtSameMomentAs(dateRange.start)) && (evaluation.creationDate!.isBefore(dateRange.end) || evaluation.creationDate!.isAtSameMomentAs(dateRange.end));
+        }).toList();
+      }
+    }
   }
 
   Future<void> synchronize(bool showLoading, bool hideFilterButton) async {
