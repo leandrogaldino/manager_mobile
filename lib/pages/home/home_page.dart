@@ -89,11 +89,12 @@ class _HomePageState extends State<HomePage> {
                     FilterBarWidget(),
                     Expanded(
                       child: RefreshIndicator(
-                          onRefresh: () async {
-                            _hasShownError = false;
-                            await _homeController.synchronize(false, false);
-                          },
-                          child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations)),
+                        onRefresh: () async {
+                          _hasShownError = false;
+                          await _homeController.synchronize(false, false);
+                        },
+                        child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations),
+                      ),
                     ),
                   ],
                 ),
