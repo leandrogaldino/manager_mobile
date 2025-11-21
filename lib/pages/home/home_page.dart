@@ -130,18 +130,40 @@ class _HomePageState extends State<HomePage> {
         listenable: _homeController,
         builder: (context, child) {
           return _homeController.currentIndex == 1
-              ? FloatingActionButton(
-                  onPressed: () async {
-                    var evaluation = EvaluationModel.fromScheduleOrNew();
-                    var loggedTechnician = await _loginController.currentLoggedUser;
-                    if (loggedTechnician != null) {
-                      evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: loggedTechnician));
-                    }
-                    _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
-                    if (!context.mounted) return;
-                    Navigator.of(context).pushNamed(Routes.evaluation);
-                  },
-                  child: const Icon(Icons.add),
+              ? Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 30,
+                        spreadRadius: 10,
+                        offset: Offset(0, 3),
+                        color: Color.fromARGB(66, 0, 0, 0),
+                      )
+                    ],
+                  ),
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      var evaluation = EvaluationModel.fromScheduleOrNew();
+                      var loggedTechnician = await _loginController.currentLoggedUser;
+
+                      if (loggedTechnician != null) {
+                        evaluation.technicians.add(
+                          EvaluationTechnicianModel(
+                            isMain: true,
+                            technician: loggedTechnician,
+                          ),
+                        );
+                      }
+
+                      _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
+
+                      if (!context.mounted) return;
+
+                      Navigator.of(context).pushNamed(Routes.evaluation);
+                    },
+                    child: const Icon(Icons.add),
+                  ),
                 )
               : SizedBox.shrink();
         },

@@ -85,7 +85,7 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
             onTap: () async {
               Navigator.pop(context);
               var db = Locator.get<LocalDatabase>();
-              await db.delete('schedule');
+              await db.delete('visitschedule');
               await db.delete('evaluation');
             },
           ),

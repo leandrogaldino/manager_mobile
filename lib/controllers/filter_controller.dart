@@ -39,6 +39,7 @@ class FilterController extends ChangeNotifier {
       _filtering = false;
       setFilterBarHeight();
     }
+    notifyListeners();
   }
 
   String get selectedDateRangeText {
@@ -60,6 +61,7 @@ class FilterController extends ChangeNotifier {
       _filtering = false;
       setFilterBarHeight();
     }
+    notifyListeners();
   }
 
   bool _showFilterButton = true;

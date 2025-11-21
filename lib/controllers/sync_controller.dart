@@ -22,7 +22,7 @@ class SyncController extends ChangeNotifier {
   final PersonCompressorCoalescentService _personCompressorcoalescentService;
   final PersonCompressorService _personCompressorService;
   final PersonService _personService;
-  final VisitScheduleService _scheduleService;
+  final VisitScheduleService _visitScheduleService;
   final EvaluationService _evaluationService;
   final AppPreferences _appPreferences;
 
@@ -36,7 +36,7 @@ class SyncController extends ChangeNotifier {
     required PersonCompressorCoalescentService personCompressorcoalescentService,
     required PersonCompressorService personCompressorService,
     required PersonService personService,
-    required VisitScheduleService scheduleService,
+    required VisitScheduleService visitScheduleService,
     required EvaluationService evaluationService,
     required AppPreferences appPreferences,
     required DataController personController,
@@ -48,7 +48,7 @@ class SyncController extends ChangeNotifier {
         _personCompressorcoalescentService = personCompressorcoalescentService,
         _personCompressorService = personCompressorService,
         _personService = personService,
-        _scheduleService = scheduleService,
+        _visitScheduleService = visitScheduleService,
         _evaluationService = evaluationService,
         _appPreferences = appPreferences;
   bool get isSyncing => _isSyncing;
@@ -75,12 +75,13 @@ class SyncController extends ChangeNotifier {
     log('Sincronizando Pessoas');
     int countPerson = await _personService.synchronize(lastSync);
     log('Sincronizando Agendamentos');
-    await _scheduleService.synchronize(lastSync);
+    int visitScheduleCount = await _visitScheduleService.synchronize(lastSync);
     log('Sincronizando Avaliações');
-    await _evaluationService.synchronize(lastSync);
+    int evaluationCount = await _evaluationService.synchronize(lastSync);
     await _appPreferences.updateLastSynchronize();
     _setSyncing(false);
-    int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson;
+    int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson + visitScheduleCount + evaluationCount;
+    notifyListeners();
     return totalCount;
   }
 }

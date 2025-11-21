@@ -23,7 +23,7 @@ import 'package:manager_mobile/repositories/evaluation_technician_repository.dar
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/productcode_repository.dart';
-import 'package:manager_mobile/repositories/schedule_repository.dart';
+import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/util/network_connection.dart';
@@ -209,7 +209,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => ScheduleRepository(
+      () => VisitScheduleRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
         compressorRepository: _getIt.get<PersonCompressorRepository>(),
@@ -218,7 +218,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => VisitScheduleService(scheduleRepository: _getIt.get<ScheduleRepository>()),
+      () => VisitScheduleService(scheduleRepository: _getIt.get<VisitScheduleRepository>()),
     );
 
     _getIt.registerLazySingleton<AppController>(() => AppController(
@@ -243,7 +243,7 @@ class Locator {
           personCompressorService: _getIt.get<PersonCompressorService>(),
           personService: _getIt.get<PersonService>(),
           appPreferences: _getIt.get<AppPreferences>(),
-          scheduleService: _getIt.get<VisitScheduleService>(),
+          visitScheduleService: _getIt.get<VisitScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
           personController: _getIt.get<DataController>(),
           filterController: _getIt.get<FilterController>(),

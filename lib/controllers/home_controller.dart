@@ -18,11 +18,11 @@ class HomeController extends ChangeNotifier {
   })  : _syncController = syncController,
         _dataController = dataController,
         _filterController = filterController {
-    _filterController.addListener(fetchData);
+    _filterController.addListener(_onFilterChanged);
   }
 
   void _onFilterChanged() {
-    fetchData();
+    applyFilters(notiifyListeners: false);
   }
 
   HomeState _state = HomeStateInitial();
@@ -38,7 +38,7 @@ class HomeController extends ChangeNotifier {
   List<VisitScheduleModel> get filteredVisitSchedules => _filteredVisitSchedules;
   List<EvaluationModel> get filteredEvaluations => _filteredEvaluations;
 
-  Future<void> fetchData() async {
+  Future<void> applyFilters({bool notiifyListeners = true}) async {
     String? text = _filterController.typedCustomerOrCompressorText;
     DateTimeRange? dateRange = _filterController.selectedDateRange;
 
@@ -50,6 +50,7 @@ class HomeController extends ChangeNotifier {
           return schedule.customer.shortName.toLowerCase().contains(text) ||
               schedule.compressor.compressor.name.toLowerCase().contains(text) ||
               schedule.compressor.serialNumber.toLowerCase().contains(text) ||
+              schedule.compressor.patrimony.toLowerCase().contains(text) ||
               schedule.compressor.sector.toLowerCase().contains(text) ||
               schedule.technician.shortName.toLowerCase().contains(text);
         },
@@ -58,6 +59,8 @@ class HomeController extends ChangeNotifier {
         (evaluation) {
           return evaluation.compressor!.person.shortName.toLowerCase().contains(text) ||
               evaluation.compressor!.compressor.name.toLowerCase().contains(text) ||
+              evaluation.compressor!.serialNumber.toLowerCase().contains(text) ||
+              evaluation.compressor!.patrimony.toLowerCase().contains(text) ||
               evaluation.compressor!.sector.toLowerCase().contains(text) ||
               evaluation.technicians.any((t) => t.technician.shortName.toLowerCase().contains(text));
         },
@@ -76,6 +79,7 @@ class HomeController extends ChangeNotifier {
         }).toList();
       }
     }
+    if (notiifyListeners) _setState(HomeStateSuccess(filteredVisitSchedules, filteredEvaluations));
   }
 
   Future<void> synchronize(bool showLoading, bool hideFilterButton) async {
@@ -98,11 +102,11 @@ class HomeController extends ChangeNotifier {
       if (totalCount > 0 || _dataController.evaluations.isEmpty) await _dataController.fetchEvaluations();
       if (totalCount > 0 || _dataController.visitSchedules.isEmpty) await _dataController.fetchVisitSchedules();
 
-      await fetchData();
+      await applyFilters();
 
-      if (_state is! HomeStateError) {
-        _state = HomeStateSuccess(filteredVisitSchedules, filteredEvaluations);
-      }
+      //if (_state is! HomeStateError) {
+      //_state = HomeStateSuccess(filteredVisitSchedules, filteredEvaluations);
+      //}
       log('Sincronização concluída com sucesso');
       _setState(HomeStateSuccess(filteredVisitSchedules, filteredEvaluations));
       _filterController.setShowFilterButton(true);

@@ -75,7 +75,7 @@ class EvaluationService {
     return EvaluationModel.fromMap(savedMap);
   }
 
-  Future<void> synchronize(int lastSync) async {
-    await _evaluationRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _evaluationRepository.synchronize(lastSync);
   }
 }

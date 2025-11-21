@@ -125,10 +125,12 @@ class EvaluationRepository {
     }
   }
 
-  Future<void> synchronize(int lastSync) async {
+  Future<int> synchronize(int lastSync) async {
+    int count = 0;
     try {
-      await _synchronizeFromLocalToCloud(lastSync);
-      await _synchronizeFromCloudToLocal(lastSync);
+      count = await _synchronizeFromLocalToCloud(lastSync);
+      count += await _synchronizeFromCloudToLocal(lastSync);
+      return count;
     } on LocalDatabaseException {
       rethrow;
     } on RemoteDatabaseException {
@@ -150,7 +152,7 @@ class EvaluationRepository {
     }
   }
 
-  Future<void> _synchronizeFromLocalToCloud(int lastSync) async {
+  Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       int customerId = await _localDatabase.query('personcompressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
@@ -186,10 +188,12 @@ class EvaluationRepository {
         'importeddate': null,
       };
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
+      await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
     }
+    return localResult.length;
   }
 
-  Future<void> _synchronizeFromCloudToLocal(int lastSync) async {
+  Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
@@ -251,6 +255,7 @@ class EvaluationRepository {
         await _localDatabase.insert('evaluation', evaluationMap);
       }
     }
+    return remoteResult.length;
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {

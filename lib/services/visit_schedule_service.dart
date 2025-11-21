@@ -1,11 +1,11 @@
 import 'package:manager_mobile/models/visitschedule_model.dart';
-import 'package:manager_mobile/repositories/schedule_repository.dart';
+import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
 
 class VisitScheduleService {
-  final ScheduleRepository _scheduleRepository;
+  final VisitScheduleRepository _scheduleRepository;
 
   VisitScheduleService({
-    required ScheduleRepository scheduleRepository,
+    required VisitScheduleRepository scheduleRepository,
   }) : _scheduleRepository = scheduleRepository;
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
@@ -26,7 +26,7 @@ class VisitScheduleService {
     return data.map((item) => VisitScheduleModel.fromMap(item)).toList();
   }
 
-  Future<void> synchronize(int lastSync) async {
-    await _scheduleRepository.synchronize(lastSync);
+  Future<int> synchronize(int lastSync) async {
+    return await _scheduleRepository.synchronize(lastSync);
   }
 }

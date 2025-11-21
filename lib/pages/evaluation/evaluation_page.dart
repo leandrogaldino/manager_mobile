@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
@@ -28,6 +29,7 @@ class EvaluationPage extends StatefulWidget {
 
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> _formKey;
+  late final DataController _dataController;
   late final EvaluationController _evaluationController;
   late final HomeController _homeController;
 
@@ -35,6 +37,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
+    _dataController = Locator.get<DataController>();
     _evaluationController = Locator.get<EvaluationController>();
     _homeController = Locator.get<HomeController>();
     if (_evaluationController.source == SourceTypes.fromSaved) {
@@ -196,7 +199,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         if (!_validateSignature()) return;
 
                         await _evaluationController.save();
-                        await _homeController.fetchData();
+                        
+                       await _dataController.fetchEvaluations();
+                        await _dataController.fetchVisitSchedules();
+                        await _homeController.applyFilters();
 
                         if (!context.mounted) return;
                         Navigator.pop<EvaluationModel>(context);

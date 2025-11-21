@@ -6,12 +6,12 @@ import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
-class ScheduleRepository {
+class VisitScheduleRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final PersonCompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
-  ScheduleRepository({
+  VisitScheduleRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
     required PersonCompressorRepository compressorRepository,
@@ -59,10 +59,12 @@ class ScheduleRepository {
     }
   }
 
-  Future<void> synchronize(int lastSync) async {
+  Future<int> synchronize(int lastSync) async {
+    int count = 0;
     try {
-      await _synchronizeFromLocalToCloud(lastSync);
-      await _synchronizeFromCloudToLocal(lastSync);
+      count = await _synchronizeFromLocalToCloud(lastSync);
+      count += await _synchronizeFromCloudToLocal(lastSync);
+      return count;
     } on LocalDatabaseException {
       rethrow;
     } on RemoteDatabaseException {
@@ -86,18 +88,16 @@ class ScheduleRepository {
   }
 
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
-    int uploadedData = 0;
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
-      //TODO: o lastupdate deve ser o now;
+      //TODO: o lastupdate deve ser o now, onde está alterando os dados da visita realizada?;
       await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
-      uploadedData += 1;
     }
-    return uploadedData;
+    return localResult.length;
   }
 
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
-     int count = 0;
+    int count = 0;
     try {
       bool hasMore = true;
       while (hasMore) {

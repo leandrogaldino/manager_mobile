@@ -27,11 +27,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final EvaluationController _evaluationController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
-
   late final TextEditingController _unitEC;
   late final TextEditingController _temperatureEC;
   late final TextEditingController _pressureEC;
-
   late final TextEditingController _horimeterEC;
   late final TextEditingController _airFilterEC;
   late final TextEditingController _oilFilterEC;
@@ -45,11 +43,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void dispose() {
     _customerEC.dispose();
     _compressorEC.dispose();
-
     _unitEC.dispose();
     _temperatureEC.dispose();
     _pressureEC.dispose();
-
     _horimeterEC.dispose();
     _airFilterEC.dispose();
     _oilFilterEC.dispose();
@@ -78,11 +74,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
         _evaluationController.updateCompressor(null);
       }
     });
-
     _unitEC = TextEditingController();
     _temperatureEC = TextEditingController();
     _pressureEC = TextEditingController();
-
     _horimeterEC = TextEditingController();
     _airFilterEC = TextEditingController();
     _oilFilterEC = TextEditingController();
@@ -91,10 +85,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
-    //TODO: posso remover abaixo?
-    //_adviceFocusNode.addListener(() {
-    //setState(() {}); // Atualiza o estado pra mostrar/ocultar o botão
-    //});
     if (_evaluationController.source != SourceTypes.fromNew) _fillForm();
   }
 
