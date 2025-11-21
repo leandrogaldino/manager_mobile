@@ -57,7 +57,7 @@ class EvaluationRepository {
       var photosMap = data['photos'] as List<Map<String, Object?>>;
       data.remove('photos');
       if (data['id'] == null || data['id'] == '') {
-        data['id'] = StringHelper.getUniqueString(prefix: data['personcompressorid'].toString());
+        data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
         await _localDatabase.insert('evaluation', data);
         for (var coalescentMap in coalescentsMap) {
           coalescentMap['evaluationid'] = data['id'];
@@ -153,7 +153,7 @@ class EvaluationRepository {
   Future<void> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
-      int customerId = await _localDatabase.query('compressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['personcompressorid']]).then((v) => v[0]['personid'] as int);
+      int customerId = await _localDatabase.query('personcompressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
       String customerDocument = await _localDatabase.query('person', columns: ['document'], where: 'id = ?', whereArgs: [customerId]).then((v) => v[0]['document'].toString());
       customerDocument = customerDocument.replaceAll('.', '').replaceFirst('/', '').replaceFirst('-', '');
       String rootPath = '$customerDocument/${evaluationMap['id']}';

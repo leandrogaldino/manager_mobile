@@ -29,7 +29,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     const int crossAxisCount = 3;
     const double spacing = 8;
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;
-    final double cellHeight = cellWidth * 1.8;
+    final double cellHeight = cellWidth * 1.3;
     final List<String?> photoPaths = List.generate(
       maxPhotos,
       (index) => index < _evaluationController.evaluation!.photos.length ? _evaluationController.evaluation!.photos[index].path : null,

@@ -170,34 +170,44 @@ class _EvaluationPageState extends State<EvaluationPage> {
           ),
         ),
         bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved
-            ? Container(
-                color: Theme.of(context).colorScheme.secondaryContainer,
+            ? SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      bool isValid = _formKey.currentState?.validate() ?? false;
-                      if (!isValid) {
-                        Message.showInfoSnackbar(
-                          context: context,
-                          message: 'Verifique a seção de dados do compressor',
-                        );
-                        return;
-                      }
-                      if (!_validadeNeedProposal()) return;
-                      if (!_validateCoalescentsNextChange()) return;
-                      if (!_validateSignature()) return;
-                      await _evaluationController.save();
-                      await _homeController.fetchData();
-                      if (!context.mounted) return;
-                      Navigator.pop<EvaluationModel>(context);
-                    },
-                    child: Text(
-                      'Salvar',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  // ↑        ↑
+                  // left   espaço acima do botão (24px)
+                  // right  espaço inferior (16px)
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final isValid = _formKey.currentState?.validate() ?? false;
+
+                        if (!isValid) {
+                          Message.showInfoSnackbar(
+                            context: context,
+                            message: 'Verifique a seção de dados do compressor',
+                          );
+                          return;
+                        }
+
+                        if (!_validadeNeedProposal()) return;
+                        if (!_validateCoalescentsNextChange()) return;
+                        if (!_validateSignature()) return;
+
+                        await _evaluationController.save();
+                        await _homeController.fetchData();
+
+                        if (!context.mounted) return;
+                        Navigator.pop<EvaluationModel>(context);
+                      },
+                      child: Text(
+                        'Salvar',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
                     ),
                   ),
                 ),

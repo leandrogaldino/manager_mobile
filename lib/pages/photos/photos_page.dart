@@ -84,7 +84,7 @@ class _PhotosPageState extends State<PhotosPage> {
                               color: Colors.black.withValues(alpha: 125),
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.delete, color: theme.surface),
+                              icon: Icon(Icons.delete, color: theme.onSurface),
                               onPressed: () async {
                                 final bool isYes = await YesNoPicker.pick(
                                       context: context,

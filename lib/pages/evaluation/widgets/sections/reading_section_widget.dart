@@ -208,9 +208,21 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _unitEC,
                               readOnly: _evaluationController.source == SourceTypes.fromSaved,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
+                              textCapitalization: TextCapitalization.characters,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
+                                TextInputFormatter.withFunction(
+                                  (oldValue, newValue) {
+                                    return newValue.copyWith(
+                                      text: newValue.text.toUpperCase(),
+                                      selection: newValue.selection,
+                                    );
+                                  },
+                                ),
+
+                                // Permite somente A-Z e 0-9
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[A-Z0-9]'),
+                                ),
                               ],
                               validator: Validatorless.multiple(
                                 [
@@ -257,7 +269,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+(\.\d{0,1})?$'), // permite só 1 casa decimal
+                                  RegExp(r'^\d+(,\d{0,1})?$'), // vírgula e 1 casa decimal
                                 ),
                               ],
                               validator: Validatorless.multiple([
@@ -267,7 +279,11 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Pressão (BAR)',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updatePresure(double.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                // troca vírgula por ponto antes de fazer parse
+                                final raw = value.replaceAll(',', '.');
+                                _evaluationController.updatePresure(double.tryParse(raw) ?? 0);
+                              },
                             ),
                           ),
                         ],
@@ -426,7 +442,14 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         readOnly: _evaluationController.source == SourceTypes.fromSaved,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
+                          TextInputFormatter.withFunction(
+                            (oldValue, newValue) {
+                              return newValue.copyWith(
+                                text: newValue.text.toUpperCase(), // transforma tudo
+                                selection: newValue.selection,
+                              );
+                            },
+                          ),
                         ],
                         decoration: InputDecoration(
                           labelText: 'Parecer Técnico',
