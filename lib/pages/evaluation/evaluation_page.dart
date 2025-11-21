@@ -193,14 +193,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
                           );
                           return;
                         }
-
-                        if (!_validadeNeedProposal()) return;
                         if (!_validateCoalescentsNextChange()) return;
                         if (!_validateSignature()) return;
-
                         await _evaluationController.save();
-                        
-                       await _dataController.fetchEvaluations();
+               
+               //atualizar performeddate
+
+                        await _dataController.fetchEvaluations();
                         await _dataController.fetchVisitSchedules();
                         await _homeController.applyFilters();
 
@@ -221,14 +220,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
             : null,
       ),
     );
-  }
-
-  bool _validadeNeedProposal() {
-    final bool valid = _evaluationController.evaluation!.needProposal != null;
-    if (!valid) {
-      Message.showInfoSnackbar(context: context, message: 'É necessário informar se há necessidade de fazer um orçamento.');
-    }
-    return valid;
   }
 
   bool _validateSignature() {

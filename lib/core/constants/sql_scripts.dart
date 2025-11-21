@@ -116,6 +116,7 @@ class SQLScripts {
       id TEXT PRIMARY KEY,
       visible INTEGER NOT NULL,
       importedid INTEGER,
+      visitscheduleid INTEGER,
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
       calltypeid INTEGER NOT NULL,

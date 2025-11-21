@@ -69,9 +69,9 @@ class EvaluationService {
     return data.map((item) => EvaluationModel.fromMap(item)).toList();
   }
 
-  Future<EvaluationModel> save(EvaluationModel model) async {
+  Future<EvaluationModel> save(EvaluationModel model, int? visitScheduleId) async {
     final evaluationMap = model.toMap();
-    var savedMap = await _evaluationRepository.save(evaluationMap);
+    var savedMap = await _evaluationRepository.save(evaluationMap,visitScheduleId);
     return EvaluationModel.fromMap(savedMap);
   }
 

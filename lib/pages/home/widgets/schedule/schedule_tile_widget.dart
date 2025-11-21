@@ -8,14 +8,22 @@ class ScheduleTileWidget extends StatelessWidget {
     super.key,
     required this.schedule,
   });
+
   final VisitScheduleModel schedule;
 
   @override
   Widget build(BuildContext context) {
     String subtitle = schedule.compressor.compressor.name;
-    schedule.compressor.serialNumber.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.serialNumber}' : null;
-    schedule.compressor.sector.isNotEmpty ? subtitle = '$subtitle - ${schedule.compressor.sector}' : null;
+
+    if (schedule.compressor.serialNumber.isNotEmpty) {
+      subtitle = '$subtitle - ${schedule.compressor.serialNumber}';
+    }
+    if (schedule.compressor.sector.isNotEmpty) {
+      subtitle = '$subtitle - ${schedule.compressor.sector}';
+    }
+
     String technician = schedule.technician.shortName;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -23,43 +31,13 @@ class ScheduleTileWidget extends StatelessWidget {
           color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(5),
         ),
-        child: ListTile(
-          isThreeLine: true,
-          title: Text(
-            schedule.customer.shortName,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          subtitle: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-              Text(
-                technician,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ],
-          ),
-          trailing: Text(
-            DateFormat('dd/MM/yyyy').format(schedule.scheduleDate),
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-          ),
+        padding: const EdgeInsets.all(12),
+        child: InkWell(
           onTap: () async {
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(10),
                 ),
@@ -71,6 +49,52 @@ class ScheduleTileWidget extends StatelessWidget {
               },
             );
           },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center, // ÍCONE CENTRALIZADO
+            children: [
+              // TÍTULO + SUBTÍTULOS
+              Expanded(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        schedule.customer.shortName,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                      ),
+                      Text(
+                        technician,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // TRAILING — DATA
+              const SizedBox(width: 8),
+              Text(
+                DateFormat('dd/MM/yyyy').format(schedule.scheduleDate),
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );

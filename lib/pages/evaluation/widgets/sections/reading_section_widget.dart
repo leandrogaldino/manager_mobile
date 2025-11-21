@@ -208,7 +208,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                     );
                                   },
                                 ),
-
                                 // Permite somente A-Z e 0-9
                                 FilteringTextInputFormatter.allow(
                                   RegExp(r'[A-Z0-9]'),
@@ -456,10 +455,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ),
                         child: SwitchListTile(
                           title: Text("Necessário orçamento?"),
-                          value: _evaluationController.evaluation!.needProposal ?? false,
-                          onChanged: (bool? value) {
+                          value: _evaluationController.evaluation!.needProposal,
+                          onChanged: (bool value) {
                             if (_evaluationController.source == SourceTypes.fromSaved) return;
-                            _evaluationController.updateNeedProposal(value!);
+                            _evaluationController.updateNeedProposal(value);
                           },
                         ),
                       ),
@@ -468,6 +467,15 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         readOnly: _evaluationController.source == SourceTypes.fromSaved,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
+                          TextInputFormatter.withFunction(
+                            (oldValue, newValue) {
+                              return newValue.copyWith(
+                                text: newValue.text.toUpperCase(),
+                                selection: newValue.selection,
+                              );
+                            },
+                          ),
+                          // Permite somente A-Z e 0-9
                           FilteringTextInputFormatter.allow(RegExp(r'[A-Z\s]')), // Só permite A-Z e espaços
                         ],
                         validator: Validatorless.required('Campo obrigatório'),

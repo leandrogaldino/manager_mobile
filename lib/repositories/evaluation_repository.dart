@@ -46,8 +46,9 @@ class EvaluationRepository {
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
-  Future<Map<String, Object?>> save(Map<String, Object?> data) async {
+  Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
     try {
+      visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
       data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
       data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
       var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
@@ -180,13 +181,10 @@ class EvaluationRepository {
       evaluationMap['coalescents'] = coalescentsMap;
       evaluationMap.remove('existsincloud');
       evaluationMap.remove('importedid');
-      evaluationMap['info'] = {
-        'importedid': null,
-        'importingdate': null,
-        'importingby': null,
-        'importedby': null,
-        'importeddate': null,
-      };
+      evaluationMap['info'] = {'importedid': null, 'importingdate': null, 'importingby': null, 'importedby': null, 'importeddate': null, 'visitscheduleid': evaluationMap['visitscheduleid']};
+      evaluationMap.remove('visitscheduleid');
+evaluationMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
+
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
     }

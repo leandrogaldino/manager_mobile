@@ -90,7 +90,7 @@ class VisitScheduleRepository {
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
-      //TODO: o lastupdate deve ser o now, onde está alterando os dados da visita realizada?;
+      scheduleMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
       await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
     }
     return localResult.length;
@@ -139,7 +139,7 @@ class VisitScheduleRepository {
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
     try {
-      await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+      await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'performeddate': DateTime.now().millisecondsSinceEpoch, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e) {

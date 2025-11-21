@@ -14,8 +14,9 @@ class EvaluationModel {
   String? id;
   bool visible;
   int? importedId;
+  int? visitscheduleid;
   bool existsInCloud;
-  bool? needProposal;
+  bool needProposal;
   CallTypes callType;
   String? unitName;
   int? temperature;
@@ -42,8 +43,9 @@ class EvaluationModel {
     this.id,
     this.visible = true,
     this.importedId,
+    this.visitscheduleid,
     this.existsInCloud = false,
-    this.needProposal,
+    this.needProposal = false,
     this.callType = CallTypes.none,
     this.customer,
     this.compressor,
@@ -77,8 +79,9 @@ class EvaluationModel {
       id: null,
       visible: true,
       importedId: null,
+      visitscheduleid: null,
       existsInCloud: false,
-      needProposal: null,
+      needProposal: false,
       callType: schedule != null ? schedule.callType : CallTypes.none,
       customer: schedule?.customer,
       compressor: schedule?.compressor,
@@ -105,6 +108,7 @@ class EvaluationModel {
     String? id,
     bool? visible,
     int? importedId,
+    int? visitscheduleid,
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
@@ -130,6 +134,7 @@ class EvaluationModel {
     return EvaluationModel(
       id: id ?? this.id,
       visible: visible ?? this.visible,
+      visitscheduleid: visitscheduleid ?? this.visitscheduleid,
       importedId: importedId ?? this.importedId,
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
@@ -160,8 +165,9 @@ class EvaluationModel {
       'id': id,
       'visible': visible ? 1 : 0,
       'importedid': importedId,
+      'visitscheduleid': visitscheduleid,
       'existsincloud': existsInCloud ? 1 : 0,
-      'needproposal': needProposal == null ? null : (needProposal! ? 1 : 0),
+      'needproposal': needProposal ? 1 : 0,
       'calltypeid': callType.index,
       'customerid': customer?.id,
       'compressorid': compressor?.id,
@@ -189,8 +195,9 @@ class EvaluationModel {
       id: map['id'] != null ? map['id'] as String : null,
       visible: map['visible'] as int == 0 ? false : true,
       importedId: map['importedid'] != null ? map['importedid'] as int : null,
+      visitscheduleid: map['visitscheduleid'] != null ? map['visitscheduleid'] as int : null,
       existsInCloud: map['existsincloud'] == 0 ? false : true,
-      needProposal: map['needproposal'] == null ? null : (map['needproposal'] == 0 ? false : true),
+      needProposal: map['needproposal'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
       advice: map['advice'] != null ? map['advice'] as String : null,
       customer: map['customer'] != null ? PersonModel.fromMap(map['customer']) : null,
@@ -231,7 +238,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -241,6 +248,7 @@ class EvaluationModel {
     return other.id == id &&
         other.visible == visible &&
         other.importedId == importedId &&
+        other.visitscheduleid == visitscheduleid &&
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
         other.callType == callType &&
@@ -269,6 +277,7 @@ class EvaluationModel {
     return id.hashCode ^
         visible.hashCode ^
         importedId.hashCode ^
+        visitscheduleid.hashCode ^
         existsInCloud.hashCode ^
         needProposal.hashCode ^
         callType.hashCode ^

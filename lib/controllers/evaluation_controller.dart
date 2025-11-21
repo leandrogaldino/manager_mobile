@@ -48,9 +48,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateSchedule(int scheduleId, bool isVisible) async {
-    await scheduleService.updateVisibility(scheduleId, isVisible);
-  }
 
   Future<void> updateImagesBytes() async {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
@@ -69,7 +66,8 @@ class EvaluationController extends ChangeNotifier {
   Future<void> save() async {
     await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
-    await evaluationService.save(evaluation!);
+    await evaluationService.save(evaluation!, schedule?.id);
+
     if (_schedule != null) await scheduleService.updateVisibility(_schedule!.id, false);
     notifyListeners();
   }
@@ -117,7 +115,7 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateNeedProposal(bool? needProposal) {
+  void updateNeedProposal(bool needProposal) {
     _evaluation!.needProposal = needProposal;
     notifyListeners();
   }
@@ -156,17 +154,18 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.oilType = oilType;
     notifyListeners();
   }
-    void updateUnit(String unit) {
+
+  void updateUnit(String unit) {
     _evaluation!.unitName = unit;
     notifyListeners();
   }
 
-    void updateTemperature(int temperature) {
+  void updateTemperature(int temperature) {
     _evaluation!.temperature = temperature;
     notifyListeners();
   }
 
-      void updatePresure(double pressure) {
+  void updatePresure(double pressure) {
     _evaluation!.pressure = pressure;
     notifyListeners();
   }
@@ -175,6 +174,7 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.callType = callType;
     notifyListeners();
   }
+
   void updateHorimeter(int horimeter) {
     _evaluation!.horimeter = horimeter;
     notifyListeners();
@@ -212,7 +212,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-//TODO: Mudar para AppController.
   Future<int> clean() async {
     int count = 0;
     var allEvaluations = await evaluationService.getAll();
