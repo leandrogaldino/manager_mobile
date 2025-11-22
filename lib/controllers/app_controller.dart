@@ -75,12 +75,11 @@ class AppController extends ChangeNotifier {
           if (now.difference(lastModified).inHours > 24) {
             await fileOrDir.delete();
           }
-        } catch (e) {
-          log("Erro ao excluir arquivo temporário: $e");
+        } catch (e, s) {
+          String message = 'Erro ao excluir arquivo temporário.';
+          log(message, time: DateTime.now(), error: e, stackTrace: s);
         }
       }
     }
   }
-
-  
 }

@@ -4,25 +4,25 @@ import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 
-class EvaluationPhotoRepository {
+class EvaluationPerformedServiceRepository {
   final LocalDatabase _localDatabase;
 
-  EvaluationPhotoRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
+  EvaluationPerformedServiceRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-       bool exists = await _localDatabase.isSaved('evaluationphoto', id: data['id'] == null ? 0 : data['id'] as int);
+       bool exists = await _localDatabase.isSaved('evaluationperformedservice', id: data['id'] == null ? 0 : data['id'] as int);
       if (!exists) {
-        int id = await _localDatabase.insert('evaluationphoto', data);
+        int id = await _localDatabase.insert('evaluationperformedservice', data);
         data['id'] = id;
       } else {
-        await _localDatabase.update('evaluationphoto', data, where: 'id = ?', whereArgs: [data['id']]);
+        await _localDatabase.update('evaluationperformedservice', data, where: 'id = ?', whereArgs: [data['id']]);
       }
       return data;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
-      String code = 'EPH001';
+      String code = 'EPF001';
       String message = 'Erro ao salvar os dados';
       log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
@@ -31,12 +31,12 @@ class EvaluationPhotoRepository {
 
   Future<List<Map<String, Object?>>> getByParentId(dynamic parentId) async {
     try {
-      var evaluationPhotos = await _localDatabase.query('evaluationphoto', where: 'evaluationid = ?', whereArgs: [parentId]);
-      return evaluationPhotos;
+      var evaluationPerformedServices = await _localDatabase.query('evaluationperformedservice', where: 'evaluationid = ?', whereArgs: [parentId]);
+      return evaluationPerformedServices;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
-      String code = 'EPH002';
+      String code = 'EPF002';
       String message = 'Erro ao obter os dados';
       log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);

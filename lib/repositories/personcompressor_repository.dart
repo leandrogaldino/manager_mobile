@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
@@ -45,8 +47,11 @@ class PersonCompressorRepository {
       return personcompressors;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PRO002', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCO001';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -70,8 +75,11 @@ class PersonCompressorRepository {
       return personCompressor;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PER001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCO002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -94,8 +102,11 @@ class PersonCompressorRepository {
       return personcompressors;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PCO001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCO003';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -135,8 +146,11 @@ class PersonCompressorRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PCO002', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCO004';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

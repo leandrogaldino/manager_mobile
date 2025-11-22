@@ -13,7 +13,7 @@ class Message {
       message: message,
       snackBar: CustomSnackBar.error(
         message: message,
-        maxLines: 20,
+        maxLines: 4,
       ),
       position: position,
     );
@@ -29,7 +29,7 @@ class Message {
       message: message,
       snackBar: CustomSnackBar.info(
         message: message,
-        maxLines: 10,
+        maxLines: 4,
       ),
       position: position,
     );
@@ -45,7 +45,7 @@ class Message {
       message: message,
       snackBar: CustomSnackBar.success(
         message: message,
-        maxLines: 10,
+        maxLines: 4,
       ),
       position: position,
     );

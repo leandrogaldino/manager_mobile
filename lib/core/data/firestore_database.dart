@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
@@ -20,8 +22,11 @@ class FirestoreDatabase implements RemoteDatabase {
         };
       }).toList();
       return result;
-    } catch (e) {
-      throw RemoteDatabaseException('RDB001', 'Ocorreu um erro ao consultar o registro na núvem: $e');
+    } catch (e, s) {
+      String code = 'RDB001';
+      String message = 'Ocorreu um erro ao consultar o registro na núvem.';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RemoteDatabaseException(code, message);
     }
   }
 
@@ -73,8 +78,11 @@ class FirestoreDatabase implements RemoteDatabase {
     try {
       final docRef = id != null ? _db.collection(collection).doc(id) : _db.collection(collection).doc();
       await docRef.set(data, SetOptions(merge: merge));
-    } catch (e) {
-      throw RemoteDatabaseException('RDB002', 'Ocorreu um erro ao salvar o registro na núvem: $e');
+    } catch (e, s) {
+      String code = 'RDB002';
+      String message = 'Ocorreu um erro ao salvar o registro na núvem.';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RemoteDatabaseException(code, message);
     }
   }
 
@@ -87,8 +95,11 @@ class FirestoreDatabase implements RemoteDatabase {
       for (var doc in querySnapshot.docs) {
         await doc.reference.delete();
       }
-    } catch (e) {
-      throw RemoteDatabaseException('RDB003', 'Ocorreu um erro ao excluir o registro na núvem: $e');
+    } catch (e, s) {
+      String code = 'RDB003';
+      String message = 'Ocorreu um erro ao excluir o registro na núvem.';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RemoteDatabaseException(code, message);
     }
   }
 
@@ -96,8 +107,11 @@ class FirestoreDatabase implements RemoteDatabase {
   Future<void> update({required collection, required String id, required Map<String, dynamic> data}) async {
     try {
       await _db.collection(collection).doc(id).update(data);
-    } catch (e) {
-      throw RemoteDatabaseException('RDB004', 'Ocorreu um erro ao atualizar o registro na núvem: $e');
+    } catch (e, s) {
+      String code = 'RDB004';
+      String message = 'Ocorreu um erro ao atualizar o registro na núvem.';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RemoteDatabaseException(code, message);
     }
   }
 }

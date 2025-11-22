@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/constants/sql_scripts.dart';
@@ -22,6 +24,8 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableService);
           await db.execute(SQLScripts.createTablePersonCompressorCoalescent);
           await db.execute(SQLScripts.createTableEvaluation);
+          await db.execute(SQLScripts.createTableEvaluationReplacedProduct);
+          await db.execute(SQLScripts.createTableEvaluationPerformedService);
           await db.execute(SQLScripts.createTableEvaluationTechnician);
           await db.execute(SQLScripts.createTableEvaluationCoalescent);
           await db.execute(SQLScripts.createTableEvaluationPhoto);
@@ -31,8 +35,11 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.insertloggedTechnicianIdPreference);
         },
       );
-    } on DatabaseException catch (e) {
-      throw LocalDatabaseException('LDB001', 'Falha ao inicializar o banco de dados: $e');
+    } on DatabaseException catch (e, s) {
+      String code = 'LDB001';
+      String message = 'Falha ao inicializar o banco de dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     } catch (e) {
       rethrow;
     }
@@ -43,8 +50,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       int deletedRows = await _database.delete(table, where: where, whereArgs: whereArgs);
       return deletedRows;
-    } catch (e) {
-      throw LocalDatabaseException('LDB002', 'Erro ao excluir: $e');
+    } catch (e, s) {
+      String code = 'LDB002';
+      String message = 'Erro ao excluir registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -53,8 +63,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       dynamic lastInsertedId = await _database.insert(table, values);
       return lastInsertedId;
-    } catch (e) {
-      throw LocalDatabaseException('LDB003', 'Erro ao salvar: $e');
+    } catch (e, s) {
+      String code = 'LDB003';
+      String message = 'Erro ao salvar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -63,8 +76,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       int changes = await _database.update(table, values, where: where, whereArgs: whereArgs);
       return changes;
-    } catch (e) {
-      throw LocalDatabaseException('LDB004', 'Erro ao atualizar: $e');
+    } catch (e, s) {
+      String code = 'LDB004';
+      String message = 'Erro ao atualizar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -73,8 +89,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       List<Map<String, Object?>> result = await _database.query(table, distinct: distinct, columns: columns, where: where, whereArgs: whereArgs, groupBy: groupBy, having: having, orderBy: orderBy, limit: limit, offset: offset);
       return _resultSetToRawResult(result);
-    } catch (e) {
-      throw LocalDatabaseException('LDB005', 'Erro ao consultar: $e');
+    } catch (e, s) {
+      String code = 'LDB005';
+      String message = 'Erro ao consultar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -83,8 +102,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       int deletedRows = await _database.rawDelete(sql, arguments);
       return deletedRows;
-    } catch (e) {
-      throw LocalDatabaseException('LDB006', 'Erro ao deletar: $e');
+    } catch (e, s) {
+      String code = 'LDB006';
+      String message = 'Erro ao excluir registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -93,8 +115,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       int lastinsertedidd = await _database.rawInsert(sql, arguments);
       return lastinsertedidd;
-    } catch (e) {
-      throw LocalDatabaseException('LDB007', 'Erro ao salvar: $e');
+    } catch (e, s) {
+      String code = 'LDB007';
+      String message = 'Erro ao salvar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -103,8 +128,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       List<Map<String, Object?>> result = await _database.rawQuery(sql, arguments);
       return _resultSetToRawResult(result);
-    } catch (e) {
-      throw LocalDatabaseException('LDB008', 'Erro ao consultar: $e');
+    } catch (e, s) {
+      String code = 'LDB008';
+      String message = 'Erro ao consultar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -113,8 +141,11 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       int changes = await _database.rawUpdate(sql, arguments);
       return changes;
-    } catch (e) {
-      throw LocalDatabaseException('LDB009', 'Erro ao atualizar: $e');
+    } catch (e, s) {
+      String code = 'LDB009';
+      String message = 'Erro ao atualizar registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 
@@ -124,8 +155,11 @@ class SqfliteDatabase implements LocalDatabase {
       final data = await _database.query(table, where: 'id = ?', whereArgs: [id]);
       if (data.isEmpty) return false;
       return true;
-    } catch (e) {
-      throw LocalDatabaseException('LDB010', 'Erro ao verificar a existencia do registro: $e');
+    } catch (e, s) {
+      String code = 'LDB010';
+      String message = 'Erro ao verificar a existência do registro';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw LocalDatabaseException(code, message);
     }
   }
 

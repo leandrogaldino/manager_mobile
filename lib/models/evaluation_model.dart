@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
+import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
+import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
@@ -33,6 +35,8 @@ class EvaluationModel {
   int? separator;
   int? oil;
   List<EvaluationCoalescentModel> coalescents;
+  List<EvaluationReplacedProductModel> replacedProducts;
+  List<EvaluationPerformedServiceModel> performedServices;
   List<EvaluationTechnicianModel> technicians;
   List<EvaluationPhotoModel> photos;
   String? responsible;
@@ -47,6 +51,9 @@ class EvaluationModel {
     this.existsInCloud = false,
     this.needProposal = false,
     this.callType = CallTypes.none,
+    this.unitName,
+    this.temperature,
+    this.pressure,
     this.customer,
     this.compressor,
     DateTime? creationDate,
@@ -59,6 +66,8 @@ class EvaluationModel {
     this.separator,
     this.oil,
     required this.coalescents,
+    required this.replacedProducts,
+    required this.performedServices,
     required this.technicians,
     required this.photos,
     this.responsible,
@@ -83,6 +92,9 @@ class EvaluationModel {
       existsInCloud: false,
       needProposal: false,
       callType: schedule != null ? schedule.callType : CallTypes.none,
+      unitName: null,
+      temperature: null,
+      pressure: null,
       customer: schedule?.customer,
       compressor: schedule?.compressor,
       creationDate: DateTime.now(),
@@ -95,6 +107,8 @@ class EvaluationModel {
       separator: null,
       oil: null,
       coalescents: coalescents,
+      replacedProducts: [],
+      performedServices: [],
       technicians: [],
       photos: [],
       responsible: null,
@@ -112,6 +126,9 @@ class EvaluationModel {
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
+    String? unitName,
+    int? temperature,
+    double? pressure,
     PersonModel? customer,
     PersonCompressorModel? compressor,
     DateTime? creationDate,
@@ -124,6 +141,8 @@ class EvaluationModel {
     int? separator,
     int? oil,
     List<EvaluationCoalescentModel>? coalescents,
+    List<EvaluationReplacedProductModel>? replacedProducts,
+    List<EvaluationPerformedServiceModel>? performedServices,
     List<EvaluationTechnicianModel>? technicians,
     List<EvaluationPhotoModel>? photos,
     String? responsible,
@@ -139,6 +158,9 @@ class EvaluationModel {
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
       callType: callType ?? this.callType,
+      unitName: unitName ?? this.unitName,
+      temperature: temperature ?? this.temperature,
+      pressure: pressure ?? this.pressure,
       customer: customer ?? this.customer,
       compressor: compressor ?? this.compressor,
       creationDate: creationDate ?? this.creationDate,
@@ -151,6 +173,8 @@ class EvaluationModel {
       separator: separator ?? this.separator,
       oil: oil ?? this.oil,
       coalescents: coalescents ?? this.coalescents,
+      replacedProducts: replacedProducts ?? this.replacedProducts,
+      performedServices: performedServices ?? this.performedServices,
       technicians: technicians ?? this.technicians,
       photos: photos ?? this.photos,
       responsible: responsible ?? this.responsible,
@@ -169,6 +193,9 @@ class EvaluationModel {
       'existsincloud': existsInCloud ? 1 : 0,
       'needproposal': needProposal ? 1 : 0,
       'calltypeid': callType.index,
+      'unitname': unitName,
+      'temperature': temperature,
+      'pressure': pressure,
       'customerid': customer?.id,
       'compressorid': compressor?.id,
       'creationdate': creationDate?.millisecondsSinceEpoch,
@@ -181,6 +208,8 @@ class EvaluationModel {
       'separator': separator,
       'oil': oil,
       'coalescents': coalescents.map((x) => x.toMap()).toList(),
+      'replacedproducts': replacedProducts.map((x) => x.toMap()).toList(),
+      'performedservices': performedServices.map((x) => x.toMap()).toList(),
       'technicians': technicians.map((x) => x.toMap()).toList(),
       'photos': photos.map((x) => x.toMap()).toList(),
       'responsible': responsible,
@@ -199,6 +228,9 @@ class EvaluationModel {
       existsInCloud: map['existsincloud'] == 0 ? false : true,
       needProposal: map['needproposal'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
+      unitName: map['unitname'] != null ? map['unitname'] as String : null,
+      temperature: map['temperature'] != null ? map['temperature'] as int : null,
+      pressure: map['pressure'] != null ? map['pressure'] as double : null,
       advice: map['advice'] != null ? map['advice'] as String : null,
       customer: map['customer'] != null ? PersonModel.fromMap(map['customer']) : null,
       compressor: map['compressor'] != null ? PersonCompressorModel.fromMap(map['compressor']) : null,
@@ -214,6 +246,16 @@ class EvaluationModel {
       coalescents: List<EvaluationCoalescentModel>.from(
         (map['coalescents'] as List<Map<String, Object?>>).map<EvaluationCoalescentModel>(
           (x) => EvaluationCoalescentModel.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+      replacedProducts: List<EvaluationReplacedProductModel>.from(
+        (map['replacedproducts'] as List<Map<String, Object?>>).map<EvaluationReplacedProductModel>(
+          (x) => EvaluationReplacedProductModel.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
+      performedServices: List<EvaluationPerformedServiceModel>.from(
+        (map['performedservices'] as List<Map<String, Object?>>).map<EvaluationPerformedServiceModel>(
+          (x) => EvaluationPerformedServiceModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
       technicians: List<EvaluationTechnicianModel>.from(
@@ -238,7 +280,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -252,6 +294,9 @@ class EvaluationModel {
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
         other.callType == callType &&
+        other.unitName == unitName &&
+        other.temperature == temperature &&
+        other.pressure == pressure &&
         other.customer == customer &&
         other.compressor == compressor &&
         other.creationDate == creationDate &&
@@ -264,6 +309,8 @@ class EvaluationModel {
         other.separator == separator &&
         other.oil == oil &&
         listEquals(other.coalescents, coalescents) &&
+        listEquals(other.replacedProducts, replacedProducts) &&
+        listEquals(other.performedServices, performedServices) &&
         listEquals(other.technicians, technicians) &&
         listEquals(other.photos, photos) &&
         other.responsible == responsible &&
@@ -281,6 +328,9 @@ class EvaluationModel {
         existsInCloud.hashCode ^
         needProposal.hashCode ^
         callType.hashCode ^
+        unitName.hashCode ^
+        temperature.hashCode ^
+        pressure.hashCode ^
         customer.hashCode ^
         compressor.hashCode ^
         creationDate.hashCode ^
@@ -293,6 +343,8 @@ class EvaluationModel {
         separator.hashCode ^
         oil.hashCode ^
         coalescents.hashCode ^
+        replacedProducts.hashCode ^
+        performedServices.hashCode ^
         technicians.hashCode ^
         photos.hashCode ^
         responsible.hashCode ^

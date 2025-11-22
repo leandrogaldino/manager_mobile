@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
@@ -23,8 +25,11 @@ class PersonRepository {
       return person;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PER001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PER001';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -34,8 +39,11 @@ class PersonRepository {
       return persons;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PER002', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PER002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -75,8 +83,11 @@ class PersonRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PER003', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PER003';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

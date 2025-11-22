@@ -29,8 +29,16 @@ class HomeController extends ChangeNotifier {
   HomeState get state => _state;
   void _setState(HomeState newState) {
     _state = newState;
+    if (_state is HomeStateSuccess) {
+      _lastSuccessState = _state as HomeStateSuccess;
+    }
     notifyListeners();
   }
+
+HomeStateSuccess? _lastSuccessState;
+HomeStateSuccess? get lastSuccessState => _lastSuccessState;
+
+
 
   List<VisitScheduleModel> _filteredVisitSchedules = [];
   List<EvaluationModel> _filteredEvaluations = [];
@@ -80,6 +88,7 @@ class HomeController extends ChangeNotifier {
       }
     }
     if (notiifyListeners) _setState(HomeStateSuccess(filteredVisitSchedules, filteredEvaluations));
+
   }
 
   Future<void> synchronize(bool showLoading, bool hideFilterButton) async {
@@ -104,9 +113,7 @@ class HomeController extends ChangeNotifier {
 
       await applyFilters();
 
-      //if (_state is! HomeStateError) {
-      //_state = HomeStateSuccess(filteredVisitSchedules, filteredEvaluations);
-      //}
+
       log('Sincronização concluída com sucesso');
       _setState(HomeStateSuccess(filteredVisitSchedules, filteredEvaluations));
       _filterController.setShowFilterButton(true);

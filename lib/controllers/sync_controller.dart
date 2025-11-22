@@ -59,29 +59,34 @@ class SyncController extends ChangeNotifier {
 
   Future<int> runSync() async {
     _setSyncing(true);
-    int lastSync = await _appPreferences.lastSynchronize;
-    log('Sincronizando Produtos');
-    int countProduct = await _productService.synchronize(lastSync);
-    log('Sincronizando Códigos de Produtos');
-    int countProductCode = await _productCodeService.synchronize(lastSync);
-    log('Sincronizando Serviços');
-    int countService = await _serviceService.synchronize(lastSync);
-    log('Sincronizando Compressores');
-    int countCompressor = await _compressorService.synchronize(lastSync);
-    log('Sincronizando Coalescentes dos Compressores da Pessoa');
-    int countPersonCompressorCoalescent = await _personCompressorcoalescentService.synchronize(lastSync);
-    log('Sincronizando Compressores da Pessoa');
-    int countPersonCompressor = await _personCompressorService.synchronize(lastSync);
-    log('Sincronizando Pessoas');
-    int countPerson = await _personService.synchronize(lastSync);
-    log('Sincronizando Agendamentos');
-    int visitScheduleCount = await _visitScheduleService.synchronize(lastSync);
-    log('Sincronizando Avaliações');
-    int evaluationCount = await _evaluationService.synchronize(lastSync);
-    await _appPreferences.updateLastSynchronize();
-    _setSyncing(false);
-    int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson + visitScheduleCount + evaluationCount;
-    notifyListeners();
-    return totalCount;
+    try {
+      int lastSync = await _appPreferences.lastSynchronize;
+      log('Sincronizando Produtos');
+      int countProduct = await _productService.synchronize(lastSync);
+      log('Sincronizando Códigos de Produtos');
+      int countProductCode = await _productCodeService.synchronize(lastSync);
+      log('Sincronizando Serviços');
+      int countService = await _serviceService.synchronize(lastSync);
+      log('Sincronizando Compressores');
+      int countCompressor = await _compressorService.synchronize(lastSync);
+      log('Sincronizando Coalescentes dos Compressores da Pessoa');
+      int countPersonCompressorCoalescent = await _personCompressorcoalescentService.synchronize(lastSync);
+      log('Sincronizando Compressores da Pessoa');
+      int countPersonCompressor = await _personCompressorService.synchronize(lastSync);
+      log('Sincronizando Pessoas');
+      int countPerson = await _personService.synchronize(lastSync);
+      log('Sincronizando Agendamentos');
+      int visitScheduleCount = await _visitScheduleService.synchronize(lastSync);
+      log('Sincronizando Avaliações');
+      int evaluationCount = await _evaluationService.synchronize(lastSync);
+      await _appPreferences.updateLastSynchronize();
+      int totalCount = countProduct + countProductCode + countService + countCompressor + countPersonCompressorCoalescent + countPersonCompressor + countPerson + visitScheduleCount + evaluationCount;
+      notifyListeners();
+      return totalCount;
+    } catch (e) {
+      rethrow;
+    } finally {
+      _setSyncing(false);
+    }
   }
 }

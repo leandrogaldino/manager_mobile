@@ -120,6 +120,9 @@ class SQLScripts {
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
       calltypeid INTEGER NOT NULL,
+      unitname TEXT NOT NULL,
+      temperature INTEGER NOT NULL,
+      pressure REAL NOT NULL,
       customerid INT NOT NULL,
       compressorid INT NOT NULL,      
       creationdate INTEGER NOT NULL,
@@ -147,6 +150,28 @@ class SQLScripts {
       evaluationid TEXT NOT NULL,
       nextchange INTEGER NOT NULL,
       FOREIGN KEY (coalescentid) REFERENCES personcompressorcoalescent (id) ON DELETE RESTRICT,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableEvaluationReplacedProduct = '''
+    CREATE TABLE evaluationreplacedproduct (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      quantity REAL NOT NULL,
+      productid INT NOT NULL,
+      evaluationid TEXT NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE RESTRICT,
+      FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableEvaluationPerformedService = '''
+    CREATE TABLE evaluationperformedservice (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      quantity REAL NOT NULL,
+      serviceid INT NOT NULL,
+      evaluationid TEXT NOT NULL,
+      FOREIGN KEY (serviceid) REFERENCES service (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
   ''';

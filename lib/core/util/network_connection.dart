@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:manager_mobile/core/exceptions/connection_exception.dart';
 import 'package:manager_mobile/interfaces/connection.dart';
@@ -11,8 +13,11 @@ class NetworkConnection implements Connection {
         return true;
       }
       return false;
-    } catch (e) {
-      throw ConnectionException('CON001', 'Erro ao testar a conexão.');
+    } catch (e, s) {
+      String code = 'CON001';
+      String message = 'Erro ao testar a conexão';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw ConnectionException(code, message);
     }
   }
 }

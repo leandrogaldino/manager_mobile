@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -9,17 +11,21 @@ class EvaluationTechnicianRepository {
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-      if (data['id'] == null || data['id'] == 0) {
+      bool exists = await _localDatabase.isSaved('evaluationtechnician', id: data['id'] == null ? 0 : data['id'] as int);
+      if (!exists) {
         int id = await _localDatabase.insert('evaluationtechnician', data);
         data['id'] = id;
-        return data;
       } else {
-        throw RepositoryException('ETH002', 'Esse técnico já foi salvo.');
+        await _localDatabase.update('evaluationtechnician', data, where: 'id = ?', whereArgs: [data['id']]);
       }
+      return data;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('ETH003', 'Erro ao salvar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'ETH001';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -29,8 +35,11 @@ class EvaluationTechnicianRepository {
       return evaluationTechnicians;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('ETH001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'ETH002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

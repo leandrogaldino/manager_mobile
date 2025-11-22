@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
@@ -30,8 +32,11 @@ class VisitScheduleRepository {
       return schedules;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC001';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -44,8 +49,11 @@ class VisitScheduleRepository {
       return schedules;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC002', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -54,8 +62,11 @@ class VisitScheduleRepository {
       return await _localDatabase.delete('visitschedule', where: 'id = ?', whereArgs: [id as String]);
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC003', 'Erro ao deletar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC003';
+      String message = 'Erro ao deletar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -69,8 +80,11 @@ class VisitScheduleRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC004', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC004';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -90,7 +104,7 @@ class VisitScheduleRepository {
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
-      scheduleMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
+      scheduleMap['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
       await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
     }
     return localResult.length;
@@ -132,8 +146,11 @@ class VisitScheduleRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC005', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC005';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -142,8 +159,11 @@ class VisitScheduleRepository {
       await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'performeddate': DateTime.now().millisecondsSinceEpoch, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('SHC006', 'Erro ao atualizar: $e');
+    } on Exception catch (e, s) {
+      String code = 'SHC006';
+      String message = 'Erro ao atualizar';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

@@ -12,6 +12,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_
 import 'package:manager_mobile/pages/evaluation/widgets/sections/instructions_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/photo_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/reading_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/replaced_product_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/signature_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_section_widget.dart';
 
@@ -126,6 +127,20 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         ),
                       );
                     }),
+                SizedBox(height: 5),
+                ListenableBuilder(
+                    listenable: _evaluationController,
+                    builder: (context, child) {
+                      return Visibility(
+                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
+                        child: ExpandableSectionWidget(
+                          title: Text('Peças Substituídas'),
+                          children: [
+                            ReplacedProductSectionWidget(),
+                          ],
+                        ),
+                      );
+                    }),
                 ListenableBuilder(
                     listenable: _evaluationController,
                     builder: (context, child) {
@@ -196,8 +211,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         if (!_validateCoalescentsNextChange()) return;
                         if (!_validateSignature()) return;
                         await _evaluationController.save();
-               
-               //atualizar performeddate
+
+                        //atualizar performeddate
 
                         await _dataController.fetchEvaluations();
                         await _dataController.fetchVisitSchedules();

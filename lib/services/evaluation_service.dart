@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
@@ -27,8 +28,11 @@ class EvaluationService {
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);
       return filePath;
-    } catch (e) {
-      throw ServiceException('EVA008', 'Erro ao salvar a imagem: $e');
+    } catch (e, s) {
+      String code = 'EVA008';
+      String message = 'Erro ao salvar a imagem';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw ServiceException(code, message);
     }
   }
 
@@ -40,7 +44,12 @@ class EvaluationService {
         await photosDirectory.create(recursive: true);
       }
       img.Image? image = img.decodeImage(photoBytes);
-      if (image == null) throw Exception('Não foi possível processar a imagem');
+      if (image == null) {
+        String code = 'EVA009';
+        String message = 'Não foi possível processar a imagem';
+        log('[$code] $message', time: DateTime.now());
+        throw Exception(message);
+      }
       if (image.width > 1024 || image.height > 768) {
         image = img.copyResize(image, width: 1024, height: 768, maintainAspect: true);
       }
@@ -50,8 +59,11 @@ class EvaluationService {
       final file = File(filePath);
       await file.writeAsBytes(resizedBytes);
       return EvaluationPhotoModel(path: file.path);
-    } catch (e) {
-      throw ServiceException('EVA009', 'Erro ao salvar a imagem: $e');
+    } catch (e, s) {
+      String code = 'EVA010';
+      String message = 'Erro ao salvar a imagem';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw ServiceException(code, message);
     }
   }
 
@@ -71,7 +83,7 @@ class EvaluationService {
 
   Future<EvaluationModel> save(EvaluationModel model, int? visitScheduleId) async {
     final evaluationMap = model.toMap();
-    var savedMap = await _evaluationRepository.save(evaluationMap,visitScheduleId);
+    var savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
     return EvaluationModel.fromMap(savedMap);
   }
 

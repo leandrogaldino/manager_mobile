@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
+import 'package:manager_mobile/repositories/evaluation_performed_service_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_replaced_product_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
@@ -14,6 +17,8 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/repositories/product_repository.dart';
+import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EvaluationRepository {
@@ -23,7 +28,11 @@ class EvaluationRepository {
   final PersonCompressorCoalescentRepository _coalescentRepository;
   final PersonCompressorRepository _compressorRepository;
   final PersonRepository _personRepository;
+  final ProductRepository _productRepository;
+  final ServiceRepository _serviceRepository;
   final EvaluationCoalescentRepository _evaluationCoalescentRepository;
+  final EvaluationReplacedProductRepository _evaluationReplacedProductRepository;
+  final EvaluationPerformedServiceRepository _evaluationPerformedServiceRepository;
   final EvaluationTechnicianRepository _evaluationTechnicianRepository;
   final EvaluationPhotoRepository _evaluationPhotoRepository;
   EvaluationRepository({
@@ -33,7 +42,11 @@ class EvaluationRepository {
     required PersonCompressorCoalescentRepository coalescentRepository,
     required PersonCompressorRepository compressorRepository,
     required PersonRepository personRepository,
+    required ProductRepository productRepository,
+    required ServiceRepository serviceRepository,
     required EvaluationCoalescentRepository evaluationCoalescentRepository,
+    required EvaluationReplacedProductRepository evaluationReplacedProductRepository,
+    required EvaluationPerformedServiceRepository evaluationPerformedServiceRepository,
     required EvaluationTechnicianRepository evaluationTechnicianRepository,
     required EvaluationPhotoRepository evaluationPhotoRepository,
   })  : _remoteDatabase = remoteDatabase,
@@ -42,7 +55,11 @@ class EvaluationRepository {
         _coalescentRepository = coalescentRepository,
         _compressorRepository = compressorRepository,
         _personRepository = personRepository,
+        _productRepository = productRepository,
+        _serviceRepository = serviceRepository,
         _evaluationCoalescentRepository = evaluationCoalescentRepository,
+        _evaluationReplacedProductRepository = evaluationReplacedProductRepository,
+        _evaluationPerformedServiceRepository = evaluationPerformedServiceRepository,
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
@@ -53,6 +70,13 @@ class EvaluationRepository {
       data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
       var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
       data.remove('coalescents');
+
+      var replacedProductsMap = data['replacedproducts'] as List<Map<String, Object?>>;
+      data.remove('replacedproducts');
+
+      var performedServicesMap = data['performedservices'] as List<Map<String, Object?>>;
+      data.remove('performedservices');
+
       var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
       data.remove('technicians');
       var photosMap = data['photos'] as List<Map<String, Object?>>;
@@ -64,6 +88,17 @@ class EvaluationRepository {
           coalescentMap['evaluationid'] = data['id'];
           coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
         }
+
+        for (var replacedProductMap in replacedProductsMap) {
+          replacedProductMap['evaluationid'] = data['id'];
+          replacedProductMap = await _evaluationReplacedProductRepository.save(replacedProductMap);
+        }
+
+        for (var performedServiceMap in performedServicesMap) {
+          performedServiceMap['evaluationid'] = data['id'];
+          performedServiceMap = await _evaluationPerformedServiceRepository.save(performedServiceMap);
+        }
+
         for (var technicianMap in techniciansMap) {
           technicianMap['evaluationid'] = data['id'];
           technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
@@ -73,18 +108,26 @@ class EvaluationRepository {
           photoMap = await _evaluationPhotoRepository.save(photoMap);
         }
         data['coalescents'] = coalescentsMap;
+        data['replacedproducts'] = replacedProductsMap;
+        data['performedservices'] = performedServicesMap;
         data['technicians'] = techniciansMap;
         data['photos'] = photosMap;
         data = await _processEvaluation(data);
 
         return data;
       } else {
-        throw RepositoryException('EVA001', 'Essa avaliação já foi salva.');
+        String code = 'EVA001';
+        String message = 'Essa avaliação já foi salva';
+        log('[$code] $message', time: DateTime.now());
+        throw RepositoryException(code, message);
       }
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA002', 'Erro ao salvar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'EVA002';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -97,8 +140,11 @@ class EvaluationRepository {
       return evaluations;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA003', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'EVA003';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -111,8 +157,11 @@ class EvaluationRepository {
       return evaluations;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA004', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'EVA004';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -121,8 +170,11 @@ class EvaluationRepository {
       return await _localDatabase.delete('evaluation', where: 'id = ?', whereArgs: [id as String]);
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA005', 'Erro ao deletar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'EVA005';
+      String message = 'Erro ao deletar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -136,8 +188,11 @@ class EvaluationRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('EVA006', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'EVA006';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -148,8 +203,11 @@ class EvaluationRepository {
       final file = File(filePath);
       await file.writeAsBytes(imageData);
       return filePath;
-    } catch (e) {
-      throw RepositoryException('EVA007', 'Falha ao salvar a imagem no dispositivo.');
+    } catch (e, s) {
+      String code = 'EVA007';
+      String message = 'Erro ao salvar a imagem no dispositivo';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -166,7 +224,7 @@ class EvaluationRepository {
       await _storage.uploadFile(signPath, signData);
       evaluationMap['signaturepath'] = signPath;
 
-      var photosListMap = await _localDatabase.query('evaluationphoto', columns: ['id', 'path'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+      var photosListMap = await _evaluationPhotoRepository.getByParentId(evaluationMap['id']);
       for (var photoMap in photosListMap) {
         String photoFilename = photoMap['path'].toString().split('/').last;
         String photoPath = '$rootPath/photo/$photoFilename';
@@ -175,15 +233,24 @@ class EvaluationRepository {
         photoMap['path'] = photoPath;
       }
       evaluationMap['photos'] = photosListMap;
-      var techniciansMap = await _localDatabase.query('evaluationtechnician', columns: ['id', 'ismain', 'personid'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+
+      var replacedProductsMap = await _evaluationReplacedProductRepository.getByParentId(evaluationMap['id']);
+      evaluationMap['replacedproducts'] = replacedProductsMap;
+
+      var performedServicesMap = await _evaluationPerformedServiceRepository.getByParentId(evaluationMap['id']);
+      evaluationMap['performedservices'] = performedServicesMap;
+
+      var techniciansMap = await _evaluationTechnicianRepository.getByParentId(evaluationMap['id']);
       evaluationMap['technicians'] = techniciansMap;
-      var coalescentsMap = await _localDatabase.query('evaluationcoalescent', columns: ['id', 'coalescentid', 'nextchange'], where: 'evaluationid = ?', whereArgs: [evaluationMap['id']]);
+
+      var coalescentsMap = await _evaluationCoalescentRepository.getByParentId(evaluationMap['id']);
       evaluationMap['coalescents'] = coalescentsMap;
+
       evaluationMap.remove('existsincloud');
       evaluationMap.remove('importedid');
       evaluationMap['info'] = {'importedid': null, 'importingdate': null, 'importingby': null, 'importedby': null, 'importeddate': null, 'visitscheduleid': evaluationMap['visitscheduleid']};
       evaluationMap.remove('visitscheduleid');
-evaluationMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
+      evaluationMap['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
 
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
@@ -191,30 +258,36 @@ evaluationMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
     return localResult.length;
   }
 
+  
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
+      var replacedProducts = evaluationMap['replacedproducts'];
+      for (var replacedProduct in replacedProducts) {
+        replacedProduct['evaluationid'] = evaluationMap['id'];
+        await _evaluationReplacedProductRepository.save(replacedProduct);
+      }
+
+      var performedServices = evaluationMap['performedservices'];
+      for (var performedService in performedServices) {
+        performedService['evaluationid'] = evaluationMap['id'];
+        await _evaluationPerformedServiceRepository.save(performedService);
+      }
+
       var technicians = evaluationMap['technicians'];
       for (var technician in technicians) {
         exists = await _localDatabase.isSaved('evaluationtechnician', id: technician['id'] as int);
         technician['evaluationid'] = evaluationMap['id'];
-        if (exists) {
-          await _localDatabase.update('evaluationtechnician', technician, where: 'id = ?', whereArgs: [evaluationMap['id']]);
-        } else {
-          await _localDatabase.insert('evaluationtechnician', technician);
-        }
+        await _evaluationTechnicianRepository.save(technician);
       }
+
       var coalescents = evaluationMap['coalescents'];
       for (var coalescent in coalescents) {
-        exists = await _localDatabase.isSaved('evaluationcoalescent', id: coalescent['id'] as int);
         coalescent['evaluationid'] = evaluationMap['id'];
-        if (exists) {
-          await _localDatabase.update('evaluationcoalescent', coalescent, where: 'id = ?', whereArgs: [evaluationMap['id']]);
-        } else {
-          await _localDatabase.insert('evaluationcoalescent', coalescent);
-        }
+        await _evaluationCoalescentRepository.save(coalescent);
       }
+
       var photos = evaluationMap['photos'];
       for (var photo in photos) {
         exists = await _localDatabase.isSaved('evaluationphoto', id: photo['id'] as int);
@@ -225,13 +298,13 @@ evaluationMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
         } else {
           photo['path'] = '';
         }
-        if (exists) {
-          await _localDatabase.update('evaluationphoto', photo, where: 'id = ?', whereArgs: [evaluationMap['id']]);
-        } else {
-          await _localDatabase.insert('evaluationphoto', photo);
-        }
+        await _evaluationPhotoRepository.save(photo);
       }
       evaluationMap.remove('documentid');
+
+      evaluationMap.remove('replacedproducts');
+      evaluationMap.remove('performedservices');
+
       evaluationMap.remove('technicians');
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
@@ -267,6 +340,25 @@ evaluationMap['lastupdate'] =DateTime.now().millisecondsSinceEpoch;
       evaluationCoalescent.remove('coalescentid');
     }
     evaluationData['coalescents'] = evaluationCoalescents;
+
+    var replacedProducts = await _evaluationReplacedProductRepository.getByParentId(evaluationData['id'].toString());
+    for (var replacedProduct in replacedProducts) {
+      var product = await _productRepository.getById(replacedProduct['productid'] as int);
+      replacedProduct['product'] = product;
+      replacedProduct.remove('productid');
+      replacedProduct.remove('evaluationid');
+    }
+    evaluationData['replacedproducts'] = replacedProducts;
+
+    var performedServices = await _evaluationPerformedServiceRepository.getByParentId(evaluationData['id'].toString());
+    for (var performedService in performedServices) {
+      var service = await _serviceRepository.getById(performedService['serviceid'] as int);
+      performedService['service'] = service;
+      performedService.remove('serviceid');
+      performedService.remove('evaluationid');
+    }
+    evaluationData['performedservices'] = performedServices;
+
     var technicians = await _evaluationTechnicianRepository.getByParentId(evaluationData['id'].toString());
     for (var technician in technicians) {
       var person = await _personRepository.getById(technician['personid'] as int);

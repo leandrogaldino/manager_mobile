@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -9,17 +11,21 @@ class EvaluationCoalescentRepository {
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-      if (data['id'] == null || data['id'] == 0) {
+      bool exists = await _localDatabase.isSaved('evaluationcoalescent', id: data['id'] == null ? 0 : data['id'] as int);
+      if (!exists) {
         int id = await _localDatabase.insert('evaluationcoalescent', data);
         data['id'] = id;
-        return data;
       } else {
-        throw RepositoryException('ECO001', 'Esse coalescente já foi salvo.');
+        await _localDatabase.update('evaluationcoalescent', data, where: 'id = ?', whereArgs: [data['id']]);
       }
+      return data;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('ECO002', 'Erro ao salvar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'ECO001';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -29,8 +35,11 @@ class EvaluationCoalescentRepository {
       return evaluationCoalescents;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('ECO003', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'ECO002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

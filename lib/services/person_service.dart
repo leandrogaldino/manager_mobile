@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
@@ -17,7 +19,10 @@ class PersonService {
     if (data.isNotEmpty) {
       return PersonModel.fromMap(data);
     } else {
-      throw ServiceException('PER004', 'Pessoa com o id $id não encontrada.');
+      String code = 'PER004';
+      String message = 'Pessoa com o id $id não encontrada';
+      log('[$code] $message', time: DateTime.now());
+      throw ServiceException(code, message);
     }
   }
 

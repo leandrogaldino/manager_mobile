@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
@@ -31,8 +33,11 @@ class PersonCompressorCoalescentRepository {
       return personCompressorCoalescent;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('PER001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCC001';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -47,8 +52,11 @@ class PersonCompressorCoalescentRepository {
       return personCompressorCoalescents;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('COA001', 'Erro ao obter os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCC002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 
@@ -88,8 +96,11 @@ class PersonCompressorCoalescentRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e) {
-      throw RepositoryException('COA002', 'Erro ao sincronizar os dados: $e');
+    } on Exception catch (e, s) {
+      String code = 'PCC003';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
     }
   }
 }

@@ -14,6 +14,8 @@ import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_performed_service_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_replaced_product_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
@@ -176,6 +178,18 @@ class Locator {
       ),
     );
 
+        _getIt.registerLazySingleton(
+      () => EvaluationReplacedProductRepository(
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
+        _getIt.registerLazySingleton(
+      () => EvaluationPerformedServiceRepository(
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
     _getIt.registerLazySingleton(
       () => EvaluationTechnicianRepository(
         localDatabase: _getIt.get<LocalDatabase>(),
@@ -195,8 +209,12 @@ class Locator {
         storage: _getIt.get<Storage>(),
         coalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
         compressorRepository: _getIt.get<PersonCompressorRepository>(),
+        productRepository: _getIt.get<ProductRepository>(),
+        serviceRepository: _getIt.get<ServiceRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
         evaluationCoalescentRepository: _getIt.get<EvaluationCoalescentRepository>(),
+        evaluationReplacedProductRepository: _getIt.get<EvaluationReplacedProductRepository>(),
+        evaluationPerformedServiceRepository: _getIt.get<EvaluationPerformedServiceRepository>(),
         evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
         evaluationPhotoRepository: _getIt.get<EvaluationPhotoRepository>(),
       ),

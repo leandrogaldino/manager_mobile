@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/exceptions/auth_exception.dart';
@@ -20,21 +22,41 @@ class AuthService implements Auth {
       if (_auth.currentUser == null) return;
       String userId = _auth.currentUser!.uid;
       var result = await _remoteDatabase.get(collection: 'users', filters: [RemoteDatabaseFilter(field: 'userid', operator: FilterOperator.isEqualTo, value: userId)]);
-      if (result.isEmpty) throw Exception('Usuario não vinculado com a pessoa.');
+      if (result.isEmpty) {
+        String code = 'AUT001';
+        String message = 'Usuário não vinculado com a pessoa';
+        log('[$code] $message', time: DateTime.now());
+        throw Exception(message);
+      }
       var personId = int.parse(result[0]['personid']);
       await _appPreferences.setLoggedTechnicianId(personId);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
-          throw AuthException('AUT001', 'Usuário inválido');
+          String code = 'AUT002';
+          String message = 'Usuário inválido';
+          log('[$code] $message', time: DateTime.now());
+          throw AuthException(code, message);
         case 'invalid-credential':
-          throw AuthException('AUT002', 'Usuário e/ou senha incorretos');
+          String code = 'AUT003';
+          String message = 'Usuário e/ou senha incorretos';
+          log('[$code] $message', time: DateTime.now());
+          throw AuthException(code, message);
         case 'too-many-requests':
-          throw AuthException('AUT003', 'O número máximo de requisições foi excedido, aguarde alguns minuitos e tente novamente.');
+          String code = 'AUT004';
+          String message = 'O número máximo de requisições foi excedido, aguarde alguns minutos e tente novamente';
+          log('[$code] $message', time: DateTime.now());
+          throw AuthException(code, message);
         case 'user-disabled':
-          throw AuthException('AUT004', 'Usuário desativado');
+          String code = 'AUT005';
+          String message = 'Usuário desativado';
+          log('[$code] $message', time: DateTime.now());
+          throw AuthException(code, message);
         default:
-          throw AuthException('AUT005', 'Erro: ${e.code}');
+          String code = 'AUT006';
+          String message = 'Erro: ${e.code}';
+          log('[$code] $message', time: DateTime.now());
+          throw AuthException(code, message);
       }
     } catch (e) {
       rethrow;
@@ -43,9 +65,9 @@ class AuthService implements Auth {
 
   @override
   Future<void> signOut() async {
-    try { 
-        await _auth.signOut();
-          await _appPreferences.setLoggedTechnicianId(0);
+    try {
+      await _auth.signOut();
+      await _appPreferences.setLoggedTechnicianId(0);
     } catch (e) {
       throw AuthException('AUT006', 'Erro ao sair: ${e.toString()}');
     }

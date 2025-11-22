@@ -57,31 +57,39 @@ class _HomePageState extends State<HomePage> {
           listenable: _homeController,
           builder: (context, child) {
             final state = _homeController.state;
+            final lastSuccess = _homeController.lastSuccessState;
+
+            // 1. Se erro → mostra snackbar, mas não altera UI
             if (state is HomeStateError && !_hasShownError) {
               _hasShownError = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Message.showErrorSnackbar(context: context, message: state.errorMessage);
+                Message.showErrorSnackbar(
+                  context: context,
+                  message: state.errorMessage,
+                );
               });
             }
-            if (state is HomeStateLoading) {
+
+            // 2. Loading real (quando ainda não teve sucesso nenhum)
+            if (state is HomeStateLoading && lastSuccess == null) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 20,
-                  children: [
-                    CircularProgressIndicator(strokeWidth: 2),
-                    Text(
-                      'CARREGANDO, POR FAVOR AGUARDE',
-                      style: theme.textTheme.titleSmall!.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 20,
+                children: [
+                  CircularProgressIndicator(strokeWidth: 2),
+                  Text(
+                    'CARREGANDO, POR FAVOR AGUARDE',
+                    style: theme.textTheme.titleSmall!.copyWith(
+                      color: theme.colorScheme.primary,
                     ),
-                  ],
-                ),
-              );
+                  ),
+                ],
+              ));
             }
-            if (state is HomeStateSuccess) {
-              _hasShownError = false;
+
+            // 3. Aqui mostra SEMPRE os dados do último sucesso
+            
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -93,14 +101,16 @@ class _HomePageState extends State<HomePage> {
                           _hasShownError = false;
                           await _homeController.synchronize(false, false);
                         },
-                        child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: state.schedules) : EvaluationListWidget(evaluations: state.evaluations),
+                        child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : []) : EvaluationListWidget(evaluations: lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : []),
                       ),
                     ),
                   ],
                 ),
               );
-            }
-            return ListView();
+            
+
+            // fallback: nunca deve ocorrer
+           // return SizedBox.shrink();
           }),
       bottomNavigationBar: ListenableBuilder(
         listenable: _homeController,
