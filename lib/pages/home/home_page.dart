@@ -5,6 +5,7 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/timers/refresh_sync_view_timer.dart';
 import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -38,7 +39,6 @@ class _HomePageState extends State<HomePage> {
     _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
-      //_synchronizeTimer = await SynchronizeTimer.init();
     });
   }
 
@@ -89,28 +89,29 @@ class _HomePageState extends State<HomePage> {
             }
 
             // 3. Aqui mostra SEMPRE os dados do último sucesso
-            
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    FilterBarWidget(),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          _hasShownError = false;
-                          await _homeController.synchronize( );
-                        },
-                        child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : []) : EvaluationListWidget(evaluations: lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : []),
-                      ),
+
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  FilterBarWidget(),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _hasShownError = false;
+                        await _homeController.synchronize();
+                      },
+                      child: _homeController.currentIndex == 0
+                          ? ScheduleListWidget(schedules: lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : [])
+                          : EvaluationListWidget(evaluations: lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : []),
                     ),
-                  ],
-                ),
-              );
-            
+                  ),
+                ],
+              ),
+            );
 
             // fallback: nunca deve ocorrer
-           // return SizedBox.shrink();
+            // return SizedBox.shrink();
           }),
       bottomNavigationBar: ListenableBuilder(
         listenable: _homeController,

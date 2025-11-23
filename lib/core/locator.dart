@@ -3,7 +3,7 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/core/data/storage_file.dart';
+import 'package:manager_mobile/core/data/firebase_cloud_storage.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 import 'package:manager_mobile/interfaces/connection.dart';
@@ -55,7 +55,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton<Storage>(
-      () => StorageFile(),
+      () => FirebaseCloudStorage(),
     );
 
     _getIt.registerLazySingleton<LocalDatabase>(

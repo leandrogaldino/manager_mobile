@@ -9,6 +9,7 @@ import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/background/dispatcher.dart';
+import 'package:manager_mobile/core/timers/refresh_sync_view_timer.dart';
 import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/locator.dart';
@@ -26,21 +27,33 @@ void main() async {
   await Locator.get<AppController>().clearOldTemporaryFiles();
   await GetIt.I<AppController>().loadTheme();
   await Locator.get<EvaluationController>().clean();
-
+  await RefreshSyncedTimer.init();
   Workmanager().initialize(
     callbackDispatcher,
   );
 
-  Workmanager().registerPeriodicTask(
-    "1",
-    synchronizeTask,
-    frequency: Duration(minutes: 15),
-    initialDelay: Duration(seconds: 10),
-    constraints: Constraints(
-      networkType: NetworkType.connected,
-    ),
-  );
-
+  if (kDebugMode) {
+    log('Registrando tarefa de sincronização imediata (debug)...', time: DateTime.now());
+    Workmanager().registerOneOffTask(
+      'immediateSync',
+      synchronizeTask,
+      initialDelay: Duration(seconds: 1),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
+  } else {
+    log('Registrando tarefa de sincronização periódica (release)...', time: DateTime.now());
+    Workmanager().registerPeriodicTask(
+      synchronizeTask.toUpperCase(),
+      synchronizeTask,
+      frequency: Duration(minutes: 15),
+      initialDelay: Duration(seconds: 30),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
+  }
   if (kReleaseMode) {
     runZonedGuarded(
       () {

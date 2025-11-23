@@ -27,13 +27,52 @@ class SQLScripts {
     );
   ''';
 
-  static const String insertloggedTechnicianIdPreference = '''
+  static const String insertLoggedTechnicianIdPreference = '''
     INSERT INTO preferences (
       key,
       value
     ) VALUES (
       'loggedtechnicianid',
       '0'
+    );
+  ''';
+
+  static const String insertLoggedTechnicianEmailPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'loggedtechnicianemail',
+      ''
+    );
+  ''';
+  static const String insertLoggedTechnicianPasswordPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'loggedtechnicianpassword',
+      ''
+    );
+  ''';
+
+  static const String insertLastSyncLockPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'lastsynclock',
+      0
+    );
+  ''';
+
+  static const String insertLastSyncCountPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'lastsynccount',
+      0
     );
   ''';
 

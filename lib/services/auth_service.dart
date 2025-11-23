@@ -28,8 +28,10 @@ class AuthService implements Auth {
         log('[$code] $message', time: DateTime.now());
         throw Exception(message);
       }
-      var personId = int.parse(result[0]['personid']);
+      var personId = int.parse(result[0]['personid']); 
       await _appPreferences.setLoggedTechnicianId(personId);
+      await _appPreferences.setLoggedTechnicianEmail(email);
+      await _appPreferences.setLoggedTechnicianPassword(password);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
@@ -68,6 +70,8 @@ class AuthService implements Auth {
     try {
       await _auth.signOut();
       await _appPreferences.setLoggedTechnicianId(0);
+      await _appPreferences.setLoggedTechnicianEmail('');
+      await _appPreferences.setLoggedTechnicianPassword('');
     } catch (e) {
       throw AuthException('AUT006', 'Erro ao sair: ${e.toString()}');
     }

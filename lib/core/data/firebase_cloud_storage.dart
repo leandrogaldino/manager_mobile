@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:manager_mobile/core/exceptions/storage_exception.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 
-class StorageFile implements Storage {
+class FirebaseCloudStorage implements Storage {
   final _storage = FirebaseStorage.instance;
 
   @override

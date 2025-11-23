@@ -1,10 +1,9 @@
 import 'dart:developer';
-
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/constants/sql_scripts.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
@@ -13,6 +12,7 @@ class SqfliteDatabase implements LocalDatabase {
     try {
       _database = await openDatabase(
         inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db'),
+        password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
         version: 1,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);
@@ -32,7 +32,11 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
-          await db.execute(SQLScripts.insertloggedTechnicianIdPreference);
+          await db.execute(SQLScripts.insertLoggedTechnicianIdPreference);
+          await db.execute(SQLScripts.insertLoggedTechnicianEmailPreference);
+          await db.execute(SQLScripts.insertLoggedTechnicianPasswordPreference);
+          await db.execute(SQLScripts.insertLastSyncCountPreference);
+          await db.execute(SQLScripts.insertLastSyncLockPreference);
         },
       );
     } on DatabaseException catch (e, s) {

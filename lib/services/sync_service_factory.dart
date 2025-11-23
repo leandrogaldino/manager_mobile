@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_performed_service_repository.dart';
@@ -25,14 +27,18 @@ import 'package:manager_mobile/services/visit_schedule_service.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
-import 'package:manager_mobile/core/data/storage_file.dart';
+import 'package:manager_mobile/core/data/firebase_cloud_storage.dart';
 
 class SyncServiceFactory {
   static Future<SyncService> create() async {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
     // Bancos de dados e storage
     final remoteDb = FirestoreDatabase();
     final localDb = SqfliteDatabase();
-    final storage = StorageFile();
+    final storage = FirebaseCloudStorage();
+
+    localDb.init();
 
     // Repositories
     final productCodeRepo = ProductCodeRepository(remoteDatabase: remoteDb, localDatabase: localDb);

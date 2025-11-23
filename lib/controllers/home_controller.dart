@@ -31,8 +31,6 @@ class HomeController extends ChangeNotifier {
   bool _filtering = false;
   bool get filtering => _filtering;
 
-
-
   bool _showFilterButton = true;
   bool get showFilterButton => _showFilterButton;
 
@@ -47,8 +45,7 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  
-  DateTimeRange? get selectedDateRange => _filterService.dateRange;  
+  DateTimeRange? get selectedDateRange => _filterService.dateRange;
   String get typedCustomerOrCompressorText => _filterService.text;
 
   void setCustomerOrCompressorText(String text) {
@@ -62,11 +59,6 @@ class HomeController extends ChangeNotifier {
     _updateFiltering();
     notifyListeners();
   }
-
-
-
-
-
 
   String get selectedDateRangeText {
     if (_filterService.dateRange == null) return '';
@@ -96,11 +88,25 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   void setShowFilterButton(bool show) {
     _showFilterButton = show;
     notifyListeners();
+  }
+
+  Future<void> fetchAllIfNeeded(bool force, {bool showLoading = false}) async {
+    try {
+      if (showLoading) _setState(HomeStateLoading());
+      await _dataService.fetchAllIfNeeded(force);
+
+      final filtered = _filterService.applyFilters(
+        visitSchedules: _dataService.visitSchedules,
+        evaluations: _dataService.evaluations,
+      );
+
+      _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
+    } catch (e) {
+      _setState(HomeStateError(e.toString()));
+    }
   }
 
   Future<void> synchronize({bool showLoading = false}) async {
@@ -108,15 +114,8 @@ class HomeController extends ChangeNotifier {
       if (showLoading) _setState(HomeStateLoading());
 
       int totalCount = await _syncService.runSync();
-      await _dataService.fetchAllIfNeeded(totalCount > 0);
 
-      final filtered = _filterService.applyFilters(
-        visitSchedules: _dataService.visitSchedules,
-        evaluations: _dataService.evaluations,
-
-      );
-
-      _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
+      fetchAllIfNeeded(totalCount > 0, showLoading: showLoading);
     } catch (e) {
       _setState(HomeStateError(e.toString()));
     }
@@ -126,7 +125,6 @@ class HomeController extends ChangeNotifier {
     final filtered = _filterService.applyFilters(
       visitSchedules: _dataService.visitSchedules,
       evaluations: _dataService.evaluations,
-
     );
     _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
   }

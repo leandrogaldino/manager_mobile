@@ -20,6 +20,27 @@ class AppPreferences {
     return lastSync;
   }
 
+  Future<void> setLastSyncLock(DateTime? time) async {
+    int? intTime = time?.millisecondsSinceEpoch;
+    await _database.update('preferences', {'value': intTime}, where: 'key = ?', whereArgs: ['lastsynclock']);
+  }
+
+  Future<DateTime?> get lastSyncLock async {
+    var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsynclock']);
+    if (data[0]['value'] == null) return null;
+    int intTime = int.parse(data[0]['value'].toString());
+    return DateTime.fromMillisecondsSinceEpoch(intTime);
+  }
+
+  Future<void> setLastSyncCount(int count) async {
+    await _database.update('preferences', {'value': count}, where: 'key = ?', whereArgs: ['lastsynccount']);
+  }
+
+  Future<int> get lastSyncCount async {
+    var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['lastsynccount']);
+    return int.parse(data[0]['value'].toString());
+  }
+
   Future<void> setLoggedTechnicianId(int id) async {
     await _database.update('preferences', {'value': id}, where: 'key = ?', whereArgs: ['loggedtechnicianid']);
   }
@@ -27,6 +48,24 @@ class AppPreferences {
   Future<int> get loggedTechnicianId async {
     var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['loggedtechnicianid']);
     return int.parse(data[0]['value'].toString());
+  }
+
+  Future<String> get loggedTechnicianEmail async {
+    var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['loggedtechnicianemail']);
+    return data[0]['value'].toString();
+  }
+
+  Future<void> setLoggedTechnicianEmail(String email) async {
+    await _database.update('preferences', {'value': email}, where: 'key = ?', whereArgs: ['loggedtechnicianemail']);
+  }
+
+  Future<String> get loggedTechnicianPassword async {
+    var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['loggedtechnicianpassword']);
+    return data[0]['value'].toString();
+  }
+
+  Future<void> setLoggedTechnicianPassword(String password) async {
+    await _database.update('preferences', {'value': password}, where: 'key = ?', whereArgs: ['loggedtechnicianpassword']);
   }
 
   Future<ThemeMode> get themeMode async {
