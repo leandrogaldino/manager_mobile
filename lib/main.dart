@@ -32,17 +32,17 @@ void main() async {
     callbackDispatcher,
   );
 
-  if (kDebugMode) {
-    log('Registrando tarefa de sincronização imediata (debug)...', time: DateTime.now());
-    Workmanager().registerOneOffTask(
-      'immediateSync',
-      synchronizeTask,
-      initialDelay: Duration(seconds: 1),
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
-    );
-  } else {
+
+    // log('Registrando tarefa de sincronização imediata (debug)...', time: DateTime.now());
+    // Workmanager().registerOneOffTask(
+    //   'immediateSync',
+    //   synchronizeTask,
+    //   initialDelay: Duration(seconds: 1),
+    //   constraints: Constraints(
+    //     networkType: NetworkType.connected,
+    //   ),
+    // );
+
     log('Registrando tarefa de sincronização periódica (release)...', time: DateTime.now());
     Workmanager().registerPeriodicTask(
       synchronizeTask.toUpperCase(),
@@ -53,7 +53,7 @@ void main() async {
         networkType: NetworkType.connected,
       ),
     );
-  }
+
   if (kReleaseMode) {
     runZonedGuarded(
       () {
