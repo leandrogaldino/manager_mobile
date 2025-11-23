@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
-      _synchronizeTimer = await SynchronizeTimer.init();
+      //_synchronizeTimer = await SynchronizeTimer.init();
     });
   }
 

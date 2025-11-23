@@ -8,9 +8,11 @@ import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/background/dispatcher.dart';
 import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:workmanager/workmanager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,21 @@ void main() async {
   await Locator.get<AppController>().clearOldTemporaryFiles();
   await GetIt.I<AppController>().loadTheme();
   await Locator.get<EvaluationController>().clean();
+
+  Workmanager().initialize(
+    callbackDispatcher,
+  );
+
+  Workmanager().registerPeriodicTask(
+    "1",
+    synchronizeTask,
+    frequency: Duration(minutes: 15),
+    initialDelay: Duration(seconds: 10),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
+  );
+
   if (kReleaseMode) {
     runZonedGuarded(
       () {
