@@ -31,11 +31,7 @@ class HomeController extends ChangeNotifier {
   bool _filtering = false;
   bool get filtering => _filtering;
 
-  DateTimeRange? _selectedDateRange;
-  DateTimeRange? get selectedDateRange => _selectedDateRange;
 
-  String _typedCustomerOrCompressorText = '';
-  String get typedCustomerOrCompressorText => _typedCustomerOrCompressorText;
 
   bool _showFilterButton = true;
   bool get showFilterButton => _showFilterButton;
@@ -51,10 +47,31 @@ class HomeController extends ChangeNotifier {
     }
   }
 
+  
+  DateTimeRange? get selectedDateRange => _filterService.dateRange;  
+  String get typedCustomerOrCompressorText => _filterService.text;
+
+  void setCustomerOrCompressorText(String text) {
+    _filterService.text = text;
+    _updateFiltering();
+    notifyListeners();
+  }
+
+  void setSelectedDateRange(DateTimeRange? range) {
+    _filterService.dateRange = range;
+    _updateFiltering();
+    notifyListeners();
+  }
+
+
+
+
+
+
   String get selectedDateRangeText {
-    if (_selectedDateRange == null) return '';
-    String initialDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.start);
-    String finalDate = DateFormat('dd/MM/yyyy').format(_selectedDateRange!.end);
+    if (_filterService.dateRange == null) return '';
+    String initialDate = DateFormat('dd/MM/yyyy').format(_filterService.dateRange!.start);
+    String finalDate = DateFormat('dd/MM/yyyy').format(_filterService.dateRange!.end);
     return initialDate == finalDate ? initialDate : '$initialDate até $finalDate';
   }
 
@@ -68,9 +85,9 @@ class HomeController extends ChangeNotifier {
   }
 
   void _updateFiltering() {
-    _filtering = _selectedDateRange != null || _typedCustomerOrCompressorText.isNotEmpty;
+    _filtering = _filterService.dateRange != null || _filterService.text.isNotEmpty;
     _filterBarHeight = _filtering ? 170 : 145;
-    if (!_filtering) _filterBarHeight = 0;
+    //if (!_filtering) _filterBarHeight = 0;
   }
 
   // --- métodos públicos ---
@@ -79,17 +96,7 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCustomerOrCompressorText(String text) {
-    _typedCustomerOrCompressorText = text;
-    _updateFiltering();
-    notifyListeners();
-  }
 
-  void setSelectedDateRange(DateTimeRange? range) {
-    _selectedDateRange = range;
-    _updateFiltering();
-    notifyListeners();
-  }
 
   void setShowFilterButton(bool show) {
     _showFilterButton = show;
@@ -124,7 +131,7 @@ class HomeController extends ChangeNotifier {
     _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
   }
 
-  bool _filterBarVisible = true;
+  bool _filterBarVisible = false;
   bool get filterBarVisible => _filterBarVisible;
   void toggleFilterBarVisible() {
     _filterBarVisible = !_filterBarVisible;
