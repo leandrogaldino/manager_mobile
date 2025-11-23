@@ -181,8 +181,8 @@ class EvaluationRepository {
   Future<int> synchronize(int lastSync) async {
     int count = 0;
     try {
-      count = await _synchronizeFromLocalToCloud(lastSync);
-      count += await _synchronizeFromCloudToLocal(lastSync);
+      await _synchronizeFromLocalToCloud(lastSync);
+      count = await _synchronizeFromCloudToLocal(lastSync);
       return count;
     } on LocalDatabaseException {
       rethrow;
