@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_tile_widget.dart';
+import 'package:manager_mobile/services/data_service.dart';
 
 class TechnicianPickerListWidget extends StatefulWidget {
   const TechnicianPickerListWidget({
@@ -19,12 +19,12 @@ class TechnicianPickerListWidget extends StatefulWidget {
 }
 
 class _TechnicianChoseListWidgetState extends State<TechnicianPickerListWidget> {
-  late final DataController personController;
+  late final DataService dataService;
 
   @override
   void initState() {
     super.initState();
-    personController = Locator.get<DataController>();
+    dataService = Locator.get<DataService>();
   }
 
   @override

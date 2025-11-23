@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/compressor_picker/compressor_picker_widget.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
+import 'package:manager_mobile/services/data_service.dart';
 
 class CompressorPickerDialog extends StatelessWidget {
   const CompressorPickerDialog({
@@ -11,8 +11,8 @@ class CompressorPickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DataController dataController = Locator.get<DataController>();
-    List<PersonCompressorModel> compressors = dataController.compressors;
+    DataService dataService = Locator.get<DataService>();
+    List<PersonCompressorModel> compressors = dataService.compressors;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

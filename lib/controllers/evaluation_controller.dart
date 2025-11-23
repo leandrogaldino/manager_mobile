@@ -10,16 +10,23 @@ import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
+import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
-import 'package:manager_mobile/services/person_service.dart';
+
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 
 class EvaluationController extends ChangeNotifier {
-  final EvaluationService evaluationService;
-  final VisitScheduleService scheduleService;
-  final PersonService personService;
+  final EvaluationService _evaluationService;
+  final VisitScheduleService _visitScheduleService;
+  final DataService _dataService;
 
-  EvaluationController({required this.evaluationService, required this.scheduleService, required this.personService});
+  EvaluationController({
+    required EvaluationService evaluationService,
+    required VisitScheduleService visitScheduleService,
+    required DataService dataService,
+  })  : _evaluationService = evaluationService,
+        _visitScheduleService = visitScheduleService,
+        _dataService = dataService;
 
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;
@@ -48,7 +55,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> updateImagesBytes() async {
     final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
     _signatureBytes = signatureFile != null ? await signatureFile.readAsBytes() : null;
@@ -66,25 +72,25 @@ class EvaluationController extends ChangeNotifier {
   Future<void> save() async {
     await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
-    await evaluationService.save(evaluation!, schedule?.id);
+    await _evaluationService.save(evaluation!, schedule?.id);
 
-    if (_schedule != null) await scheduleService.updateVisibility(_schedule!.id, false);
+    if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);
     notifyListeners();
   }
 
   Future<void> _saveSignature({required Uint8List signatureBytes}) async {
-    _evaluation!.signaturePath = await evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
+    _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
   }
 
   Future<void> saveTempSignature({required Uint8List signatureBytes}) async {
-    _evaluation!.signaturePath = await evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
+    _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
     notifyListeners();
   }
 
   Future<void> _savePhotos({required List<Uint8List> photosBytes}) async {
     _evaluation!.photos.clear();
     for (var photoBytes in _photosBytes) {
-      EvaluationPhotoModel photo = await evaluationService.savePhoto(photoBytes: photoBytes);
+      EvaluationPhotoModel photo = await _evaluationService.savePhoto(photoBytes: photoBytes);
       _evaluation!.photos.add(photo);
     }
   }
@@ -98,6 +104,7 @@ class EvaluationController extends ChangeNotifier {
   //}
 
   final List<Uint8List> _photosBytes = [];
+
   List<Uint8List> get photosBytes => _photosBytes;
 
   void addPhoto(EvaluationPhotoModel photo) {
@@ -214,22 +221,28 @@ class EvaluationController extends ChangeNotifier {
 
   Future<int> clean() async {
     int count = 0;
-    var allEvaluations = await evaluationService.getAll();
+    var allEvaluations = await _evaluationService.getAll();
     for (var evaluation in allEvaluations) {
       if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
-        await evaluationService.delete(evaluation.id);
+        await _evaluationService.delete(evaluation.id);
         count += 1;
       }
     }
 
-    var allSchedules = await scheduleService.getAll();
+    var allSchedules = await _visitScheduleService.getAll();
     for (var schedule in allSchedules) {
       if (schedule.creationDate.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
-        await scheduleService.delete(schedule.id);
+        await _visitScheduleService.delete(schedule.id);
         count += 1;
       }
     }
 
     return count;
+  }
+
+  Future<void> refreshData() async {
+    await _dataService.fetchEvaluations();
+    await _dataService.fetchVisitSchedules();
+    notifyListeners();
   }
 }

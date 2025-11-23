@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
+import 'package:manager_mobile/services/data_service.dart';
 
 class CompressorPickerWidget extends StatefulWidget {
   const CompressorPickerWidget({
@@ -16,15 +16,15 @@ class CompressorPickerWidget extends StatefulWidget {
 
 class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
   late final TextEditingController _customerOrCompressorEC;
-  late final DataController _dataController;
+  late final DataService _dataService;
   late List<PersonCompressorModel> filteredCompressors;
 
   @override
   void initState() {
     super.initState();
     _customerOrCompressorEC = TextEditingController();
-    _dataController = Locator.get<DataController>();
-    filteredCompressors = _dataController.compressors;
+    _dataService = Locator.get<DataService>();
+    filteredCompressors = _dataService.compressors;
   }
 
   @override
@@ -42,7 +42,7 @@ class _CompressorPickerWidgetState extends State<CompressorPickerWidget> {
           decoration: InputDecoration(labelText: 'Cliente/Compressor'),
           onChanged: (value) {
             setState(() {
-              filteredCompressors = _dataController.compressors.where((compressor) {
+              filteredCompressors = _dataService.compressors.where((compressor) {
                 return compressor.compressor.name.toLowerCase().contains(value) ||
                     compressor.serialNumber.toLowerCase().contains(value) ||
                     compressor.sector.toLowerCase().contains(value) ||

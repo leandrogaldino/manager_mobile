@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/popup_button_widget.dart';
@@ -10,7 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Locator.get<HomeController>();
-    final FilterController filterController = Locator.get<FilterController>();
+    
 
     return AppBar(
       leading: ListenableBuilder(
@@ -29,13 +28,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1,
       actions: [        
         ListenableBuilder(
-            listenable: filterController,
+            listenable: homeController,
             builder: (context, child) {
-              return filterController.showFilterButton ? IconButton(
+              return homeController.showFilterButton ? IconButton(
                 onPressed: () {
-                  filterController.toggleFilterBarVisible();
+                  homeController.toggleFilterBarVisible();
                 },
-                icon: Icon(filterController.filtering ? Icons.filter_alt : Icons.filter_alt_off),
+                icon: Icon(homeController.filtering ? Icons.filter_alt : Icons.filter_alt_off),
               ) : SizedBox.shrink();
             }),
         PopupButtonWidget(),

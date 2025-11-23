@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/data_controller.dart';
-import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/services/data_service.dart';
 
 class FilterBarWidget extends StatefulWidget {
   const FilterBarWidget({super.key});
@@ -12,8 +11,7 @@ class FilterBarWidget extends StatefulWidget {
 }
 
 class _FilterBarWidgetState extends State<FilterBarWidget> {
-  late final FilterController _filterController;
-  late final DataController _dataController;
+  late final DataService _dataService;
   late final HomeController _homeController;
   late final TextEditingController _customerControllerEC;
   late final TextEditingController _dateControllerEC;
@@ -21,9 +19,8 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
   @override
   void initState() {
     super.initState();
-    _filterController = Locator.get<FilterController>();
     _homeController = Locator.get<HomeController>();
-    _dataController = Locator.get<DataController>();
+    _dataService = Locator.get<DataService>();
     _customerControllerEC = TextEditingController();
     _dateControllerEC = TextEditingController();
   }
@@ -38,13 +35,13 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _filterController,
+      listenable: _homeController,
       builder: (context, child) {
         return ClipRect(
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            height: _filterController.filterBarHeight.toDouble(),
+            height: _homeController.filterBarHeight.toDouble(),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -52,15 +49,15 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                   spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_filterController.filtering)
+                    if (_homeController.filtering)
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () async {
                             _customerControllerEC.clear();
                             _dateControllerEC.clear();
-                            _filterController.setCustomerOrCompressorText('');
-                            _filterController.setSelectedDateRange(null);
+                            _homeController.setCustomerOrCompressorText('');
+                            _homeController.setSelectedDateRange(null);
                             await _homeController.applyFilters();
                           },
                           style: TextButton.styleFrom(
@@ -77,7 +74,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                     TextField(
                       controller: _customerControllerEC,
                       onChanged: (text) async {
-                        _filterController.setCustomerOrCompressorText(text);
+                        _homeController.setCustomerOrCompressorText(text);
                         await _homeController.applyFilters();
                       },
                       decoration: InputDecoration(
@@ -97,13 +94,13 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       onTap: () async {
                         final DateTimeRange? picked = await showDateRangePicker(
                           context: context,
-                          firstDate: _dataController.firstDate ?? DateTime(2000),
-                          lastDate: _dataController.lastDate ?? DateTime(2100),
-                          initialDateRange: _filterController.selectedDateRange,
+                          firstDate: _dataService.firstDate ?? DateTime(2000),
+                          lastDate: _dataService.lastDate ?? DateTime(2100),
+                          initialDateRange: _homeController.selectedDateRange,
                         );
 
-                        _filterController.setSelectedDateRange(picked);
-                        _dateControllerEC.text = _filterController.selectedDateRangeText;
+                        _homeController.setSelectedDateRange(picked);
+                        _dateControllerEC.text = _homeController.selectedDateRangeText;
                         await _homeController.applyFilters();
                       },
                     ),

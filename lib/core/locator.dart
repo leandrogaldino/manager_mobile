@@ -1,11 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/controllers/data_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
-import 'package:manager_mobile/controllers/sync_controller.dart';
 import 'package:manager_mobile/core/data/storage_file.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
@@ -32,13 +29,15 @@ import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/data_service.dart';
+import 'package:manager_mobile/services/filter_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
-
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/product_service.dart';
 import 'package:manager_mobile/services/productcode_service.dart';
+import 'package:manager_mobile/services/sync_service.dart';
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
 
@@ -178,13 +177,13 @@ class Locator {
       ),
     );
 
-        _getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationReplacedProductRepository(
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
 
-        _getIt.registerLazySingleton(
+    _getIt.registerLazySingleton(
       () => EvaluationPerformedServiceRepository(
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
@@ -207,8 +206,8 @@ class Locator {
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
         storage: _getIt.get<Storage>(),
-        coalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
-        compressorRepository: _getIt.get<PersonCompressorRepository>(),
+        personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
+        personCompressorRepository: _getIt.get<PersonCompressorRepository>(),
         productRepository: _getIt.get<ProductRepository>(),
         serviceRepository: _getIt.get<ServiceRepository>(),
         personRepository: _getIt.get<PersonRepository>(),
@@ -243,8 +242,8 @@ class Locator {
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
-    _getIt.registerLazySingleton<DataController>(
-      () => DataController(
+    _getIt.registerLazySingleton<DataService>(
+      () => DataService(
         visitScheduleService: _getIt.get<VisitScheduleService>(),
         evaluationService: _getIt.get<EvaluationService>(),
         personService: _getIt.get<PersonService>(),
@@ -252,7 +251,7 @@ class Locator {
       ),
     );
 
-    _getIt.registerLazySingleton<SyncController>(() => SyncController(
+    _getIt.registerLazySingleton<SyncService>(() => SyncService(
           productService: _getIt.get<ProductService>(),
           productCodeService: _getIt.get<ProductCodeService>(),
           serviceService: _getIt.get<ServiceService>(),
@@ -263,23 +262,21 @@ class Locator {
           appPreferences: _getIt.get<AppPreferences>(),
           visitScheduleService: _getIt.get<VisitScheduleService>(),
           evaluationService: _getIt.get<EvaluationService>(),
-          personController: _getIt.get<DataController>(),
-          filterController: _getIt.get<FilterController>(),
         ));
+
+    _getIt.registerLazySingleton<FilterService>(() => FilterService());
 
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
-          syncController: _getIt.get<SyncController>(),
-          dataController: _getIt.get<DataController>(),
-          filterController: _getIt.get<FilterController>(),
+          syncService: _getIt.get<SyncService>(),
+          dataService: _getIt.get<DataService>(),
+          filterService: _getIt.get<FilterService>(),
         ));
-
-    _getIt.registerLazySingleton<FilterController>(() => FilterController());
 
     _getIt.registerLazySingleton<EvaluationController>(
       () => EvaluationController(
         evaluationService: _getIt.get<EvaluationService>(),
-        scheduleService: _getIt.get<VisitScheduleService>(),
-        personService: _getIt.get<PersonService>(),
+        visitScheduleService: _getIt.get<VisitScheduleService>(),
+        dataService: _getIt.get<DataService>(),
       ),
     );
 

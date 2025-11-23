@@ -25,8 +25,8 @@ class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
-  final PersonCompressorCoalescentRepository _coalescentRepository;
-  final PersonCompressorRepository _compressorRepository;
+  final PersonCompressorCoalescentRepository _personCompressorCoalescentRepository;
+  final PersonCompressorRepository _personCompressorRepository;
   final PersonRepository _personRepository;
   final ProductRepository _productRepository;
   final ServiceRepository _serviceRepository;
@@ -39,8 +39,8 @@ class EvaluationRepository {
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
     required Storage storage,
-    required PersonCompressorCoalescentRepository coalescentRepository,
-    required PersonCompressorRepository compressorRepository,
+    required PersonCompressorCoalescentRepository personCompressorCoalescentRepository,
+    required PersonCompressorRepository personCompressorRepository,
     required PersonRepository personRepository,
     required ProductRepository productRepository,
     required ServiceRepository serviceRepository,
@@ -52,8 +52,8 @@ class EvaluationRepository {
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
-        _coalescentRepository = coalescentRepository,
-        _compressorRepository = compressorRepository,
+        _personCompressorCoalescentRepository = personCompressorCoalescentRepository,
+        _personCompressorRepository = personCompressorRepository,
         _personRepository = personRepository,
         _productRepository = productRepository,
         _serviceRepository = serviceRepository,
@@ -258,7 +258,6 @@ class EvaluationRepository {
     return localResult.length;
   }
 
-  
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
@@ -330,12 +329,12 @@ class EvaluationRepository {
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
-    var compressor = await _compressorRepository.getById(evaluationData['compressorid'] as int);
+    var compressor = await _personCompressorRepository.getById(evaluationData['compressorid'] as int);
     evaluationData['compressor'] = compressor;
     evaluationData.remove('personcompressorid');
     var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
     for (var evaluationCoalescent in evaluationCoalescents) {
-      var coalescent = await _coalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
+      var coalescent = await _personCompressorCoalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
       evaluationCoalescent['coalescent'] = coalescent;
       evaluationCoalescent.remove('coalescentid');
     }

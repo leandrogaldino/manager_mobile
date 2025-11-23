@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _homeController.synchronize(true, true);
+      await _homeController.synchronize(showLoading: true);
       _synchronizeTimer = await SynchronizeTimer.init();
     });
   }
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                       child: RefreshIndicator(
                         onRefresh: () async {
                           _hasShownError = false;
-                          await _homeController.synchronize(false, false);
+                          await _homeController.synchronize( );
                         },
                         child: _homeController.currentIndex == 0 ? ScheduleListWidget(schedules: lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : []) : EvaluationListWidget(evaluations: lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : []),
                       ),
