@@ -270,6 +270,7 @@ class Locator {
           syncService: _getIt.get<SyncService>(),
           dataService: _getIt.get<DataService>(),
           filterService: _getIt.get<FilterService>(),
+          networkConnection: _getIt.get<Connection>(),
         ));
 
     _getIt.registerLazySingleton<EvaluationController>(

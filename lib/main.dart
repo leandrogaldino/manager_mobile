@@ -60,7 +60,7 @@ void main() async {
         runApp(const App());
       },
       (error, stack) {
-        log('Erro não tratado', error: error, stackTrace: stack);
+        log('Erro não tratado', error: error, stackTrace: stack, time: DateTime.now() );
       },
     );
   } else {
