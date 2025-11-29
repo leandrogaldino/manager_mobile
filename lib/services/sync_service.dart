@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/timers/refresh_sync_lock_timer.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
@@ -46,85 +45,96 @@ class SyncService {
         _evaluationService = evaluationService,
         _appPreferences = appPreferences;
 
+  bool _synchronizing = false;
+  bool get synchronizing => _synchronizing;
+
   Future<int> runSync({bool isAuto = false}) async {
+    _synchronizing = true;
+
     log('${isAuto ? "(Workmanager) " : ""}Iniciando sincronização.', time: DateTime.now());
 
-    final lastLock = await _appPreferences.lastSyncLock;
+    final lastLock = await _appPreferences.syncLockTime;
     if (isSyncLocked(lastLock)) {
       log('${isAuto ? "(Workmanager) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTime.now());
       return 0;
     }
 
     // Ativa lock imediatamente
-    await _appPreferences.setLastSyncLock(DateTime.now());
+    await _appPreferences.setSyncLockTime(DateTime.now());
 
     // Inicia o timer que manterá o lock renovado durante toda a sync
     await RefreshSyncLockTimer.start();
 
+    log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTime.now());
+
     try {
+      _appPreferences.setIgnoreLastSynchronize(false);
       final int lastSync = await _appPreferences.lastSynchronize;
       int totalCount = 0;
 
       // --- PRODUTOS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Produtos...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Produtos...', time: DateTime.now());
       final int productsCount = await _productService.synchronize(lastSync);
       totalCount += productsCount;
 
       // --- CODIGOS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Códigos de Produtos...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Códigos de Produtos...', time: DateTime.now());
       final int productCodesCount = await _productCodeService.synchronize(lastSync);
       totalCount += productCodesCount;
 
       // --- SERVIÇOS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Serviços...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Serviços...', time: DateTime.now());
       final int servicesCount = await _serviceService.synchronize(lastSync);
       totalCount += servicesCount;
 
       // --- COMPRESSORES ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Compressores...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores...', time: DateTime.now());
       final int compressorsCount = await _compressorService.synchronize(lastSync);
       totalCount += compressorsCount;
 
       // --- COALESCENTES ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Coalescentes dos Compressores...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Coalescentes dos Compressores...', time: DateTime.now());
       final int personCompressorCoalescentCount = await _personCompressorcoalescentService.synchronize(lastSync);
       totalCount += personCompressorCoalescentCount;
 
       // --- COMPRESSORES DAS PESSOAS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Compressores das Pessoas...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores das Pessoas...', time: DateTime.now());
       final int personCompressorCount = await _personCompressorService.synchronize(lastSync);
       totalCount += personCompressorCount;
 
       // --- PESSOAS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Pessoas...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Pessoas...', time: DateTime.now());
       final int personsCount = await _personService.synchronize(lastSync);
       totalCount += personsCount;
 
       // --- AGENDAMENTOS ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Agendamentos de Visita...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Agendamentos de Visita...', time: DateTime.now());
       final int visitSchedulesCount = await _visitScheduleService.synchronize(lastSync);
       totalCount += visitSchedulesCount;
 
       // --- AVALIAÇÕES ---
-      log('${isAuto ? "(Workmanager) " : ""}Sincronizando Avaliações...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Avaliações...', time: DateTime.now());
       final int evaluationsCount = await _evaluationService.synchronize(lastSync);
       totalCount += evaluationsCount;
 
+      log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTime.now());
+
       // Fim!
-      await _appPreferences.updateLastSynchronize();
-
-      log('${isAuto ? "(Workmanager) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTime.now());
-
+      if (await _appPreferences.ignoreLastSynchronize) {
+        log('${isAuto ? "(Auto) " : ""}Ignorando atualização do timestamp de sincronização conforme preferência.', time: DateTime.now());
+        return totalCount;
+      }
+      await _appPreferences.setLastSynchronize();
+      _synchronizing = false;
       return totalCount;
     } catch (e, s) {
-      log('${isAuto ? "(Workmanager) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTime.now());
       rethrow;
     } finally {
       // Para de renovar o lock
       await RefreshSyncLockTimer.stop();
-
       // Remove lock manualmente (evita manter bloqueado por timeout)
-      await _appPreferences.setLastSyncLock(null);
+      await _appPreferences.setSyncLockTime(null);
     }
   }
 
@@ -132,6 +142,6 @@ class SyncService {
     if (lastSyncLock == null) return false;
     final now = DateTime.now();
     final diff = now.difference(lastSyncLock).inSeconds;
-    return diff < 15;
+    return diff < 20;
   }
 }

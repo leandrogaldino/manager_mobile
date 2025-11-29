@@ -4,15 +4,37 @@ import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/services/sync_service.dart';
 
 class SynchronizeTimer {
+  static Timer? _timer;
   SynchronizeTimer._();
-  static Future<Timer> init() async {
-    NetworkConnection connection = NetworkConnection();
-    SyncService syncService = Locator.get<SyncService>();
-    return Timer.periodic(Duration(minutes: 1), (_) async {
+  static void start() {
+    if (_timer != null && _timer!.isActive) {
+      print("SynchronizeTimer já está ativo.");
+      return;
+    }
+    final NetworkConnection connection = NetworkConnection();
+    final SyncService syncService = Locator.get<SyncService>();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) async {
+
       bool hasConnection = await connection.hasConnection();
       if (hasConnection) {
-        await syncService.runSync(isAuto: true);
+        try {
+          await syncService.runSync(isAuto: true);
+        } catch (e) {
+          rethrow;
+        }
+      } else {
+        print("Sem conexão para sincronização automática.");
       }
     });
+    print("Timer de sincronização automática iniciado (1 min).");
   }
+
+  // Método estático para parar (cancelar) o Timer.
+  static void stop() {
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  // Opcional: Verifica o estado
+  static bool get isActive => _timer != null && _timer!.isActive;
 }

@@ -10,7 +10,7 @@ class RefreshSyncLockTimer {
   static Future<void> start() async {
     if (_timer != null) return;
     final appPreferences = Locator.get<AppPreferences>();
-    _timer = Timer.periodic(Duration(seconds: 10), (_) => appPreferences.setLastSyncLock(DateTime.now()));
+    _timer = Timer.periodic(Duration(seconds: 10), (_) => appPreferences.setSyncLockTime(DateTime.now()));
   }
 
   static Future<void> stop() async {

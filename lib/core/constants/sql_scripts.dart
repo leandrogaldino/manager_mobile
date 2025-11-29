@@ -37,42 +37,24 @@ class SQLScripts {
     );
   ''';
 
-  static const String insertLoggedTechnicianEmailPreference = '''
+  static const String insertIgnoreLastSynchronizePreference = '''
     INSERT INTO preferences (
       key,
       value
     ) VALUES (
-      'loggedtechnicianemail',
-      ''
-    );
-  ''';
-  static const String insertLoggedTechnicianPasswordPreference = '''
-    INSERT INTO preferences (
-      key,
-      value
-    ) VALUES (
-      'loggedtechnicianpassword',
-      ''
+      'ignorelastsynchronize',
+      '0'
     );
   ''';
 
-  static const String insertLastSyncLockPreference = '''
-    INSERT INTO preferences (
-      key,
-      value
-    ) VALUES (
-      'lastsynclock',
-      0
-    );
-  ''';
 
-  static const String insertLastSyncCountPreference = '''
+  static const String insertSyncLockTimePreference = '''
     INSERT INTO preferences (
       key,
       value
     ) VALUES (
-      'lastsynccount',
-      0
+      'synclocktime',
+      NULL
     );
   ''';
 

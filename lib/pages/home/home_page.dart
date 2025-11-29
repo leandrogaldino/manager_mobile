@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
@@ -22,19 +26,30 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final HomeController _homeController;
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
-  Timer? _synchronizeTimer;
+  late final AppPreferences _appPreferences;
+  late final StreamSubscription<InternetStatus> _connectionSubscription;
   bool _hasShownError = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _homeController = Locator.get<HomeController>();
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
+    _appPreferences = Locator.get<AppPreferences>();
+    _connectionSubscription = InternetConnection().onStatusChange.listen((status) async {
+      if (status == InternetStatus.disconnected && _homeController.synchronizing) {
+        log('AppLifecycleState: App perdeu a conexao com a internet. Salvando estado...', time: DateTime.now());
+        await _appPreferences.setIgnoreLastSynchronize(true);
+        log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTime.now());
+      }
+    });
+    SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
     });
@@ -42,8 +57,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _synchronizeTimer?.cancel();
+    SynchronizeTimer.stop();
+    _connectionSubscription.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    // 🎯 O ponto de gatilho para salvar os dados:
+    if ((state == AppLifecycleState.paused || state == AppLifecycleState.hidden) && _homeController.synchronizing) {
+      log('AppLifecycleState: App entrando em Background. Salvando estado...', time: DateTime.now());
+      //_homeController.saveCriticalData();
+      await _appPreferences.setIgnoreLastSynchronize(true);
+
+      log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTime.now());
+    }
+
+    // Opcional: Acionar a sincronização ao voltar para o foreground
+    if (state == AppLifecycleState.resumed) {
+      log('AppLifecycleState: App voltando para Foreground.', time: DateTime.now());
+      // Opcional: Recarregar dados ou resumir operações.
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/filter_service.dart';
 import 'package:manager_mobile/services/sync_service.dart';
 import 'package:manager_mobile/states/home_state.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class HomeController extends ChangeNotifier {
   final SyncService _syncService;
@@ -51,6 +52,8 @@ class HomeController extends ChangeNotifier {
 
   DateTimeRange? get selectedDateRange => _filterService.dateRange;
   String get typedCustomerOrCompressorText => _filterService.text;
+
+  bool get synchronizing => _syncService.synchronizing;
 
   void setCustomerOrCompressorText(String text) {
     _filterService.text = text;
@@ -114,19 +117,20 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> synchronize({bool showLoading = false}) async {
-    //TODO: REVISAR
     bool hasConnection = await _networkConnection.hasConnection();
     if (!hasConnection) {
       _setState(HomeStateError("Sem conexão com a internet."));
       return;
     }
-
+    await WakelockPlus.enable();
     try {
       if (showLoading) _setState(HomeStateLoading());
       int totalCount = await _syncService.runSync();
       fetchAllIfNeeded(totalCount > 0, showLoading: showLoading);
     } catch (e) {
       _setState(HomeStateError(e.toString()));
+    } finally {
+      await WakelockPlus.disable();
     }
   }
 

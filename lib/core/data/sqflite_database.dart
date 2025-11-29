@@ -33,10 +33,8 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
           await db.execute(SQLScripts.insertLoggedTechnicianIdPreference);
-          await db.execute(SQLScripts.insertLoggedTechnicianEmailPreference);
-          await db.execute(SQLScripts.insertLoggedTechnicianPasswordPreference);
-          await db.execute(SQLScripts.insertLastSyncCountPreference);
-          await db.execute(SQLScripts.insertLastSyncLockPreference);
+          await db.execute( SQLScripts.insertIgnoreLastSynchronizePreference);
+          await db.execute( SQLScripts.insertSyncLockTimePreference);
         },
       );
     } on DatabaseException catch (e, s) {
