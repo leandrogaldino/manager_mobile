@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
-import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/filter_service.dart';
 import 'package:manager_mobile/services/sync_service.dart';
@@ -11,17 +11,14 @@ class HomeController extends ChangeNotifier {
   final SyncService _syncService;
   final DataService _dataService;
   final FilterService _filterService;
-  final Connection _networkConnection;
-
+  
   HomeController({
     required SyncService syncService,
     required DataService dataService,
     required FilterService filterService,
-    required Connection networkConnection,
-  })  : _syncService = syncService,
+      })  : _syncService = syncService,
         _dataService = dataService,
-        _filterService = filterService,
-        _networkConnection = networkConnection;
+        _filterService = filterService;
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -117,7 +114,7 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> synchronize({bool showLoading = false}) async {
-    bool hasConnection = await _networkConnection.hasConnection();
+    bool hasConnection =  await InternetConnection().hasInternetAccess;
     if (!hasConnection) {
       _setState(HomeStateError("Sem conexão com a internet."));
       return;

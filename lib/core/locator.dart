@@ -6,7 +6,6 @@ import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/data/firebase_cloud_storage.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
-import 'package:manager_mobile/interfaces/connection.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
@@ -25,7 +24,6 @@ import 'package:manager_mobile/repositories/productcode_repository.dart';
 import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
-import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
@@ -66,14 +64,9 @@ class Locator {
       () => AuthService(),
     );
 
-    _getIt.registerLazySingleton<Connection>(
-      () => NetworkConnection(),
-    );
-
     _getIt.registerLazySingleton<LoginController>(
       () => LoginController(
         service: _getIt.get<Auth>(),
-        connection: _getIt.get<Connection>(),
         appPreferences: _getIt.get<AppPreferences>(),
       ),
     );
@@ -269,8 +262,7 @@ class Locator {
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
           syncService: _getIt.get<SyncService>(),
           dataService: _getIt.get<DataService>(),
-          filterService: _getIt.get<FilterService>(),
-          networkConnection: _getIt.get<Connection>(),
+          filterService: _getIt.get<FilterService>()
         ));
 
     _getIt.registerLazySingleton<EvaluationController>(

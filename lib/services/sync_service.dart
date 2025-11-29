@@ -51,11 +51,11 @@ class SyncService {
   Future<int> runSync({bool isAuto = false}) async {
     _synchronizing = true;
 
-    log('${isAuto ? "(Workmanager) " : ""}Iniciando sincronização.', time: DateTime.now());
+    log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTime.now());
 
     final lastLock = await _appPreferences.syncLockTime;
     if (isSyncLocked(lastLock)) {
-      log('${isAuto ? "(Workmanager) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTime.now());
       return 0;
     }
 

@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/util/network_connection.dart';
 import 'package:manager_mobile/services/sync_service.dart';
 
 class SynchronizeTimer {
@@ -11,11 +11,11 @@ class SynchronizeTimer {
       print("SynchronizeTimer já está ativo.");
       return;
     }
-    final NetworkConnection connection = NetworkConnection();
+    
     final SyncService syncService = Locator.get<SyncService>();
     _timer = Timer.periodic(const Duration(seconds: 30), (_) async {
 
-      bool hasConnection = await connection.hasConnection();
+      bool hasConnection =  await InternetConnection().hasInternetAccess;
       if (hasConnection) {
         try {
           await syncService.runSync(isAuto: true);

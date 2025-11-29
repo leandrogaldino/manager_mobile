@@ -9,7 +9,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/helper/connection_notifier.dart';
+import 'package:manager_mobile/core/util/connection_notifier.dart';
 import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/locator.dart';
