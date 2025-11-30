@@ -11,12 +11,12 @@ class HomeController extends ChangeNotifier {
   final SyncService _syncService;
   final DataService _dataService;
   final FilterService _filterService;
-  
+
   HomeController({
     required SyncService syncService,
     required DataService dataService,
     required FilterService filterService,
-      })  : _syncService = syncService,
+  })  : _syncService = syncService,
         _dataService = dataService,
         _filterService = filterService;
 
@@ -107,14 +107,19 @@ class HomeController extends ChangeNotifier {
         evaluations: _dataService.evaluations,
       );
 
-      _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
+      bool done = await _syncService.firstSyncSuccessfulDone;
+      if (!done) {
+        _setState(HomeStateLoading());
+      } else {
+        _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
+      }
     } catch (e) {
       _setState(HomeStateError(e.toString()));
     }
   }
 
-  Future<void> synchronize({bool showLoading = false}) async {
-    bool hasConnection =  await InternetConnection().hasInternetAccess;
+  Future<void> synchronize({bool showLoading = false, bool isAuto = false}) async {
+    bool hasConnection = await InternetConnection().hasInternetAccess;
     if (!hasConnection) {
       _setState(HomeStateError("Sem conexão com a internet."));
       return;
@@ -122,7 +127,7 @@ class HomeController extends ChangeNotifier {
     await WakelockPlus.enable();
     try {
       if (showLoading) _setState(HomeStateLoading());
-      int totalCount = await _syncService.runSync();
+      int totalCount = await _syncService.runSync(isAuto: isAuto);
       fetchAllIfNeeded(totalCount > 0, showLoading: showLoading);
     } catch (e) {
       _setState(HomeStateError(e.toString()));

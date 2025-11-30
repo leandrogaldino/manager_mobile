@@ -61,7 +61,6 @@ class PersonCompressorRepository {
         if (list.isEmpty) return {};
         return list[0];
       });
-      //TODO: se a lista for falta, lançar exceção
       final compressorId = personCompressor['compressorid'] as int;
       personCompressor.remove('compressorid');
       final compressor = await _compressorRepository.getById(compressorId);

@@ -35,6 +35,7 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.insertLoggedTechnicianIdPreference);
           await db.execute( SQLScripts.insertIgnoreLastSynchronizePreference);
           await db.execute( SQLScripts.insertSyncLockTimePreference);
+          await db.execute( SQLScripts.insertSyncCountPreference);
         },
       );
     } on DatabaseException catch (e, s) {

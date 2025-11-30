@@ -64,8 +64,7 @@ class SyncService {
 
     // Inicia o timer que manterá o lock renovado durante toda a sync
     await RefreshSyncLockTimer.start();
-
-    log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTime.now());
+    log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer iniciado!===================', time: DateTime.now());
 
     try {
       _appPreferences.setIgnoreLastSynchronize(false);
@@ -125,6 +124,7 @@ class SyncService {
         return totalCount;
       }
       await _appPreferences.setLastSynchronize();
+      await _appPreferences.setSyncCount((await _appPreferences.syncCount) + 1);
       _synchronizing = false;
       return totalCount;
     } catch (e, s) {
@@ -133,6 +133,7 @@ class SyncService {
     } finally {
       // Para de renovar o lock
       await RefreshSyncLockTimer.stop();
+      log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer parado!===================', time: DateTime.now());
       // Remove lock manualmente (evita manter bloqueado por timeout)
       await _appPreferences.setSyncLockTime(null);
     }
@@ -142,6 +143,8 @@ class SyncService {
     if (lastSyncLock == null) return false;
     final now = DateTime.now();
     final diff = now.difference(lastSyncLock).inSeconds;
-    return diff < 20;
+    return diff < 120;
   }
+
+  Future<bool> get firstSyncSuccessfulDone async => (await _appPreferences.syncCount) > 0;
 }

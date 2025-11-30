@@ -104,22 +104,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             }
 
             // 2. Loading real (quando ainda não teve sucesso nenhum)
-            if (state is HomeStateLoading && lastSuccess == null) {
-              return Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 20,
-                children: [
-                  CircularProgressIndicator(strokeWidth: 2),
-                  Text(
-                    'CARREGANDO, POR FAVOR AGUARDE',
-                    style: theme.textTheme.titleSmall!.copyWith(
-                      color: theme.colorScheme.primary,
+            //if (state is HomeStateLoading && lastSuccess == null) {
+            return Padding(
+              padding: const EdgeInsets.all(30),
+              child: Container(
+                color: Colors.transparent,
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 50,
+                  children: [
+                    CircularProgressIndicator(strokeWidth: 2),
+                    Text(
+                      'Sincronização em andamento. Para garantir a conclusão, mantenha o aplicativo aberto nesta tela e verifique sua conexão com a internet.',
+                      style: theme.textTheme.labelLarge!.copyWith(color: theme.colorScheme.primary),
+                      textAlign: TextAlign.justify,
                     ),
-                  ),
-                ],
-              ));
-            }
+                  ],
+                )),
+              ),
+            );
+            //}
 
             // 3. Aqui mostra SEMPRE os dados do último sucesso
 
@@ -146,7 +151,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             // fallback: nunca deve ocorrer
             // return SizedBox.shrink();
           }),
-      bottomNavigationBar: ListenableBuilder(
+      bottomNavigationBar:  ListenableBuilder(
         listenable: _homeController,
         builder: (context, child) {
           final state = _homeController.state;

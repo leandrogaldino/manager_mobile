@@ -58,6 +58,16 @@ class SQLScripts {
     );
   ''';
 
+  static const String insertSyncCountPreference = '''
+    INSERT INTO preferences (
+      key,
+      value
+    ) VALUES (
+      'synccount',
+      0
+    );
+  ''';
+
   static const String createTablePerson = '''
     CREATE TABLE person (
       id INTEGER PRIMARY KEY,
