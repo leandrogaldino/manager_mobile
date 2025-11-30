@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class SynchronizeTimer {
   static Timer? _timer;
@@ -18,10 +18,13 @@ class SynchronizeTimer {
     _timer = Timer.periodic(const Duration(minutes: 1), (_) async {
       bool hasConnection = await InternetConnection().hasInternetAccess;
       if (hasConnection) {
+        await WakelockPlus.enable();
         try {
           await homeController.synchronize(isAuto: true);
         } catch (e) {
           rethrow;
+        } finally {
+          await WakelockPlus.disable();
         }
       } else {
         log("Sem conexão para sincronização automática.");

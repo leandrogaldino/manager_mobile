@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:lottie/lottie.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
@@ -104,7 +105,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             }
 
             // 2. Loading real (quando ainda não teve sucesso nenhum)
-            //if (state is HomeStateLoading && lastSuccess == null) {
+            if (state is HomeStateLoading && lastSuccess == null) {
             return Padding(
               padding: const EdgeInsets.all(30),
               child: Container(
@@ -114,7 +115,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 50,
                   children: [
-                    CircularProgressIndicator(strokeWidth: 2),
+                    //CircularProgressIndicator(strokeWidth: 2),
+                    Lottie.asset(
+                      'assets/json/sync_animation.json',
+                      fit: BoxFit.fill,
+                      repeat: true,
+                    ),
                     Text(
                       'Sincronização em andamento. Para garantir a conclusão, mantenha o aplicativo aberto nesta tela e verifique sua conexão com a internet.',
                       style: theme.textTheme.labelLarge!.copyWith(color: theme.colorScheme.primary),
@@ -124,7 +130,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 )),
               ),
             );
-            //}
+            }
 
             // 3. Aqui mostra SEMPRE os dados do último sucesso
 
@@ -151,7 +157,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             // fallback: nunca deve ocorrer
             // return SizedBox.shrink();
           }),
-      bottomNavigationBar:  ListenableBuilder(
+      bottomNavigationBar: ListenableBuilder(
         listenable: _homeController,
         builder: (context, child) {
           final state = _homeController.state;
