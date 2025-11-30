@@ -38,7 +38,7 @@ class AppPreferences {
   }
 
   Future<void> setSyncLockTime(DateTime? time) async {
-    await _database.update('preferences', {'value': time?.microsecondsSinceEpoch}, where: 'key = ?', whereArgs: ['synclocktime']);
+    await _database.update('preferences', {'value': time?.millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['synclocktime']);
   }
 
   Future<void> setLoggedTechnicianId(int id) async {
@@ -49,6 +49,22 @@ class AppPreferences {
     var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['loggedtechnicianid']);
     return int.parse(data[0]['value'].toString());
   }
+
+
+
+
+  Future<void> setSyncCount(int id) async {
+    await _database.update('preferences', {'value': id}, where: 'key = ?', whereArgs: ['synccount']);
+  }
+
+  Future<int> get syncCount async {
+    var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['synccount']);
+    return int.parse(data[0]['value'].toString());
+  }
+
+
+
+
 
   Future<ThemeMode> get themeMode async {
     final result = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['theme']);
