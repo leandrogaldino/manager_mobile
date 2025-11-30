@@ -29,7 +29,7 @@ class EvaluationPage extends StatefulWidget {
 
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> _formKey;
-  
+
   late final EvaluationController _evaluationController;
   late final HomeController _homeController;
 
@@ -37,7 +37,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
-    
+
     _evaluationController = Locator.get<EvaluationController>();
     _homeController = Locator.get<HomeController>();
     if (_evaluationController.source == SourceTypes.fromSaved) {
@@ -100,82 +100,126 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   child: SizedBox(height: 5),
                 ),
                 ListenableBuilder(
-                    listenable: _evaluationController,
-                    builder: (context, child) {
-                      return ExpandableSectionWidget(
-                        initiallyExpanded: true,
-                        title: Text('Dados do Compressor'),
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return ExpandableSectionWidget(
+                      initiallyExpanded: true,
+                      title: Text('Dados do Compressor'),
+                      children: [
+                        ReadingSectionWidget(
+                          formKey: _formKey,
+                        )
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 5),
+                ListenableBuilder(
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
+                      child: ExpandableSectionWidget(
+                        title: Text('Coalescentes'),
                         children: [
-                          ReadingSectionWidget(
-                            formKey: _formKey,
-                          )
+                          CoalescentSectionWidget(),
                         ],
-                      );
-                    }),
-                SizedBox(height: 5),
+                      ),
+                    );
+                  },
+                ),
                 ListenableBuilder(
-                    listenable: _evaluationController,
-                    builder: (context, child) {
-                      return Visibility(
-                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
-                        child: ExpandableSectionWidget(
-                          title: Text('Coalescentes'),
-                          children: [
-                            CoalescentSectionWidget(),
-                          ],
-                        ),
-                      );
-                    }),
-                SizedBox(height: 5),
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
+                      child: SizedBox(height: 5),
+                    );
+                  },
+                ),
                 ListenableBuilder(
-                    listenable: _evaluationController,
-                    builder: (context, child) {
-                      return Visibility(
-                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
-                        child: ExpandableSectionWidget(
-                          title: Text('Peças Substituídas'),
-                          children: [
-                            ReplacedProductSectionWidget(),
-                          ],
-                        ),
-                      );
-                    }),
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.replacedProducts.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: ExpandableSectionWidget(
+                        title: Text('Peças Substituídas'),
+                        children: [
+                          ReplacedProductSectionWidget(),
+                        ],
+                      ),
+                    );
+                  },
+                ),
                 ListenableBuilder(
-                    listenable: _evaluationController,
-                    builder: (context, child) {
-                      return Visibility(
-                        visible: _evaluationController.evaluation!.coalescents.isNotEmpty,
-                        child: SizedBox(height: 5),
-                      );
-                    }),
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.replacedProducts.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: SizedBox(height: 5),
+                    );
+                  },
+                ),
+                ListenableBuilder(
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.performedServices.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: ExpandableSectionWidget(
+                        title: Text('Serviços Realizados'),
+                        children: [
+                          ReplacedProductSectionWidget(),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                ListenableBuilder(
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.performedServices.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: SizedBox(height: 5),
+                    );
+                  },
+                ),
                 ExpandableSectionWidget(
                   title: Text('Técnicos'),
                   children: [
                     TechnicianSectionWidget(),
                   ],
                 ),
-                SizedBox(height: 5),
                 ListenableBuilder(
                     listenable: _evaluationController,
                     builder: (context, child) {
                       return Visibility(
-                        visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
-                        child: ExpandableSectionWidget(
-                          title: Text('Fotos'),
-                          children: [
-                            PhotoSectionWidget(),
-                          ],
-                        ),
-                      );
-                    }),
-                ListenableBuilder(
-                    listenable: _evaluationController,
-                    builder: (context, child) {
-                      return Visibility(
-                        visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                        visible: _evaluationController.evaluation!.technicians.isNotEmpty,
                         child: SizedBox(height: 5),
                       );
                     }),
+                ListenableBuilder(
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: ExpandableSectionWidget(
+                        title: Text('Fotos'),
+                        children: [
+                          PhotoSectionWidget(),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                ListenableBuilder(
+                  listenable: _evaluationController,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.evaluation!.photos.isNotEmpty) || (_evaluationController.source != SourceTypes.fromSaved),
+                      child: SizedBox(height: 5),
+                    );
+                  },
+                ),
                 ExpandableSectionWidget(
                   title: Text('Assinatura'),
                   children: [
@@ -210,7 +254,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         if (!_validateCoalescentsNextChange()) return;
                         if (!_validateSignature()) return;
                         await _evaluationController.save();
-
 
                         await _evaluationController.refreshData();
                         await _homeController.applyFilters();

@@ -13,7 +13,7 @@ class SQLScripts {
       value
     ) VALUES (
       'theme',
-      'ThemeMode.system'
+      'ThemeMode.light'
     );
   ''';
 
@@ -46,7 +46,6 @@ class SQLScripts {
       '0'
     );
   ''';
-
 
   static const String insertSyncLockTimePreference = '''
     INSERT INTO preferences (
