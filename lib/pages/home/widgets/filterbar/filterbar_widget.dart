@@ -94,8 +94,8 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       onTap: () async {
                         final DateTimeRange? picked = await showDateRangePicker(
                           context: context,
-                          firstDate: _dataService.firstDate ?? DateTime(2000),
-                          lastDate: _dataService.lastDate ?? DateTime(2100),
+                          firstDate: _dataService.firstEvaluationOrVisitScheduleDate ?? DateTime(2000),
+                          lastDate: _dataService.lastEvaluationOrVisitScheduleDate ?? DateTime(2100),
                           initialDateRange: _homeController.selectedDateRange,
                         );
 

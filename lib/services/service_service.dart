@@ -1,4 +1,4 @@
-import 'package:manager_mobile/models/personcompressor_model.dart';
+import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 
 class ServiceService {
@@ -8,9 +8,9 @@ class ServiceService {
     required ServiceRepository serviceRepository,
   }) : _serviceRepository = serviceRepository;
 
-  Future<List<PersonCompressorModel>> getVisibles() async {
+  Future<List<ServiceModel>> getVisibles() async {
     final data = await _serviceRepository.getVisibles();
-    return data.map((item) => PersonCompressorModel.fromMap(item)).toList();
+    return data.map((item) => ServiceModel.fromMap(item)).toList();
   }
 
   Future<int> synchronize(int lastSync) async {
