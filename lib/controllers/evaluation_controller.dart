@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
+import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -206,6 +207,16 @@ class EvaluationController extends ChangeNotifier {
 
   void removeTechnician(EvaluationTechnicianModel technician) {
     _evaluation!.technicians.remove(technician);
+    notifyListeners();
+  }
+
+  void addPerformedService(EvaluationPerformedServiceModel performedService) {
+    _evaluation!.performedServices.add(performedService);
+    notifyListeners();
+  }
+
+  void removePerformedService(EvaluationPerformedServiceModel performedService) {
+    _evaluation!.performedServices.remove(performedService);
     notifyListeners();
   }
 
