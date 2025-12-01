@@ -10,7 +10,6 @@ class ProductService {
 
   Future<List<ProductModel>> getVisibles() async {
     final data = await _productRepository.getVisibles();
-    //TODO: Codes
     return data.map((item) => ProductModel.fromMap(item)).toList();
   }
 

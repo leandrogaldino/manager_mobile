@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/widgets/service_picker/service_picker_list_widget.dart';
+import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/widgets/service_picker/service_picker_widget.dart';
 import 'package:manager_mobile/models/service_model.dart';
+import 'package:manager_mobile/services/data_service.dart';
 
 class ServicePickerDialog extends StatelessWidget {
-  final List<ServiceModel> services;
-
   const ServicePickerDialog({
     super.key,
-    required this.services,
   });
 
   @override
   Widget build(BuildContext context) {
+    DataService dataService = Locator.get<DataService>();
+    List<ServiceModel> services = dataService.services;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -25,10 +26,9 @@ class ServicePickerDialog extends StatelessWidget {
       content: SizedBox(
         width: double.maxFinite,
         height: (services.length > 5) ? 330 : (services.length * 66),
-        child: ServicePickerListWidget(
-          services: services,
-          onServiceSelected: (ServiceModel selectedService) {
-            Navigator.pop(context, selectedService);
+        child: ServicePickerWidget(
+          onServiceSelected: (service) {
+            Navigator.pop(context, service);
           },
         ),
       ),
