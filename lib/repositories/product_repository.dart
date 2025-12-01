@@ -26,11 +26,8 @@ class ProductRepository {
         if (list.isEmpty) return {};
         return list[0];
       });
-
       var codes = await _productCodeRepository.getByProductId(id);
-
       product['codes'] = codes;
-
       return product;
     } on LocalDatabaseException {
       rethrow;
@@ -45,6 +42,10 @@ class ProductRepository {
   Future<List<Map<String, Object?>>> getVisibles() async {
     try {
       var products = await _localDatabase.query('product', where: 'visible = ?', whereArgs: [1]);
+      for (var product in products) {
+        var codes = await _productCodeRepository.getByProductId(product['id'] as int);
+        product['codes'] = codes;
+      }
       return products;
     } on LocalDatabaseException {
       rethrow;

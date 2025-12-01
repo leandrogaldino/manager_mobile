@@ -39,7 +39,7 @@ class ServiceModel {
   factory ServiceModel.fromMap(Map<String, dynamic> map) {
     return ServiceModel(
       id: (map['id'] ?? 0) as int,
-      visible: (map['visible'] ?? false) as bool,
+      visible: map['visible'] == 0 ? false : true,
       name: (map['name'] ?? '') as String,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );

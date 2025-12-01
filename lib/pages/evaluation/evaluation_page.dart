@@ -9,6 +9,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_sect
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/instructions_section_widget.dart';
+import 'package:manager_mobile/pages/evaluation/widgets/sections/performed_service_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/photo_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/reading_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/replaced_product_section_widget.dart';
@@ -192,7 +193,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         key: _performedServiceKey,
                         onExpand: () => _scrollToKey(_performedServiceKey),
                         title: Text('Serviços Realizados'),
-                        children: [ReplacedProductSectionWidget()],
+                        children: [PerformedServiceSectionWidget()],
                       ),
                     );
                   },
