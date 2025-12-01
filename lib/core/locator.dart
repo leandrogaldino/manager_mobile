@@ -241,6 +241,8 @@ class Locator {
         evaluationService: _getIt.get<EvaluationService>(),
         personService: _getIt.get<PersonService>(),
         compressorService: _getIt.get<PersonCompressorService>(),
+        productService: _getIt.get<ProductService>(),
+        serviceService: _getIt.get<ServiceService>(),
       ),
     );
 
