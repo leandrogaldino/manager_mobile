@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_list_widget.dart';
-import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/core/widgets/service_picker/service_picker_list_widget.dart';
+import 'package:manager_mobile/models/service_model.dart';
 
-class TechnicianPickerDialog extends StatelessWidget {
-  final List<PersonModel> technicians;
+class ServicePickerDialog extends StatelessWidget {
+  final List<ServiceModel> services;
 
-  const TechnicianPickerDialog({
+  const ServicePickerDialog({
     super.key,
-    required this.technicians,
+    required this.services,
   });
 
   @override
@@ -18,17 +18,17 @@ class TechnicianPickerDialog extends StatelessWidget {
       ),
       title: Center(
         child: Text(
-          'Escolha o Técnico',
+          'Escolha o Serviço',
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
       content: SizedBox(
         width: double.maxFinite,
-        height: (technicians.length > 5) ? 330 : (technicians.length * 66),
-        child: TechnicianPickerListWidget(
-          technicians: technicians,
-          onTechnicianSelected: (PersonModel selectedTechnician) {
-            Navigator.pop(context, selectedTechnician);
+        height: (services.length > 5) ? 330 : (services.length * 66),
+        child: ServicePickerListWidget(
+          services: services,
+          onServiceSelected: (ServiceModel selectedService) {
+            Navigator.pop(context, selectedService);
           },
         ),
       ),

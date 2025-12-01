@@ -31,7 +31,7 @@ class TechnicianPicker {
     person = await showDialog<PersonModel>(
       context: context,
       builder: (BuildContext context) {
-        return TechniciaPickerDialog(
+        return TechnicianPickerDialog(
           technicians: allTechnicians,
         );
       },

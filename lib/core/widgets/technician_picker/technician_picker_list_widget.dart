@@ -15,10 +15,10 @@ class TechnicianPickerListWidget extends StatefulWidget {
   final ValueChanged<PersonModel> onTechnicianSelected;
 
   @override
-  State<TechnicianPickerListWidget> createState() => _TechnicianChoseListWidgetState();
+  State<TechnicianPickerListWidget> createState() => _TechnicianPickerListWidgetState();
 }
 
-class _TechnicianChoseListWidgetState extends State<TechnicianPickerListWidget> {
+class _TechnicianPickerListWidgetState extends State<TechnicianPickerListWidget> {
   late final DataService dataService;
 
   @override
