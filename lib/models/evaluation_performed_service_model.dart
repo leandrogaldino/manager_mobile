@@ -3,7 +3,7 @@ import 'package:manager_mobile/models/service_model.dart';
 
 class EvaluationPerformedServiceModel {
   final int? id;
-  final double quantity;
+  int quantity;
   final ServiceModel service;
 
   EvaluationPerformedServiceModel({
@@ -12,10 +12,9 @@ class EvaluationPerformedServiceModel {
     required this.service,
   });
 
-
   EvaluationPerformedServiceModel copyWith({
     int? id,
-    double? quantity,
+    int? quantity,
     ServiceModel? service,
   }) {
     return EvaluationPerformedServiceModel(
@@ -36,8 +35,8 @@ class EvaluationPerformedServiceModel {
   factory EvaluationPerformedServiceModel.fromMap(Map<String, dynamic> map) {
     return EvaluationPerformedServiceModel(
       id: map['id'] != null ? map['id'] as int : null,
-      quantity: (map['quantity'] ?? 0.0) as double,
-      service: ServiceModel.fromMap(map['service'] as Map<String,dynamic>),
+      quantity: (map['quantity'] ?? 0) as int,
+      service: ServiceModel.fromMap(map['service'] as Map<String, dynamic>),
     );
   }
 
@@ -51,11 +50,8 @@ class EvaluationPerformedServiceModel {
   @override
   bool operator ==(covariant EvaluationPerformedServiceModel other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.id == id &&
-      other.quantity == quantity &&
-      other.service == service;
+
+    return other.id == id && other.quantity == quantity && other.service == service;
   }
 
   @override

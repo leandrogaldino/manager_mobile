@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/services/data_service.dart';
 

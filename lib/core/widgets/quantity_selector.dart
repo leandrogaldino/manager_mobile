@@ -39,12 +39,13 @@ class _QuantitySelectorState extends State<QuantitySelector> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
       // Estilo de borda arredondada (opcional, mas comum no iFood)
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(

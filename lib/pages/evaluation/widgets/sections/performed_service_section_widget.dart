@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/service_picker.dart';
+import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
@@ -69,9 +70,19 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                               ),
                             ),
                           ),
-                          QuantitySelector(onQuantityChanged: (q) {
-                            if (q == 0) _evaluationController.removePerformedServiceAt(index);
-                            _evaluationController.updatePerformedServiceQuantity(index, q);
+                          QuantitySelector(onQuantityChanged: (q) async {
+                            if (q == 0) {
+                              bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este serviço?');
+                              if (answer == true) {
+                                _evaluationController.removePerformedServiceAt(index);
+                              } else {
+                                //TODO: DEFINE A QUANTIDADE PARA 1 MAS NAO REFLETE NO SELECTOR
+                                
+                                _evaluationController.updatePerformedServiceQuantity(index, 1);
+                              }
+                            } else {
+                              _evaluationController.updatePerformedServiceQuantity(index, q);
+                            }
                           })
                         ],
                       ),

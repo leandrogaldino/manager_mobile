@@ -261,7 +261,9 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.performedServices.removeAt(index);
     notifyListeners();
   }
-    void updatePerformedServiceQuantity(int index, int q) {
-    _evaluation!.performedServices[index].quantity = q;
-    }
+
+  void updatePerformedServiceQuantity(int index, int quantity) {
+    _evaluation!.performedServices[index].quantity = quantity;
+    notifyListeners();
+  }
 }
