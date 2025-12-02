@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/services/data_service.dart';
 
@@ -17,14 +19,22 @@ class ServicePickerWidget extends StatefulWidget {
 class _ServicePickerWidgetState extends State<ServicePickerWidget> {
   late final TextEditingController _serviceEC;
   late final DataService _dataService;
-  late List<ServiceModel> filteredServices;
+  late final EvaluationController _evaluationController;
+  late List<ServiceModel> _filteredServices;
 
   @override
   void initState() {
     super.initState();
     _serviceEC = TextEditingController();
     _dataService = Locator.get<DataService>();
-    filteredServices = _dataService.services;
+    _evaluationController = Locator.get<EvaluationController>();
+
+    var services = _evaluationController.evaluation!.performedServices.map((x) => x.service).toList();
+
+    _filteredServices = _dataService.services;
+    _filteredServices = _filteredServices.where((x) {
+      return !services.any((s) => s.id == x.id);
+    }).toList();
   }
 
   @override
@@ -42,7 +52,7 @@ class _ServicePickerWidgetState extends State<ServicePickerWidget> {
           decoration: InputDecoration(labelText: 'Serviço'),
           onChanged: (value) {
             setState(() {
-              filteredServices = _dataService.services.where((service) {
+              _filteredServices = _dataService.services.where((service) {
                 return service.name.toLowerCase().contains(value);
               }).toList();
             });
@@ -51,21 +61,21 @@ class _ServicePickerWidgetState extends State<ServicePickerWidget> {
         Divider(),
         Expanded(
           child: ListView.builder(
-              itemCount: filteredServices.length,
+              itemCount: _filteredServices.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(filteredServices[index].name),
+                  title: Text(_filteredServices[index].name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(filteredServices[index].name),
+                      Text(_filteredServices[index].name),
                       Divider(
                         color: Theme.of(context).colorScheme.primary,
                       )
                     ],
                   ),
                   onTap: () {
-                    widget.onServiceSelected(filteredServices[index]);
+                    widget.onServiceSelected(_filteredServices[index]);
                   },
                 );
               }),

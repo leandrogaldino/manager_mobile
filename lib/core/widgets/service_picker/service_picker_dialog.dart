@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/service_picker/service_picker_widget.dart';
-import 'package:manager_mobile/models/service_model.dart';
-import 'package:manager_mobile/services/data_service.dart';
+
 
 class ServicePickerDialog extends StatelessWidget {
   const ServicePickerDialog({
@@ -11,8 +9,6 @@ class ServicePickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DataService dataService = Locator.get<DataService>();
-    List<ServiceModel> services = dataService.services;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
