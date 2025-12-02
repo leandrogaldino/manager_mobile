@@ -23,6 +23,16 @@ class _QuantitySelectorState extends State<QuantitySelector> {
     _quantity = widget.initialQuantity;
   }
 
+  @override
+  void didUpdateWidget(covariant QuantitySelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialQuantity != _quantity) {
+      setState(() {
+        _quantity = widget.initialQuantity;
+      });
+    }
+  }
+
   void _decrement() {
     if (_quantity > 0) {
       setState(() {
@@ -39,25 +49,22 @@ class _QuantitySelectorState extends State<QuantitySelector> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Estilo de borda arredondada (opcional, mas comum no iFood)
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Ocupa o mínimo de espaço horizontal
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Botão de Decremento (-)
           IconButton(
             icon: const Icon(Icons.remove),
-            onPressed: _quantity > 0 ? _decrement : null, // Desabilita se for 1
+            onPressed: _quantity > 0 ? _decrement : null,
             color: Theme.of(context).colorScheme.primary,
           ),
-
           // Texto da Quantidade
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -66,8 +73,6 @@ class _QuantitySelectorState extends State<QuantitySelector> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-
-          // Botão de Incremento (+)
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _increment,

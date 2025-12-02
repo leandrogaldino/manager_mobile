@@ -63,14 +63,11 @@ class _ServicePickerWidgetState extends State<ServicePickerWidget> {
               itemCount: _filteredServices.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_filteredServices[index].name),
-                  subtitle: Column(
+                  title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(_filteredServices[index].name),
-                                               Divider(
-                        color: Theme.of(context).colorScheme.primary,
-                      )
+                      Divider(color: Theme.of(context).colorScheme.primary),
                     ],
                   ),
                   onTap: () {

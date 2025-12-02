@@ -115,6 +115,7 @@ class SQLScripts {
     CREATE TABLE productcode (
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
+      ismain INTEGER NOT NULL,
       code TEXT NOT NULL,
       productid INT NOT NULL,
       lastupdate INTEGER NOT NULL,

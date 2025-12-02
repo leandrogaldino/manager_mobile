@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/service_picker.dart';
@@ -64,26 +66,30 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                           Expanded(
                             child: Align(
                               alignment: Alignment.centerLeft,
-                              child: Text(
-                                _evaluationController.evaluation!.performedServices[index].service.name,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Text(
+                                  _evaluationController.evaluation!.performedServices[index].service.name,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ),
                           ),
-                          QuantitySelector(onQuantityChanged: (q) async {
-                            if (q == 0) {
-                              bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este serviço?');
-                              if (answer == true) {
-                                _evaluationController.removePerformedServiceAt(index);
+                          QuantitySelector(
+                            initialQuantity: _evaluationController.evaluation!.performedServices[index].quantity,
+                            onQuantityChanged: (q) async {
+                              if (q == 0) {
+                                bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este serviço?');
+                                if (answer == true) {
+                                  _evaluationController.removePerformedServiceAt(index);
+                                } else {
+                                              _evaluationController.updatePerformedServiceQuantity(index, 1);
+                                }
                               } else {
-                                //TODO: DEFINE A QUANTIDADE PARA 1 MAS NAO REFLETE NO SELECTOR
-                                
-                                _evaluationController.updatePerformedServiceQuantity(index, 1);
+                                _evaluationController.updatePerformedServiceQuantity(index, q);
                               }
-                            } else {
-                              _evaluationController.updatePerformedServiceQuantity(index, q);
-                            }
-                          })
+                            },
+                          ),
                         ],
                       ),
                       index != _evaluationController.evaluation!.technicians.length - 1
