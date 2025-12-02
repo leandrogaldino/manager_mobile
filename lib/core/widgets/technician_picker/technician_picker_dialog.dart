@@ -24,7 +24,7 @@ class TechnicianPickerDialog extends StatelessWidget {
       ),
       content: SizedBox(
         width: double.maxFinite,
-        height: (technicians.length > 5) ? 330 : (technicians.length * 66),
+        height: 350,
         child: TechnicianPickerListWidget(
           technicians: technicians,
           onTechnicianSelected: (PersonModel selectedTechnician) {

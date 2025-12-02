@@ -25,7 +25,7 @@ class ServicePickerDialog extends StatelessWidget {
       ),
       content: SizedBox(
         width: double.maxFinite,
-        height: (services.length > 5) ? 330 : (services.length * 66),
+        height: 350,
         child: ServicePickerWidget(
           onServiceSelected: (service) {
             Navigator.pop(context, service);

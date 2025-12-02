@@ -25,7 +25,7 @@ class CompressorPickerDialog extends StatelessWidget {
       ),
       content: SizedBox(
         width: double.maxFinite,
-        height: (compressors.length > 5) ? 330 : (compressors.length * 66),
+        height:350,
         child: CompressorPickerWidget(
           onCompressorSelected: (compressor) {
             Navigator.pop(context, compressor);
