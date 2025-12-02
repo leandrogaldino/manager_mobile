@@ -352,4 +352,6 @@ class EvaluationModel {
         advice.hashCode ^
         lastUpdate.hashCode;
   }
+
+
 }

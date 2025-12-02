@@ -256,4 +256,12 @@ class EvaluationController extends ChangeNotifier {
     await _dataService.fetchVisitSchedules();
     notifyListeners();
   }
+
+  void removePerformedServiceAt(int index) {
+    _evaluation!.performedServices.removeAt(index);
+    notifyListeners();
+  }
+    void updatePerformedServiceQuantity(int index, int q) {
+    _evaluation!.performedServices[index].quantity = q;
+    }
 }

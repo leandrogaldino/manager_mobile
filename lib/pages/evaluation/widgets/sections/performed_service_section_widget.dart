@@ -5,6 +5,7 @@ import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/models/service_model.dart';
+import 'package:manager_mobile/core/widgets/quantity_selector.dart';
 
 class PerformedServiceSectionWidget extends StatefulWidget {
   const PerformedServiceSectionWidget({super.key});
@@ -59,24 +60,19 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              _evaluationController.evaluation!.performedServices[index].service.name,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                _evaluationController.evaluation!.performedServices[index].service.name,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            height: 40,
-                            child: Offstage(
-                              offstage: index == 0 || _evaluationController.source == SourceTypes.fromSaved,
-                              child: IconButton(
-                                  onPressed: () {
-                                    _evaluationController.removePerformedService(_evaluationController.evaluation!.performedServices[index]);
-                                  },
-                                  icon: Icon(Icons.delete)),
-                            ),
-                          )
+                          QuantitySelector(onQuantityChanged: (q) {
+                            if (q == 0) _evaluationController.removePerformedServiceAt(index);
+                            _evaluationController.updatePerformedServiceQuantity(index, q);
+                          })
                         ],
                       ),
                       index != _evaluationController.evaluation!.technicians.length - 1

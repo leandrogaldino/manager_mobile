@@ -69,7 +69,7 @@ class _ServicePickerWidgetState extends State<ServicePickerWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(_filteredServices[index].name),
-                      Divider(
+                                               Divider(
                         color: Theme.of(context).colorScheme.primary,
                       )
                     ],
