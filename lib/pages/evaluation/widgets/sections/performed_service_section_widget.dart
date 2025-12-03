@@ -81,9 +81,9 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                               if (q == 0) {
                                 bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este serviço?');
                                 if (answer == true) {
-                                  _evaluationController.removePerformedServiceAt(index);
+                                  _evaluationController.removePerformedService(_evaluationController.evaluation!.performedServices[index]);
                                 } else {
-                                              _evaluationController.updatePerformedServiceQuantity(index, 1);
+                                  _evaluationController.updatePerformedServiceQuantity(index, 1);
                                 }
                               } else {
                                 _evaluationController.updatePerformedServiceQuantity(index, q);
@@ -92,12 +92,14 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                           ),
                         ],
                       ),
-                      index != _evaluationController.evaluation!.technicians.length - 1
-                          ? Divider(
-                              color: Theme.of(context).colorScheme.primary,
-                              height: 1,
-                            )
-                          : SizedBox.shrink(),
+                      Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: Divider(
+                                color: Theme.of(context).colorScheme.primary,
+                                height: 1,
+                              ),
+                      )
+                        
                     ],
                   );
                 },

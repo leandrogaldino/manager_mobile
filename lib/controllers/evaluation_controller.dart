@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
+import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -220,6 +221,35 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePerformedServiceQuantity(int index, int quantity) {
+    _evaluation!.performedServices[index].quantity = quantity;
+    notifyListeners();
+  }
+
+
+
+
+  void addReplacedProduct(EvaluationReplacedProductModel replacedProduct) {
+    _evaluation!.replacedProducts.add(replacedProduct);
+    notifyListeners();
+  }
+
+  void removeReplacedProduct(EvaluationReplacedProductModel replacedProduct) {
+    _evaluation!.replacedProducts.remove(replacedProduct);
+    notifyListeners();
+  }
+
+  void updateReplacedProductQuantity(int index, int quantity) {
+    _evaluation!.replacedProducts[index].quantity = quantity;
+    notifyListeners();
+  }
+
+
+
+
+
+
+
   void addCoalescent(EvaluationCoalescentModel coalescent) {
     _evaluation!.coalescents.add(coalescent);
     notifyListeners();
@@ -254,16 +284,6 @@ class EvaluationController extends ChangeNotifier {
   Future<void> refreshData() async {
     await _dataService.fetchEvaluations();
     await _dataService.fetchVisitSchedules();
-    notifyListeners();
-  }
-
-  void removePerformedServiceAt(int index) {
-    _evaluation!.performedServices.removeAt(index);
-    notifyListeners();
-  }
-
-  void updatePerformedServiceQuantity(int index, int quantity) {
-    _evaluation!.performedServices[index].quantity = quantity;
     notifyListeners();
   }
 }

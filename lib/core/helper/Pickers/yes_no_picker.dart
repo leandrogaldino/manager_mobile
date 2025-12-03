@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/widgets/yes_no_picker/yes_no_picker_dialog.dart';
+import 'package:manager_mobile/core/widgets/yes_no_picker_dialog.dart';
 
 class YesNoPicker {
   static Future<bool?> pick({

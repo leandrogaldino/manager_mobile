@@ -11,12 +11,12 @@ class EvaluationReplacedProductRepository {
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-      bool exists = await _localDatabase.isSaved('evvaluationreplacedproduct', id: data['id'] == null ? 0 : data['id'] as int);
+      bool exists = await _localDatabase.isSaved('evaluationreplacedproduct', id: data['id'] == null ? 0 : data['id'] as int);
       if (!exists) {
-        int id = await _localDatabase.insert('evvaluationreplacedproduct', data);
+        int id = await _localDatabase.insert('evaluationreplacedproduct', data);
         data['id'] = id;
       } else {
-        await _localDatabase.update('evvaluationreplacedproduct', data, where: 'id = ?', whereArgs: [data['id']]);
+        await _localDatabase.update('evaluationreplacedproduct', data, where: 'id = ?', whereArgs: [data['id']]);
       }
       return data;
     } on LocalDatabaseException {

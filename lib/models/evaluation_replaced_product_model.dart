@@ -3,7 +3,7 @@ import 'package:manager_mobile/models/product_model.dart';
 
 class EvaluationReplacedProductModel {
   final int? id;
-  final double quantity;
+   int quantity;
   final ProductModel product;
 
   EvaluationReplacedProductModel({
@@ -15,7 +15,7 @@ class EvaluationReplacedProductModel {
 
   EvaluationReplacedProductModel copyWith({
     int? id,
-    double? quantity,
+    int? quantity,
     ProductModel? product,
   }) {
     return EvaluationReplacedProductModel(
@@ -36,7 +36,7 @@ class EvaluationReplacedProductModel {
   factory EvaluationReplacedProductModel.fromMap(Map<String, dynamic> map) {
     return EvaluationReplacedProductModel(
       id: map['id'] != null ? map['id'] as int : null,
-      quantity: (map['quantity'] ?? 0.0) as double,
+      quantity: (map['quantity'] ?? 0) as int,
       product: ProductModel.fromMap(map['product'] as Map<String,dynamic>),
     );
   }

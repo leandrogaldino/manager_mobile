@@ -50,7 +50,7 @@ class _ProductPickerWidgetState extends State<ProductPickerWidget> {
           onChanged: (value) {
             setState(() {
               _filteredProducts = _dataService.products.where((product) {
-                return product.name.toLowerCase().contains(value) || product.codes.any((p) => p.code.contains(value));
+                return product.name.toLowerCase().contains(value) || product.codes.any((p) => p.code.toLowerCase() .contains(value));
               }).toList();
             });
           },
