@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/service_picker.dart';
@@ -54,6 +52,7 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                 ),
               ),
               ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemCount: _evaluationController.evaluation!.performedServices.length,
@@ -66,16 +65,14 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                           Expanded(
                             child: Align(
                               alignment: Alignment.centerLeft,
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Text(
-                                  _evaluationController.evaluation!.performedServices[index].service.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
+                              child: Text(
+                                _evaluationController.evaluation!.performedServices[index].service.name,
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
                           ),
                           QuantitySelector(
+                            readOnly: _evaluationController.source == SourceTypes.fromSaved,
                             initialQuantity: _evaluationController.evaluation!.performedServices[index].quantity,
                             onQuantityChanged: (q) async {
                               if (q == 0) {
@@ -95,11 +92,10 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                       Padding(
                         padding: const EdgeInsets.all(3),
                         child: Divider(
-                                color: Theme.of(context).colorScheme.primary,
-                                height: 1,
-                              ),
+                          color: Theme.of(context).colorScheme.primary,
+                          height: 1,
+                        ),
                       )
-                        
                     ],
                   );
                 },

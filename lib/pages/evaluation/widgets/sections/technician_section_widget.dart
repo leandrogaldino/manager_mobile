@@ -47,6 +47,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                 ),
               ),
               ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemCount: _evaluationController.evaluation!.technicians.length,
@@ -76,12 +77,10 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                           )
                         ],
                       ),
-                      index != _evaluationController.evaluation!.technicians.length - 1
-                          ? Divider(
-                              color: Theme.of(context).colorScheme.primary,
-                              height: 1,
-                            )
-                          : SizedBox.shrink(),
+                      Divider(
+                        color: Theme.of(context).colorScheme.primary,
+                        height: 1,
+                      ),
                     ],
                   );
                 },

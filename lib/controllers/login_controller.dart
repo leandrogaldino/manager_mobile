@@ -9,11 +9,10 @@ import 'package:manager_mobile/states/login_state.dart';
 class LoginController extends ChangeNotifier {
   final Auth _authService;
 
-
   LoginController({
     required Auth service,
     required AppPreferences appPreferences,
-  })  : _authService = service;
+  }) : _authService = service;
 
   LoginState _state = LoginStateInitial();
   LoginState get state => _state;
@@ -30,7 +29,7 @@ class LoginController extends ChangeNotifier {
   Future<void> signIn(String email, String password) async {
     _setState(LoginStateLoading());
     try {
-      final hasConnection = await   InternetConnection().hasInternetAccess;
+      final hasConnection = await InternetConnection().hasInternetAccess;
       if (!hasConnection) {
         _setState(LoginStateError('Sem conexão com a internet.'));
         return;

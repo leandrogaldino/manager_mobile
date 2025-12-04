@@ -1,14 +1,8 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/models/year_month_model.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
-import 'package:manager_mobile/pages/home/widgets/filterbar/year_month_picker_widget.dart';
 
 class PopupButtonWidget extends StatefulWidget {
   const PopupButtonWidget({super.key});
@@ -19,20 +13,27 @@ class PopupButtonWidget extends StatefulWidget {
 
 class _PopupButtonWidgetState extends State<PopupButtonWidget> {
   late final LoginController _loginController;
-  late final EvaluationController _evaluationController;
 
   @override
   void initState() {
     super.initState();
     _loginController = Locator.get<LoginController>();
-    _evaluationController = Locator.get<EvaluationController>();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      icon: const Icon(Icons.more_vert),
+      icon: Icon(Icons.more_vert),
       itemBuilder: (_) => [
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text('EDNALDO NUNES', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+          ),
+        ),
         PopupMenuItem(
           child: ListTile(
             leading: const Icon(Icons.palette),
@@ -51,71 +52,15 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
         ),
         PopupMenuItem(
           child: ListTile(
-            leading: const Icon(Icons.cleaning_services),
-            title: const Text('Limpar'),
-            onTap: () async {
-              Navigator.pop(context);
-              bool? isYes = await YesNoPicker.pick(context: context, question: 'Avaliações com mais de 4 meses serão excluídas permanentemente deste dispositivo. Deseja continuar?') ?? false;
-              if (isYes) {
-                int deleted = await _evaluationController.clean();
-                String deletedMessage = '';
-                deleted > 0 ? deletedMessage = ', $deleted avaliações excluídas' : deletedMessage = ', nenhuma avaliação excluída';
-                if (!context.mounted) {
-                  return;
-                }
-                Message.showInfoSnackbar(context: context, message: 'Limpeza concluída$deletedMessage.');
-              }
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Sair'),
             onTap: () async {
-              Navigator.pop(context);
-              await _loginController.signOut();
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Resetar LocalDB'),
-            onTap: () async {
-              Navigator.pop(context);
-              var db = Locator.get<LocalDatabase>();
-              await db.delete('visitschedule');
-              await db.delete('evaluation');
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Filtro data'),
-            onTap: () async {
-              Navigator.pop(context);
-
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    contentPadding: EdgeInsets.zero,
-                    content: YearMonthPickerWidget(
-                      dataSet: {
-                        2024: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                        2025: [1, 2, 3]
-                      },
-                      selectedYearMonth: YearMonthModel(year: 2025, month: 2),
-                      onSelected: (yearmonth) {
-                        log("Selecionado: ${yearmonth.monthName} de ${yearmonth.year}");
-                      },
-                    ),
-                  );
-                },
-              );
+              bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja sair?');
+              if (answer == true) {
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                await _loginController.signOut();
+              }
             },
           ),
         ),

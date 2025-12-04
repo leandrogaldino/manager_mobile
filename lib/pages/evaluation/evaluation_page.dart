@@ -102,7 +102,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   visible: _evaluationController.source == SourceTypes.fromSchedule && widget.instructions != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
-                    title: Text('Instruções'),
+                    title: 'Instruções',
                     children: [
                       InstructionsSectionWidget(
                         instructions: widget.instructions ?? '',
@@ -117,7 +117,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 Visibility(
                   visible: _evaluationController.source == SourceTypes.fromSaved,
                   child: ExpandableSectionWidget(
-                    title: Text('Cabeçalho'),
+                    title: 'Cabeçalho',
                     children: [
                       HeaderSectionWidget(),
                     ],
@@ -132,7 +132,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   builder: (context, child) {
                     return ExpandableSectionWidget(
                       initiallyExpanded: true,
-                      title: Text('Dados do Compressor'),
+                      title: 'Dados do Compressor',
                       children: [ReadingSectionWidget(formKey: _readingKey)],
                     );
                   },
@@ -146,7 +146,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       child: ExpandableSectionWidget(
                         key: _coalescentKey,
                         onExpand: () => _scrollToKey(_coalescentKey),
-                        title: Text('Coalescentes'),
+                        title: 'Coalescentes',
                         children: [CoalescentSectionWidget()],
                       ),
                     );
@@ -169,7 +169,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       child: ExpandableSectionWidget(
                         key: _replacedProductKey,
                         onExpand: () => _scrollToKey(_replacedProductKey),
-                        title: Text('Peças Substituídas'),
+                        title: 'Peças Substituídas',
                         children: [ReplacedProductSectionWidget()],
                       ),
                     );
@@ -192,7 +192,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       child: ExpandableSectionWidget(
                         key: _performedServiceKey,
                         onExpand: () => _scrollToKey(_performedServiceKey),
-                        title: Text('Serviços Realizados'),
+                        title: 'Serviços Realizados',
                         children: [PerformedServiceSectionWidget()],
                       ),
                     );
@@ -210,7 +210,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ExpandableSectionWidget(
                   key: _technicianKey,
                   onExpand: () => _scrollToKey(_technicianKey),
-                  title: Text('Técnicos'),
+                  title: 'Técnicos',
                   children: [TechnicianSectionWidget()],
                 ),
                 ListenableBuilder(
@@ -229,7 +229,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       child: ExpandableSectionWidget(
                         key: _photoKey,
                         onExpand: () => _scrollToKey(_photoKey),
-                        title: Text('Fotos'),
+                        title: 'Fotos',
                         children: [PhotoSectionWidget()],
                       ),
                     );
@@ -253,7 +253,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       child: ExpandableSectionWidget(
                         key: _signatureKey,
                         onExpand: () => _scrollToKey(_signatureKey),
-                        title: Text('Assinatura'),
+                        title: 'Assinatura',
                         children: [SignatureSectionWidget()],
                       ),
                     );

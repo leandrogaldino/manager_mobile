@@ -29,7 +29,7 @@ class EvaluationReplacedProductModel {
     return <String, dynamic>{
       'id': id,
       'quantity': quantity,
-      'product': product.toMap(),
+      'productid': product.id,
     };
   }
 

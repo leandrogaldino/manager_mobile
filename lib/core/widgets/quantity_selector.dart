@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class QuantitySelector extends StatefulWidget {
   final int initialQuantity;
+  final bool readOnly;
   final ValueChanged<int> onQuantityChanged;
 
   const QuantitySelector({
     super.key,
     this.initialQuantity = 1,
+    this.readOnly = false,
     required this.onQuantityChanged,
   });
 
@@ -59,13 +61,14 @@ class _QuantitySelectorState extends State<QuantitySelector> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Botão de Decremento (-)
-          IconButton(
-            icon: const Icon(Icons.remove),
-            onPressed: _quantity > 0 ? _decrement : null,
-            color: Theme.of(context).colorScheme.primary,
+          Offstage(
+            offstage: widget.readOnly,
+            child: IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: _quantity > 0 ? _decrement : null,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          // Texto da Quantidade
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
@@ -73,10 +76,13 @@ class _QuantitySelectorState extends State<QuantitySelector> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _increment,
-            color: Theme.of(context).colorScheme.primary,
+          Offstage(
+            offstage: widget.readOnly,
+            child: IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _increment,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ],
       ),

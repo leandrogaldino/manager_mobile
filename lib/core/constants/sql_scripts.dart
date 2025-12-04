@@ -188,7 +188,7 @@ class SQLScripts {
   static const String createTableEvaluationReplacedProduct = '''
     CREATE TABLE evaluationreplacedproduct (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      quantity REAL NOT NULL,
+      quantity INT NOT NULL,
       productid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       FOREIGN KEY (productid) REFERENCES product (id) ON DELETE RESTRICT,
@@ -199,7 +199,7 @@ class SQLScripts {
   static const String createTableEvaluationPerformedService = '''
     CREATE TABLE evaluationperformedservice (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      quantity REAL NOT NULL,
+      quantity INT NOT NULL,
       serviceid INT NOT NULL,
       evaluationid TEXT NOT NULL,
       FOREIGN KEY (serviceid) REFERENCES service (id) ON DELETE RESTRICT,
@@ -227,7 +227,7 @@ class SQLScripts {
     );
   ''';
 
-  static const String createTableSchedule = '''
+  static const String createTableVisitSchedule = '''
     CREATE TABLE visitschedule (
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,

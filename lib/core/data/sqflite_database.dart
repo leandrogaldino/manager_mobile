@@ -29,13 +29,13 @@ class SqfliteDatabase implements LocalDatabase {
           await db.execute(SQLScripts.createTableEvaluationTechnician);
           await db.execute(SQLScripts.createTableEvaluationCoalescent);
           await db.execute(SQLScripts.createTableEvaluationPhoto);
-          await db.execute(SQLScripts.createTableSchedule);
+          await db.execute(SQLScripts.createTableVisitSchedule);
           await db.execute(SQLScripts.insertThemePreference);
           await db.execute(SQLScripts.insertLastSyncPreference);
           await db.execute(SQLScripts.insertLoggedTechnicianIdPreference);
-          await db.execute( SQLScripts.insertIgnoreLastSynchronizePreference);
-          await db.execute( SQLScripts.insertSyncLockTimePreference);
-          await db.execute( SQLScripts.insertSyncCountPreference);
+          await db.execute(SQLScripts.insertIgnoreLastSynchronizePreference);
+          await db.execute(SQLScripts.insertSyncLockTimePreference);
+          await db.execute(SQLScripts.insertSyncCountPreference);
         },
       );
     } on DatabaseException catch (e, s) {

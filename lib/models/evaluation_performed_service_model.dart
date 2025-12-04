@@ -28,7 +28,7 @@ class EvaluationPerformedServiceModel {
     return <String, dynamic>{
       'id': id,
       'quantity': quantity,
-      'service': service.toMap(),
+      'serviceid': service.id,
     };
   }
 

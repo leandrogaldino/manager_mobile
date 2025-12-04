@@ -88,7 +88,7 @@ class EvaluationModel {
       id: null,
       visible: true,
       importedId: null,
-      visitscheduleid: null,
+      visitscheduleid: schedule?.id,
       existsInCloud: false,
       needProposal: false,
       callType: schedule != null ? schedule.callType : CallTypes.none,

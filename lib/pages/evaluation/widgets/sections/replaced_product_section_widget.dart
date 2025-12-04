@@ -78,6 +78,7 @@ class _ReplacedProductSectionWidgetState extends State<ReplacedProductSectionWid
                             ),
                           ),
                           QuantitySelector(
+                            readOnly: _evaluationController.source == SourceTypes.fromSaved,
                             initialQuantity: _evaluationController.evaluation!.replacedProducts[index].quantity,
                             onQuantityChanged: (q) async {
                               if (q == 0) {

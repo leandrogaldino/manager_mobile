@@ -226,9 +226,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
   void addReplacedProduct(EvaluationReplacedProductModel replacedProduct) {
     _evaluation!.replacedProducts.add(replacedProduct);
     notifyListeners();
@@ -243,12 +240,6 @@ class EvaluationController extends ChangeNotifier {
     _evaluation!.replacedProducts[index].quantity = quantity;
     notifyListeners();
   }
-
-
-
-
-
-
 
   void addCoalescent(EvaluationCoalescentModel coalescent) {
     _evaluation!.coalescents.add(coalescent);
