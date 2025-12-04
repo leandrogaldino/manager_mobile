@@ -5,12 +5,16 @@ abstract class HomeState {}
 
 class HomeStateInitial extends HomeState {}
 
-
 class HomeStateLoading extends HomeState {}
+
+class HomeStateInfo extends HomeState {
+  final String infoMessage;
+
+  HomeStateInfo({required this.infoMessage});
+}
 
 class HomeStateError extends HomeState {
   final String errorMessage;
-
   HomeStateError(this.errorMessage);
 }
 

@@ -26,7 +26,6 @@ void main() async {
   await Locator.get<AppController>().clearOldTemporaryFiles();
   await GetIt.I<AppController>().loadTheme();
   await Locator.get<EvaluationController>().clean();
-
   final hasConnection = await InternetConnection().hasInternetAccess;
 
 

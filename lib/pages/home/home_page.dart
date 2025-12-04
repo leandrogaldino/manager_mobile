@@ -66,25 +66,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    // 🎯 O ponto de gatilho para salvar os dados:
     if ((state == AppLifecycleState.paused || state == AppLifecycleState.hidden) && _homeController.synchronizing) {
       log('AppLifecycleState: App entrando em Background. Salvando estado...', time: DateTime.now());
-      //_homeController.saveCriticalData();
       await _appPreferences.setIgnoreLastSynchronize(true);
 
       log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTime.now());
     }
-
-    // Opcional: Acionar a sincronização ao voltar para o foreground
     if (state == AppLifecycleState.resumed) {
       log('AppLifecycleState: App voltando para Foreground.', time: DateTime.now());
-      // Opcional: Recarregar dados ou resumir operações.
     }
   }
 
   @override
   Widget build(BuildContext context) {
-        return Scaffold(
+    return Scaffold(
       appBar: CustomAppBar(),
       body: ListenableBuilder(
           listenable: _homeController,
@@ -99,6 +94,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 Message.showErrorSnackbar(
                   context: context,
                   message: state.errorMessage,
+                );
+              });
+            }
+
+            if (state is HomeStateInfo) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Message.showInfoSnackbar(
+                  context: context,
+                  message: state.infoMessage,
                 );
               });
             }

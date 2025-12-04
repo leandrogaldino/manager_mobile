@@ -119,15 +119,19 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> synchronize({bool showLoading = false, bool isAuto = false}) async {
-    bool hasConnection = await InternetConnection().hasInternetAccess;
-    if (!hasConnection) {
-      _setState(HomeStateError("Sem conexão com a internet."));
-      return;
-    }
+    int totalCount = 0;
     await WakelockPlus.enable();
     try {
       if (showLoading) _setState(HomeStateLoading());
-      int totalCount = await _syncService.runSync(isAuto: isAuto);
+      bool hasConnection = await InternetConnection().hasInternetAccess;
+      if (hasConnection) {
+        totalCount = await _syncService.runSync(isAuto: isAuto);
+        if (totalCount > 0) {
+          totalCount == 1 ? _setState(HomeStateInfo(infoMessage: '$totalCount registro sincronizado')) : _setState(HomeStateInfo(infoMessage: '$totalCount registros sincronizados'));
+        }
+      } else {
+        _setState(HomeStateInfo(infoMessage: 'Sem conexão com a internet'));
+      }
       fetchAllIfNeeded(totalCount > 0, showLoading: showLoading);
     } catch (e) {
       _setState(HomeStateError(e.toString()));
