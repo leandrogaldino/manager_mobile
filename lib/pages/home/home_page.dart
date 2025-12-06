@@ -180,18 +180,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   child: FloatingActionButton(
                     onPressed: () async {
                       var evaluation = EvaluationModel.fromScheduleOrNew();
-                      var loggedTechnician = await _loginController.currentLoggedUser;
-
-                      if (loggedTechnician != null) {
-                        evaluation.technicians.add(
-                          EvaluationTechnicianModel(
-                            isMain: true,
-                            technician: loggedTechnician,
-                          ),
-                        );
-                      }
-
                       _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
+                      var loggedTechnician = await _loginController.currentLoggedUser;
+                      _evaluationController.addTechnician(
+                        EvaluationTechnicianModel(
+                          isMain: true,
+                          technician: loggedTechnician!,
+                        ),
+                      );
 
                       if (!context.mounted) return;
 
