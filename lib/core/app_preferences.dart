@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 
 class AppPreferences {
@@ -11,7 +12,7 @@ class AppPreferences {
   }
 
   Future<void> setLastSynchronize() async {
-    await _database.update('preferences', {'value': DateTime.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
+    await _database.update('preferences', {'value': DateTimeHelper.now().millisecondsSinceEpoch}, where: 'key = ?', whereArgs: ['lastsync']);
   }
 
   Future<int> get lastSynchronize async {
@@ -34,7 +35,7 @@ class AppPreferences {
     var data = await _database.query('preferences', columns: ['value'], where: 'key = ?', whereArgs: ['synclocktime']);
     if (data[0]['value'] == null) return null;
     int intTime = int.parse(data[0]['value'].toString());
-    return DateTime.fromMillisecondsSinceEpoch(intTime);
+    return DateTimeHelper.fromMillisecondsSinceEpoch(intTime);
   }
 
   Future<void> setSyncLockTime(DateTime? time) async {

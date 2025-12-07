@@ -5,7 +5,7 @@ class DateTimeHelper {
   static bool _initialized = false;
   static late tz.Location _sp;
 
-  /// Inicializa timezone (chame no main)
+  /// Inicialize no main()
   static Future<void> initialize() async {
     if (_initialized) return;
     tz.initializeTimeZones();
@@ -14,48 +14,25 @@ class DateTimeHelper {
   }
 
   // ----------------------------
-  // Mesmos métodos estáticos do DateTime
+  // Métodos equivalentes ao DateTime
   // ----------------------------
 
-  /// DateTime.now()
+  /// DateTime.now() → MAS sempre São Paulo
   static DateTime now() {
     return tz.TZDateTime.now(_sp);
   }
 
-  /// DateTime.utc(...)
-  static DateTime utc(
-    int year, [
-    int month = 1,
-    int day = 1,
-    int hour = 0,
-    int minute = 0,
-    int second = 0,
-    int millisecond = 0,
-    int microsecond = 0,
-  ]) {
-    return tz.TZDateTime.utc(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
-      millisecond,
-      microsecond,
-    ).toLocal();
-  }
+  
 
   /// DateTime.parse()
   static DateTime parse(String input) {
-    final parsed = DateTime.parse(input);
-    return tz.TZDateTime.from(parsed, _sp);
+    return tz.TZDateTime.from(DateTime.parse(input), _sp);
   }
 
   /// DateTime.tryParse()
   static DateTime? tryParse(String input) {
-    final parsed = DateTime.tryParse(input);
-    if (parsed == null) return null;
-    return tz.TZDateTime.from(parsed, _sp);
+    final dt = DateTime.tryParse(input);
+    return dt == null ? null : tz.TZDateTime.from(dt, _sp);
   }
 
   /// DateTime.fromMillisecondsSinceEpoch()
@@ -76,9 +53,7 @@ class DateTimeHelper {
     return tz.TZDateTime.from(dt, _sp);
   }
 
-  // ----------------------------
-  // Construtor igual ao DateTime original
-  // ----------------------------
+  /// Construtor DateTime(...)
   static DateTime create(
     int year, [
     int month = 1,
@@ -103,14 +78,7 @@ class DateTimeHelper {
   }
 
   // ----------------------------
-  // Conversão para SP
-  // ----------------------------
-  static DateTime toSP(DateTime date) {
-    return tz.TZDateTime.from(date, _sp);
-  }
-
-  // ----------------------------
-  // Helpers opcionais
+  // Helpers simples
   // ----------------------------
   static String formatTime(DateTime dt) {
     return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';

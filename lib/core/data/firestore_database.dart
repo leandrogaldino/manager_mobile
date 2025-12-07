@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 
@@ -25,7 +26,7 @@ class FirestoreDatabase implements RemoteDatabase {
     } catch (e, s) {
       String code = 'RDB001';
       String message = 'Ocorreu um erro ao consultar o registro na núvem.';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RemoteDatabaseException(code, message);
     }
   }
@@ -81,7 +82,7 @@ class FirestoreDatabase implements RemoteDatabase {
     } catch (e, s) {
       String code = 'RDB002';
       String message = 'Ocorreu um erro ao salvar o registro na núvem.';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RemoteDatabaseException(code, message);
     }
   }
@@ -98,7 +99,7 @@ class FirestoreDatabase implements RemoteDatabase {
     } catch (e, s) {
       String code = 'RDB003';
       String message = 'Ocorreu um erro ao excluir o registro na núvem.';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RemoteDatabaseException(code, message);
     }
   }
@@ -110,7 +111,7 @@ class FirestoreDatabase implements RemoteDatabase {
     } catch (e, s) {
       String code = 'RDB004';
       String message = 'Ocorreu um erro ao atualizar o registro na núvem.';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RemoteDatabaseException(code, message);
     }
   }

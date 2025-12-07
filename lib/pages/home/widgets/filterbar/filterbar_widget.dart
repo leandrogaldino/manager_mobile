@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/services/data_service.dart';
 
@@ -94,8 +95,8 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       onTap: () async {
                         final DateTimeRange? picked = await showDateRangePicker(
                           context: context,
-                          firstDate: _dataService.firstEvaluationOrVisitScheduleDate ?? DateTime(2000),
-                          lastDate: _dataService.lastEvaluationOrVisitScheduleDate ?? DateTime(2100),
+                          firstDate: _dataService.firstEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2000),
+                          lastDate: _dataService.lastEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2100),
                           initialDateRange: _homeController.selectedDateRange,
                         );
 

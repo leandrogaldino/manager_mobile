@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:manager_mobile/core/exceptions/storage_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 
 class FirebaseCloudStorage implements Storage {
@@ -17,7 +18,7 @@ class FirebaseCloudStorage implements Storage {
     } catch (e, s) {
       String code = 'STO001';
       String message = 'Erro ao fazer upload do arquivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw StorageException(code, message);
     }
   }
@@ -31,7 +32,7 @@ class FirebaseCloudStorage implements Storage {
     } catch (e, s) {
       String code = 'STO002';
       String message = 'Erro ao fazer download do arquivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw StorageException(code, message);
     }
   }
@@ -44,7 +45,7 @@ class FirebaseCloudStorage implements Storage {
     } catch (e, s) {
       String code = 'STO003';
       String message = 'Erro ao deletar o arquivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw StorageException(code, message);
     }
   }
@@ -61,7 +62,7 @@ class FirebaseCloudStorage implements Storage {
       }
       String code = 'STO004';
       String message = 'Erro ao verificar existência do arquivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw StorageException(code, message);
     }
   }
@@ -82,7 +83,7 @@ class FirebaseCloudStorage implements Storage {
     } catch (e, s) {
       String code = 'STO005';
       String message = 'Erro ao obter os metadados do arquivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw StorageException(code, message);
     }
   }

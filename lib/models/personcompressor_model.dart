@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/personcompressorcoalescent_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
@@ -57,7 +58,7 @@ class PersonCompressorModel {
       visible: map['visible'] == 0 ? false : true,
       person: PersonModel.fromMap(map['person']),
       compressor: CompressorModel.fromMap(map['compressor']),
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
       serialNumber: (map['serialnumber'] ?? '') as String,
       sector: (map['sector'] ?? '') as String,
       patrimony: (map['patrimony'] ?? '') as String,

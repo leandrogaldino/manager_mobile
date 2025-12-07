@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
 import 'package:manager_mobile/repositories/evaluation_performed_service_repository.dart';
@@ -66,8 +66,8 @@ class EvaluationRepository {
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
     try {
       visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
-      data['endtime'] = '${TimeOfDay.now().hour.toString().padLeft(2,"0")}:${TimeOfDay.now().minute.toString().padLeft(2,"0")}';
-      data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
+      data['endtime'] = DateTimeHelper.formatTime(DateTimeHelper.now());
+      data['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
       var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
       data.remove('coalescents');
 
@@ -118,7 +118,7 @@ class EvaluationRepository {
       } else {
         String code = 'EVA001';
         String message = 'Essa avaliação já foi salva';
-        log('[$code] $message', time: DateTime.now());
+        log('[$code] $message', time: DateTimeHelper.now());
         throw RepositoryException(code, message);
       }
     } on LocalDatabaseException {
@@ -126,7 +126,7 @@ class EvaluationRepository {
     } on Exception catch (e, s) {
       String code = 'EVA002';
       String message = 'Erro ao salvar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -143,7 +143,7 @@ class EvaluationRepository {
     } on Exception catch (e, s) {
       String code = 'EVA003';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -160,7 +160,7 @@ class EvaluationRepository {
     } on Exception catch (e, s) {
       String code = 'EVA004';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -173,7 +173,7 @@ class EvaluationRepository {
     } on Exception catch (e, s) {
       String code = 'EVA005';
       String message = 'Erro ao deletar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -191,7 +191,7 @@ class EvaluationRepository {
     } on Exception catch (e, s) {
       String code = 'EVA006';
       String message = 'Erro ao sincronizar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -206,7 +206,7 @@ class EvaluationRepository {
     } catch (e, s) {
       String code = 'EVA007';
       String message = 'Erro ao salvar a imagem no dispositivo';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -250,7 +250,7 @@ class EvaluationRepository {
       evaluationMap.remove('importedid');
       evaluationMap['info'] = {'importedid': null, 'importingdate': null, 'importingby': null, 'importedby': null, 'importeddate': null, 'visitscheduleid': evaluationMap['visitscheduleid']};
       evaluationMap.remove('visitscheduleid');
-      evaluationMap['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
+      evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
 
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
@@ -262,6 +262,10 @@ class EvaluationRepository {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
+
+
+
+
       var replacedProducts = evaluationMap['replacedproducts'];
       for (var replacedProduct in replacedProducts) {
         replacedProduct['evaluationid'] = evaluationMap['id'];
@@ -314,6 +318,8 @@ class EvaluationRepository {
         evaluationMap['signaturepath'] = '';
       }
       evaluationMap['existsincloud'] = 1;
+
+//TODO: nao ta salvando!!
 
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap.remove('info');

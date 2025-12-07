@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 
 class EvaluationReplacedProductRepository {
@@ -24,7 +25,7 @@ class EvaluationReplacedProductRepository {
     } on Exception catch (e, s) {
       String code = 'ERP001';
       String message = 'Erro ao salvar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -38,7 +39,7 @@ class EvaluationReplacedProductRepository {
     } on Exception catch (e, s) {
       String code = 'ERP002';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }

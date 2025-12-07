@@ -29,9 +29,6 @@ void main() async {
   await GetIt.I<AppController>().loadTheme();
   await Locator.get<EvaluationController>().clean();
   final hasConnection = await InternetConnection().hasInternetAccess;
-
-
-
   if (kReleaseMode) {
     runZonedGuarded(
       () {
@@ -41,7 +38,7 @@ void main() async {
         ));
       },
       (error, stack) {
-        log('Erro não tratado', error: error, stackTrace: stack, time: DateTime.now());
+        log('Erro não tratado', error: error, stackTrace: stack, time: DateTimeHelper.now());
       },
     );
   } else {

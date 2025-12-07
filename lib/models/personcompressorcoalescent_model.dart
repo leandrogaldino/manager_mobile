@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/product_model.dart';
 
 class PersonCompressorCoalescentModel {
@@ -41,7 +42,7 @@ class PersonCompressorCoalescentModel {
       id: (map['id'] ?? 0) as int,
       visible: map['visible'] == 0 ? false : true,
       product: ProductModel.fromMap(map['product']),
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/personcompressor_repository.dart';
@@ -35,7 +36,7 @@ class VisitScheduleRepository {
     } on Exception catch (e, s) {
       String code = 'SHC001';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -52,7 +53,7 @@ class VisitScheduleRepository {
     } on Exception catch (e, s) {
       String code = 'SHC002';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -65,7 +66,7 @@ class VisitScheduleRepository {
     } on Exception catch (e, s) {
       String code = 'SHC003';
       String message = 'Erro ao deletar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -83,7 +84,7 @@ class VisitScheduleRepository {
     } on Exception catch (e, s) {
       String code = 'SHC004';
       String message = 'Erro ao sincronizar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -104,7 +105,7 @@ class VisitScheduleRepository {
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var scheduleMap in localResult) {
-      scheduleMap['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
+      scheduleMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
       await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
     }
     return localResult.length;
@@ -115,7 +116,7 @@ class VisitScheduleRepository {
     try {
       bool hasMore = true;
       while (hasMore) {
-        final int startTime = DateTime.now().millisecondsSinceEpoch;
+        final int startTime = DateTimeHelper.now().millisecondsSinceEpoch;
         final remoteResult = await _remoteDatabase.get(
           collection: 'visitschedules',
           filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
@@ -149,20 +150,20 @@ class VisitScheduleRepository {
     } on Exception catch (e, s) {
       String code = 'SHC005';
       String message = 'Erro ao sincronizar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
 
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
     try {
-      await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'performeddate': DateTime.now().millisecondsSinceEpoch, 'lastupdate': DateTime.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
+      await _localDatabase.update('visitschedule', {'visible': isVisible == true ? 1 : 0, 'performeddate': DateTimeHelper.now().millisecondsSinceEpoch, 'lastupdate': DateTimeHelper.now().millisecondsSinceEpoch}, where: 'id = ?', whereArgs: [scheduleId]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
       String code = 'SHC006';
       String message = 'Erro ao atualizar';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }

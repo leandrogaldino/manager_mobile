@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/product_model.dart';
 
 class ProductCodeModel {
@@ -49,7 +50,7 @@ class ProductCodeModel {
       visible: map['visible'] == 0 ? false : true,
       isMain: map['ismain'] == 0 ? false : true,
       code: (map['code'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:manager_mobile/core/enums/call_types.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 
@@ -81,14 +82,14 @@ class VisitScheduleModel {
       id: (map['id'] ?? 0) as int,
       visible:  map['visible'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
-      creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
-      scheduleDate: DateTime.fromMillisecondsSinceEpoch((map['scheduleddate'] ?? 0) as int),
-      performedDate: map['performedDate'] != null ? DateTime.fromMillisecondsSinceEpoch((map['performeddate'] ?? 0) as int) : null,
+      creationDate: DateTimeHelper.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
+      scheduleDate: DateTimeHelper.fromMillisecondsSinceEpoch((map['scheduleddate'] ?? 0) as int),
+      performedDate: map['performedDate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['performeddate'] ?? 0) as int) : null,
       technician: PersonModel.fromMap(map['technician']),
       customer: PersonModel.fromMap(map['customer']),
       compressor: PersonCompressorModel.fromMap(map['compressor'] ),
       instructions: (map['instructions'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

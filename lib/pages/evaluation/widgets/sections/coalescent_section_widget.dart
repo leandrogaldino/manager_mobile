@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
@@ -51,11 +52,10 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                         FocusScope.of(context).requestFocus(FocusNode());
                                         DateTime? selectedDate = await showDatePicker(
                                           context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime(2000),
-                                          lastDate: DateTime(2100),
+                                          initialDate: DateTimeHelper.now(),
+                                          firstDate: DateTimeHelper.create(2000),
+                                          lastDate: DateTimeHelper.create(2100),
                                         );
-
                                         if (selectedDate != null) {
                                           _evaluationController.setCoalescentNextChange(index, selectedDate);
                                         }

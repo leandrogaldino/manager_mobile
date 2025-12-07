@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/personcompressorcoalescent_model.dart';
 
 class EvaluationCoalescentModel {
@@ -53,7 +54,7 @@ class EvaluationCoalescentModel {
     return EvaluationCoalescentModel(
       id: map['id'] != null ? map['id'] as int : null,
       coalescent: PersonCompressorCoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
-      nextChange: map['nextchange'] != null ? DateTime.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
+      nextChange: map['nextchange'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
     );
   }
 }

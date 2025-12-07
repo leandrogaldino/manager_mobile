@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
+
 class ServiceModel {
   final int id;
   final bool visible;
@@ -41,7 +43,7 @@ class ServiceModel {
       id: (map['id'] ?? 0) as int,
       visible: map['visible'] == 0 ? false : true,
       name: (map['name'] ?? '') as String,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

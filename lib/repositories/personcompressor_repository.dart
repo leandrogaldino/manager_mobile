@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
@@ -50,7 +51,7 @@ class PersonCompressorRepository {
     } on Exception catch (e, s) {
       String code = 'PCO001';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -78,7 +79,7 @@ class PersonCompressorRepository {
     } on Exception catch (e, s) {
       String code = 'PCO002';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -105,7 +106,7 @@ class PersonCompressorRepository {
     } on Exception catch (e, s) {
       String code = 'PCO003';
       String message = 'Erro ao obter os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
@@ -115,7 +116,7 @@ class PersonCompressorRepository {
     try {
       bool hasMore = true;
       while (hasMore) {
-        final int startTime = DateTime.now().millisecondsSinceEpoch;
+        final int startTime = DateTimeHelper.now().millisecondsSinceEpoch;
         final remoteResult = await _remoteDatabase.get(
           collection: 'personcompressors',
           filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
@@ -149,7 +150,7 @@ class PersonCompressorRepository {
     } on Exception catch (e, s) {
       String code = 'PCO004';
       String message = 'Erro ao sincronizar os dados';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:manager_mobile/core/app_preferences.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/timers/refresh_sync_lock_timer.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -51,20 +52,20 @@ class SyncService {
   Future<int> runSync({bool isAuto = false}) async {
     _synchronizing = true;
 
-    log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTime.now());
+    log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTimeHelper.now());
 
     final lastLock = await _appPreferences.syncLockTime;
     if (isSyncLocked(lastLock)) {
-      log('${isAuto ? "(Auto) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTimeHelper.now());
       return 0;
     }
 
     // Ativa lock imediatamente
-    await _appPreferences.setSyncLockTime(DateTime.now());
+    await _appPreferences.setSyncLockTime(DateTimeHelper.now());
 
     // Inicia o timer que manterá o lock renovado durante toda a sync
     await RefreshSyncLockTimer.start();
-    log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer iniciado!===================', time: DateTime.now());
+    log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer iniciado!===================', time: DateTimeHelper.now());
 
     try {
       _appPreferences.setIgnoreLastSynchronize(false);
@@ -72,55 +73,55 @@ class SyncService {
       int totalCount = 0;
 
       // --- PRODUTOS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Produtos...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Produtos...', time: DateTimeHelper.now());
       final int productsCount = await _productService.synchronize(lastSync);
       totalCount += productsCount;
 
       // --- CODIGOS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Códigos de Produtos...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Códigos de Produtos...', time: DateTimeHelper.now());
       final int productCodesCount = await _productCodeService.synchronize(lastSync);
       totalCount += productCodesCount;
 
       // --- SERVIÇOS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Serviços...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Serviços...', time: DateTimeHelper.now());
       final int servicesCount = await _serviceService.synchronize(lastSync);
       totalCount += servicesCount;
 
       // --- COMPRESSORES ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores...', time: DateTimeHelper.now());
       final int compressorsCount = await _compressorService.synchronize(lastSync);
       totalCount += compressorsCount;
 
       // --- COALESCENTES ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Coalescentes dos Compressores...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Coalescentes dos Compressores...', time: DateTimeHelper.now());
       final int personCompressorCoalescentCount = await _personCompressorcoalescentService.synchronize(lastSync);
       totalCount += personCompressorCoalescentCount;
 
       // --- COMPRESSORES DAS PESSOAS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores das Pessoas...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Compressores das Pessoas...', time: DateTimeHelper.now());
       final int personCompressorCount = await _personCompressorService.synchronize(lastSync);
       totalCount += personCompressorCount;
 
       // --- PESSOAS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Pessoas...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Pessoas...', time: DateTimeHelper.now());
       final int personsCount = await _personService.synchronize(lastSync);
       totalCount += personsCount;
 
       // --- AGENDAMENTOS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Agendamentos de Visita...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Agendamentos de Visita...', time: DateTimeHelper.now());
       final int visitSchedulesCount = await _visitScheduleService.synchronize(lastSync);
       totalCount += visitSchedulesCount;
 
       // --- AVALIAÇÕES ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Avaliações...', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Avaliações...', time: DateTimeHelper.now());
       final int evaluationsCount = await _evaluationService.synchronize(lastSync);
       totalCount += evaluationsCount;
 
-      log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTimeHelper.now());
 
       // Fim!
       if (await _appPreferences.ignoreLastSynchronize) {
-        log('${isAuto ? "(Auto) " : ""}Ignorando atualização do timestamp de sincronização conforme preferência.', time: DateTime.now());
+        log('${isAuto ? "(Auto) " : ""}Ignorando atualização do timestamp de sincronização conforme preferência.', time: DateTimeHelper.now());
         return totalCount;
       }
       await _appPreferences.setLastSynchronize();
@@ -128,12 +129,12 @@ class SyncService {
       _synchronizing = false;
       return totalCount;
     } catch (e, s) {
-      log('${isAuto ? "(Auto) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTimeHelper.now());
       rethrow;
     } finally {
       // Para de renovar o lock
       await RefreshSyncLockTimer.stop();
-      log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer parado!===================', time: DateTime.now());
+      log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer parado!===================', time: DateTimeHelper.now());
       // Remove lock manualmente (evita manter bloqueado por timeout)
       await _appPreferences.setSyncLockTime(null);
     }
@@ -141,7 +142,7 @@ class SyncService {
 
   bool isSyncLocked(DateTime? lastSyncLock) {
     if (lastSyncLock == null) return false;
-    final now = DateTime.now();
+    final now = DateTimeHelper.now();
     final diff = now.difference(lastSyncLock).inSeconds;
     return diff < 120;
   }

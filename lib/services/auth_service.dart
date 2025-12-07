@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/exceptions/auth_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 
@@ -25,7 +26,7 @@ class AuthService implements Auth {
       if (result.isEmpty) {
         String code = 'AUT001';
         String message = 'Usuário não vinculado com a pessoa';
-        log('[$code] $message', time: DateTime.now());
+        log('[$code] $message', time: DateTimeHelper.now());
         throw Exception(message);
       }
       var personId = int.parse(result[0]['personid']); 
@@ -35,27 +36,27 @@ class AuthService implements Auth {
         case 'invalid-email':
           String code = 'AUT002';
           String message = 'Usuário inválido';
-          log('[$code] $message', time: DateTime.now());
+          log('[$code] $message', time: DateTimeHelper.now());
           throw AuthException(code, message);
         case 'invalid-credential':
           String code = 'AUT003';
           String message = 'Usuário e/ou senha incorretos';
-          log('[$code] $message', time: DateTime.now());
+          log('[$code] $message', time: DateTimeHelper.now());
           throw AuthException(code, message);
         case 'too-many-requests':
           String code = 'AUT004';
           String message = 'O número máximo de requisições foi excedido, aguarde alguns minutos e tente novamente';
-          log('[$code] $message', time: DateTime.now());
+          log('[$code] $message', time: DateTimeHelper.now());
           throw AuthException(code, message);
         case 'user-disabled':
           String code = 'AUT005';
           String message = 'Usuário desativado';
-          log('[$code] $message', time: DateTime.now());
+          log('[$code] $message', time: DateTimeHelper.now());
           throw AuthException(code, message);
         default:
           String code = 'AUT006';
           String message = 'Erro: ${e.code}';
-          log('[$code] $message', time: DateTime.now());
+          log('[$code] $message', time: DateTimeHelper.now());
           throw AuthException(code, message);
       }
     } catch (e) {

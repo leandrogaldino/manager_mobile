@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -74,8 +75,8 @@ class EvaluationModel {
     this.signaturePath,
     this.advice,
     this.lastUpdate,
-  })  : creationDate = creationDate ?? DateTime.now(),
-        startTime = startTime ?? TimeOfDay.now();
+  })  : creationDate = creationDate ?? DateTimeHelper.now(),
+        startTime =  startTime ?? TimeOfDay.now();
 
   factory EvaluationModel.fromScheduleOrNew({VisitScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
@@ -97,7 +98,7 @@ class EvaluationModel {
       pressure: null,
       customer: schedule?.customer,
       compressor: schedule?.compressor,
-      creationDate: DateTime.now(),
+      creationDate: DateTimeHelper.now(),
       startTime: TimeOfDay.now(),
       endTime: null,
       horimeter: null,
@@ -234,7 +235,7 @@ class EvaluationModel {
       advice: map['advice'] != null ? map['advice'] as String : null,
       customer: map['customer'] != null ? PersonModel.fromMap(map['customer']) : null,
       compressor: map['compressor'] != null ? PersonCompressorModel.fromMap(map['compressor']) : null,
-      creationDate: DateTime.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
+      creationDate: DateTimeHelper.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
       horimeter: map['horimeter'] != null ? map['horimeter'] as int : null,
@@ -270,7 +271,7 @@ class EvaluationModel {
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
       signaturePath: map['signaturepath'] != null ? map['signaturepath'] as String : null,
-      lastUpdate: map['lastupdate'] != null ? DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
+      lastUpdate: map['lastupdate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
     );
   }
 

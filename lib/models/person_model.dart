@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
+
 class PersonModel {
   final int id;
   final bool visible;
@@ -46,7 +48,7 @@ class PersonModel {
       document: (map['document'] ?? '') as String,
       isCustomer: map['iscustomer'] == 0 ? false : true,
       isTechnician: map['istechnician'] == 0 ? false : true,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
       shortName: (map['shortname'] ?? '') as String,
     );
   }

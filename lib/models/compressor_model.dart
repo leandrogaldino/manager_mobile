@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
+
 class CompressorModel {
   final int id;
   final String name;
@@ -41,7 +43,7 @@ class CompressorModel {
       id: (map['id'] ?? 0) as int,
       name: (map['name'] ?? '') as String,
       visible: map['visible'] == 0 ? false : true,
-      lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
+      lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
   }
 

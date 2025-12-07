@@ -7,6 +7,7 @@ import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/message.dart';
@@ -45,9 +46,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _appPreferences = Locator.get<AppPreferences>();
     _connectionSubscription = InternetConnection().onStatusChange.listen((status) async {
       if (status == InternetStatus.disconnected && _homeController.synchronizing) {
-        log('AppLifecycleState: App perdeu a conexao com a internet. Salvando estado...', time: DateTime.now());
+        log('AppLifecycleState: App perdeu a conexao com a internet. Salvando estado...', time: DateTimeHelper.now());
         await _appPreferences.setIgnoreLastSynchronize(true);
-        log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTime.now());
+        log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTimeHelper.now());
       }
     });
     SynchronizeTimer.start();
@@ -67,13 +68,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if ((state == AppLifecycleState.paused || state == AppLifecycleState.hidden) && _homeController.synchronizing) {
-      log('AppLifecycleState: App entrando em Background. Salvando estado...', time: DateTime.now());
+      log('AppLifecycleState: App entrando em Background. Salvando estado...', time: DateTimeHelper.now());
       await _appPreferences.setIgnoreLastSynchronize(true);
 
-      log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTime.now());
+      log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTimeHelper.now());
     }
     if (state == AppLifecycleState.resumed) {
-      log('AppLifecycleState: App voltando para Foreground.', time: DateTime.now());
+      log('AppLifecycleState: App voltando para Foreground.', time: DateTimeHelper.now());
     }
   }
 

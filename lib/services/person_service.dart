@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 
@@ -21,7 +22,7 @@ class PersonService {
     } else {
       String code = 'PER004';
       String message = 'Pessoa com o id $id não encontrada';
-      log('[$code] $message', time: DateTime.now());
+      log('[$code] $message', time: DateTimeHelper.now());
       throw ServiceException(code, message);
     }
   }

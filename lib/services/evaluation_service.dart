@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:manager_mobile/core/exceptions/service_exception.dart';
+import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
@@ -31,7 +32,7 @@ class EvaluationService {
     } catch (e, s) {
       String code = 'EVA008';
       String message = 'Erro ao salvar a imagem';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw ServiceException(code, message);
     }
   }
@@ -47,7 +48,7 @@ class EvaluationService {
       if (image == null) {
         String code = 'EVA009';
         String message = 'Não foi possível processar a imagem';
-        log('[$code] $message', time: DateTime.now());
+        log('[$code] $message', time: DateTimeHelper.now());
         throw Exception(message);
       }
       if (image.width > 1024 || image.height > 768) {
@@ -62,7 +63,7 @@ class EvaluationService {
     } catch (e, s) {
       String code = 'EVA010';
       String message = 'Erro ao salvar a imagem';
-      log('[$code] $message', time: DateTime.now(), error: e, stackTrace: s);
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw ServiceException(code, message);
     }
   }
