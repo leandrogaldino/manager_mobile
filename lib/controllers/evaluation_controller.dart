@@ -41,6 +41,11 @@ class EvaluationController extends ChangeNotifier {
     _schedule = null;
     _evaluation = evaluation;
     _source = source;
+    if (_schedule != null && _evaluation != null) {
+      _evaluation!.visitscheduleid = _schedule!.id;
+    } else {
+      _evaluation!.visitscheduleid = null;
+    }
     notifyListeners();
   }
 
@@ -54,6 +59,11 @@ class EvaluationController extends ChangeNotifier {
   VisitScheduleModel? get schedule => _schedule;
   void setSchedule(VisitScheduleModel? schedule) {
     _schedule = schedule;
+    if (_schedule != null && _evaluation != null) {
+      _evaluation!.visitscheduleid = _schedule!.id;
+    } else {
+      _evaluation!.visitscheduleid = null;
+    }
     notifyListeners();
   }
 

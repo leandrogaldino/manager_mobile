@@ -66,7 +66,7 @@ class EvaluationRepository {
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
     try {
       visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
-      data['endtime'] = '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}';
+      data['endtime'] = '${TimeOfDay.now().hour.toString().padLeft(2,"0")}:${TimeOfDay.now().minute.toString().padLeft(2,"0")}';
       data['lastupdate'] = DateTime.now().millisecondsSinceEpoch;
       var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
       data.remove('coalescents');
