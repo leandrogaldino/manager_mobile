@@ -318,12 +318,8 @@ class EvaluationRepository {
         evaluationMap['signaturepath'] = '';
       }
       evaluationMap['existsincloud'] = 1;
-
-//TODO: nao ta salvando!!
-
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap.remove('info');
-
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
       if (exists) {
         await _localDatabase.update('evaluation', evaluationMap, where: 'id = ?', whereArgs: [evaluationMap['id']]);

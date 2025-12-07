@@ -1,19 +1,19 @@
 enum OilTypes {
+  none,
   mineral,
   semiSynthetic,
-  synthetic,
-  none;
+  synthetic;
 
   String get stringValue {
     switch (this) {
+      case OilTypes.none:
+        return '';
       case OilTypes.mineral:
         return 'Mineral';
       case OilTypes.semiSynthetic:
         return 'Semi-Sintético';
       case OilTypes.synthetic:
         return 'Sintético';
-      case OilTypes.none:
-        return '';
     }
   }
 }
