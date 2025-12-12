@@ -40,120 +40,133 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const AppTitle(),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // EMAIL
-                      TextFormField(
-                        controller: _emailEC,
-                        validator: Validatorless.required('Usuário obrigatório'),
-                        textAlign: TextAlign.center,
-                        decoration: const InputDecoration(labelText: 'Usuário'),
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      // SENHA
-                      TextFormField(
-                        controller: _passwordEC,
-                        obscureText: obscurePassword,
-                        validator: Validatorless.required('Senha obrigatória'),
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          suffixIcon: IconButton(
-                            onPressed: () => setState(() => obscurePassword = !obscurePassword),
-                            icon: Icon(
-                              obscurePassword ? Icons.visibility : Icons.visibility_off,
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AppTitle(),
+                const SizedBox(height: 16),
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // Campo EMAIL
+                          TextFormField(
+                            controller: _emailEC,
+                            validator: Validatorless.required('Usuário obrigatório'),
+                            textAlign: TextAlign.left,
+                            decoration: InputDecoration(
+                              labelText: 'Usuário',
+                              prefixIcon: const Icon(Icons.person),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // BOTÃO COM ESTADO
-                      ListenableBuilder(
-                        listenable: _loginController,
-                        builder: (context, _) {
-                          final state = _loginController.state;
-
-                          // ---- ERRO ----
-                          if (state is LoginStateError && !_hasShownError) {
-                            _hasShownError = true;
-
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Message.showErrorSnackbar(
-                                context: context,
-                                message: state.message,
-                              );
-                            });
-                          }
-
-                          // ---- SUCESSO ----
-                          if (state is LoginStateSuccess) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Navigator.pushReplacementNamed(context, Routes.home);
-                            });
-                          }
-
-                          final loading = state is LoginStateLoading;
-
-                          return SizedBox(
-                            width: screenSize.width * 0.5,
-                            height: 42,
-                            child: ElevatedButton(
-                              onPressed: loading
-                                  ? null
-                                  : () async {
-                                      final valid = _formKey.currentState?.validate() ?? false;
-                                      if (!valid) return;
-
-                                      _hasShownError = false;
-
-                                      await _loginController.signIn(
-                                        '${_emailEC.text}@manager.com',
-                                        _passwordEC.text,
-                                      );
-                                    },
-                              child: loading
-                                  ? const SizedBox(
-                                      width: 22,
-                                      height: 22,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    )
-                                  : Text(
-                                      'Login',
-                                      style: theme.textTheme.titleLarge!.copyWith(
-                                        color: theme.colorScheme.onPrimary,
-                                      ),
-                                    ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _passwordEC,
+                            obscureText: obscurePassword,
+                            validator: Validatorless.required('Senha obrigatória'),
+                            textAlign: TextAlign.left,
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() {
+                                  obscurePassword = !obscurePassword;
+                                }),
+                                icon: Icon(
+                                  obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                ),
+                              ),
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(height: 28),
+                          ListenableBuilder(
+                            listenable: _loginController,
+                            builder: (context, _) {
+                              final state = _loginController.state;
+
+                              if (state is LoginStateError && !_hasShownError) {
+                                _hasShownError = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  Message.showErrorSnackbar(
+                                    context: context,
+                                    message: state.message,
+                                  );
+                                });
+                              }
+                              if (state is LoginStateSuccess) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  Navigator.pushReplacementNamed(context, Routes.home);
+                                });
+                              }
+                              final loading = state is LoginStateLoading;
+                              return SizedBox(
+                                height: 48,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: loading
+                                      ? null
+                                      : () async {
+                                          if (!(_formKey.currentState?.validate() ?? false)) {
+                                            return;
+                                          }
+                                          _hasShownError = false;
+                                          await _loginController.signIn(
+                                            '${_emailEC.text}@manager.com',
+                                            _passwordEC.text,
+                                          );
+                                        },
+                                  child: loading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : Text(
+                                          'Entrar',
+                                          style: theme.textTheme.titleMedium!.copyWith(
+                                            color: theme.colorScheme.onPrimary,
+                                          ),
+                                        ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),

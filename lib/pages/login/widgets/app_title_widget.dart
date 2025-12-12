@@ -6,21 +6,16 @@ class AppTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 10,
+    return Column(
       children: [
-        Text(
-          'Gerenciador',
-          style: theme.textTheme.displayMedium?.copyWith(
-            fontFamily: 'DancingScript',
+        SizedBox(
+          width: 150,
+          height: 150,
+          child: Image.asset(
+            'assets/images/app_icon.png',
           ),
         ),
-        Icon(
-          Icons.phone_android,
-          size: 48,
-          color: theme.colorScheme.primary,
-        ),
+        Text('Gerenciador', style: theme.textTheme.displayMedium!.copyWith(color: theme.colorScheme.primary)),
       ],
     );
   }
