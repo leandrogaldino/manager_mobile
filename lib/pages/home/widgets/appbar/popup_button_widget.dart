@@ -4,26 +4,15 @@ import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 
-class PopupButtonWidget extends StatefulWidget {
+class PopupButtonWidget extends StatelessWidget {
   const PopupButtonWidget({super.key});
 
   @override
-  State<PopupButtonWidget> createState() => _PopupButtonWidgetState();
-}
-
-class _PopupButtonWidgetState extends State<PopupButtonWidget> {
-  late final LoginController _loginController;
-
-  @override
-  void initState() {
-    super.initState();
-    _loginController = Locator.get<LoginController>();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final LoginController loginController = Locator.get<LoginController>();
+
     return PopupMenuButton(
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
       itemBuilder: (_) => [
         PopupMenuItem(
           child: ListTile(
@@ -31,7 +20,25 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
               Icons.person,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: Text('EDNALDO NUNES', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            title: FutureBuilder(
+                future: loginController.currentLoggedUser,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('Carregando...',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ));
+                  }
+                  if (!snapshot.hasData) {
+                    return Text('');
+                  }
+                  return Text(
+                    snapshot.data!.shortName,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  );
+                }),
           ),
         ),
         PopupMenuItem(
@@ -42,11 +49,8 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
               Navigator.pop(context);
               showDialog(
                 context: context,
-                builder: (context) {
-                  return const ThemeSwitchWidget();
-                },
+                builder: (_) => const ThemeSwitchWidget(),
               );
-              const ThemeSwitchWidget();
             },
           ),
         ),
@@ -55,11 +59,14 @@ class _PopupButtonWidgetState extends State<PopupButtonWidget> {
             leading: const Icon(Icons.logout),
             title: const Text('Sair'),
             onTap: () async {
-              bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja sair?');
-              if (answer == true) {
-                if (!context.mounted) return;
+              bool? answer = await YesNoPicker.pick(
+                context: context,
+                question: 'Deseja sair?',
+              );
+
+              if (answer == true && context.mounted) {
                 Navigator.pop(context);
-                await _loginController.signOut();
+                await loginController.signOut();
               }
             },
           ),
