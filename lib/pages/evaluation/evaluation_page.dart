@@ -273,45 +273,50 @@ class _EvaluationPageState extends State<EvaluationPage> {
             ),
           ),
         ),
-        bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved
+        bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved || (_evaluationController.source != SourceTypes.fromSaved && _evaluationController.photosBytes.isEmpty)
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                  // ↑        ↑
-                  // left   espaço acima do botão (24px)
-                  // right  espaço inferior (16px)
                   child: SizedBox(
                     width: double.infinity,
                     height: 52,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final isValid = _readingKey.currentState?.validate() ?? false;
-
-                        if (!isValid) {
-                          Message.showInfoSnackbar(
-                            context: context,
-                            message: 'Verifique a seção de dados do compressor',
+                    child: ListenableBuilder(
+                        listenable: _evaluationController,
+                        builder: (context, child) {
+                          return ElevatedButton(
+                            onPressed: _evaluationController.isSaving
+                                ? null
+                                : () async {
+                                    final isValid = _readingKey.currentState?.validate() ?? false;
+                                    if (!isValid) {
+                                      Message.showInfoSnackbar(
+                                        context: context,
+                                        message: 'Verifique a seção de dados do compressor',
+                                      );
+                                      return;
+                                    }
+                                    if (!_validateCoalescentsNextChange()) return;
+                                    if (!_validateSignature()) return;
+                                    await _evaluationController.save();
+                                    await _homeController.applyFilters();
+                                    if (!context.mounted) return;
+                                    Navigator.pop<EvaluationModel>(context);
+                                  },
+                            child: _evaluationController.isSaving
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : Text(
+                                    'Salvar',
+                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                          color: Theme.of(context).colorScheme.surface,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                           );
-                          return;
-                        }
-                        if (!_validateCoalescentsNextChange()) return;
-                        if (!_validateSignature()) return;
-                        await _evaluationController.save();
-
-                        await _evaluationController.refreshData();
-                        await _homeController.applyFilters();
-
-                        if (!context.mounted) return;
-                        Navigator.pop<EvaluationModel>(context);
-                      },
-                      child: Text(
-                        'Salvar',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: Theme.of(context).colorScheme.surface,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ),
+                        }),
                   ),
                 ),
               )

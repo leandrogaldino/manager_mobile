@@ -252,6 +252,8 @@ class EvaluationRepository {
       evaluationMap.remove('visitscheduleid');
       evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
 
+      
+
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
     }
