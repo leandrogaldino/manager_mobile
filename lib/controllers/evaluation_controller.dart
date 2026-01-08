@@ -86,10 +86,7 @@ class EvaluationController extends ChangeNotifier {
   bool get isSaving => _isSaving;
 
   Future<void> save() async {
-    if (_isSaving) return;
-    _isSaving = true;
-    notifyListeners();
-    await _saveSignature(signatureBytes: _signatureBytes!);
+    if(_signatureBytes != null) await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
     await _evaluationService.save(evaluation!, schedule?.id);
     if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);

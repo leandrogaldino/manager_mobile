@@ -214,6 +214,9 @@ class EvaluationRepository {
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
+
+      if(evaluationMap['signaturepath'] == null) continue;
+
       int customerId = await _localDatabase.query('personcompressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
       String customerDocument = await _localDatabase.query('person', columns: ['document'], where: 'id = ?', whereArgs: [customerId]).then((v) => v[0]['document'].toString());
       customerDocument = customerDocument.replaceAll('.', '').replaceFirst('/', '').replaceFirst('-', '');

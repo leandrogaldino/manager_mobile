@@ -166,10 +166,11 @@ class SQLScripts {
       separator INTEGER NOT NULL,
       oil INTEGER NOT NULL,
       responsible TEXT NOT NULL,      
-      signaturepath TEXT NOT NULL,
+      signaturepath TEXT DEFAULT NULL,
       advice TEXT,
       lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT
+      isdirty INTEGER DEFAULT 1,
+      FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT,
       FOREIGN KEY (compressorid) REFERENCES personcompressor (id) ON DELETE RESTRICT
     );
   ''';

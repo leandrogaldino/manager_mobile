@@ -273,7 +273,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             ),
           ),
         ),
-        bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved || (_evaluationController.source != SourceTypes.fromSaved && _evaluationController.photosBytes.isEmpty)
+        bottomNavigationBar: _evaluationController.source != SourceTypes.fromSaved || (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.photosBytes.isEmpty)
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
@@ -296,7 +296,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       return;
                                     }
                                     if (!_validateCoalescentsNextChange()) return;
-                                    if (!_validateSignature()) return;
+                                    //if (!_validateSignature()) return;
                                     await _evaluationController.save();
                                     await _homeController.applyFilters();
                                     if (!context.mounted) return;
@@ -325,13 +325,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
     );
   }
 
-  bool _validateSignature() {
-    final bool valid = _evaluationController.signatureBytes != null;
-    if (!valid) {
-      Message.showInfoSnackbar(context: context, message: 'Assinatura do cliente necessária para salvar.');
-    }
-    return valid;
-  }
+  // bool _validateSignature() {
+  //   final bool valid = _evaluationController.signatureBytes != null;
+  //   if (!valid) {
+  //     Message.showInfoSnackbar(context: context, message: 'Assinatura do cliente necessária para salvar.');
+  //   }
+  //   return valid;
+  // }
 
   bool _validateCoalescentsNextChange() {
     final bool valid = _evaluationController.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);

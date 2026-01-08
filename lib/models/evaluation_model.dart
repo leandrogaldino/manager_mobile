@@ -44,39 +44,41 @@ class EvaluationModel {
   String? signaturePath;
   String? advice;
   DateTime? lastUpdate;
-  EvaluationModel({
-    this.id,
-    this.visible = true,
-    this.importedId,
-    this.visitscheduleid,
-    this.existsInCloud = false,
-    this.needProposal = false,
-    this.callType = CallTypes.none,
-    this.unitName,
-    this.temperature,
-    this.pressure,
-    this.customer,
-    this.compressor,
-    DateTime? creationDate,
-    TimeOfDay? startTime,
-    this.endTime,
-    this.horimeter,
-    this.oilType = OilTypes.none,
-    this.airFilter,
-    this.oilFilter,
-    this.separator,
-    this.oil,
-    required this.coalescents,
-    required this.replacedProducts,
-    required this.performedServices,
-    required this.technicians,
-    required this.photos,
-    this.responsible,
-    this.signaturePath,
-    this.advice,
-    this.lastUpdate,
-  })  : creationDate = creationDate ?? DateTimeHelper.now(),
-        startTime =  startTime ?? TimeOfDay.now();
+  bool isDirty;
+  EvaluationModel(
+      {this.id,
+      this.visible = true,
+      this.importedId,
+      this.visitscheduleid,
+      this.existsInCloud = false,
+      this.needProposal = false,
+      this.callType = CallTypes.none,
+      this.unitName,
+      this.temperature,
+      this.pressure,
+      this.customer,
+      this.compressor,
+      DateTime? creationDate,
+      TimeOfDay? startTime,
+      this.endTime,
+      this.horimeter,
+      this.oilType = OilTypes.none,
+      this.airFilter,
+      this.oilFilter,
+      this.separator,
+      this.oil,
+      required this.coalescents,
+      required this.replacedProducts,
+      required this.performedServices,
+      required this.technicians,
+      required this.photos,
+      this.responsible,
+      this.signaturePath,
+      this.advice,
+      this.lastUpdate,
+      this.isDirty = false})
+      : creationDate = creationDate ?? DateTimeHelper.now(),
+        startTime = startTime ?? TimeOfDay.now();
 
   factory EvaluationModel.fromScheduleOrNew({VisitScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
@@ -86,103 +88,103 @@ class EvaluationModel {
       }
     }
     return EvaluationModel(
-      id: null,
-      visible: true,
-      importedId: null,
-      visitscheduleid: schedule?.id,
-      existsInCloud: false,
-      needProposal: false,
-      callType: schedule != null ? schedule.callType : CallTypes.none,
-      unitName: null,
-      temperature: null,
-      pressure: null,
-      customer: schedule?.customer,
-      compressor: schedule?.compressor,
-      creationDate: DateTimeHelper.now(),
-      startTime: TimeOfDay.now(),
-      endTime: null,
-      horimeter: null,
-      oilType: OilTypes.none,
-      airFilter: null,
-      oilFilter: null,
-      separator: null,
-      oil: null,
-      coalescents: coalescents,
-      replacedProducts: [],
-      performedServices: [],
-      technicians: [],
-      photos: [],
-      responsible: null,
-      signaturePath: null,
-      advice: null,
-      lastUpdate: null,
-    );
+        id: null,
+        visible: true,
+        importedId: null,
+        visitscheduleid: schedule?.id,
+        existsInCloud: false,
+        needProposal: false,
+        callType: schedule != null ? schedule.callType : CallTypes.none,
+        unitName: null,
+        temperature: null,
+        pressure: null,
+        customer: schedule?.customer,
+        compressor: schedule?.compressor,
+        creationDate: DateTimeHelper.now(),
+        startTime: TimeOfDay.now(),
+        endTime: null,
+        horimeter: null,
+        oilType: OilTypes.none,
+        airFilter: null,
+        oilFilter: null,
+        separator: null,
+        oil: null,
+        coalescents: coalescents,
+        replacedProducts: [],
+        performedServices: [],
+        technicians: [],
+        photos: [],
+        responsible: null,
+        signaturePath: null,
+        advice: null,
+        lastUpdate: null,
+        isDirty: false);
   }
 
-  EvaluationModel copyWith({
-    String? id,
-    bool? visible,
-    int? importedId,
-    int? visitscheduleid,
-    bool? existsInCloud,
-    bool? needProposal,
-    CallTypes? callType,
-    String? unitName,
-    int? temperature,
-    double? pressure,
-    PersonModel? customer,
-    PersonCompressorModel? compressor,
-    DateTime? creationDate,
-    TimeOfDay? startTime,
-    TimeOfDay? endTime,
-    int? horimeter,
-    OilTypes? oilType,
-    int? airFilter,
-    int? oilFilter,
-    int? separator,
-    int? oil,
-    List<EvaluationCoalescentModel>? coalescents,
-    List<EvaluationReplacedProductModel>? replacedProducts,
-    List<EvaluationPerformedServiceModel>? performedServices,
-    List<EvaluationTechnicianModel>? technicians,
-    List<EvaluationPhotoModel>? photos,
-    String? responsible,
-    String? signaturePath,
-    String? advice,
-    DateTime? lastUpdate,
-  }) {
+  EvaluationModel copyWith(
+      {String? id,
+      bool? visible,
+      int? importedId,
+      int? visitscheduleid,
+      bool? existsInCloud,
+      bool? needProposal,
+      CallTypes? callType,
+      String? unitName,
+      int? temperature,
+      double? pressure,
+      PersonModel? customer,
+      PersonCompressorModel? compressor,
+      DateTime? creationDate,
+      TimeOfDay? startTime,
+      TimeOfDay? endTime,
+      int? horimeter,
+      OilTypes? oilType,
+      int? airFilter,
+      int? oilFilter,
+      int? separator,
+      int? oil,
+      List<EvaluationCoalescentModel>? coalescents,
+      List<EvaluationReplacedProductModel>? replacedProducts,
+      List<EvaluationPerformedServiceModel>? performedServices,
+      List<EvaluationTechnicianModel>? technicians,
+      List<EvaluationPhotoModel>? photos,
+      String? responsible,
+      String? signaturePath,
+      String? advice,
+      DateTime? lastUpdate,
+      bool? isDirty}) {
     return EvaluationModel(
-      id: id ?? this.id,
-      visible: visible ?? this.visible,
-      visitscheduleid: visitscheduleid ?? this.visitscheduleid,
-      importedId: importedId ?? this.importedId,
-      existsInCloud: existsInCloud ?? this.existsInCloud,
-      needProposal: needProposal ?? this.needProposal,
-      callType: callType ?? this.callType,
-      unitName: unitName ?? this.unitName,
-      temperature: temperature ?? this.temperature,
-      pressure: pressure ?? this.pressure,
-      customer: customer ?? this.customer,
-      compressor: compressor ?? this.compressor,
-      creationDate: creationDate ?? this.creationDate,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-      horimeter: horimeter ?? this.horimeter,
-      oilType: oilType ?? this.oilType,
-      airFilter: airFilter ?? this.airFilter,
-      oilFilter: oilFilter ?? this.oilFilter,
-      separator: separator ?? this.separator,
-      oil: oil ?? this.oil,
-      coalescents: coalescents ?? this.coalescents,
-      replacedProducts: replacedProducts ?? this.replacedProducts,
-      performedServices: performedServices ?? this.performedServices,
-      technicians: technicians ?? this.technicians,
-      photos: photos ?? this.photos,
-      responsible: responsible ?? this.responsible,
-      signaturePath: signaturePath ?? this.signaturePath,
-      advice: advice ?? this.advice,
-      lastUpdate: lastUpdate ?? this.lastUpdate,
-    );
+        id: id ?? this.id,
+        visible: visible ?? this.visible,
+        visitscheduleid: visitscheduleid ?? this.visitscheduleid,
+        importedId: importedId ?? this.importedId,
+        existsInCloud: existsInCloud ?? this.existsInCloud,
+        needProposal: needProposal ?? this.needProposal,
+        callType: callType ?? this.callType,
+        unitName: unitName ?? this.unitName,
+        temperature: temperature ?? this.temperature,
+        pressure: pressure ?? this.pressure,
+        customer: customer ?? this.customer,
+        compressor: compressor ?? this.compressor,
+        creationDate: creationDate ?? this.creationDate,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        horimeter: horimeter ?? this.horimeter,
+        oilType: oilType ?? this.oilType,
+        airFilter: airFilter ?? this.airFilter,
+        oilFilter: oilFilter ?? this.oilFilter,
+        separator: separator ?? this.separator,
+        oil: oil ?? this.oil,
+        coalescents: coalescents ?? this.coalescents,
+        replacedProducts: replacedProducts ?? this.replacedProducts,
+        performedServices: performedServices ?? this.performedServices,
+        technicians: technicians ?? this.technicians,
+        photos: photos ?? this.photos,
+        responsible: responsible ?? this.responsible,
+        signaturePath: signaturePath ?? this.signaturePath,
+        advice: advice ?? this.advice,
+        lastUpdate: lastUpdate ?? this.lastUpdate,
+        isDirty: isDirty ?? this.isDirty);
   }
 
   Map<String, dynamic> toMap() {
@@ -217,6 +219,7 @@ class EvaluationModel {
       'signaturepath': signaturePath,
       'advice': advice,
       'lastupdate': lastUpdate?.millisecondsSinceEpoch,
+      'isdirty': isDirty ? 1 : 0,
     };
   }
 
@@ -272,6 +275,7 @@ class EvaluationModel {
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
       signaturePath: map['signaturepath'] != null ? map['signaturepath'] as String : null,
       lastUpdate: map['lastupdate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
+      isDirty: map['isdirty'] == 0 ? false : true,
     );
   }
 
@@ -281,7 +285,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate, isDirty: $isDirty)';
   }
 
   @override
@@ -317,7 +321,8 @@ class EvaluationModel {
         other.responsible == responsible &&
         other.signaturePath == signaturePath &&
         other.advice == advice &&
-        other.lastUpdate == lastUpdate;
+        other.lastUpdate == lastUpdate &&
+        other.isDirty == isDirty;
   }
 
   @override
@@ -351,8 +356,7 @@ class EvaluationModel {
         responsible.hashCode ^
         signaturePath.hashCode ^
         advice.hashCode ^
-        lastUpdate.hashCode;
+        lastUpdate.hashCode ^
+        isDirty.hashCode;
   }
-
-
 }
