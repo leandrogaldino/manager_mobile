@@ -44,7 +44,7 @@ class PersonCompressorCoalescentRepository {
 
   Future<List<Map<String, Object?>>> getByPersonCompressorId(int personCompressorId) async {
     try {
-      final personCompressorCoalescents = await _localDatabase.query('personcompressorcoalescent', where: 'personcompressorid = ?', whereArgs: [personCompressorId]);
+      final personCompressorCoalescents = await _localDatabase.query('personcompressorcoalescent', where: 'personcompressorid = ? AND visible = ?', whereArgs: [personCompressorId, 1]);
       for (var personCompressorCoalescent in personCompressorCoalescents) {
         final productId = personCompressorCoalescent['productid'] as int;
         final product = await _productRepository.getById(productId);

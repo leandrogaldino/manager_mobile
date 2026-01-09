@@ -126,9 +126,6 @@ class HomeController extends ChangeNotifier {
       bool hasConnection = await InternetConnection().hasInternetAccess;
       if (hasConnection) {
         totalCount = await _syncService.runSync(isAuto: isAuto);
-        if (totalCount > 0) {
-          totalCount == 1 ? _setState(HomeStateInfo(infoMessage: '$totalCount registro sincronizado')) : _setState(HomeStateInfo(infoMessage: '$totalCount registros sincronizados'));
-        }
       } else {
         _setState(HomeStateInfo(infoMessage: 'Sem conexão com a internet'));
       }

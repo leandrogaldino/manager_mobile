@@ -330,7 +330,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _airFilterEC,
                               readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
                               validator: Validatorless.multiple(
                                 [
@@ -353,7 +353,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _oilFilterEC,
                               readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
                               validator: Validatorless.multiple(
                                 [
@@ -382,7 +382,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _separatorEC,
                               readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
                               validator: Validatorless.multiple(
                                 [
@@ -405,7 +405,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _oilEC,
                               readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
                               validator: Validatorless.multiple(
                                 [
