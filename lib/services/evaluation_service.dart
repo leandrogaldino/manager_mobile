@@ -88,6 +88,10 @@ class EvaluationService {
     return EvaluationModel.fromMap(savedMap);
   }
 
+  Future<void> updateSignature(String signaturePath) async {
+    await _evaluationRepository.updateSignature(signaturePath);
+  }
+
   Future<int> synchronize(int lastSync) async {
     return await _evaluationRepository.synchronize(lastSync);
   }

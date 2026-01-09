@@ -295,9 +295,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       );
                                       return;
                                     }
-                                    if (!_validateCoalescentsNextChange()) return;
-                                    //if (!_validateSignature()) return;
-                                    await _evaluationController.save();
+                                    if (_evaluationController.evaluation!.id == null && _evaluationController.signatureBytes == null) {
+                                      if (!_validateCoalescentsNextChange()) return;
+                                      await _evaluationController.save();
+                                    } else {
+                                      await _evaluationController.updateSignature(_evaluationController.evaluation!.signaturePath!);
+                                    }
                                     await _homeController.applyFilters();
                                     if (!context.mounted) return;
                                     Navigator.pop<EvaluationModel>(context);
@@ -324,14 +327,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
       ),
     );
   }
-
-  // bool _validateSignature() {
-  //   final bool valid = _evaluationController.signatureBytes != null;
-  //   if (!valid) {
-  //     Message.showInfoSnackbar(context: context, message: 'Assinatura do cliente necessária para salvar.');
-  //   }
-  //   return valid;
-  // }
 
   bool _validateCoalescentsNextChange() {
     final bool valid = _evaluationController.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);

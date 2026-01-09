@@ -63,6 +63,24 @@ class EvaluationRepository {
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
+  Future<void> updateSignature(String signaturePath) async {
+    try {
+    await _localDatabase.update('evaluation', {
+      'signaturepath': signaturePath,
+      'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
+    });
+  
+   } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e, s) {
+      String code = 'EVA011';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
+    }
+
+  }
+
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
     try {
       visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
@@ -214,8 +232,7 @@ class EvaluationRepository {
   Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
-
-      if(evaluationMap['signaturepath'] == null) continue;
+      if (evaluationMap['signaturepath'] == null) continue;
 
       int customerId = await _localDatabase.query('personcompressor', columns: ['personid'], where: 'id = ?', whereArgs: [evaluationMap['compressorid']]).then((v) => v[0]['personid'] as int);
       String customerDocument = await _localDatabase.query('person', columns: ['document'], where: 'id = ?', whereArgs: [customerId]).then((v) => v[0]['document'].toString());
@@ -255,8 +272,6 @@ class EvaluationRepository {
       evaluationMap.remove('visitscheduleid');
       evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
 
-      
-
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
     }
@@ -267,10 +282,6 @@ class EvaluationRepository {
     bool exists = false;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
-
-
-
-
       var replacedProducts = evaluationMap['replacedproducts'];
       for (var replacedProduct in replacedProducts) {
         replacedProduct['evaluationid'] = evaluationMap['id'];

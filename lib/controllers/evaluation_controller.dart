@@ -95,6 +95,10 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateSignature(String signaturePath) async {
+    await _evaluationService.updateSignature(signaturePath);
+  }
+
   Future<void> _saveSignature({required Uint8List signatureBytes}) async {
     _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
   }
