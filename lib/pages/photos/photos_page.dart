@@ -77,7 +77,7 @@ class _PhotosPageState extends State<PhotosPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Offstage(
-                          offstage: _evaluationController.source == SourceTypes.fromSaved,
+                          offstage: _evaluationController.source == SourceTypes.fromSavedWithSign,
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,

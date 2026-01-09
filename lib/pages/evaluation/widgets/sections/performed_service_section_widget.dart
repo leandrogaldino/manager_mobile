@@ -37,7 +37,7 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != SourceTypes.fromSaved,
+                  visible: _evaluationController.source != SourceTypes.fromSavedWithSign,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
@@ -72,7 +72,7 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                             ),
                           ),
                           QuantitySelector(
-                            readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                            readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                             initialQuantity: _evaluationController.evaluation!.performedServices[index].quantity,
                             onQuantityChanged: (q) async {
                               if (q == 0) {

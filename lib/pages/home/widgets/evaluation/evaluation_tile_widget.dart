@@ -38,7 +38,11 @@ class EvaluationTileWidget extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: InkWell(
           onTap: () {
-            evaluationController.setEvaluation(evaluation, SourceTypes.fromSaved);
+            if (evaluation.signaturePath != null) {
+              evaluationController.setEvaluation(evaluation, SourceTypes.fromSavedWithSign);
+            } else {
+              evaluationController.setEvaluation(evaluation, SourceTypes.fromSavedWithoutSign);
+            }
             Navigator.of(context).pushNamed(Routes.evaluation);
           },
           // NOTE: crossAxisAlignment.center will vertically center the icon

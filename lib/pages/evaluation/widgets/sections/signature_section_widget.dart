@@ -32,7 +32,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
         children: [
           GestureDetector(
             onTap: () {
-              if (_evaluationController.source != SourceTypes.fromSaved || (_evaluationController.source == SourceTypes.fromSaved && _evaluationController.photosBytes.isEmpty)) {
+              if (_evaluationController.source != SourceTypes.fromSavedWithSign || (_evaluationController.source == SourceTypes.fromSavedWithSign && _evaluationController.photosBytes.isEmpty)) {
                 FocusScope.of(context).requestFocus(FocusNode());
                 Navigator.of(context).pushNamed(Routes.captureSignature);
               } else {

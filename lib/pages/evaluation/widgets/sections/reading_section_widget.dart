@@ -196,7 +196,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _unitEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               textCapitalization: TextCapitalization.characters,
                               inputFormatters: [
@@ -234,7 +234,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _temperatureEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -253,7 +253,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _pressureEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               inputFormatters: [
@@ -284,7 +284,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _horimeterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -312,7 +312,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   ),
                                 );
                               }).toList(),
-                              onChanged: _evaluationController.source != SourceTypes.fromSaved
+                              onChanged: _evaluationController.source != SourceTypes.fromSavedWithSign
                                   ? (oilType) {
                                       _evaluationController.updateOilType(oilType!);
                                     }
@@ -328,7 +328,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _airFilterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -351,7 +351,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _oilFilterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -380,7 +380,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _separatorEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -403,7 +403,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _oilEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -428,7 +428,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       TextFormField(
                         controller: _adviceEC,
                         focusNode: _adviceFocusNode,
-                        readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                        readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
                           TextInputFormatter.withFunction(
@@ -457,14 +457,14 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           title: Text("Necessário orçamento?"),
                           value: _evaluationController.evaluation!.needProposal,
                           onChanged: (bool value) {
-                            if (_evaluationController.source == SourceTypes.fromSaved) return;
+                            if (_evaluationController.source == SourceTypes.fromSavedWithSign) return;
                             _evaluationController.updateNeedProposal(value);
                           },
                         ),
                       ),
                       TextFormField(
                         controller: _responsibleEC,
-                        readOnly: _evaluationController.source == SourceTypes.fromSaved,
+                        readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
                           TextInputFormatter.withFunction(

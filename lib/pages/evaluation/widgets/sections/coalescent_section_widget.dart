@@ -46,7 +46,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                             builder: (context, child) {
                               return TextButton(
                                 isSemanticButton: true,
-                                onPressed: _evaluationController.source == SourceTypes.fromSaved
+                                onPressed: _evaluationController.source == SourceTypes.fromSavedWithSign
                                     ? null
                                     : () async {
                                         FocusScope.of(context).requestFocus(FocusNode());

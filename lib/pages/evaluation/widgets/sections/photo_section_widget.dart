@@ -25,7 +25,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final int maxPhotos = _evaluationController.source != SourceTypes.fromSaved ? 6 : _evaluationController.evaluation!.photos.length;
+    final int maxPhotos = _evaluationController.source != SourceTypes.fromSavedWithSign ? 6 : _evaluationController.evaluation!.photos.length;
     const int crossAxisCount = 3;
     const double spacing = 8;
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;
@@ -100,7 +100,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                   await Navigator.pushNamed(context, Routes.viewPhoto);
                   _evaluationController.setSelectedPhotoIndex(null);
                 } else {
-                  if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
+                  if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSavedWithSign) {
                     final File? file = await Navigator.pushNamed<File?>(context, Routes.takePhoto);
                     if (file != null) {
                       _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
@@ -110,7 +110,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 }
               },
               onLongPress: () async {
-                if (isPhotoTaken && _evaluationController.source != SourceTypes.fromSaved) {
+                if (isPhotoTaken && _evaluationController.source != SourceTypes.fromSavedWithSign) {
                   final bool isYes = await YesNoPicker.pick(
                         context: context,
                         question: 'Deseja excluir essa foto?',

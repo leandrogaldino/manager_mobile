@@ -35,7 +35,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != SourceTypes.fromSaved,
+                  visible: _evaluationController.source != SourceTypes.fromSavedWithSign,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
@@ -47,7 +47,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                 ),
               ),
               ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemCount: _evaluationController.evaluation!.technicians.length,
@@ -67,7 +67,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                           SizedBox(
                             height: 40,
                             child: Offstage(
-                              offstage: index == 0 || _evaluationController.source == SourceTypes.fromSaved,
+                              offstage: index == 0 || _evaluationController.source == SourceTypes.fromSavedWithSign,
                               child: IconButton(
                                   onPressed: () {
                                     _evaluationController.removeTechnician(_evaluationController.evaluation!.technicians[index]);

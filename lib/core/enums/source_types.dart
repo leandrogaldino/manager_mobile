@@ -1,16 +1,19 @@
 enum SourceTypes {
   fromNew,
   fromSchedule,
-  fromSaved;
+  fromSavedWithSign,
+  fromSavedWithoutSign;
 
   String get stringValue {
     switch (this) {
       case SourceTypes.fromNew:
-        return 'De uma Nova';
+        return 'De uma nova';
       case SourceTypes.fromSchedule:
-        return 'De uma Visita';
-      case SourceTypes.fromSaved:
-        return 'De uma Salva';
+        return 'De um agendamento de visita';
+      case SourceTypes.fromSavedWithSign:
+        return 'De uma Salva com assinatura';
+      case SourceTypes.fromSavedWithoutSign:
+        return 'De uma Salva sem assinatura';
     }
   }
 }
