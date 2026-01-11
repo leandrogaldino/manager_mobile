@@ -294,11 +294,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       );
                                       return;
                                     }
-                                    if (_evaluationController.evaluation!.id == null && _evaluationController.signatureBytes == null) {
-                                      if (!_validateCoalescentsNextChange()) return;
-                                      await _evaluationController.save();
+                                    if (_evaluationController.evaluation!.id == null) {
+                                      if (!_validateCoalescentsNextChange()) return;      
+                                        await _evaluationController.save();                               
                                     } else {
-                                      await _evaluationController.updateSignature(_evaluationController.evaluation!.signaturePath!);
+                                      await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
                                     }
                                     await _homeController.applyFilters();
                                     if (!context.mounted) return;

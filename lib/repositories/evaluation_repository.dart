@@ -63,14 +63,18 @@ class EvaluationRepository {
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
-  Future<void> updateSignature(String signaturePath) async {
+  Future<void> updateSignature(String evaluationId, String signaturePath) async {
     try {
-    await _localDatabase.update('evaluation', {
-      'signaturepath': signaturePath,
-      'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
-    });
-  
-   } on LocalDatabaseException {
+      await _localDatabase.update(
+        'evaluation',
+        {
+          'signaturepath': signaturePath,
+          'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
+        },
+        where: 'id = ?',
+        whereArgs: [evaluationId],
+      );
+    } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
       String code = 'EVA011';
@@ -78,7 +82,6 @@ class EvaluationRepository {
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
-
   }
 
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {

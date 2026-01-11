@@ -84,12 +84,13 @@ class EvaluationService {
 
   Future<EvaluationModel> save(EvaluationModel model, int? visitScheduleId) async {
     final evaluationMap = model.toMap();
-    var savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
+    log(evaluationMap.toString());
+     Map<String, Object?> savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
     return EvaluationModel.fromMap(savedMap);
   }
 
-  Future<void> updateSignature(String signaturePath) async {
-    await _evaluationRepository.updateSignature(signaturePath);
+  Future<void> updateSignature(String evaluationId, String signaturePath) async {
+    await _evaluationRepository.updateSignature(evaluationId,signaturePath);
   }
 
   Future<int> synchronize(int lastSync) async {

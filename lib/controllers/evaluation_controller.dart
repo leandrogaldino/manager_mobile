@@ -86,7 +86,9 @@ class EvaluationController extends ChangeNotifier {
   bool get isSaving => _isSaving;
 
   Future<void> save() async {
-    if(_signatureBytes != null) await _saveSignature(signatureBytes: _signatureBytes!);
+    _isSaving = true;
+    notifyListeners();
+    if (_signatureBytes != null) await _saveSignature(signatureBytes: _signatureBytes!);
     await _savePhotos(photosBytes: _photosBytes);
     await _evaluationService.save(evaluation!, schedule?.id);
     if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);
@@ -95,8 +97,12 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateSignature(String signaturePath) async {
-    await _evaluationService.updateSignature(signaturePath);
+  Future<void> updateSignature(String evaluationId, String signaturePath) async {
+    _isSaving = true;
+    notifyListeners();
+    await _evaluationService.updateSignature(evaluationId, signaturePath);
+    _isSaving = false;
+    notifyListeners();
   }
 
   Future<void> _saveSignature({required Uint8List signatureBytes}) async {
