@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
@@ -16,6 +18,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
   late final HomeController _homeController;
   late final TextEditingController _customerControllerEC;
   late final TextEditingController _dateControllerEC;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -28,6 +31,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _customerControllerEC.dispose();
     _dateControllerEC.dispose();
     super.dispose();
@@ -42,7 +46,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            height: _homeController.filterBarHeight.toDouble(),
+            height: _homeController.filter.filterBarHeight.toDouble(),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -50,16 +54,14 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                   spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_homeController.filtering)
+                    if (_homeController.filter.filtering)
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () async {
                             _customerControllerEC.clear();
                             _dateControllerEC.clear();
-                            _homeController.setCustomerOrCompressorText('');
-                            _homeController.setSelectedDateRange(null);
-                            await _homeController.applyFilters();
+                            _homeController.filter.clear();
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -75,8 +77,13 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                     TextField(
                       controller: _customerControllerEC,
                       onChanged: (text) async {
-                        _homeController.setCustomerOrCompressorText(text);
-                        await _homeController.applyFilters();
+                        _searchDebounce?.cancel();
+                        _searchDebounce = Timer(
+                          const Duration(milliseconds: 400),
+                          () {
+                            _homeController.filter.setSearchText(text);
+                          },
+                        );
                       },
                       decoration: InputDecoration(
                         labelText: "Cliente/Compressor",
@@ -97,12 +104,11 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                           context: context,
                           firstDate: _dataService.firstEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2000),
                           lastDate: _dataService.lastEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2100),
-                          initialDateRange: _homeController.selectedDateRange,
+                          initialDateRange: _homeController.filter.selectedDateRange,
                         );
 
-                        _homeController.setSelectedDateRange(picked);
-                        _dateControllerEC.text = _homeController.selectedDateRangeText;
-                        await _homeController.applyFilters();
+                        _homeController.filter.setDateRange(picked);
+                        _dateControllerEC.text = _homeController.filter.selectedDateRangeText;
                       },
                     ),
                     Divider(),

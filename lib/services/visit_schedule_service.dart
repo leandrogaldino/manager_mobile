@@ -21,8 +21,20 @@ class VisitScheduleService {
     return data.map((item) => VisitScheduleModel.fromMap(item)).toList();
   }
 
-  Future<List<VisitScheduleModel>> getVisibles() async {
-    final data = await _scheduleRepository.getVisibles();
+  Future<List<VisitScheduleModel>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    DateTime? initialDate,
+    DateTime? finalDate,
+  }) async {
+    final data = await _scheduleRepository.searchVisibles(
+      offset: offset,
+      limit: limit,
+      search: search,
+      initialDate: initialDate,
+      finalDate: finalDate,
+    );
     return data.map((item) => VisitScheduleModel.fromMap(item)).toList();
   }
 

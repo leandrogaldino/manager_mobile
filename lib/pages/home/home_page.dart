@@ -34,6 +34,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final EvaluationController _evaluationController;
   late final AppPreferences _appPreferences;
   late final StreamSubscription<InternetStatus> _connectionSubscription;
+  late final ScrollController _visitScheduleScrollController;
+  late final ScrollController _evaluationScrollController;
+
   bool _hasShownError = false;
 
   @override
@@ -44,6 +47,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     _appPreferences = Locator.get<AppPreferences>();
+
+    _visitScheduleScrollController = ScrollController();
+    _visitScheduleScrollController.addListener(() {
+      if (_visitScheduleScrollController.position.pixels >= _visitScheduleScrollController.position.maxScrollExtent - 200) {
+        _homeController.visitSchedules.loadMore();
+      }
+    });
+    _evaluationScrollController = ScrollController();
+    _evaluationScrollController.addListener(() {
+      if (_evaluationScrollController.position.pixels >= _evaluationScrollController.position.maxScrollExtent - 200) {
+        _homeController.evaluations.loadMore();
+      }
+    });
     _connectionSubscription = InternetConnection().onStatusChange.listen((status) async {
       if (status == InternetStatus.disconnected && _homeController.synchronizing) {
         log('AppLifecycleState: App perdeu a conexao com a internet. Salvando estado...', time: DateTimeHelper.now());
@@ -54,6 +70,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
+      await _homeController.loadInitial();
     });
   }
 
@@ -70,7 +87,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if ((state == AppLifecycleState.paused || state == AppLifecycleState.hidden) && _homeController.synchronizing) {
       log('AppLifecycleState: App entrando em Background. Salvando estado...', time: DateTimeHelper.now());
       await _appPreferences.setIgnoreLastSynchronize(true);
-
       log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTimeHelper.now());
     }
     if (state == AppLifecycleState.resumed) {
@@ -87,34 +103,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           builder: (context, child) {
             final state = _homeController.state;
             final lastSuccess = _homeController.lastSuccessState;
-
-            // 1. Se erro → mostra snackbar, mas não altera UI
-            if (state is HomeStateError && !_hasShownError) {
-              _hasShownError = true;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Message.showErrorSnackbar(
-                  context: context,
-                  message: state.errorMessage,
-                );
-              });
-            }
-
-            if (state is HomeStateInfo) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Message.showInfoSnackbar(
-                  context: context,
-                  message: state.infoMessage,
-                );
-              });
-            }
-
-            // 2. Loading real (quando ainda não teve sucesso nenhum)
+            showMessage(state);
             if (state is HomeStateLoading && lastSuccess == null) {
               return LoaderWidget();
             }
-
-            // 3. Aqui mostra SEMPRE os dados do último sucesso
-
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -125,25 +117,28 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       onRefresh: () async {
                         _hasShownError = false;
                         await _homeController.synchronize();
+                        await _homeController.loadInitial();
                       },
                       child: _homeController.currentIndex == 0
-                          ? ScheduleListWidget(schedules: lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : [])
-                          : EvaluationListWidget(evaluations: lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : []),
+                          ? ScheduleListWidget(
+                              homeController: _homeController,
+                              scrollController: _visitScheduleScrollController,
+                            )
+                          : EvaluationListWidget(
+                              homeController: _homeController,
+                              scrollController: _evaluationScrollController,
+                            ),
                     ),
                   ),
                 ],
               ),
             );
-
-            // fallback: nunca deve ocorrer
-            // return SizedBox.shrink();
           }),
       bottomNavigationBar: ListenableBuilder(
         listenable: _homeController,
         builder: (context, child) {
           final state = _homeController.state;
           if (state is HomeStateLoading) return SizedBox.shrink();
-
           return BottomNavigationBar(
             currentIndex: _homeController.currentIndex,
             onTap: (index) {
@@ -201,5 +196,44 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         },
       ),
     );
+  }
+
+  void showMessage(HomeState state) {
+    if (state is HomeStateError && !_hasShownError) {
+      _hasShownError = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Message.showErrorSnackbar(
+          context: context,
+          message: state.errorMessage,
+        );
+      });
+    }
+
+    if (state is HomeStateConnection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Message.showInfoSnackbar(
+          context: context,
+          message: state.infoMessage,
+        );
+      });
+    }
+
+    if (state is HomeStateNewVisitSchedule) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Message.showInfoSnackbar(
+          context: context,
+          message: state.message,
+        );
+      });
+    }
+
+    if (state is HomeStateNewEvaluation) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Message.showInfoSnackbar(
+          context: context,
+          message: state.message,
+        );
+      });
+    }
   }
 }

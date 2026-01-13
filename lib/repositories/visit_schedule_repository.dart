@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/remote_database_exception.dart';
 import 'package:manager_mobile/core/exceptions/repository_exception.dart';
@@ -24,11 +23,50 @@ class VisitScheduleRepository {
         _compressorRepository = compressorRepository,
         _personRepository = personRepository;
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
+  Future<List<Map<String, Object?>>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    DateTime? initialDate,
+    DateTime? finalDate,
+  }) async {
     try {
-      List<Map<String, Object?>> schedules = await _localDatabase.query('visitschedule', where: 'visible = ?', whereArgs: [1]);
-      for (var schedule in schedules) {
-        schedule = await _processSchedule(schedule);
+      String where = 's.visible = ?';
+      List<Object?> whereArgs = [1];
+      if (search != null && search.trim().isNotEmpty) {
+        where+= ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+      }
+      if (initialDate != null) {
+        where += ' AND s.creationdate >= ?';
+        whereArgs.add(initialDate.millisecondsSinceEpoch);
+      }
+      if (finalDate != null) {
+        where += ' AND s.creationdate <= ?';
+        whereArgs.add(finalDate.millisecondsSinceEpoch);
+      }
+
+      whereArgs.addAll([limit, offset]);
+
+      List<Map<String, Object?>> schedules = await _localDatabase.rawQuery(
+        '''
+      SELECT s.* FROM visitschedule s
+      JOIN person p ON p.id = s.customerid
+      JOIN personcompressor pc ON pc.id = s.compressorid
+      JOIN compressor c ON c.id = pc.compressorid
+      WHERE $where
+      ORDER BY s.creationdate DESC
+      LIMIT ? OFFSET ?;
+      ''',
+        whereArgs,
+      );
+
+      for (int i = 0; i < schedules.length; i++) {
+        schedules[i] = await _processSchedule(schedules[i]);
       }
       return schedules;
     } on LocalDatabaseException {

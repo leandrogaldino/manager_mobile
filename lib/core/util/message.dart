@@ -55,7 +55,7 @@ class Message {
     required BuildContext context,
     required String message,
     required CustomSnackBar snackBar,
-    SnackBarPosition position = SnackBarPosition.top,
+    SnackBarPosition position = SnackBarPosition.top,    
   }) {
     showTopSnackBar(
       Overlay.of(context),

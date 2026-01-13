@@ -7,10 +7,21 @@ class HomeStateInitial extends HomeState {}
 
 class HomeStateLoading extends HomeState {}
 
-class HomeStateInfo extends HomeState {
+class HomeStateConnection extends HomeState {
   final String infoMessage;
 
-  HomeStateInfo({required this.infoMessage});
+  HomeStateConnection({required this.infoMessage});
+}
+class HomeStateNewVisitSchedule extends HomeState {
+  final String message;
+
+  HomeStateNewVisitSchedule({required this.message});
+}
+
+class HomeStateNewEvaluation extends HomeState {
+  final String message;
+
+  HomeStateNewEvaluation({required this.message});
 }
 
 class HomeStateError extends HomeState {

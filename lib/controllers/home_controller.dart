@@ -1,24 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:intl/intl.dart';
-import 'package:manager_mobile/services/data_service.dart';
-import 'package:manager_mobile/services/filter_service.dart';
+import 'package:manager_mobile/controllers/filter_controller.dart';
+import 'package:manager_mobile/controllers/paged_list_controller.dart';
+import 'package:manager_mobile/models/evaluation_model.dart';
+import 'package:manager_mobile/models/visitschedule_model.dart';
+import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/sync_service.dart';
+import 'package:manager_mobile/services/visit_schedule_service.dart';
 import 'package:manager_mobile/states/home_state.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class HomeController extends ChangeNotifier {
   final SyncService _syncService;
-  final DataService _dataService;
-  final FilterService _filterService;
+  final FilterController filter;
+
+  late final PagedListController<EvaluationModel> evaluations;
+  late final PagedListController<VisitScheduleModel> visitSchedules;
 
   HomeController({
     required SyncService syncService,
-    required DataService dataService,
-    required FilterService filterService,
-  })  : _syncService = syncService,
-        _dataService = dataService,
-        _filterService = filterService;
+    required EvaluationService evaluationService,
+    required VisitScheduleService visitScheduleService,
+    required this.filter,
+  }) : _syncService = syncService {
+    evaluations = PagedListController<EvaluationModel>(
+      (offset, limit) {
+        return evaluationService.searchVisibles(
+          offset: offset,
+          limit: limit,
+          search: filter.searchText,
+          initialDate: filter.selectedDateRange?.start,
+          finalDate: filter.selectedDateRange?.end,
+        );
+      }, 
+    );
+
+    visitSchedules = PagedListController<VisitScheduleModel>(
+      (offset, limit) {
+        return visitScheduleService.searchVisibles(
+          offset: offset,
+          limit: limit,
+          search: filter.searchText,
+          initialDate: filter.selectedDateRange?.start,
+          finalDate: filter.selectedDateRange?.end,
+        );
+      },
+    );
+
+    // sempre que o filtro mudar, recarrega tudo
+    filter.addListener(_onFilterChanged);
+  }
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
@@ -29,49 +60,31 @@ class HomeController extends ChangeNotifier {
   int _currentIndex = 0;
   int get currentIndex => _currentIndex;
 
-  // --- propriedades de filtro (antes no FilterController) ---
-  bool _filtering = false;
-  bool get filtering => _filtering;
-
-  bool _showFilterButton = true;
-  bool get showFilterButton => _showFilterButton;
-
-  int _filterBarHeight = 0;
-  int get filterBarHeight => _filterBarHeight;
-
-  void _updateFilterBarHeight() {
-    if (_filterBarVisible) {
-      _filterBarHeight = filtering ? 170 : 145;
-    } else {
-      _filterBarHeight = 0;
-    }
-  }
-
-  DateTimeRange? get selectedDateRange => _filterService.dateRange;
-  String get typedCustomerOrCompressorText => _filterService.text;
-
   bool get synchronizing => _syncService.synchronizing;
 
-  void setCustomerOrCompressorText(String text) {
-    _filterService.text = text;
-    _updateFiltering();
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
     notifyListeners();
   }
 
-  void setSelectedDateRange(DateTimeRange? range) {
-    _filterService.dateRange = range;
-    _updateFiltering();
-    notifyListeners();
+  Future<void> loadInitial() async {
+    await Future.wait([
+      evaluations.loadInitial(),
+      visitSchedules.loadInitial(),
+    ]);
+
+    _setState(
+      HomeStateSuccess(
+        visitSchedules.items,
+        evaluations.items,
+      ),
+    );
   }
 
-  String get selectedDateRangeText {
-    if (_filterService.dateRange == null) return '';
-    String initialDate = DateFormat('dd/MM/yyyy').format(_filterService.dateRange!.start);
-    String finalDate = DateFormat('dd/MM/yyyy').format(_filterService.dateRange!.end);
-    return initialDate == finalDate ? initialDate : '$initialDate até $finalDate';
+  void _onFilterChanged() {
+    loadInitial();
   }
 
-  // --- métodos internos ---
   void _setState(HomeState newState) {
     _state = newState;
     if (newState is HomeStateSuccess) {
@@ -80,56 +93,34 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _updateFiltering() {
-    _filtering = _filterService.dateRange != null || _filterService.text.isNotEmpty;
-    _filterBarHeight = _filtering ? 170 : 145;
-    //if (!_filtering) _filterBarHeight = 0;
-  }
-
-  // --- métodos públicos ---
-  void setCurrentIndex(int index) {
-    _currentIndex = index;
-    notifyListeners();
-  }
-
-  void setShowFilterButton(bool show) {
-    _showFilterButton = show;
-    notifyListeners();
-  }
-
-  Future<void> fetchAllIfNeeded(bool force, {bool showLoading = false}) async {
-    try {
-      if (showLoading) _setState(HomeStateLoading());
-      await _dataService.fetchAllIfNeeded(force);
-
-      final filtered = _filterService.applyFilters(
-        visitSchedules: _dataService.visitSchedules,
-        evaluations: _dataService.evaluations,
-      );
-
-      bool done = await _syncService.firstSyncSuccessfulDone;
-      if (!done) {
-        _setState(HomeStateLoading());
-      } else {
-        _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
-      }
-    } catch (e) {
-      _setState(HomeStateError(e.toString()));
-    }
-  }
-
-  Future<void> synchronize({bool showLoading = false, bool isAuto = false}) async {
-    int totalCount = 0;
+  Future<void> synchronize({
+    bool showLoading = false,
+    bool isAuto = false,
+  }) async {
     await WakelockPlus.enable();
     try {
       if (showLoading) _setState(HomeStateLoading());
-      bool hasConnection = await InternetConnection().hasInternetAccess;
-      if (hasConnection) {
-        totalCount = await _syncService.runSync(isAuto: isAuto);
-      } else {
-        _setState(HomeStateInfo(infoMessage: 'Sem conexão com a internet'));
+
+      final hasConnection = await InternetConnection().hasInternetAccess;
+
+      if (!hasConnection) {
+        _setState(
+          HomeStateConnection(
+            infoMessage: 'Sem conexão com a internet',
+          ),
+        );
+        return;
       }
-      fetchAllIfNeeded(totalCount > 0, showLoading: showLoading);
+
+      final hasNewData = await _syncService.runSync(isAuto: isAuto);
+
+      if (isAuto && hasNewData) {
+        _setState(
+          HomeStateConnection(
+            infoMessage: 'Novos itens encontrados, atualize para exibir',
+          ),
+        );
+      }
     } catch (e) {
       _setState(HomeStateError(e.toString()));
     } finally {
@@ -137,19 +128,9 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  Future<void> applyFilters() async {
-    final filtered = _filterService.applyFilters(
-      visitSchedules: _dataService.visitSchedules,
-      evaluations: _dataService.evaluations,
-    );
-    _setState(HomeStateSuccess(filtered.visitSchedules, filtered.evaluations));
-  }
-
-  bool _filterBarVisible = false;
-  bool get filterBarVisible => _filterBarVisible;
-  void toggleFilterBarVisible() {
-    _filterBarVisible = !_filterBarVisible;
-    _updateFilterBarHeight();
-    notifyListeners();
+  @override
+  void dispose() {
+    filter.removeListener(_onFilterChanged);
+    super.dispose();
   }
 }

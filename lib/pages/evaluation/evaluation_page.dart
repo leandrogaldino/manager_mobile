@@ -300,7 +300,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                     } else {
                                       await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
                                     }
-                                    await _homeController.applyFilters();
+                                    //await _homeController.applyFilters();
                                     if (!context.mounted) return;
                                     Navigator.pop<EvaluationModel>(context);
                                   },

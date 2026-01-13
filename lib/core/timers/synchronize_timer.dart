@@ -39,3 +39,8 @@ class SynchronizeTimer {
     _timer = null;
   }
 }
+
+enum SyncRoutine {
+  visitSchedule,
+  evaluation;
+}

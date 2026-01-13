@@ -77,20 +77,20 @@ class EvaluationService {
     return data.map((item) => EvaluationModel.fromMap(item)).toList();
   }
 
-  Future<List<EvaluationModel>> getVisibles() async {
-    final data = await _evaluationRepository.getVisibles();
+  Future<List<EvaluationModel>> searchVisibles({required int offset, required int limit, String? search, DateTime? initialDate, DateTime? finalDate}) async {
+    final data = await _evaluationRepository.searchVisibles(offset: offset, limit: limit, search: search, initialDate: initialDate, finalDate: finalDate);
     return data.map((item) => EvaluationModel.fromMap(item)).toList();
   }
 
   Future<EvaluationModel> save(EvaluationModel model, int? visitScheduleId) async {
     final evaluationMap = model.toMap();
     log(evaluationMap.toString());
-     Map<String, Object?> savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
+    Map<String, Object?> savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
     return EvaluationModel.fromMap(savedMap);
   }
 
   Future<void> updateSignature(String evaluationId, String signaturePath) async {
-    await _evaluationRepository.updateSignature(evaluationId,signaturePath);
+    await _evaluationRepository.updateSignature(evaluationId, signaturePath);
   }
 
   Future<int> synchronize(int lastSync) async {

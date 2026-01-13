@@ -1,9 +1,7 @@
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/product_model.dart';
 import 'package:manager_mobile/models/service_model.dart';
-import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
@@ -12,8 +10,6 @@ import 'package:manager_mobile/services/service_service.dart';
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 
 class DataService {
-  final VisitScheduleService _visitScheduleService;
-  final EvaluationService _evaluationService;
   final PersonService _personService;
   final PersonCompressorService _compressorService;
   final ProductService _productService;
@@ -26,18 +22,10 @@ class DataService {
     required PersonCompressorService compressorService,
     required ProductService productService,
     required ServiceService serviceService,
-  })  : _visitScheduleService = visitScheduleService,
-        _evaluationService = evaluationService,
-        _personService = personService,
+  })  : _personService = personService,
         _compressorService = compressorService,
         _productService = productService,
         _serviceService = serviceService;
-
-  List<VisitScheduleModel> _visitSchedules = [];
-  List<VisitScheduleModel> get visitSchedules => _visitSchedules;
-
-  List<EvaluationModel> _evaluations = [];
-  List<EvaluationModel> get evaluations => _evaluations;
 
   List<PersonCompressorModel> _compressors = [];
   List<PersonCompressorModel> get compressors => _compressors;
@@ -52,11 +40,11 @@ class DataService {
   List<ServiceModel> get services => _services;
 
   Future<void> fetchVisitSchedules() async {
-    _visitSchedules = await _visitScheduleService.getVisibles();
+    //_visitSchedules = await _visitScheduleService.getVisibles();
   }
 
   Future<void> fetchEvaluations() async {
-    _evaluations = await _evaluationService.getVisibles();
+    //_evaluations = await _evaluationService.getVisibles();
   }
 
   Future<void> fetchCompressors() async {
@@ -78,8 +66,6 @@ class DataService {
   }
 
   Future<void> fetchAllIfNeeded(bool force) async {
-    if (force || _visitSchedules.isEmpty) await fetchVisitSchedules();
-    if (force || _evaluations.isEmpty) await fetchEvaluations();
     if (force || _compressors.isEmpty) await fetchCompressors();
     if (force || _technicians.isEmpty) await fetchTechnicians();
     if (force || _products.isEmpty) await fetchProducts();
@@ -88,8 +74,8 @@ class DataService {
 
   DateTime? get firstEvaluationOrVisitScheduleDate {
     final dates = [
-      ..._visitSchedules.map((e) => e.scheduleDate),
-      ..._evaluations.map((e) => e.creationDate),
+     // ..._visitSchedules.map((e) => e.scheduleDate),
+     // ..._evaluations.map((e) => e.creationDate),
     ];
 
     if (dates.isEmpty) return null;
@@ -100,8 +86,8 @@ class DataService {
 
   DateTime? get lastEvaluationOrVisitScheduleDate {
     final dates = [
-      ..._visitSchedules.map((e) => e.scheduleDate),
-      ..._evaluations.map((e) => e.creationDate),
+      //..._visitSchedules.map((e) => e.scheduleDate),
+      //..._evaluations.map((e) => e.creationDate),
     ];
 
     if (dates.isEmpty) return null;

@@ -152,18 +152,60 @@ class EvaluationRepository {
     }
   }
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
+  Future<List<Map<String, Object?>>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    DateTime? initialDate,
+    DateTime? finalDate,
+  }) async {
     try {
-      List<Map<String, Object?>> evaluations = await _localDatabase.query('evaluation', where: 'visible = ?', whereArgs: [1], orderBy: 'creationdate DESC');
-      for (var evaluation in evaluations) {
-        evaluation = await _processEvaluation(evaluation);
+      String where = 'e.visible = ?';
+      List<Object?> whereArgs = [1];
+
+      if (search != null && search.trim().isNotEmpty) {
+       where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
       }
+      if (initialDate != null) {
+        where += ' AND e.creationdate >= ?';
+        whereArgs.add( initialDate.millisecondsSinceEpoch);
+      }
+      if (finalDate != null) {
+        where += ' AND e.creationdate <= ?';
+        whereArgs.add(finalDate.millisecondsSinceEpoch);
+      }
+
+      whereArgs.addAll([limit, offset]);
+
+      final evaluations = await _localDatabase.rawQuery(
+        '''
+      SELECT e.*
+      FROM evaluation e
+      JOIN person p ON p.id = e.customerid
+      JOIN personcompressor pc ON pc.id = e.compressorid
+      JOIN compressor c ON c.id = pc.compressorid
+      WHERE $where
+      ORDER BY e.creationdate DESC
+      LIMIT ? OFFSET ?;
+      ''',
+        whereArgs,
+      );
+
+      for (int i = 0; i < evaluations.length; i++) {
+        evaluations[i] = await _processEvaluation(evaluations[i]);
+      }
+
       return evaluations;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e, s) {
-      String code = 'EVA003';
-      String message = 'Erro ao obter os dados';
+    } catch (e, s) {
+      const code = 'EVA003';
+      const message = 'Erro ao obter os dados';
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }

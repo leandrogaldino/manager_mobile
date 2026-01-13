@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/data/firebase_cloud_storage.dart';
@@ -28,7 +29,6 @@ import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/data_service.dart';
-import 'package:manager_mobile/services/filter_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -259,12 +259,12 @@ class Locator {
           evaluationService: _getIt.get<EvaluationService>(),
         ));
 
-    _getIt.registerLazySingleton<FilterService>(() => FilterService());
-
+    _getIt.registerLazySingleton<FilterController>(() => FilterController());
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
           syncService: _getIt.get<SyncService>(),
-          dataService: _getIt.get<DataService>(),
-          filterService: _getIt.get<FilterService>()
+          evaluationService: _getIt.get<EvaluationService>(),
+          visitScheduleService: _getIt.get<VisitScheduleService>(),
+          filter: _getIt.get<FilterController>(),
         ));
 
     _getIt.registerLazySingleton<EvaluationController>(
