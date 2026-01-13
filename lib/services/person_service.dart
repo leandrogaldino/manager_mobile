@@ -14,11 +14,13 @@ class PersonService {
     required int offset,
     required int limit,
     String? search,
+    List<int>? remove,
   }) async {
     final data = await _personRepository.searchVisibleTechnicians(
       offset: offset,
       limit: limit,
       search: search,
+      remove: remove
     );
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }

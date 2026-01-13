@@ -38,6 +38,7 @@ class PersonRepository {
     required int offset,
     required int limit,
     String? search,
+    List<int>? remove,
   }) async {
     try {
       String where = 'visible = ? AND istechnician = ?';
@@ -47,6 +48,11 @@ class PersonRepository {
         whereArgs.add('%$search%');
       }
       var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
+      if (remove != null && remove.isNotEmpty) {
+        final removeSet = remove.toSet();
+        persons = persons.where((p) => !removeSet.contains(p['id'] as int)).toList();
+      }
+
       return persons;
     } on LocalDatabaseException {
       rethrow;

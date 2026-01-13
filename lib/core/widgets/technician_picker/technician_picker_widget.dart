@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/person_model.dart';
@@ -21,6 +22,8 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
   late final PagedListController<PersonModel> _technicians;
   late final PersonService _personService;
   late final ScrollController _scrollController;
+  late final EvaluationController _evaluationController;
+
   String _searchText = '';
 
   @override
@@ -29,6 +32,7 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
     _personService = Locator.get<PersonService>();
     _technicianEC = TextEditingController();
     _scrollController = ScrollController();
+    _evaluationController = Locator.get<EvaluationController>();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
         _technicians.loadMore();
@@ -39,6 +43,7 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
         offset: offset,
         limit: limit,
         search: _searchText,
+        remove: _evaluationController.evaluation!.technicians.map((et) => et.technician.id).toList(),
       );
     }, limit: 6);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
