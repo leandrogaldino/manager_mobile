@@ -10,8 +10,16 @@ class PersonService {
 
   PersonService({required PersonRepository personRepository}) : _personRepository = personRepository;
 
-  Future<List<PersonModel>> getTechnicians() async {
-    final data = await _personRepository.getTechnicians();
+  Future<List<PersonModel>> searchVisibleTechnicians({
+    required int offset,
+    required int limit,
+    String? search,
+  }) async {
+    final data = await _personRepository.searchVisibleTechnicians(
+      offset: offset,
+      limit: limit,
+      search: search,
+    );
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 

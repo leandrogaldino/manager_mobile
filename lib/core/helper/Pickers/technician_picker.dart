@@ -1,42 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_dialog.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/services/data_service.dart';
 
 class TechnicianPicker {
   static Future<PersonModel?> pick({
     required BuildContext context,
-    List<PersonModel>? hide,
   }) async {
-    DataService dataController = Locator.get<DataService>();
-    EvaluationController evaluationController = Locator.get<EvaluationController>();
-    PersonModel? person;
-
-    var allTechnicians = dataController.technicians;
-    var evaluationTechnicians = evaluationController.evaluation!.technicians.map((person) => person.technician).toList();
-
-    allTechnicians = allTechnicians.where((technician) {
-      return !evaluationTechnicians.any((evaluation) => evaluation.id == technician.id);
-    }).toList();
-
-    if (hide != null) {
-      for (var person in hide) {
-        allTechnicians.remove(person);
-      }
-    }
+    PersonModel? technician;
 
     if (!context.mounted) return null;
-    person = await showDialog<PersonModel>(
+    technician = await showDialog<PersonModel>(
       context: context,
       builder: (BuildContext context) {
-        return TechnicianPickerDialog(
-          technicians: allTechnicians,
-        );
+        return TechnicianPickerDialog();
       },
     );
-
-    return person;
+    return technician;
   }
 }

@@ -77,6 +77,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     SynchronizeTimer.stop();
+    _evaluationScrollController.dispose();
+    _visitScheduleScrollController.dispose();
     _connectionSubscription.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();

@@ -48,11 +48,11 @@ class DataService {
   }
 
   Future<void> fetchCompressors() async {
-    _compressors = await _compressorService.getVisibles();
+    _compressors = await _compressorService.searchVisibles(limit: 1, offset: 1, search: '');
   }
 
   Future<void> fetchTechnicians() async {
-    _technicians = await _personService.getTechnicians();
+    _technicians = await _personService.searchVisibleTechnicians(limit: 1, offset: 1, search: '');
     _technicians = _technicians.where((t) => t.visible).toList();
     _technicians.sort((a, b) => a.shortName.compareTo(b.shortName));
   }
@@ -74,8 +74,8 @@ class DataService {
 
   DateTime? get firstEvaluationOrVisitScheduleDate {
     final dates = [
-     // ..._visitSchedules.map((e) => e.scheduleDate),
-     // ..._evaluations.map((e) => e.creationDate),
+      // ..._visitSchedules.map((e) => e.scheduleDate),
+      // ..._evaluations.map((e) => e.creationDate),
     ];
 
     if (dates.isEmpty) return null;

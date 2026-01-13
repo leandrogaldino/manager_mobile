@@ -32,4 +32,14 @@ class PagedListController<T> extends ChangeNotifier {
     loading = false;
     notifyListeners();
   }
+
+  void removeWhere(bool Function(T item) test) {
+    items.removeWhere(test);
+    notifyListeners();
+  }
+
+  void retainWhere(bool Function(T item) test) {
+    items.retainWhere(test);
+    notifyListeners();
+  }
 }

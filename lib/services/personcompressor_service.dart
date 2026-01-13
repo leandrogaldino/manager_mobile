@@ -6,8 +6,16 @@ class PersonCompressorService {
 
   PersonCompressorService({required PersonCompressorRepository personCompressorRepository}) : _personCompressorRepository = personCompressorRepository;
 
-  Future<List<PersonCompressorModel>> getVisibles() async {
-    final data = await _personCompressorRepository.getVisibles();
+  Future<List<PersonCompressorModel>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+  }) async {
+    final data = await _personCompressorRepository.searchVisibles(
+      offset: offset,
+      limit: limit,
+      search: search,
+    );
     return data.map((item) => PersonCompressorModel.fromMap(item)).toList();
   }
 

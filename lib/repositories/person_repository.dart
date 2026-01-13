@@ -34,9 +34,19 @@ class PersonRepository {
     }
   }
 
-  Future<List<Map<String, Object?>>> getTechnicians() async {
+  Future<List<Map<String, Object?>>> searchVisibleTechnicians({
+    required int offset,
+    required int limit,
+    String? search,
+  }) async {
     try {
-      var persons = await _localDatabase.query('person', where: 'istechnician = ?', whereArgs: ['1']);
+      String where = 'visible = ? AND istechnician = ?';
+      List<Object?> whereArgs = [1, 1];
+      if (search != null && search.trim().isNotEmpty) {
+        where += ' AND (shortname LIKE ?)';
+        whereArgs.add('%$search%');
+      }
+      var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
       return persons;
     } on LocalDatabaseException {
       rethrow;

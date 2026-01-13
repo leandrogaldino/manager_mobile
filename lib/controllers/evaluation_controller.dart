@@ -21,15 +21,14 @@ import 'package:manager_mobile/services/visit_schedule_service.dart';
 class EvaluationController extends ChangeNotifier {
   final EvaluationService _evaluationService;
   final VisitScheduleService _visitScheduleService;
-  final DataService _dataService;
+
 
   EvaluationController({
     required EvaluationService evaluationService,
     required VisitScheduleService visitScheduleService,
     required DataService dataService,
   })  : _evaluationService = evaluationService,
-        _visitScheduleService = visitScheduleService,
-        _dataService = dataService;
+        _visitScheduleService = visitScheduleService;
 
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;
@@ -92,7 +91,6 @@ class EvaluationController extends ChangeNotifier {
     await _savePhotos(photosBytes: _photosBytes);
     await _evaluationService.save(evaluation!, schedule?.id);
     if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);
-    await refreshData();
     _isSaving = false;
     notifyListeners();
   }
@@ -297,9 +295,4 @@ class EvaluationController extends ChangeNotifier {
     return count;
   }
 
-  Future<void> refreshData() async {
-    await _dataService.fetchEvaluations();
-    await _dataService.fetchVisitSchedules();
-    notifyListeners();
-  }
 }

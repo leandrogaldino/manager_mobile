@@ -29,9 +29,35 @@ class PersonCompressorRepository {
         _compressorRepository = compressorRepository,
         _personCompressorCoalescentRepository = personCompressorCoalescentRepository;
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
+  Future<List<Map<String, Object?>>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+  }) async {
     try {
-      var personcompressors = await _localDatabase.query('personcompressor', where: 'visible = ?', whereArgs: [1]);
+      String where = 'pc.visible = ?';
+      List<Object?> whereArgs = [1];
+
+      if (search != null && search.trim().isNotEmpty) {
+        where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+      }
+      whereArgs.addAll([limit, offset]);
+
+      var personcompressors = await _localDatabase.rawQuery('''
+        SELECT pc.*
+        FROM personcompressor pc
+        JOIN compressor c ON c.id = pc.compressorid
+        JOIN person p ON p.id = pc.personid
+        WHERE $where
+        ORDER BY p.shortname DESC
+        LIMIT ? OFFSET ?;
+        ''', whereArgs);
+
       for (var personCompressor in personcompressors) {
         final compressorId = personCompressor['compressorid'] as int;
         personCompressor.remove('compressorid');
