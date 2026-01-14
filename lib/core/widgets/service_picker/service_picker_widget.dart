@@ -3,7 +3,6 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/service_model.dart';
-import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
 
 class ServicePickerWidget extends StatefulWidget {

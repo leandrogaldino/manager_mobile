@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -31,8 +30,6 @@ class EvaluationPage extends StatefulWidget {
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> _readingKey;
   late final EvaluationController _evaluationController;
-  late final HomeController _homeController;
-
   late final ScrollController _scrollController;
   final GlobalKey _coalescentKey = GlobalKey();
   final GlobalKey _replacedProductKey = GlobalKey();
@@ -46,7 +43,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _readingKey = GlobalKey<FormState>();
     _scrollController = ScrollController(); // Inicializa o ScrollController
     _evaluationController = Locator.get<EvaluationController>();
-    _homeController = Locator.get<HomeController>();
     if (_evaluationController.source == SourceTypes.fromSavedWithSign) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
         await _evaluationController.updateImagesBytes();
@@ -295,8 +291,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       return;
                                     }
                                     if (_evaluationController.evaluation!.id == null) {
-                                      if (!_validateCoalescentsNextChange()) return;      
-                                        await _evaluationController.save();                               
+                                      if (!_validateCoalescentsNextChange()) return;
+                                      await _evaluationController.save();
                                     } else {
                                       await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
                                     }
