@@ -3,7 +3,6 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/person_model.dart';
-import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/services/person_service.dart';
 
 class TechnicianPickerWidget extends StatefulWidget {
@@ -23,7 +22,6 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
   late final PersonService _personService;
   late final ScrollController _scrollController;
   late final EvaluationController _evaluationController;
-
   String _searchText = '';
 
   @override
@@ -49,12 +47,6 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _technicians.loadInitial();
     });
-  }
-
-  void _onTextChanged(String value) {
-    _searchText = value.trim();
-
-    _technicians.loadInitial();
   }
 
   @override
@@ -100,5 +92,10 @@ class _TechnicianPickerWidgetState extends State<TechnicianPickerWidget> {
         )
       ],
     );
+  }
+
+  void _onTextChanged(String value) {
+    _searchText = value.trim();
+    _technicians.loadInitial();
   }
 }

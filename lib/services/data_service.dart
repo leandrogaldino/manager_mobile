@@ -58,7 +58,7 @@ class DataService {
   }
 
   Future<void> fetchProducts() async {
-    _products = await _productService.getVisibles();
+    _products = await _productService.searchVisibles(limit: 1, offset: 1, search: '');
   }
 
   Future<void> fetchServices() async {

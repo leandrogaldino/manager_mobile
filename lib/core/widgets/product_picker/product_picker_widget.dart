@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/product_model.dart';
-import 'package:manager_mobile/services/data_service.dart';
+import 'package:manager_mobile/services/product_service.dart';
 
 class ProductPickerWidget extends StatefulWidget {
   const ProductPickerWidget({
     super.key,
-    required this.onServiceSelected,
+    required this.onProductSelected,
   });
-  final ValueChanged<ProductModel> onServiceSelected;
+  final ValueChanged<ProductModel> onProductSelected;
 
   @override
   State<ProductPickerWidget> createState() => _ProductPickerWidgetState();
@@ -17,26 +18,41 @@ class ProductPickerWidget extends StatefulWidget {
 
 class _ProductPickerWidgetState extends State<ProductPickerWidget> {
   late final TextEditingController _productEC;
-  late final DataService _dataService;
+  late final PagedListController<ProductModel> _products;
+  late final ProductService _productService;
+  late final ScrollController _scrollController;
   late final EvaluationController _evaluationController;
-  late List<ProductModel> _filteredProducts;
+  String _searchText = '';
 
   @override
   void initState() {
     super.initState();
+    _productService = Locator.get<ProductService>();
     _productEC = TextEditingController();
-    _dataService = Locator.get<DataService>();
+    _scrollController = ScrollController();
     _evaluationController = Locator.get<EvaluationController>();
-    var products = _evaluationController.evaluation!.replacedProducts.map((x) => x.product).toList();
-    _filteredProducts = _dataService.products;
-    _filteredProducts = _filteredProducts.where((x) {
-      return !products.any((s) => s.id == x.id);
-    }).toList();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        _products.loadMore();
+      }
+    });
+    _products = PagedListController<ProductModel>((offset, limit) {
+      return _productService.searchVisibles(
+        offset: offset,
+        limit: limit,
+        search: _searchText,
+        remove: _evaluationController.evaluation!.replacedProducts.map((et) => et.product.id).toList(),
+      );
+    }, limit: 6);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _products.loadInitial();
+    });
   }
 
   @override
   void dispose() {
     _productEC.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -47,35 +63,40 @@ class _ProductPickerWidgetState extends State<ProductPickerWidget> {
         TextField(
           controller: _productEC,
           decoration: InputDecoration(labelText: 'Produto'),
-          onChanged: (value) {
-            setState(() {
-              _filteredProducts = _dataService.products.where((product) {
-                return product.name.toLowerCase().contains(value) || product.codes.any((p) => p.code.toLowerCase() .contains(value));
-              }).toList();
-            });
-          },
+          onChanged: _onTextChanged,
         ),
         Divider(),
         Expanded(
-          child: ListView.builder(
-              itemCount: _filteredProducts.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_filteredProducts[index].name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_filteredProducts[index].codes.map((e) => e.code).toList().join(" • ")),
-                      Divider(color: Theme.of(context).colorScheme.primary),
-                    ],
-                  ),
-                  onTap: () {
-                    widget.onServiceSelected(_filteredProducts[index]);
-                  },
-                );
+          child: ListenableBuilder(
+              listenable: _products,
+              builder: (context, child) {
+                return ListView.builder(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: _products.items.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_products.items[index].name),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_products.items[index].codes.map((e) => e.code).toList().join(" • ")),
+                            Divider(color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                        onTap: ()  {
+                          widget.onProductSelected(_products.items[index]);
+                        },
+                      );
+                    });
               }),
         )
       ],
     );
+  }
+
+  void _onTextChanged(String value) {
+    _searchText = value.trim();
+    _products.loadInitial();
   }
 }

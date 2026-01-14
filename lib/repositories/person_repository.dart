@@ -47,12 +47,12 @@ class PersonRepository {
         where += ' AND (shortname LIKE ?)';
         whereArgs.add('%$search%');
       }
-      var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
       if (remove != null && remove.isNotEmpty) {
-        final removeSet = remove.toSet();
-        persons = persons.where((p) => !removeSet.contains(p['id'] as int)).toList();
+        final placeholders = List.filled(remove.length, '?').join(',');
+        where += ' AND id NOT IN ($placeholders)';
+        whereArgs.addAll(remove);
       }
-
+      var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
       return persons;
     } on LocalDatabaseException {
       rethrow;

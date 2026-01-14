@@ -54,7 +54,7 @@ class PersonCompressorRepository {
         JOIN compressor c ON c.id = pc.compressorid
         JOIN person p ON p.id = pc.personid
         WHERE $where
-        ORDER BY p.shortname DESC
+        ORDER BY p.shortname ASC
         LIMIT ? OFFSET ?;
         ''', whereArgs);
 

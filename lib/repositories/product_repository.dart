@@ -40,9 +40,39 @@ class ProductRepository {
     }
   }
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
+  Future<List<Map<String, Object?>>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    List<int>? remove,
+  }) async {
     try {
-      var products = await _localDatabase.query('product', where: 'visible = ?', whereArgs: [1]);
+      String where = 'p.visible = ?';
+      List<Object?> whereArgs = [1];
+
+      if (search != null && search.trim().isNotEmpty) {
+        where += ' AND (p.name LIKE ? OR pc.code LIKE ?)';
+        whereArgs.add('%$search%');
+        whereArgs.add('%$search%');
+      }
+
+      if (remove != null && remove.isNotEmpty) {
+        final placeholders = List.filled(remove.length, '?').join(',');
+        where += ' AND p.id NOT IN ($placeholders)';
+        whereArgs.addAll(remove);
+      }
+
+      whereArgs.addAll([limit, offset]);
+      
+      var products = await _localDatabase.rawQuery('''
+        SELECT p.*
+        FROM product p
+        JOIN productcode pc ON p.id = pc.productid
+        WHERE $where
+        ORDER BY pc.code ASC
+        LIMIT ? OFFSET ?;
+        ''', whereArgs);
+
       for (var product in products) {
         var codes = await _productCodeRepository.getByProductId(product['id'] as int);
         product['codes'] = codes;

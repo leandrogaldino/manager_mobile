@@ -22,7 +22,7 @@ class ProductPickerDialog extends StatelessWidget {
         width: double.maxFinite,
         height: 350,
         child: ProductPickerWidget(
-          onServiceSelected: (service) {
+          onProductSelected: (service) {
             Navigator.pop(context, service);
           },
         ),

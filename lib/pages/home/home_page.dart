@@ -14,6 +14,7 @@ import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
+import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final StreamSubscription<InternetStatus> _connectionSubscription;
   late final ScrollController _visitScheduleScrollController;
   late final ScrollController _evaluationScrollController;
-
+  PersonModel? _loggedUser;
   bool _hasShownError = false;
 
   @override
@@ -47,7 +48,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     _appPreferences = Locator.get<AppPreferences>();
-
     _visitScheduleScrollController = ScrollController();
     _visitScheduleScrollController.addListener(() {
       if (_visitScheduleScrollController.position.pixels >= _visitScheduleScrollController.position.maxScrollExtent - 200) {
@@ -69,6 +69,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
     SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final user = await _loginController.currentLoggedUser;
+      if (!mounted) return;
+      setState(() {
+        _loggedUser = user;
+      });
       await _homeController.synchronize(showLoading: true);
       await _homeController.loadInitial();
     });
@@ -175,24 +180,25 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       )
                     ],
                   ),
-                  child: FloatingActionButton(
-                    onPressed: () async {
-                      var evaluation = EvaluationModel.fromScheduleOrNew();
-                      _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
-                      var loggedTechnician = await _loginController.currentLoggedUser;
-                      _evaluationController.addTechnician(
-                        EvaluationTechnicianModel(
-                          isMain: true,
-                          technician: loggedTechnician!,
-                        ),
-                      );
-
-                      if (!context.mounted) return;
-
-                      Navigator.of(context).pushNamed(Routes.evaluation);
-                    },
-                    child: const Icon(Icons.add),
-                  ),
+                  child: _loggedUser != null && _loggedUser!.isTechnician
+                      ? FloatingActionButton(
+                          onPressed: () async {
+                            var evaluation = EvaluationModel.fromScheduleOrNew();
+                            _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
+                            if (_loggedUser!.isTechnician) {
+                              _evaluationController.addTechnician(
+                                EvaluationTechnicianModel(
+                                  isMain: true,
+                                  technician: _loggedUser!,
+                                ),
+                              );
+                            }
+                            if (!context.mounted) return;
+                            Navigator.of(context).pushNamed(Routes.evaluation);
+                          },
+                          child: const Icon(Icons.add),
+                        )
+                      : SizedBox.shrink(),
                 )
               : SizedBox.shrink();
         },

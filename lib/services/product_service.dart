@@ -8,8 +8,18 @@ class ProductService {
     required ProductRepository productRepository,
   }) : _productRepository = productRepository;
 
-  Future<List<ProductModel>> getVisibles() async {
-    final data = await _productRepository.getVisibles();
+  Future<List<ProductModel>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    List<int>? remove,
+  }) async {
+    final data = await _productRepository.searchVisibles(
+      offset: offset,
+      limit: limit,
+      search: search,
+      remove: remove,
+    );
     return data.map((item) => ProductModel.fromMap(item)).toList();
   }
 

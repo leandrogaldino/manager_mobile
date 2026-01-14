@@ -17,7 +17,6 @@ class EvaluationTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final evaluationController = Locator.get<EvaluationController>();
-
     String subtitle = evaluation.compressor!.compressor.name;
     if (evaluation.compressor!.serialNumber.isNotEmpty) {
       subtitle = '$subtitle - ${evaluation.compressor!.serialNumber}';
@@ -25,9 +24,7 @@ class EvaluationTileWidget extends StatelessWidget {
     if (evaluation.compressor!.sector.isNotEmpty) {
       subtitle = '$subtitle - ${evaluation.compressor!.sector}';
     }
-
     String technicians = evaluation.technicians.map((e) => e.technician.shortName).toList().join(' • ');
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -45,15 +42,11 @@ class EvaluationTileWidget extends StatelessWidget {
             }
             Navigator.of(context).pushNamed(Routes.evaluation);
           },
-          // NOTE: crossAxisAlignment.center will vertically center the icon
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // LEADING CENTRALIZADO VERTICALMENTE
-              // use SizedBox to give it a consistent min width (optional)
               SizedBox(
                 width: 36,
-                // height não precisa ser double.infinity agora
                 child: Center(
                   child: Icon(
                     evaluation.existsInCloud ? Icons.cloud_done : Icons.cloud_off,
@@ -63,13 +56,11 @@ class EvaluationTileWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
-              // TITLE + SUBTITLE — EXPANDED PARA USAR TODA A LARGURA
               Expanded(
                 child: Align(
-                  alignment: Alignment.topLeft, // garante os textos no topo do espaço
+                  alignment: Alignment.topLeft,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, // evita que a coluna preencha verticalmente
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -96,8 +87,6 @@ class EvaluationTileWidget extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // TRAILING (DATA)
               const SizedBox(width: 8),
               Text(
                 DateFormat('dd/MM/yyyy').format(evaluation.creationDate!),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:manager_mobile/core/widgets/compressor_picker/compressor_picker_widget.dart';
 import 'package:manager_mobile/core/widgets/technician_picker/technician_picker_widget.dart';
 
 class TechnicianPickerDialog extends StatelessWidget {

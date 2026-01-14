@@ -25,12 +25,19 @@ class ScheduleWidget extends StatefulWidget {
 class _ScheduleWidgetState extends State<ScheduleWidget> {
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
-
+  PersonModel? _loggedUser;
   @override
   void initState() {
     super.initState();
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final user = await _loginController.currentLoggedUser;
+      if (!mounted) return;
+      setState(() {
+        _loggedUser = user;
+      });
+    });
   }
 
   @override
@@ -134,18 +141,20 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                 ),
               ),
             Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  var evaluation = EvaluationModel.fromScheduleOrNew(schedule: widget.schedule);
-                  PersonModel? technician = await _loginController.currentLoggedUser;
-                  if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: technician));
-                  if (!context.mounted) return;
-                  _evaluationController.setEvaluation(evaluation, SourceTypes.fromSchedule);
-                  _evaluationController.setSchedule(widget.schedule);
-                  Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: widget.schedule.instructions);
-                },
-                child: Text('Iniciar Avaliação'),
-              ),
+              child: _loggedUser != null && _loggedUser!.isTechnician
+                  ? ElevatedButton(
+                      onPressed: () async {
+                        var evaluation = EvaluationModel.fromScheduleOrNew(schedule: widget.schedule);
+                        PersonModel? technician = await _loginController.currentLoggedUser;
+                        if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: technician));
+                        if (!context.mounted) return;
+                        _evaluationController.setEvaluation(evaluation, SourceTypes.fromSchedule);
+                        _evaluationController.setSchedule(widget.schedule);
+                        Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: widget.schedule.instructions);
+                      },
+                      child: Text('Iniciar Avaliação'),
+                    )
+                  : SizedBox.shrink(),
             ),
           ],
         ),
