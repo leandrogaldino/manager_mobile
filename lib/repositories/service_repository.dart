@@ -35,9 +35,25 @@ class ServiceRepository {
     }
   }
 
-  Future<List<Map<String, Object?>>> getVisibles() async {
+  Future<List<Map<String, Object?>>> searchVisibles({
+    required int offset,
+    required int limit,
+    String? search,
+    List<int>? remove,
+  }) async {
     try {
-      var services = await _localDatabase.query('service', where: 'visible = ?', whereArgs: [1]);
+      String where = 'visible = ?';
+      List<Object?> whereArgs = [1];
+      if (search != null && search.trim().isNotEmpty) {
+        where += ' AND name LIKE ?';
+        whereArgs.add('%$search%');
+      }
+      if (remove != null && remove.isNotEmpty) {
+        final placeholders = List.filled(remove.length, '?').join(',');
+        where += ' AND id NOT IN ($placeholders)';
+        whereArgs.addAll(remove);
+      }
+      var services = await _localDatabase.query('service', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
       return services;
     } on LocalDatabaseException {
       rethrow;

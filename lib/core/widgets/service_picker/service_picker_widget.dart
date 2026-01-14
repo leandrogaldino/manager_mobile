@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/services/data_service.dart';
+import 'package:manager_mobile/services/service_service.dart';
 
 class ServicePickerWidget extends StatefulWidget {
   const ServicePickerWidget({
@@ -17,28 +19,41 @@ class ServicePickerWidget extends StatefulWidget {
 
 class _ServicePickerWidgetState extends State<ServicePickerWidget> {
   late final TextEditingController _serviceEC;
-  late final DataService _dataService;
+  late final PagedListController<ServiceModel> _services;
+  late final ServiceService _serviceService;
+  late final ScrollController _scrollController;
   late final EvaluationController _evaluationController;
-  late List<ServiceModel> _filteredServices;
+  String _searchText = '';
 
   @override
   void initState() {
     super.initState();
+    _serviceService = Locator.get<ServiceService>();
     _serviceEC = TextEditingController();
-    _dataService = Locator.get<DataService>();
+    _scrollController = ScrollController();
     _evaluationController = Locator.get<EvaluationController>();
-
-    var services = _evaluationController.evaluation!.performedServices.map((x) => x.service).toList();
-
-    _filteredServices = _dataService.services;
-    _filteredServices = _filteredServices.where((x) {
-      return !services.any((s) => s.id == x.id);
-    }).toList();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        _services.loadMore();
+      }
+    });
+    _services = PagedListController<ServiceModel>((offset, limit) {
+      return _serviceService.searchVisibles(
+        offset: offset,
+        limit: limit,
+        search: _searchText,
+        remove: _evaluationController.evaluation!.performedServices.map((et) => et.service.id).toList(),
+      );
+    }, limit: 6);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _services.loadInitial();
+    });
   }
 
   @override
   void dispose() {
     _serviceEC.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -49,34 +64,37 @@ class _ServicePickerWidgetState extends State<ServicePickerWidget> {
         TextField(
           controller: _serviceEC,
           decoration: InputDecoration(labelText: 'Serviço'),
-          onChanged: (value) {
-            setState(() {
-              _filteredServices = _dataService.services.where((service) {
-                return service.name.toLowerCase().contains(value);
-              }).toList();
-            });
-          },
+          onChanged: _onTextChanged,
         ),
         Divider(),
         Expanded(
-          child: ListView.builder(
-              itemCount: _filteredServices.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_filteredServices[index].name),
-                      Divider(color: Theme.of(context).colorScheme.primary),
-                    ],
-                  ),
-                  onTap: () {
-                    widget.onServiceSelected(_filteredServices[index]);
-                  },
-                );
+          child: ListenableBuilder(
+              listenable: _services,
+              builder: (context, child) {
+                return ListView.builder(
+                    itemCount: _services.items.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_services.items[index].name),
+                            Divider(color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                        onTap: () {
+                          widget.onServiceSelected(_services.items[index]);
+                        },
+                      );
+                    });
               }),
         )
       ],
     );
+  }
+
+  void _onTextChanged(String value) {
+    _searchText = value.trim();
+    _services.loadInitial();
   }
 }

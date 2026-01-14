@@ -62,7 +62,7 @@ class DataService {
   }
 
   Future<void> fetchServices() async {
-    _services = await _serviceService.getVisibles();
+    _services = await _serviceService.searchVisibles(limit: 1, offset: 1, search: '');
   }
 
   Future<void> fetchAllIfNeeded(bool force) async {
