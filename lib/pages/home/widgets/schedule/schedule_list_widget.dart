@@ -13,15 +13,20 @@ class ScheduleListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var schedules = homeController.visitSchedules;
-    return ListView.builder(
-      controller: scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: schedules.items.length,
-      itemBuilder: (context, index) {
-        return ScheduleTileWidget(
-          schedule: schedules.items[index],
+    return ListenableBuilder(
+      listenable: homeController.visitSchedules,
+      builder: (context, child) {
+        return ListView.builder(
+          controller: scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: schedules.items.length,
+          itemBuilder: (context, index) {
+            return ScheduleTileWidget(
+              schedule: schedules.items[index],
+            );
+          },
         );
-      },
+      }
     );
   }
 }

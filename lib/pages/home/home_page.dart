@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           builder: (context, child) {
             final state = _homeController.state;
             showMessage(state);
-            if (state is HomeStateLoading ) {
+            if (state is HomeStateLoading) {
               return LoaderWidget();
             }
             return Padding(
@@ -127,6 +127,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             onTap: () async {
                               _hasShownError = false;
                               await _homeController.loadInitial();
+                              _homeController.hideUpdateBanner();
                             },
                           ),
                         )
@@ -137,6 +138,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         _hasShownError = false;
                         await _homeController.synchronize();
                         await _homeController.loadInitial();
+                        _homeController.hideUpdateBanner();
                       },
                       child: _homeController.currentIndex == 0
                           ? ScheduleListWidget(
@@ -206,7 +208,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               );
                             }
                             if (!context.mounted) return;
-                            Navigator.of(context).pushNamed(Routes.evaluation);
+                            await Navigator.of(context).pushNamed(Routes.evaluation);
+                              await _homeController.loadInitial();
                           },
                           child: const Icon(Icons.add),
                         )
@@ -237,23 +240,5 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         );
       });
     }
-
-    // if (state is HomeStateNewItems) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     Message.showInfoSnackbar(
-    //       context: context,
-    //       message: state.message,
-    //     );
-    //   });
-    // }
-
-    // if (state is HomeStateNewEvaluation) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     Message.showInfoSnackbar(
-    //       context: context,
-    //       message: state.message,
-    //     );
-    //   });
-    // }
   }
 }

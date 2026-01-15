@@ -56,7 +56,10 @@ class HomeController extends ChangeNotifier {
     _showingUpdateBanner = true;
     notifyListeners();
   }
-
+  void hideUpdateBanner() {
+    _showingUpdateBanner = false;
+    notifyListeners();
+  }
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
 

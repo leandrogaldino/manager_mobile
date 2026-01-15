@@ -32,7 +32,10 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(color: colorScheme.onPrimary);
+    final textStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: colorScheme.onPrimary,
+          fontWeight: FontWeight.bold,
+        );
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
@@ -63,7 +66,7 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
                               ),
                             )
                           : Text(
-                              'Alterações encontradas, atualize',
+                              'Há alterações disponíveis',
                               key: const ValueKey('text'),
                               style: textStyle,
                               textAlign: TextAlign.center,

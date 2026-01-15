@@ -15,15 +15,20 @@ class EvaluationListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var evaluations = homeController.evaluations;
 
-    return ListView.builder(
-      controller: scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: evaluations.items.length,
-      itemBuilder: (context, index) {
-        return EvaluationTileWidget(
-          evaluation: evaluations.items[index],
+    return ListenableBuilder(
+      listenable: homeController.evaluations,
+      builder: (context, child) {
+        return ListView.builder(
+          controller: scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: evaluations.items.length,
+          itemBuilder: (context, index) {
+            return EvaluationTileWidget(
+              evaluation: evaluations.items[index],
+            );
+          },
         );
-      },
+      }
     );
   }
 }
