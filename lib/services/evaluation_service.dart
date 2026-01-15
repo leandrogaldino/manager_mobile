@@ -37,6 +37,15 @@ class EvaluationService {
     }
   }
 
+  Future<void> deletePhotos({required List<EvaluationPhotoModel> photos}) async {
+    for (var photo in photos) {
+        final file = File(photo.path);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+  }
+
   Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
     try {
       final rootDirectory = await getApplicationDocumentsDirectory();
@@ -84,14 +93,13 @@ class EvaluationService {
 
   Future<EvaluationModel> save(EvaluationModel model, int? visitScheduleId) async {
     final evaluationMap = model.toMap();
-    log(evaluationMap.toString());
     Map<String, Object?> savedMap = await _evaluationRepository.save(evaluationMap, visitScheduleId);
     return EvaluationModel.fromMap(savedMap);
   }
 
-  Future<void> updateSignature(String evaluationId, String signaturePath) async {
-    await _evaluationRepository.updateSignature(evaluationId, signaturePath);
-  }
+  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
+  //   await _evaluationRepository.updateSignature(evaluationId, signaturePath);
+  // }
 
   Future<int> synchronize(int lastSync) async {
     return await _evaluationRepository.synchronize(lastSync);

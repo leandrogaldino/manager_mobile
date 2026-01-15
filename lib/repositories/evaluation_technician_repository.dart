@@ -12,13 +12,8 @@ class EvaluationTechnicianRepository {
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-      bool exists = await _localDatabase.isSaved('evaluationtechnician', id: data['id'] == null ? 0 : data['id'] as int);
-      if (!exists) {
-        int id = await _localDatabase.insert('evaluationtechnician', data);
-        data['id'] = id;
-      } else {
-        await _localDatabase.update('evaluationtechnician', data, where: 'id = ?', whereArgs: [data['id']]);
-      }
+      int id = await _localDatabase.insert('evaluationtechnician', data);
+      data['id'] = id;
       return data;
     } on LocalDatabaseException {
       rethrow;
@@ -38,6 +33,19 @@ class EvaluationTechnicianRepository {
       rethrow;
     } on Exception catch (e, s) {
       String code = 'ETH002';
+      String message = 'Erro ao obter os dados';
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
+    }
+  }
+
+  Future<int> deleteByParentId(dynamic parentId) async {
+    try {
+      return await _localDatabase.delete('evaluationtechnician', where: 'evaluationid = ?', whereArgs: [parentId]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e, s) {
+      String code = 'ETH003';
       String message = 'Erro ao obter os dados';
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);

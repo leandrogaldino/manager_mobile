@@ -148,7 +148,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         PersonModel? technician = await _loginController.currentLoggedUser;
                         if (technician != null) evaluation.technicians.add(EvaluationTechnicianModel(isMain: true, technician: technician));
                         if (!context.mounted) return;
-                        _evaluationController.setEvaluation(evaluation, SourceTypes.fromSchedule);
+                        _evaluationController.setEvaluation(evaluation,  SourceTypes.fromSchedule);
                         _evaluationController.setSchedule(widget.schedule);
                         Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: widget.schedule.instructions);
                       },

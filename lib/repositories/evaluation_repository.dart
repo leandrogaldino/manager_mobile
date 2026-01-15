@@ -63,85 +63,92 @@ class EvaluationRepository {
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
 
-  Future<void> updateSignature(String evaluationId, String signaturePath) async {
-    try {
-      await _localDatabase.update(
-        'evaluation',
-        {
-          'signaturepath': signaturePath,
-          'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
-        },
-        where: 'id = ?',
-        whereArgs: [evaluationId],
-      );
-    } on LocalDatabaseException {
-      rethrow;
-    } on Exception catch (e, s) {
-      String code = 'EVA011';
-      String message = 'Erro ao salvar os dados';
-      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
-      throw RepositoryException(code, message);
-    }
-  }
+  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
+  //   try {
+  //     await _localDatabase.update(
+  //       'evaluation',
+  //       {
+  //         'signaturepath': signaturePath,
+  //         'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
+  //       },
+  //       where: 'id = ?',
+  //       whereArgs: [evaluationId],
+  //     );
+  //   } on LocalDatabaseException {
+  //     rethrow;
+  //   } on Exception catch (e, s) {
+  //     String code = 'EVA011';
+  //     String message = 'Erro ao salvar os dados';
+  //     log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+  //     throw RepositoryException(code, message);
+  //   }
+  // }
 
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
+    var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
+    data.remove('coalescents');
+    var replacedProductsMap = data['replacedproducts'] as List<Map<String, Object?>>;
+    data.remove('replacedproducts');
+    var performedServicesMap = data['performedservices'] as List<Map<String, Object?>>;
+    data.remove('performedservices');
+    var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
+    data.remove('technicians');
+    var photosMap = data['photos'] as List<Map<String, Object?>>;
+    data.remove('photos');
+    data['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
     try {
-      visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
-      data['endtime'] = DateTimeHelper.formatTime(DateTimeHelper.now());
-      data['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
-      var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
-      data.remove('coalescents');
+      String? id = data['id'] as String?;
+      bool isInsert = (id == null || id == '');
 
-      var replacedProductsMap = data['replacedproducts'] as List<Map<String, Object?>>;
-      data.remove('replacedproducts');
-
-      var performedServicesMap = data['performedservices'] as List<Map<String, Object?>>;
-      data.remove('performedservices');
-
-      var techniciansMap = data['technicians'] as List<Map<String, Object?>>;
-      data.remove('technicians');
-      var photosMap = data['photos'] as List<Map<String, Object?>>;
-      data.remove('photos');
-      if (data['id'] == null || data['id'] == '') {
-        data['id'] = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
+      if (isInsert) {
+        id = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
+        data['id'] = id;
+        visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
+        data['endtime'] = DateTimeHelper.formatTime(DateTimeHelper.now());
         await _localDatabase.insert('evaluation', data);
-        for (var coalescentMap in coalescentsMap) {
-          coalescentMap['evaluationid'] = data['id'];
-          coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
-        }
-
-        for (var replacedProductMap in replacedProductsMap) {
-          replacedProductMap['evaluationid'] = data['id'];
-          replacedProductMap = await _evaluationReplacedProductRepository.save(replacedProductMap);
-        }
-
-        for (var performedServiceMap in performedServicesMap) {
-          performedServiceMap['evaluationid'] = data['id'];
-          performedServiceMap = await _evaluationPerformedServiceRepository.save(performedServiceMap);
-        }
-
-        for (var technicianMap in techniciansMap) {
-          technicianMap['evaluationid'] = data['id'];
-          technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
-        }
-        for (var photoMap in photosMap) {
-          photoMap['evaluationid'] = data['id'];
-          photoMap = await _evaluationPhotoRepository.save(photoMap);
-        }
-        data['coalescents'] = coalescentsMap;
-        data['replacedproducts'] = replacedProductsMap;
-        data['performedservices'] = performedServicesMap;
-        data['technicians'] = techniciansMap;
-        data['photos'] = photosMap;
-        data = await _processEvaluation(data);
-
-        return data;
       } else {
-        String code = 'EVA001';
-        String message = 'Essa avaliação já foi salva';
-        log('[$code] $message', time: DateTimeHelper.now());
-        throw RepositoryException(code, message);
+        id = data['id'] as String;
+        data.remove('id');
+        await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [id]);
       }
+
+      await _evaluationCoalescentRepository.deleteByParentId(id);
+      for (var coalescentMap in coalescentsMap) {
+        coalescentMap['evaluationid'] = id;
+        coalescentMap = await _evaluationCoalescentRepository.save(coalescentMap);
+      }
+
+      await _evaluationReplacedProductRepository.deleteByParentId(id);
+      for (var replacedProductMap in replacedProductsMap) {
+        replacedProductMap['evaluationid'] = id;
+        replacedProductMap = await _evaluationReplacedProductRepository.save(replacedProductMap);
+      }
+
+      await _evaluationPerformedServiceRepository.deleteByParentId(id);
+      for (var performedServiceMap in performedServicesMap) {
+        performedServiceMap['evaluationid'] = id;
+        performedServiceMap = await _evaluationPerformedServiceRepository.save(performedServiceMap);
+      }
+
+      await _evaluationTechnicianRepository.deleteByParentId(id);
+      for (var technicianMap in techniciansMap) {
+        technicianMap['evaluationid'] = id;
+        technicianMap = await _evaluationTechnicianRepository.save(technicianMap);
+      }
+
+      await _evaluationPhotoRepository.deleteByParentId(id);
+      for (var photoMap in photosMap) {
+        photoMap['evaluationid'] = id;
+        photoMap = await _evaluationPhotoRepository.save(photoMap);
+      }
+      data['coalescents'] = coalescentsMap;
+      data['replacedproducts'] = replacedProductsMap;
+      data['performedservices'] = performedServicesMap;
+      data['technicians'] = techniciansMap;
+      data['photos'] = photosMap;
+      data = await _processEvaluation(data);
+
+      return data;
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
@@ -164,7 +171,7 @@ class EvaluationRepository {
       List<Object?> whereArgs = [1];
 
       if (search != null && search.trim().isNotEmpty) {
-       where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
+        where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
@@ -173,7 +180,7 @@ class EvaluationRepository {
       }
       if (initialDate != null) {
         where += ' AND e.creationdate >= ?';
-        whereArgs.add( initialDate.millisecondsSinceEpoch);
+        whereArgs.add(initialDate.millisecondsSinceEpoch);
       }
       if (finalDate != null) {
         where += ' AND e.creationdate <= ?';
@@ -392,9 +399,13 @@ class EvaluationRepository {
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
+    var customer = await _personRepository.getById(evaluationData['customerid'] as int);
+    evaluationData['customer'] = customer;
+    evaluationData.remove('customerid');
+
     var compressor = await _personCompressorRepository.getById(evaluationData['compressorid'] as int);
     evaluationData['compressor'] = compressor;
-    evaluationData.remove('personcompressorid');
+    evaluationData.remove('compressorid');
     var evaluationCoalescents = await _evaluationCoalescentRepository.getByParentId(evaluationData['id'].toString());
     for (var evaluationCoalescent in evaluationCoalescents) {
       var coalescent = await _personCompressorCoalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);

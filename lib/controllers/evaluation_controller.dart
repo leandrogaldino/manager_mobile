@@ -22,7 +22,6 @@ class EvaluationController extends ChangeNotifier {
   final EvaluationService _evaluationService;
   final VisitScheduleService _visitScheduleService;
 
-
   EvaluationController({
     required EvaluationService evaluationService,
     required VisitScheduleService visitScheduleService,
@@ -34,14 +33,18 @@ class EvaluationController extends ChangeNotifier {
   EvaluationModel? get evaluation => _evaluation;
   SourceTypes? _source;
   SourceTypes? get source => _source;
+
+  EvaluationModel? shadow;
+
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
     _signatureBytes = null;
     _selectedPhotoIndex = 0;
     _photosBytes.clear();
     _schedule = null;
     _evaluation = evaluation;
+    shadow = evaluation?.copyWith();
     _source = source;
-    if (_schedule != null && _evaluation != null) {
+    if (_schedule != null && _evaluation != null)  {
       _evaluation!.visitscheduleid = _schedule!.id;
     } else {
       _evaluation!.visitscheduleid = null;
@@ -88,20 +91,22 @@ class EvaluationController extends ChangeNotifier {
     _isSaving = true;
     notifyListeners();
     if (_signatureBytes != null) await _saveSignature(signatureBytes: _signatureBytes!);
+
     await _savePhotos(photosBytes: _photosBytes);
     await _evaluationService.save(evaluation!, schedule?.id);
+
     if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);
     _isSaving = false;
     notifyListeners();
   }
 
-  Future<void> updateSignature(String evaluationId, String signaturePath) async {
-    _isSaving = true;
-    notifyListeners();
-    await _evaluationService.updateSignature(evaluationId, signaturePath);
-    _isSaving = false;
-    notifyListeners();
-  }
+  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
+  //   _isSaving = true;
+  //   notifyListeners();
+  //   await _evaluationService.updateSignature(evaluationId, signaturePath);
+  //   _isSaving = false;
+  //   notifyListeners();
+  // }
 
   Future<void> _saveSignature({required Uint8List signatureBytes}) async {
     _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
@@ -113,6 +118,9 @@ class EvaluationController extends ChangeNotifier {
   }
 
   Future<void> _savePhotos({required List<Uint8List> photosBytes}) async {
+    if (shadow != null) {
+      await _evaluationService.deletePhotos(photos: shadow!.photos);
+    }
     _evaluation!.photos.clear();
     for (var photoBytes in _photosBytes) {
       EvaluationPhotoModel photo = await _evaluationService.savePhoto(photoBytes: photoBytes);
@@ -280,6 +288,7 @@ class EvaluationController extends ChangeNotifier {
     for (var evaluation in allEvaluations) {
       if (evaluation.creationDate!.isBefore(DateTimeHelper.now().subtract(Duration(days: 120)))) {
         await _evaluationService.delete(evaluation.id);
+        await _evaluationService.deletePhotos(photos: evaluation.photos);
         count += 1;
       }
     }
@@ -294,5 +303,4 @@ class EvaluationController extends ChangeNotifier {
 
     return count;
   }
-
 }

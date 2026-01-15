@@ -81,7 +81,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         }
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
-          if (context.mounted) Navigator.pop(context, result);
+                    if (context.mounted) Navigator.pop(context, result);
         }
       },
       child: Scaffold(
@@ -290,12 +290,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       );
                                       return;
                                     }
-                                    if (_evaluationController.evaluation!.id == null) {
+                                    //if (_evaluationController.evaluation!.id == null) {
                                       if (!_validateCoalescentsNextChange()) return;
                                       await _evaluationController.save();
-                                    } else {
-                                      await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
-                                    }
+                                    //} else {
+                                      //await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
+                                    //}
                                     //await _homeController.applyFilters();
                                     if (!context.mounted) return;
                                     Navigator.pop<EvaluationModel>(context);

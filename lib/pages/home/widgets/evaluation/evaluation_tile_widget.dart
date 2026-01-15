@@ -36,9 +36,9 @@ class EvaluationTileWidget extends StatelessWidget {
         child: InkWell(
           onTap: () {
             if (evaluation.signaturePath != null) {
-              evaluationController.setEvaluation(evaluation, SourceTypes.fromSavedWithSign);
+              evaluationController.setEvaluation(evaluation,  SourceTypes.fromSavedWithSign);
             } else {
-              evaluationController.setEvaluation(evaluation, SourceTypes.fromSavedWithoutSign);
+              evaluationController.setEvaluation(evaluation,  SourceTypes.fromSavedWithoutSign);
             }
             Navigator.of(context).pushNamed(Routes.evaluation);
           },
