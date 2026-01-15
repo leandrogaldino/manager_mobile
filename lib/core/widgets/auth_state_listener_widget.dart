@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
@@ -11,8 +12,7 @@ class AuthStateListenerWidget extends StatefulWidget {
   const AuthStateListenerWidget({super.key});
 
   @override
-  State<AuthStateListenerWidget> createState() =>
-      _AuthStateListenerWidgetState();
+  State<AuthStateListenerWidget> createState() => _AuthStateListenerWidgetState();
 }
 
 class _AuthStateListenerWidgetState extends State<AuthStateListenerWidget> {
@@ -29,8 +29,7 @@ class _AuthStateListenerWidgetState extends State<AuthStateListenerWidget> {
     _remoteDatabase = Locator.get<RemoteDatabase>();
     _appPreferences = Locator.get<AppPreferences>();
 
-    _authSubscription =
-        FirebaseAuth.instance.authStateChanges().listen(_onAuthChanged);
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen(_onAuthChanged);
   }
 
   void _onAuthChanged(User? user) {
@@ -72,7 +71,6 @@ class _AuthStateListenerWidgetState extends State<AuthStateListenerWidget> {
     );
   }
 
-
   Future<void> _loadUserData(String userId) async {
     final result = await _remoteDatabase.get(
       collection: 'users',
@@ -85,8 +83,9 @@ class _AuthStateListenerWidgetState extends State<AuthStateListenerWidget> {
       ],
     );
 
-    final technicianId =
-        result.isEmpty ? 0 : int.parse(result.first['personid'].toString());
+    final technicianId = result.isEmpty ? 0 : int.parse(result.first['personid'].toString());
+
+    log('=============O ID LOGADO NO LISTENER E $technicianId================');
 
     await _appPreferences.setLoggedTechnicianId(technicianId);
   }

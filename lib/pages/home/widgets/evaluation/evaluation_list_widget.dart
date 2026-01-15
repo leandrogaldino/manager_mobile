@@ -13,16 +13,15 @@ class EvaluationListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lastSuccess = homeController.lastSuccessState;
-    var evaluations = lastSuccess != null && lastSuccess.evaluations.isNotEmpty ? lastSuccess.evaluations : [];
+    var evaluations = homeController.evaluations;
 
     return ListView.builder(
       controller: scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: evaluations.length,
+      itemCount: evaluations.items.length,
       itemBuilder: (context, index) {
         return EvaluationTileWidget(
-          evaluation: evaluations[index],
+          evaluation: evaluations.items[index],
         );
       },
     );

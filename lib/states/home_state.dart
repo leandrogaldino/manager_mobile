@@ -1,3 +1,4 @@
+import 'package:manager_mobile/controllers/paged_list_controller.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 
@@ -12,17 +13,6 @@ class HomeStateConnection extends HomeState {
 
   HomeStateConnection({required this.infoMessage});
 }
-class HomeStateNewVisitSchedule extends HomeState {
-  final String message;
-
-  HomeStateNewVisitSchedule({required this.message});
-}
-
-class HomeStateNewEvaluation extends HomeState {
-  final String message;
-
-  HomeStateNewEvaluation({required this.message});
-}
 
 class HomeStateError extends HomeState {
   final String errorMessage;
@@ -30,8 +20,8 @@ class HomeStateError extends HomeState {
 }
 
 class HomeStateSuccess extends HomeState {
-  final List<VisitScheduleModel> schedules;
-  final List<EvaluationModel> evaluations;
+  final PagedListController<VisitScheduleModel> schedules;
+  final PagedListController<EvaluationModel> evaluations;
 
   HomeStateSuccess(this.schedules, this.evaluations);
 }

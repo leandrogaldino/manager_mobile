@@ -32,7 +32,7 @@ class HomeController extends ChangeNotifier {
           initialDate: filter.selectedDateRange?.start,
           finalDate: filter.selectedDateRange?.end,
         );
-      }, 
+      },
     );
 
     visitSchedules = PagedListController<VisitScheduleModel>(
@@ -46,16 +46,19 @@ class HomeController extends ChangeNotifier {
         );
       },
     );
-
-    // sempre que o filtro mudar, recarrega tudo
     filter.addListener(_onFilterChanged);
+  }
+
+  bool _showingUpdateBanner = false;
+  bool get showingUpdateBanner => _showingUpdateBanner;
+
+  void showUpdateBanner() {
+    _showingUpdateBanner = true;
+    notifyListeners();
   }
 
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
-
-  HomeStateSuccess? _lastSuccessState;
-  HomeStateSuccess? get lastSuccessState => _lastSuccessState;
 
   int _currentIndex = 0;
   int get currentIndex => _currentIndex;
@@ -75,8 +78,8 @@ class HomeController extends ChangeNotifier {
 
     _setState(
       HomeStateSuccess(
-        visitSchedules.items,
-        evaluations.items,
+        visitSchedules,
+        evaluations,
       ),
     );
   }
@@ -87,9 +90,6 @@ class HomeController extends ChangeNotifier {
 
   void _setState(HomeState newState) {
     _state = newState;
-    if (newState is HomeStateSuccess) {
-      _lastSuccessState = newState;
-    }
     notifyListeners();
   }
 
@@ -115,11 +115,7 @@ class HomeController extends ChangeNotifier {
       final hasNewData = await _syncService.runSync(isAuto: isAuto);
 
       if (isAuto && hasNewData) {
-        _setState(
-          HomeStateConnection(
-            infoMessage: 'Novos itens encontrados, atualize para exibir',
-          ),
-        );
+        showUpdateBanner();
       }
     } catch (e) {
       _setState(HomeStateError(e.toString()));

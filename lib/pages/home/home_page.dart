@@ -15,11 +15,13 @@ import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/pages/home/widgets/animated_banner_wraper.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/custom_appbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/evaluation/evaluation_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/filterbar/filterbar_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/loader_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/schedule/schedule_list_widget.dart';
+import 'package:manager_mobile/pages/home/widgets/update_banner_widget.dart';
 import 'package:manager_mobile/states/home_state.dart';
 
 class HomePage extends StatefulWidget {
@@ -69,12 +71,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
     SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _homeController.synchronize(showLoading: true);
       final user = await _loginController.currentLoggedUser;
       if (!mounted) return;
       setState(() {
         _loggedUser = user;
       });
-      await _homeController.synchronize(showLoading: true);
       await _homeController.loadInitial();
     });
   }
@@ -109,9 +111,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           listenable: _homeController,
           builder: (context, child) {
             final state = _homeController.state;
-            final lastSuccess = _homeController.lastSuccessState;
             showMessage(state);
-            if (state is HomeStateLoading && lastSuccess == null) {
+            if (state is HomeStateLoading ) {
               return LoaderWidget();
             }
             return Padding(
@@ -119,6 +120,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   FilterBarWidget(),
+                  _homeController.showingUpdateBanner
+                      ? AnimatedBannerWrapper(
+                          visible: true,
+                          child: UpdateBannerWidget(
+                            onTap: () async {
+                              _hasShownError = false;
+                              await _homeController.loadInitial();
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: () async {
@@ -226,22 +238,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       });
     }
 
-    if (state is HomeStateNewVisitSchedule) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Message.showInfoSnackbar(
-          context: context,
-          message: state.message,
-        );
-      });
-    }
+    // if (state is HomeStateNewItems) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     Message.showInfoSnackbar(
+    //       context: context,
+    //       message: state.message,
+    //     );
+    //   });
+    // }
 
-    if (state is HomeStateNewEvaluation) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Message.showInfoSnackbar(
-          context: context,
-          message: state.message,
-        );
-      });
-    }
+    // if (state is HomeStateNewEvaluation) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     Message.showInfoSnackbar(
+    //       context: context,
+    //       message: state.message,
+    //     );
+    //   });
+    // }
   }
 }

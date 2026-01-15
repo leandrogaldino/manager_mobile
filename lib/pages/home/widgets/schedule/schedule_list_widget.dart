@@ -12,15 +12,14 @@ class ScheduleListWidget extends StatelessWidget {
   final ScrollController scrollController;
   @override
   Widget build(BuildContext context) {
-    final lastSuccess = homeController.lastSuccessState;
-    var schedules = lastSuccess != null && lastSuccess.schedules.isNotEmpty ? lastSuccess.schedules : [];
+    var schedules = homeController.visitSchedules;
     return ListView.builder(
       controller: scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: schedules.length,
+      itemCount: schedules.items.length,
       itemBuilder: (context, index) {
         return ScheduleTileWidget(
-          schedule: schedules[index],
+          schedule: schedules.items[index],
         );
       },
     );
