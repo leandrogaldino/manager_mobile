@@ -32,17 +32,7 @@ class App extends StatelessWidget {
             darkTheme: appTheme.dark(),
             themeMode: appController.themeMode,
             home: const AuthStateListenerWidget(),
-            onGenerateRoute: (settings) {
-              if (settings.name == Routes.evaluation) {
-                final String? args = settings.arguments as String?;
-                final instructions = args;
-                return MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) => EvaluationPage(
-                    instructions: instructions,
-                  ),
-                );
-              }
+            onGenerateRoute: (settings) {              
               if (settings.name == Routes.takePhoto) {
                 return MaterialPageRoute<File?>(
                   builder: (context) => CameraCamera(
@@ -63,6 +53,7 @@ class App extends StatelessWidget {
             routes: {
               Routes.login: (context) => const LoginPage(),
               Routes.home: (context) => const HomePage(),
+              Routes.evaluation: (context) => const EvaluationPage(),
               Routes.captureSignature: (context) => const EvaluationSignaturePage(),
               Routes.viewPhoto: (context) => const PhotosPage(),
             },

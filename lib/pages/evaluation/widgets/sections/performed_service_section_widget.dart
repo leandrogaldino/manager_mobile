@@ -2,32 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/service_picker.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/core/widgets/quantity_selector.dart';
 
 class PerformedServiceSectionWidget extends StatefulWidget {
-  const PerformedServiceSectionWidget({super.key});
+  const PerformedServiceSectionWidget({
+    super.key,
+    required this.evaluationController,
+  });
+
+  final EvaluationController evaluationController;
 
   @override
   State<PerformedServiceSectionWidget> createState() => _PerformedServiceSectionWidgetState();
 }
 
 class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionWidget> {
-  late final EvaluationController _evaluationController;
 
-  @override
-  void initState() {
-    super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
-  }
 
   @override
   Widget build(BuildContext context) {
+    EvaluationController controller = widget.evaluationController;
     return ListenableBuilder(
-      listenable: _evaluationController,
+      listenable: controller,
       builder: (context, child) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -37,14 +36,14 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != SourceTypes.fromSavedWithSign,
+                  visible: controller.source != SourceTypes.fromSavedWithSign,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       ServiceModel? service = await ServicePicker.pick(context: context);
                       if (service != null) {
                         EvaluationPerformedServiceModel performedService = EvaluationPerformedServiceModel(quantity: 1, service: service);
-                        _evaluationController.addPerformedService(performedService);
+                        controller.addPerformedService(performedService);
                       }
                     },
                     child: Text('Incluir Serviço'),
@@ -55,7 +54,7 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-                itemCount: _evaluationController.evaluation!.performedServices.length,
+                itemCount: controller.evaluation!.performedServices.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
@@ -66,24 +65,24 @@ class _PerformedServiceSectionWidgetState extends State<PerformedServiceSectionW
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                _evaluationController.evaluation!.performedServices[index].service.name,
+                                controller.evaluation!.performedServices[index].service.name,
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
                           ),
                           QuantitySelector(
-                            readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
-                            initialQuantity: _evaluationController.evaluation!.performedServices[index].quantity,
+                            readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                            initialQuantity: controller.evaluation!.performedServices[index].quantity,
                             onQuantityChanged: (q) async {
                               if (q == 0) {
                                 bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este serviço?');
                                 if (answer == true) {
-                                  _evaluationController.removePerformedService(_evaluationController.evaluation!.performedServices[index]);
+                                  controller.removePerformedService(controller.evaluation!.performedServices[index]);
                                 } else {
-                                  _evaluationController.updatePerformedServiceQuantity(index, 1);
+                                  controller.updatePerformedServiceQuantity(index, 1);
                                 }
                               } else {
-                                _evaluationController.updatePerformedServiceQuantity(index, q);
+                                controller.updatePerformedServiceQuantity(index, q);
                               }
                             },
                           ),

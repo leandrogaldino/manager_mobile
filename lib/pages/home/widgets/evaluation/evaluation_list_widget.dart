@@ -25,6 +25,7 @@ class EvaluationListWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             return EvaluationTileWidget(
               evaluation: evaluations.items[index],
+              homeController: homeController,
             );
           },
         );

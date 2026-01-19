@@ -16,12 +16,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/signature_secti
 import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({
-    super.key,
-    this.instructions,
-  });
-
-  final String? instructions;
+  const EvaluationPage({super.key});
 
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
@@ -41,7 +36,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   void initState() {
     super.initState();
     _readingKey = GlobalKey<FormState>();
-    _scrollController = ScrollController(); // Inicializa o ScrollController
+    _scrollController = ScrollController();
     _evaluationController = Locator.get<EvaluationController>();
     if (_evaluationController.source == SourceTypes.fromSavedWithSign) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
@@ -52,12 +47,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Não se esqueça de liberar o controller
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollToKey(GlobalKey key) {
-    // Usamos um post-frame callback para garantir que o widget já tenha sido renderizado (expandido)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = key.currentContext;
       if (context != null) {
@@ -70,7 +64,29 @@ class _EvaluationPageState extends State<EvaluationPage> {
       }
     });
   }
+bool _initialized = false;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  if (_initialized) return;
+
+passar apenas a evaluationcontroller nos argumentos
+
+
+    final args = ModalRoute.of(context)!.settings.arguments as List;
+    _originalEvaluation = args[0] as EvaluationModel;
+    final source = args[1] as SourceTypes;
+     instructions = args.length == 3 ? args[2] : null;
+    _editingEvaluation = _originalEvaluation.copyWith();
+    _evaluationController.setEvaluation(_editingEvaluation, source);
+      _initialized = true;
+
+  }
+
+  late EvaluationModel _originalEvaluation;
+  late EvaluationModel _editingEvaluation;
+  late String? instructions;
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -81,7 +97,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         }
         final bool shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
-                    if (context.mounted) Navigator.pop(context, result);
+          if (context.mounted) Navigator.pop(context, result);
         }
       },
       child: Scaffold(
@@ -95,19 +111,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: _evaluationController.source == SourceTypes.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == SourceTypes.fromSchedule && instructions != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
                     title: 'Instruções',
                     children: [
                       InstructionsSectionWidget(
-                        instructions: widget.instructions ?? '',
+                        instructions: instructions ?? '',
                       ),
                     ],
                   ),
                 ),
                 Visibility(
-                  visible: _evaluationController.source == SourceTypes.fromSchedule && widget.instructions != null,
+                  visible: _evaluationController.source == SourceTypes.fromSchedule && instructions != null,
                   child: SizedBox(height: 5),
                 ),
                 Visibility(
@@ -115,7 +131,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   child: ExpandableSectionWidget(
                     title: 'Cabeçalho',
                     children: [
-                      HeaderSectionWidget(),
+                      HeaderSectionWidget(evaluationController: _evaluationController),
                     ],
                   ),
                 ),
@@ -129,7 +145,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     return ExpandableSectionWidget(
                       initiallyExpanded: _evaluationController.source != SourceTypes.fromSavedWithoutSign,
                       title: 'Dados do Compressor',
-                      children: [ReadingSectionWidget(formKey: _readingKey)],
+                      children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: _evaluationController)],
                     );
                   },
                 ),
@@ -143,7 +159,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         key: _coalescentKey,
                         onExpand: () => _scrollToKey(_coalescentKey),
                         title: 'Coalescentes',
-                        children: [CoalescentSectionWidget()],
+                        children: [
+                          CoalescentSectionWidget(
+                            evaluationController: _evaluationController,
+                          )
+                        ],
                       ),
                     );
                   },
@@ -166,7 +186,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         key: _replacedProductKey,
                         onExpand: () => _scrollToKey(_replacedProductKey),
                         title: 'Peças Substituídas',
-                        children: [ReplacedProductSectionWidget()],
+                        children: [ReplacedProductSectionWidget(evaluationController: _evaluationController)],
                       ),
                     );
                   },
@@ -189,7 +209,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         key: _performedServiceKey,
                         onExpand: () => _scrollToKey(_performedServiceKey),
                         title: 'Serviços Realizados',
-                        children: [PerformedServiceSectionWidget()],
+                        children: [PerformedServiceSectionWidget(evaluationController: _evaluationController)],
                       ),
                     );
                   },
@@ -207,7 +227,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   key: _technicianKey,
                   onExpand: () => _scrollToKey(_technicianKey),
                   title: 'Técnicos',
-                  children: [TechnicianSectionWidget()],
+                  children: [TechnicianSectionWidget(evaluationController: _evaluationController)],
                 ),
                 ListenableBuilder(
                     listenable: _evaluationController,
@@ -226,7 +246,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         key: _photoKey,
                         onExpand: () => _scrollToKey(_photoKey),
                         title: 'Fotos',
-                        children: [PhotoSectionWidget()],
+                        children: [PhotoSectionWidget(evaluationController: _evaluationController)],
                       ),
                     );
                   },
@@ -250,7 +270,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         initiallyExpanded: _evaluationController.source == SourceTypes.fromSavedWithoutSign,
                         onExpand: () => _scrollToKey(_signatureKey),
                         title: 'Assinatura',
-                        children: [SignatureSectionWidget()],
+                        children: [SignatureSectionWidget(evaluationController: _evaluationController)],
                       ),
                     );
                   },
@@ -290,13 +310,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       );
                                       return;
                                     }
-                                    //if (_evaluationController.evaluation!.id == null) {
-                                      if (!_validateCoalescentsNextChange()) return;
-                                      await _evaluationController.save();
-                                    //} else {
-                                      //await _evaluationController.updateSignature(_evaluationController.evaluation!.id!, _evaluationController.evaluation!.signaturePath!);
-                                    //}
-                                    //await _homeController.applyFilters();
+                                    if (!_validateCoalescentsNextChange()) return;
+                                    await _evaluationController.save();
+                                    _originalEvaluation = _editingEvaluation.copyWith(); nao funciona, retornar no pop
                                     if (!context.mounted) return;
                                     Navigator.pop<EvaluationModel>(context);
                                   },

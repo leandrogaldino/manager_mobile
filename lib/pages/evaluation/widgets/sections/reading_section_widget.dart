@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
@@ -15,7 +14,10 @@ class ReadingSectionWidget extends StatefulWidget {
   const ReadingSectionWidget({
     super.key,
     required this.formKey,
+    required this.evaluationController,
   });
+
+  final EvaluationController evaluationController;
 
   final GlobalKey<FormState> formKey;
 
@@ -24,7 +26,6 @@ class ReadingSectionWidget extends StatefulWidget {
 }
 
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
-  late final EvaluationController _evaluationController;
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
   late final TextEditingController _unitEC;
@@ -60,18 +61,17 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   @override
   void initState() {
     super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
     _customerEC = TextEditingController();
     _customerEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && (_customerEC.text != _evaluationController.evaluation!.compressor!.person.shortName)) {
-        _evaluationController.updateCompressor(null);
+      if (widget.evaluationController.evaluation!.compressor != null && (_customerEC.text != widget.evaluationController.evaluation!.compressor!.person.shortName)) {
+        widget.evaluationController.updateCompressor(null);
         _compressorEC.text = '';
       }
     });
     _compressorEC = TextEditingController();
     _compressorEC.addListener(() {
-      if (_evaluationController.evaluation!.compressor != null && _compressorEC.text != _compressorFullName) {
-        _evaluationController.updateCompressor(null);
+      if (widget.evaluationController.evaluation!.compressor != null && _compressorEC.text != _compressorFullName) {
+        widget.evaluationController.updateCompressor(null);
       }
     });
     _unitEC = TextEditingController();
@@ -85,31 +85,31 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
-    if (_evaluationController.source != SourceTypes.fromNew) _fillForm();
+    if (widget.evaluationController.source != SourceTypes.fromNew) _fillForm();
   }
 
   void _fillForm() {
-    _customerEC.text = _evaluationController.evaluation!.compressor!.person.shortName;
+    _customerEC.text = widget.evaluationController.evaluation!.compressor!.person.shortName;
     _compressorEC.text = _compressorFullName;
 
-    _unitEC.text = _evaluationController.evaluation!.unitName == null ? '' : _evaluationController.evaluation!.unitName.toString();
-    _temperatureEC.text = _evaluationController.evaluation!.temperature == null ? '' : _evaluationController.evaluation!.temperature.toString();
-    _pressureEC.text = _evaluationController.evaluation!.pressure == null ? '' : _evaluationController.evaluation!.pressure.toString();
+    _unitEC.text = widget.evaluationController.evaluation!.unitName == null ? '' : widget.evaluationController.evaluation!.unitName.toString();
+    _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
+    _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
 
-    _horimeterEC.text = _evaluationController.evaluation!.horimeter == null ? '' : _evaluationController.evaluation!.horimeter.toString();
-    _airFilterEC.text = _evaluationController.evaluation!.airFilter == null ? '' : _evaluationController.evaluation!.airFilter.toString();
-    _oilFilterEC.text = _evaluationController.evaluation!.oilFilter == null ? '' : _evaluationController.evaluation!.oilFilter.toString();
-    _separatorEC.text = _evaluationController.evaluation!.separator == null ? '' : _evaluationController.evaluation!.separator.toString();
-    _oilEC.text = _evaluationController.evaluation!.oil == null ? '' : _evaluationController.evaluation!.oil.toString();
-    _adviceEC.text = _evaluationController.evaluation!.advice ?? '';
-    _responsibleEC.text = _evaluationController.evaluation!.responsible ?? '';
+    _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
+    _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
+    _oilFilterEC.text = widget.evaluationController.evaluation!.oilFilter == null ? '' : widget.evaluationController.evaluation!.oilFilter.toString();
+    _separatorEC.text = widget.evaluationController.evaluation!.separator == null ? '' : widget.evaluationController.evaluation!.separator.toString();
+    _oilEC.text = widget.evaluationController.evaluation!.oil == null ? '' : widget.evaluationController.evaluation!.oil.toString();
+    _adviceEC.text = widget.evaluationController.evaluation!.advice ?? '';
+    _responsibleEC.text = widget.evaluationController.evaluation!.responsible ?? '';
   }
 
   String get _compressorFullName {
-    String compressorFullName = _evaluationController.evaluation!.compressor?.compressor.name ?? '';
-    final String serialNumber = _evaluationController.evaluation!.compressor?.serialNumber ?? '';
-    final String patrimony = _evaluationController.evaluation!.compressor?.patrimony ?? '';
-    final String sector = _evaluationController.evaluation!.compressor?.sector ?? '';
+    String compressorFullName = widget.evaluationController.evaluation!.compressor?.compressor.name ?? '';
+    final String serialNumber = widget.evaluationController.evaluation!.compressor?.serialNumber ?? '';
+    final String patrimony = widget.evaluationController.evaluation!.compressor?.patrimony ?? '';
+    final String sector = widget.evaluationController.evaluation!.compressor?.sector ?? '';
     compressorFullName += serialNumber.isNotEmpty ? ' NS: $serialNumber' : '';
     compressorFullName += patrimony.isNotEmpty ? ' PAT: $patrimony' : '';
     compressorFullName += sector.isNotEmpty ? ' - $sector' : '';
@@ -118,11 +118,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _customerEC.text = _evaluationController.evaluation!.compressor?.person.shortName ?? '';
+    EvaluationController controller = widget.evaluationController;
+
+    _customerEC.text = controller.evaluation!.compressor?.person.shortName ?? '';
     _compressorEC.text = _compressorFullName;
     final theme = Theme.of(context);
     return ListenableBuilder(
-      listenable: _evaluationController,
+      listenable: controller,
       builder: (context, child) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -132,13 +134,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source == SourceTypes.fromNew,
+                  visible: controller.source == SourceTypes.fromNew,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       PersonCompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
-                        _evaluationController.updateCompressor(compressor);
+                        controller.updateCompressor(compressor);
                       }
                     },
                     child: Text('Buscar Cliente/Compressor'),
@@ -173,7 +175,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: DropdownButtonFormField<CallTypes>(
                               alignment: AlignmentDirectional.center,
-                              initialValue: _evaluationController.evaluation!.callType,
+                              initialValue: controller.evaluation!.callType,
                               decoration: InputDecoration(
                                 labelText: 'Tipo de Visita',
                               ),
@@ -182,13 +184,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   value: callType,
                                   child: Text(
                                     callType.stringValue,
-                                    style: theme.textTheme.bodyLarge!.copyWith(color: _evaluationController.source == SourceTypes.fromNew ? theme.colorScheme.onSurface : theme.colorScheme.primary),
+                                    style: theme.textTheme.bodyLarge!.copyWith(color: controller.source == SourceTypes.fromNew ? theme.colorScheme.onSurface : theme.colorScheme.primary),
                                   ),
                                 );
                               }).toList(),
-                              onChanged: _evaluationController.source == SourceTypes.fromNew
+                              onChanged: controller.source == SourceTypes.fromNew
                                   ? (callType) {
-                                      _evaluationController.updateCallType(callType!);
+                                      controller.updateCallType(callType!);
                                     }
                                   : null,
                             ),
@@ -196,7 +198,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _unitEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               textCapitalization: TextCapitalization.characters,
                               inputFormatters: [
@@ -222,7 +224,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Unidade',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateUnit(value),
+                              onChanged: (value) => controller.updateUnit(value),
                             ),
                           ),
                         ],
@@ -234,7 +236,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _temperatureEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -247,13 +249,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Temperatura (ºC)',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateTemperature(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateTemperature(int.tryParse(value) ?? 0),
                             ),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _pressureEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               inputFormatters: [
@@ -271,7 +273,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               onChanged: (value) {
                                 // troca vírgula por ponto antes de fazer parse
                                 final raw = value.replaceAll(',', '.');
-                                _evaluationController.updatePresure(double.tryParse(raw) ?? 0);
+                                controller.updatePresure(double.tryParse(raw) ?? 0);
                               },
                             ),
                           ),
@@ -284,7 +286,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _horimeterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -293,13 +295,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Horímetro',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateHorimeter(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateHorimeter(int.tryParse(value) ?? 0),
                             ),
                           ),
                           Expanded(
                             child: DropdownButtonFormField<OilTypes>(
                               alignment: AlignmentDirectional.center,
-                              initialValue: _evaluationController.evaluation!.oilType,
+                              initialValue: controller.evaluation!.oilType,
                               decoration: InputDecoration(
                                 labelText: 'Tipo de Óleo',
                               ),
@@ -312,9 +314,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   ),
                                 );
                               }).toList(),
-                              onChanged: _evaluationController.source != SourceTypes.fromSavedWithSign
+                              onChanged: controller.source != SourceTypes.fromSavedWithSign
                                   ? (oilType) {
-                                      _evaluationController.updateOilType(oilType!);
+                                      controller.updateOilType(oilType!);
                                     }
                                   : null,
                             ),
@@ -328,7 +330,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _airFilterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -336,7 +338,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType,
+                                    controller.evaluation!.oilType,
                                     PartTypes.airFilter,
                                   ),
                                 ],
@@ -345,13 +347,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Filtro de Ar',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateAirFilter(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateAirFilter(int.tryParse(value) ?? 0),
                             ),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _oilFilterEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -359,7 +361,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType,
+                                    controller.evaluation!.oilType,
                                     PartTypes.oilFilter,
                                   ),
                                 ],
@@ -368,7 +370,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Filtro de Óleo',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateOilFilter(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateOilFilter(int.tryParse(value) ?? 0),
                             ),
                           ),
                         ],
@@ -380,7 +382,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _separatorEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -388,7 +390,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType,
+                                    controller.evaluation!.oilType,
                                     PartTypes.separator,
                                   ),
                                 ],
@@ -397,13 +399,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Separador',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateSeparator(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateSeparator(int.tryParse(value) ?? 0),
                             ),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _oilEC,
-                              readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.text,
                               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
@@ -411,7 +413,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    _evaluationController.evaluation!.oilType,
+                                    controller.evaluation!.oilType,
                                     PartTypes.oil,
                                   ),
                                 ],
@@ -420,7 +422,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Óleo',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => _evaluationController.updateOil(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateOil(int.tryParse(value) ?? 0),
                             ),
                           ),
                         ],
@@ -428,7 +430,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       TextFormField(
                         controller: _adviceEC,
                         focusNode: _adviceFocusNode,
-                        readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                        readOnly: controller.source == SourceTypes.fromSavedWithSign,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
                           TextInputFormatter.withFunction(
@@ -444,7 +446,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           labelText: 'Parecer Técnico',
                         ),
                         maxLines: 5,
-                        onChanged: (value) => _evaluationController.updateAdvice(value),
+                        onChanged: (value) => controller.updateAdvice(value),
                       ),
                       Card(
                         shape: RoundedRectangleBorder(
@@ -455,16 +457,16 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ),
                         child: SwitchListTile(
                           title: Text("Necessário orçamento?"),
-                          value: _evaluationController.evaluation!.needProposal,
+                          value: controller.evaluation!.needProposal,
                           onChanged: (bool value) {
-                            if (_evaluationController.source == SourceTypes.fromSavedWithSign) return;
-                            _evaluationController.updateNeedProposal(value);
+                            if (controller.source == SourceTypes.fromSavedWithSign) return;
+                            controller.updateNeedProposal(value);
                           },
                         ),
                       ),
                       TextFormField(
                         controller: _responsibleEC,
-                        readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
+                        readOnly: controller.source == SourceTypes.fromSavedWithSign,
                         textCapitalization: TextCapitalization.characters,
                         inputFormatters: [
                           TextInputFormatter.withFunction(
@@ -480,7 +482,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         ],
                         validator: Validatorless.required('Campo obrigatório'),
                         decoration: InputDecoration(labelText: 'Responsável'),
-                        onChanged: (value) => _evaluationController.updateResponsible(value),
+                        onChanged: (value) => controller.updateResponsible(value),
                       ),
                     ],
                   ),

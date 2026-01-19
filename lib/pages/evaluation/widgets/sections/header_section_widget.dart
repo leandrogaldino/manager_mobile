@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 
 class HeaderSectionWidget extends StatelessWidget {
-  const HeaderSectionWidget({super.key});
+  const HeaderSectionWidget({
+    super.key,
+    required this.evaluationController,
+  });
+
+  final EvaluationController evaluationController;
 
   @override
-  Widget build(BuildContext context) {
-    final EvaluationController evaluationController = Locator.get<EvaluationController>();
+  Widget build(BuildContext context) {    
     return Column(
       spacing: 10,
       children: [

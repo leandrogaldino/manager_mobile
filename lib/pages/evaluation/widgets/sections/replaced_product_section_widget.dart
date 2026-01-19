@@ -2,32 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/product_picker.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/product_model.dart';
 import 'package:manager_mobile/core/widgets/quantity_selector.dart';
 
 class ReplacedProductSectionWidget extends StatefulWidget {
-  const ReplacedProductSectionWidget({super.key});
-
+  const ReplacedProductSectionWidget({
+    super.key,
+    required this.evaluationController,
+  });
+  final EvaluationController evaluationController;
   @override
   State<ReplacedProductSectionWidget> createState() => _ReplacedProductSectionWidgetState();
 }
 
 class _ReplacedProductSectionWidgetState extends State<ReplacedProductSectionWidget> {
-  late final EvaluationController _evaluationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
-  }
-
   @override
   Widget build(BuildContext context) {
+
+EvaluationController controller = widget.evaluationController;
+
     return ListenableBuilder(
-      listenable: _evaluationController,
+      listenable: controller,
       builder: (context, child) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -37,14 +34,14 @@ class _ReplacedProductSectionWidgetState extends State<ReplacedProductSectionWid
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != SourceTypes.fromSavedWithSign,
+                  visible: controller.source != SourceTypes.fromSavedWithSign,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       ProductModel? product = await ProductPicker.pick(context: context);
                       if (product != null) {
                         EvaluationReplacedProductModel replacedProduct = EvaluationReplacedProductModel(quantity: 1, product: product);
-                        _evaluationController.addReplacedProduct(replacedProduct);
+                        controller.addReplacedProduct(replacedProduct);
                       }
                     },
                     child: Text('Incluir Produto'),
@@ -55,7 +52,7 @@ class _ReplacedProductSectionWidgetState extends State<ReplacedProductSectionWid
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-                itemCount: _evaluationController.evaluation!.replacedProducts.length,
+                itemCount: controller.evaluation!.replacedProducts.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
@@ -67,29 +64,29 @@ class _ReplacedProductSectionWidgetState extends State<ReplacedProductSectionWid
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _evaluationController.evaluation!.replacedProducts[index].product.name,
+                                  controller.evaluation!.replacedProducts[index].product.name,
                                   style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                                 Text(
-                                  _evaluationController.evaluation!.replacedProducts[index].product.codes.map((c) => c.code).join(' • '),
+                                  controller.evaluation!.replacedProducts[index].product.codes.map((c) => c.code).join(' • '),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
                           ),
                           QuantitySelector(
-                            readOnly: _evaluationController.source == SourceTypes.fromSavedWithSign,
-                            initialQuantity: _evaluationController.evaluation!.replacedProducts[index].quantity,
+                            readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                            initialQuantity: controller.evaluation!.replacedProducts[index].quantity,
                             onQuantityChanged: (q) async {
                               if (q == 0) {
                                 bool? answer = await YesNoPicker.pick(context: context, question: 'Deseja remover este produto?');
                                 if (answer == true) {
-                                  _evaluationController.removeReplacedProduct(_evaluationController.evaluation!.replacedProducts[index]);
+                                  controller.removeReplacedProduct(controller.evaluation!.replacedProducts[index]);
                                 } else {
-                                  _evaluationController.updateReplacedProductQuantity(index, 1);
+                                  controller.updateReplacedProductQuantity(index, 1);
                                 }
                               } else {
-                                _evaluationController.updateReplacedProductQuantity(index, q);
+                                controller.updateReplacedProductQuantity(index, q);
                               }
                             },
                           ),

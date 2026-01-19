@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
@@ -10,13 +9,13 @@ class EvaluationTileWidget extends StatelessWidget {
   const EvaluationTileWidget({
     super.key,
     required this.evaluation,
+    required this.homeController,
   });
 
   final EvaluationModel evaluation;
-
+  final HomeController homeController;
   @override
   Widget build(BuildContext context) {
-    final evaluationController = Locator.get<EvaluationController>();
     String subtitle = evaluation.compressor!.compressor.name;
     if (evaluation.compressor!.serialNumber.isNotEmpty) {
       subtitle = '$subtitle - ${evaluation.compressor!.serialNumber}';
@@ -34,13 +33,10 @@ class EvaluationTileWidget extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(12),
         child: InkWell(
-          onTap: () {
-            if (evaluation.signaturePath != null) {
-              evaluationController.setEvaluation(evaluation,  SourceTypes.fromSavedWithSign);
-            } else {
-              evaluationController.setEvaluation(evaluation,  SourceTypes.fromSavedWithoutSign);
-            }
-            Navigator.of(context).pushNamed(Routes.evaluation);
+          onTap: () async {
+            SourceTypes source = evaluation.signaturePath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
+            await Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, source]);
+            await homeController.loadInitial();
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

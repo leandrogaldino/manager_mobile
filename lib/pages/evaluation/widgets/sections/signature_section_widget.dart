@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class SignatureSectionWidget extends StatefulWidget {
-  const SignatureSectionWidget({super.key});
-
+  const SignatureSectionWidget({
+    super.key,
+    required this.evaluationController,
+  });
+  final EvaluationController evaluationController;
   @override
   State<SignatureSectionWidget> createState() => _SignatureSectionWidgetState();
 }
 
 class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
-  late final EvaluationController _evaluationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
-  }
 
   @override
   Widget build(BuildContext context) {
+    EvaluationController controller = widget.evaluationController;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(
@@ -32,7 +28,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
         children: [
           GestureDetector(
             onTap: () {
-              if (_evaluationController.evaluation!.compressor != null && _evaluationController.source != SourceTypes.fromSavedWithSign) {
+              if (controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign) {
                 FocusScope.of(context).requestFocus(FocusNode());
                 Navigator.of(context).pushNamed(Routes.captureSignature);
               } else {
@@ -40,7 +36,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
               }
             },
             child: ListenableBuilder(
-                listenable: _evaluationController,
+                listenable: controller,
                 builder: (context, child) {
                   return Container(
                     width: double.infinity,
@@ -50,7 +46,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
                     ),
-                    child: _evaluationController.signatureBytes == null
+                    child: controller.signatureBytes == null
                         ? Center(
                             child: Text(
                               'Toque para assinar',
@@ -59,7 +55,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
                               ),
                             ),
                           )
-                        : Image.memory(_evaluationController.signatureBytes!),
+                        : Image.memory(controller.signatureBytes!),
                   );
                 }),
           ),

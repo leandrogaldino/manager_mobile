@@ -1,31 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/technician_picker.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class TechnicianSectionWidget extends StatefulWidget {
-  const TechnicianSectionWidget({super.key});
+  const TechnicianSectionWidget({super.key, required this.evaluationController,});
+
+  final EvaluationController evaluationController;
+
 
   @override
   State<TechnicianSectionWidget> createState() => _TechnicianSectionWidgetState();
 }
 
 class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
-  late final EvaluationController _evaluationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
-  }
-
+   
   @override
   Widget build(BuildContext context) {
+    final EvaluationController controller = widget.evaluationController;
     return ListenableBuilder(
-      listenable: _evaluationController,
+      listenable: controller,
       builder: (context, child) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -35,12 +31,12 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
               SizedBox(
                 width: double.infinity,
                 child: Visibility(
-                  visible: _evaluationController.source != SourceTypes.fromSavedWithSign,
+                  visible: controller.source != SourceTypes.fromSavedWithSign,
                   child: OutlinedButton(
                     onPressed: () async {
                       FocusScope.of(context).requestFocus(FocusNode());
                       PersonModel? technician = await TechnicianPicker.pick(context: context);
-                      if (technician != null) _evaluationController.addTechnician(EvaluationTechnicianModel(isMain: false, technician: technician));
+                      if (technician != null) controller.addTechnician(EvaluationTechnicianModel(isMain: false, technician: technician));
                     },
                     child: Text('Incluir Técnico'),
                   ),
@@ -50,7 +46,7 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-                itemCount: _evaluationController.evaluation!.technicians.length,
+                itemCount: controller.evaluation!.technicians.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
@@ -60,17 +56,17 @@ class _TechnicianSectionWidgetState extends State<TechnicianSectionWidget> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _evaluationController.evaluation!.technicians[index].technician.shortName,
+                              controller.evaluation!.technicians[index].technician.shortName,
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ),
                           SizedBox(
                             height: 40,
                             child: Offstage(
-                              offstage: index == 0 || _evaluationController.source == SourceTypes.fromSavedWithSign,
+                              offstage: index == 0 || controller.source == SourceTypes.fromSavedWithSign,
                               child: IconButton(
                                   onPressed: () {
-                                    _evaluationController.removeTechnician(_evaluationController.evaluation!.technicians[index]);
+                                    controller.removeTechnician(controller.evaluation!.technicians[index]);
                                   },
                                   icon: Icon(Icons.delete)),
                             ),

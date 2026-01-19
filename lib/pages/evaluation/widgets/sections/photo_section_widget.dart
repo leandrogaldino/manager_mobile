@@ -3,36 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class PhotoSectionWidget extends StatefulWidget {
-  const PhotoSectionWidget({super.key});
-
+  const PhotoSectionWidget({super.key, required this.evaluationController});
+  final EvaluationController evaluationController;
   @override
   State<PhotoSectionWidget> createState() => _PhotoSectionWidgetState();
 }
 
 class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
-  late final EvaluationController _evaluationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _evaluationController = Locator.get<EvaluationController>();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final int maxPhotos = _evaluationController.source != SourceTypes.fromSavedWithSign ? 6 : _evaluationController.evaluation!.photos.length;
+    final EvaluationController controller = widget.evaluationController;
+    final int maxPhotos = controller.source != SourceTypes.fromSavedWithSign ? 6 : controller.evaluation!.photos.length;
     const int crossAxisCount = 3;
     const double spacing = 8;
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;
     final double cellHeight = cellWidth * 1.3;
     final List<String?> photoPaths = List.generate(
       maxPhotos,
-      (index) => index < _evaluationController.evaluation!.photos.length ? _evaluationController.evaluation!.photos[index].path : null,
+      (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].path : null,
     );
 
     return Padding(
@@ -63,7 +56,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                   ),
                 ),
                 child: ListenableBuilder(
-                    listenable: _evaluationController,
+                    listenable: controller,
                     builder: (context, child) {
                       return isPhotoTaken
                           ? ClipRRect(
@@ -96,29 +89,29 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
               ),
               onTap: () async {
                 if (isPhotoTaken) {
-                  _evaluationController.setSelectedPhotoIndex(index);
+                  controller.setSelectedPhotoIndex(index);
                   await Navigator.pushNamed(context, Routes.viewPhoto);
-                  _evaluationController.setSelectedPhotoIndex(null);
+                  controller.setSelectedPhotoIndex(null);
                 } else {
-                  if (!isPhotoTaken && _evaluationController.source != SourceTypes.fromSavedWithSign) {
+                  if (!isPhotoTaken && controller.source != SourceTypes.fromSavedWithSign) {
                     final File? file = await Navigator.pushNamed<File?>(context, Routes.takePhoto);
                     if (file != null) {
-                      _evaluationController.addPhoto(EvaluationPhotoModel(path: file.path));
-                      await _evaluationController.updateImagesBytes();
+                      controller.addPhoto(EvaluationPhotoModel(path: file.path));
+                      await controller.updateImagesBytes();
                     }
                   }
                 }
               },
               onLongPress: () async {
-                if (isPhotoTaken && _evaluationController.source != SourceTypes.fromSavedWithSign) {
+                if (isPhotoTaken && controller.source != SourceTypes.fromSavedWithSign) {
                   final bool isYes = await YesNoPicker.pick(
                         context: context,
                         question: 'Deseja excluir essa foto?',
                       ) ??
                       false;
                   if (isYes) {
-                    _evaluationController.removePhoto(_evaluationController.evaluation!.photos[index]);
-                    await _evaluationController.updateImagesBytes();
+                    controller.removePhoto(controller.evaluation!.photos[index]);
+                    await controller.updateImagesBytes();
                   }
                 }
               },
