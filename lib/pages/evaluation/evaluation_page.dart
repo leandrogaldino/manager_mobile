@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
@@ -33,6 +32,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   final GlobalKey _technicianKey = GlobalKey();
   final GlobalKey _photoKey = GlobalKey();
   final GlobalKey _signatureKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +58,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         Scrollable.ensureVisible(
           context,
           duration: const Duration(milliseconds: 300),
-          alignment: 0.0, // Rola o widget para o topo (0.0) ou meio (0.5) da tela
+          alignment: 0.0, 
           curve: Curves.easeOut,
         );
       }
