@@ -44,7 +44,7 @@ class EvaluationController extends ChangeNotifier {
     _evaluation = evaluation;
     shadow = evaluation?.copyWith();
     _source = source;
-    if (_schedule != null && _evaluation != null)  {
+    if (_schedule != null && _evaluation != null) {
       _evaluation!.visitscheduleid = _schedule!.id;
     } else {
       _evaluation!.visitscheduleid = null;
@@ -282,7 +282,18 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int> clean() async {
+  void clean() {
+    _evaluation = null;
+    shadow = null;
+    _schedule = null;
+    _source = null;
+    _selectedPhotoIndex = null;
+    _isSaving = false;
+    _signatureBytes = null;
+    _photosBytes.clear();
+  }
+
+  Future<int> periodicClean() async {
     int count = 0;
     var allEvaluations = await _evaluationService.getAll();
     for (var evaluation in allEvaluations) {

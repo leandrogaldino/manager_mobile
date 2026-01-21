@@ -15,11 +15,10 @@ class ScheduleWidget extends StatefulWidget {
   const ScheduleWidget({
     super.key,
     required this.schedule,
-    required this.homeController,
   });
 
   final VisitScheduleModel schedule;
-  final HomeController homeController;
+
   @override
   State<ScheduleWidget> createState() => _ScheduleWidgetState();
 }
@@ -27,12 +26,15 @@ class ScheduleWidget extends StatefulWidget {
 class _ScheduleWidgetState extends State<ScheduleWidget> {
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
+  late final HomeController _homeController;
+
   PersonModel? _loggedUser;
   @override
   void initState() {
     super.initState();
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
+    _homeController = Locator.get<HomeController>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final user = await _loginController.currentLoggedUser;
       if (!mounted) return;
@@ -153,7 +155,8 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
                         _evaluationController.setEvaluation(evaluation, SourceTypes.fromSchedule);
                         _evaluationController.setSchedule(widget.schedule);
                         await Navigator.of(context).popAndPushNamed(Routes.evaluation, arguments: _evaluationController);
-                        await widget.homeController.loadInitial();
+                        await _homeController.loadInitial();
+                        _evaluationController.clean();
                       },
                       child: Text('Iniciar Avaliação'),
                     )

@@ -27,7 +27,7 @@ void main() async {
   await Locator.get<LocalDatabase>().init();
   await Locator.get<AppController>().clearOldTemporaryFiles();
   await GetIt.I<AppController>().loadTheme();
-  await Locator.get<EvaluationController>().clean();
+  await Locator.get<EvaluationController>().periodicClean();
   final hasConnection = await InternetConnection().hasInternetAccess;
   if (kReleaseMode) {
     runZonedGuarded(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -9,11 +10,14 @@ class EvaluationTileWidget extends StatelessWidget {
   const EvaluationTileWidget({
     super.key,
     required this.evaluation,
+    required this.evaluationController,
     required this.homeController,
   });
 
   final EvaluationModel evaluation;
+  final EvaluationController evaluationController;
   final HomeController homeController;
+
   @override
   Widget build(BuildContext context) {
     String subtitle = evaluation.compressor!.compressor.name;
@@ -35,8 +39,10 @@ class EvaluationTileWidget extends StatelessWidget {
         child: InkWell(
           onTap: () async {
             SourceTypes source = evaluation.signaturePath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
-            await Navigator.of(context).pushNamed(Routes.evaluation, arguments: [evaluation, source]);
+            evaluationController.setEvaluation(evaluation, source);
+            await Navigator.of(context).pushNamed(Routes.evaluation);            
             await homeController.loadInitial();
+            evaluationController.clean();
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

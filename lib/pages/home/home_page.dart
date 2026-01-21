@@ -147,6 +147,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             )
                           : EvaluationListWidget(
                               homeController: _homeController,
+                              evaluationController: _evaluationController,
                               scrollController: _evaluationScrollController,
                             ),
                     ),
@@ -198,7 +199,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ? FloatingActionButton(
                           onPressed: () async {
                             var evaluation = EvaluationModel.fromScheduleOrNew();
-                            _evaluationController.setEvaluation(evaluation,   SourceTypes.fromNew);
+                            _evaluationController.setEvaluation(evaluation, SourceTypes.fromNew);
                             if (_loggedUser!.isTechnician) {
                               _evaluationController.addTechnician(
                                 EvaluationTechnicianModel(
@@ -210,6 +211,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             if (!context.mounted) return;
                             await Navigator.of(context).pushNamed(Routes.evaluation);
                             await _homeController.loadInitial();
+                            _evaluationController.clean();
                           },
                           child: const Icon(Icons.add),
                         )

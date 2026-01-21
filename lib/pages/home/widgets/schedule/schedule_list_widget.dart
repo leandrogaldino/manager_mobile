@@ -23,7 +23,6 @@ class ScheduleListWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             return ScheduleTileWidget(
               schedule: schedules.items[index],
-              homeController: homeController,
             );
           },
         );

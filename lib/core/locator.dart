@@ -267,7 +267,7 @@ class Locator {
           filter: _getIt.get<FilterController>(),
         ));
 
-    _getIt.registerFactory<EvaluationController>(
+    _getIt.registerLazySingleton<EvaluationController>(
       () => EvaluationController(
         evaluationService: _getIt.get<EvaluationService>(),
         visitScheduleService: _getIt.get<VisitScheduleService>(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
@@ -15,9 +15,7 @@ import 'package:manager_mobile/pages/evaluation/widgets/sections/signature_secti
 import 'package:manager_mobile/pages/evaluation/widgets/sections/technician_section_widget.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({super.key, required this.controller});
-
-  final EvaluationController controller;
+  const EvaluationPage({super.key});
 
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
@@ -25,6 +23,7 @@ class EvaluationPage extends StatefulWidget {
 
 class _EvaluationPageState extends State<EvaluationPage> {
   late final GlobalKey<FormState> _readingKey;
+  late final EvaluationController _controller;
   late final ScrollController _scrollController;
   final GlobalKey _coalescentKey = GlobalKey();
   final GlobalKey _replacedProductKey = GlobalKey();
@@ -38,9 +37,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
     super.initState();
     _readingKey = GlobalKey<FormState>();
     _scrollController = ScrollController();
-    if (widget.controller.source == SourceTypes.fromSavedWithSign) {
+    _controller = Locator.get<EvaluationController>();
+    if (_controller.source == SourceTypes.fromSavedWithSign) {
       WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-        await widget.controller.updateImagesBytes();
+        await _controller.updateImagesBytes();
       });
     }
   }
@@ -58,7 +58,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         Scrollable.ensureVisible(
           context,
           duration: const Duration(milliseconds: 300),
-          alignment: 0.0, 
+          alignment: 0.0,
           curve: Curves.easeOut,
         );
       }
@@ -67,9 +67,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   Widget build(BuildContext context) {
-    EvaluationController controller = widget.controller;
     return PopScope(
-      canPop: controller.source == SourceTypes.fromSavedWithSign,
+      canPop: _controller.source == SourceTypes.fromSavedWithSign,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
@@ -90,57 +89,57 @@ class _EvaluationPageState extends State<EvaluationPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: controller.source == SourceTypes.fromSchedule && controller.schedule != null,
+                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
                     title: 'Instruções',
                     children: [
                       InstructionsSectionWidget(
-                        instructions: controller.schedule != null ? controller.schedule!.instructions : '',
+                        instructions: _controller.schedule != null ? _controller.schedule!.instructions : '',
                       ),
                     ],
                   ),
                 ),
                 Visibility(
-                  visible: controller.source == SourceTypes.fromSchedule && controller.schedule != null,
+                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
                   child: SizedBox(height: 5),
                 ),
                 Visibility(
-                  visible: controller.source == SourceTypes.fromSavedWithSign,
+                  visible: _controller.source == SourceTypes.fromSavedWithSign,
                   child: ExpandableSectionWidget(
                     title: 'Cabeçalho',
                     children: [
-                      HeaderSectionWidget(evaluationController: controller),
+                      HeaderSectionWidget(evaluationController: _controller),
                     ],
                   ),
                 ),
                 Visibility(
-                  visible: controller.source == SourceTypes.fromSavedWithSign,
+                  visible: _controller.source == SourceTypes.fromSavedWithSign,
                   child: SizedBox(height: 5),
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return ExpandableSectionWidget(
-                      initiallyExpanded: controller.source != SourceTypes.fromSavedWithoutSign,
+                      initiallyExpanded: _controller.source != SourceTypes.fromSavedWithoutSign,
                       title: 'Dados do Compressor',
-                      children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: controller)],
+                      children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: _controller)],
                     );
                   },
                 ),
                 SizedBox(height: 5),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.coalescents.isNotEmpty,
+                      visible: _controller.evaluation!.coalescents.isNotEmpty,
                       child: ExpandableSectionWidget(
                         key: _coalescentKey,
                         onExpand: () => _scrollToKey(_coalescentKey),
                         title: 'Coalescentes',
                         children: [
                           CoalescentSectionWidget(
-                            evaluationController: controller,
+                            evaluationController: _controller,
                           )
                         ],
                       ),
@@ -148,56 +147,56 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.coalescents.isNotEmpty,
+                      visible: _controller.evaluation!.coalescents.isNotEmpty,
                       child: SizedBox(height: 5),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.replacedProducts.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: ExpandableSectionWidget(
                         key: _replacedProductKey,
                         onExpand: () => _scrollToKey(_replacedProductKey),
                         title: 'Peças Substituídas',
-                        children: [ReplacedProductSectionWidget(evaluationController: controller)],
+                        children: [ReplacedProductSectionWidget(evaluationController: _controller)],
                       ),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.replacedProducts.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: SizedBox(height: 5),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.performedServices.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: ExpandableSectionWidget(
                         key: _performedServiceKey,
                         onExpand: () => _scrollToKey(_performedServiceKey),
                         title: 'Serviços Realizados',
-                        children: [PerformedServiceSectionWidget(evaluationController: controller)],
+                        children: [PerformedServiceSectionWidget(evaluationController: _controller)],
                       ),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.performedServices.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: SizedBox(height: 5),
                     );
                   },
@@ -206,59 +205,59 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   key: _technicianKey,
                   onExpand: () => _scrollToKey(_technicianKey),
                   title: 'Técnicos',
-                  children: [TechnicianSectionWidget(evaluationController: controller)],
+                  children: [TechnicianSectionWidget(evaluationController: _controller)],
                 ),
                 ListenableBuilder(
-                    listenable: controller,
+                    listenable: _controller,
                     builder: (context, child) {
                       return Visibility(
-                        visible: controller.evaluation!.technicians.isNotEmpty,
+                        visible: _controller.evaluation!.technicians.isNotEmpty,
                         child: SizedBox(height: 5),
                       );
                     }),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.photos.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: ExpandableSectionWidget(
                         key: _photoKey,
                         onExpand: () => _scrollToKey(_photoKey),
                         title: 'Fotos',
-                        children: [PhotoSectionWidget(evaluationController: controller)],
+                        children: [PhotoSectionWidget(evaluationController: _controller)],
                       ),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && ((controller.source == SourceTypes.fromSavedWithSign && controller.evaluation!.photos.isNotEmpty) || (controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: SizedBox(height: 5),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign,
+                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
                       child: ExpandableSectionWidget(
                         key: _signatureKey,
-                        initiallyExpanded: controller.source == SourceTypes.fromSavedWithoutSign,
+                        initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
                         onExpand: () => _scrollToKey(_signatureKey),
                         title: 'Assinatura',
-                        children: [SignatureSectionWidget(evaluationController: controller)],
+                        children: [SignatureSectionWidget(evaluationController: _controller)],
                       ),
                     );
                   },
                 ),
                 ListenableBuilder(
-                  listenable: controller,
+                  listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign,
+                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
                       child: SizedBox(height: 5),
                     );
                   },
@@ -267,7 +266,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             ),
           ),
         ),
-        bottomNavigationBar: controller.source != SourceTypes.fromSavedWithSign || (controller.source == SourceTypes.fromSavedWithSign && controller.photosBytes.isEmpty)
+        bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign || (_controller.source == SourceTypes.fromSavedWithSign && _controller.photosBytes.isEmpty)
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
@@ -275,10 +274,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     width: double.infinity,
                     height: 52,
                     child: ListenableBuilder(
-                        listenable: controller,
+                        listenable: _controller,
                         builder: (context, child) {
                           return ElevatedButton(
-                            onPressed: controller.isSaving
+                            onPressed: _controller.isSaving
                                 ? null
                                 : () async {
                                     final isValid = _readingKey.currentState?.validate() ?? false;
@@ -289,12 +288,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                       );
                                       return;
                                     }
-                                    if (!_validateCoalescentsNextChange(controller)) return;
-                                    await controller.save();
+                                    if (!_validateCoalescentsNextChange(_controller)) return;
+                                    await _controller.save();
                                     if (!context.mounted) return;
-                                    Navigator.pop<EvaluationModel>(context);
+                                    Navigator.pop(context);
                                   },
-                            child: controller.isSaving
+                            child: _controller.isSaving
                                 ? const SizedBox(
                                     height: 22,
                                     width: 22,

@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/connection_notifier.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
@@ -55,7 +53,7 @@ class App extends StatelessWidget {
           routes: {
             Routes.login: (context) => const LoginPage(),
             Routes.home: (context) => const HomePage(),
-            Routes.evaluation: (context) => EvaluationPage(controller: Locator.get<EvaluationController>()),
+            Routes.evaluation: (context) => EvaluationPage(),
             Routes.captureSignature: (context) => const EvaluationSignaturePage(),
             Routes.viewPhoto: (context) => const PhotosPage(),
           },

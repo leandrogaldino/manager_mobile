@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/pages/home/widgets/schedule/schedule_widget.dart';
 
@@ -8,11 +7,9 @@ class ScheduleTileWidget extends StatelessWidget {
   const ScheduleTileWidget({
     super.key,
     required this.schedule,
-    required this.homeController,
   });
 
   final VisitScheduleModel schedule;
-  final HomeController homeController;
   @override
   Widget build(BuildContext context) {
     String subtitle = schedule.compressor.compressor.name;
@@ -47,15 +44,13 @@ class ScheduleTileWidget extends StatelessWidget {
               builder: (context) {
                 return ScheduleWidget(
                   schedule: schedule,
-                  homeController: homeController,
                 );
               },
             );
           },
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center, // ÍCONE CENTRALIZADO
+            crossAxisAlignment: CrossAxisAlignment.center, 
             children: [
-              // TÍTULO + SUBTÍTULOS
               Expanded(
                 child: Align(
                   alignment: Alignment.topLeft,
@@ -87,8 +82,6 @@ class ScheduleTileWidget extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // TRAILING — DATA
               const SizedBox(width: 8),
               Text(
                 DateFormat('dd/MM/yyyy').format(schedule.scheduleDate),
