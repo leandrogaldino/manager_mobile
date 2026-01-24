@@ -84,6 +84,19 @@ class EvaluationRepository {
   //   }
   // }
 
+  Future<bool> get hasPendingEvaluation async {
+    var result = await _localDatabase.rawQuery("""
+      SELECT COUNT(*) count
+      FROM evaluation
+      WHERE
+        signaturepath IS NULL OR 
+        signaturepath = '';
+      """);
+    if (result.isEmpty) return false;
+    if (result[0]['count'] as int > 0) return true;
+    return false;
+  }
+
   Future<DateTime> get minimumDate async {
     DateTime minDate;
     var result = await _localDatabase.rawQuery('''

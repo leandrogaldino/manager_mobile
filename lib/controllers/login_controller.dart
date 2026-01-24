@@ -4,15 +4,19 @@ import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 
 import 'package:manager_mobile/models/person_model.dart';
+import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/states/login_state.dart';
 
 class LoginController extends ChangeNotifier {
   final Auth _authService;
+  final EvaluationService _evaluationService;
 
   LoginController({
     required Auth service,
     required AppPreferences appPreferences,
-  }) : _authService = service;
+    required EvaluationService evaluationService,
+  })  : _authService = service,
+        _evaluationService = evaluationService;
 
   LoginState _state = LoginStateInitial();
   LoginState get state => _state;
@@ -20,6 +24,10 @@ class LoginController extends ChangeNotifier {
   void _setState(LoginState newState) {
     _state = newState;
     notifyListeners();
+  }
+
+  Future<bool> canLoggout() async {
+    return !(await _evaluationService.hasPendingEvaluation);
   }
 
   Future<PersonModel?> get currentLoggedUser async {

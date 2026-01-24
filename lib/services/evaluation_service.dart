@@ -17,6 +17,10 @@ class EvaluationService {
     required EvaluationRepository evaluationRepository,
   }) : _evaluationRepository = evaluationRepository;
 
+  Future<bool> get hasPendingEvaluation async {
+    return await _evaluationRepository.hasPendingEvaluation;
+  }
+
   Future<DateTime> get minimumDate async {
     return _evaluationRepository.minimumDate;
   }

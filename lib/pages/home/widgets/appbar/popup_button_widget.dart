@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/home/widgets/appbar/theme_switch_widget.dart';
 
 class PopupButtonWidget extends StatelessWidget {
@@ -63,10 +64,14 @@ class PopupButtonWidget extends StatelessWidget {
                 context: context,
                 question: 'Deseja sair?',
               );
-
               if (answer == true && context.mounted) {
-                Navigator.pop(context);
-                await loginController.signOut();
+                var canLoggount = await loginController.canLoggout();
+                if (canLoggount && context.mounted) {
+                  Navigator.pop(context);
+                  await loginController.signOut();
+                } else {
+                  if (context.mounted) Message.showInfoSnackbar(context: context, message: 'Sincronize todas as avaliações para antes de sair.');
+                }
               }
             },
           ),

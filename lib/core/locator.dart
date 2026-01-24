@@ -67,6 +67,7 @@ class Locator {
       () => LoginController(
         service: _getIt.get<Auth>(),
         appPreferences: _getIt.get<AppPreferences>(),
+        evaluationService: _getIt.get<EvaluationService>(),
       ),
     );
 
