@@ -421,7 +421,6 @@ class EvaluationRepository {
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap.remove('info');
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
-
       await _localDatabase.insert('evaluation', evaluationMap);
     }
     return count;

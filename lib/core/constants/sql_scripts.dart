@@ -169,7 +169,6 @@ class SQLScripts {
       signaturepath TEXT DEFAULT NULL,
       advice TEXT,
       lastupdate INTEGER NOT NULL,
-      isdirty INTEGER DEFAULT 1,
       FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT,
       FOREIGN KEY (compressorid) REFERENCES personcompressor (id) ON DELETE RESTRICT
     );
