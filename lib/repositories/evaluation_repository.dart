@@ -109,6 +109,10 @@ class EvaluationRepository {
       } else {
         id = data['id'] as String;
         data.remove('id');
+
+        //TODO: Ao dar update em uma avaliação, as fotos podem ter sido alteradas, deveria apagar todos os arquivos do dispositivo, e salvar novamente.
+        //Onde fazer isso?
+
         await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [id]);
       }
 
@@ -281,7 +285,7 @@ class EvaluationRepository {
     }
   }
 
-  Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
+  Future<void> _synchronizeFromLocalToCloud(int lastSync) async {
     final localResult = await _localDatabase.query('evaluation', where: 'lastupdate > ?', whereArgs: [lastSync]);
     for (var evaluationMap in localResult) {
       if (evaluationMap['signaturepath'] == null) continue;
@@ -327,13 +331,19 @@ class EvaluationRepository {
       await _remoteDatabase.set(collection: 'evaluations', data: evaluationMap, id: evaluationMap['id'].toString());
       await _localDatabase.update('evaluation', {'existsincloud': 1}, where: 'id = ?', whereArgs: [evaluationMap['id'].toString()]);
     }
-    return localResult.length;
   }
 
   Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
     bool exists = false;
+    int count = 0;
     final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)]);
     for (var evaluationMap in remoteResult) {
+      exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
+
+      if (exists) continue;
+
+      count += 1;
+
       var replacedProducts = evaluationMap['replacedproducts'];
       for (var replacedProduct in replacedProducts) {
         replacedProduct['evaluationid'] = evaluationMap['id'];
@@ -348,7 +358,6 @@ class EvaluationRepository {
 
       var technicians = evaluationMap['technicians'];
       for (var technician in technicians) {
-        exists = await _localDatabase.isSaved('evaluationtechnician', id: technician['id'] as int);
         technician['evaluationid'] = evaluationMap['id'];
         await _evaluationTechnicianRepository.save(technician);
       }
@@ -361,7 +370,6 @@ class EvaluationRepository {
 
       var photos = evaluationMap['photos'];
       for (var photo in photos) {
-        exists = await _localDatabase.isSaved('evaluationphoto', id: photo['id'] as int);
         photo['evaluationid'] = evaluationMap['id'];
         var photoData = await _storage.downloadFile(photo['path']);
         if (photoData != null) {
@@ -389,13 +397,10 @@ class EvaluationRepository {
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap.remove('info');
       exists = await _localDatabase.isSaved('evaluation', id: evaluationMap['id']);
-      if (exists) {
-        await _localDatabase.update('evaluation', evaluationMap, where: 'id = ?', whereArgs: [evaluationMap['id']]);
-      } else {
-        await _localDatabase.insert('evaluation', evaluationMap);
-      }
+
+      await _localDatabase.insert('evaluation', evaluationMap);
     }
-    return remoteResult.length;
+    return count;
   }
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
