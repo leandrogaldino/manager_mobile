@@ -28,7 +28,6 @@ import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
-import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -235,17 +234,6 @@ class Locator {
           appPreferences: _getIt.get<AppPreferences>(),
         ));
 
-    _getIt.registerLazySingleton<DataService>(
-      () => DataService(
-        visitScheduleService: _getIt.get<VisitScheduleService>(),
-        evaluationService: _getIt.get<EvaluationService>(),
-        personService: _getIt.get<PersonService>(),
-        compressorService: _getIt.get<PersonCompressorService>(),
-        productService: _getIt.get<ProductService>(),
-        serviceService: _getIt.get<ServiceService>(),
-      ),
-    );
-
     _getIt.registerLazySingleton<SyncService>(() => SyncService(
           productService: _getIt.get<ProductService>(),
           productCodeService: _getIt.get<ProductCodeService>(),
@@ -259,7 +247,10 @@ class Locator {
           evaluationService: _getIt.get<EvaluationService>(),
         ));
 
-    _getIt.registerLazySingleton<FilterController>(() => FilterController());
+    _getIt.registerLazySingleton<FilterController>(() => FilterController(
+          evaluationService: _getIt.get<EvaluationService>(),
+          scheduleService: _getIt.get<VisitScheduleService>(),
+        ));
     _getIt.registerLazySingleton<HomeController>(() => HomeController(
           syncService: _getIt.get<SyncService>(),
           evaluationService: _getIt.get<EvaluationService>(),
@@ -271,7 +262,6 @@ class Locator {
       () => EvaluationController(
         evaluationService: _getIt.get<EvaluationService>(),
         visitScheduleService: _getIt.get<VisitScheduleService>(),
-        dataService: _getIt.get<DataService>(),
       ),
     );
 

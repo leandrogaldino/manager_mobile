@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
-import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
-import 'package:manager_mobile/services/data_service.dart';
 
 class FilterBarWidget extends StatefulWidget {
   const FilterBarWidget({super.key});
@@ -14,7 +11,6 @@ class FilterBarWidget extends StatefulWidget {
 }
 
 class _FilterBarWidgetState extends State<FilterBarWidget> {
-  late final DataService _dataService;
   late final HomeController _homeController;
   late final TextEditingController _customerControllerEC;
   late final TextEditingController _dateControllerEC;
@@ -24,7 +20,6 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
   void initState() {
     super.initState();
     _homeController = Locator.get<HomeController>();
-    _dataService = Locator.get<DataService>();
     _customerControllerEC = TextEditingController();
     _dateControllerEC = TextEditingController();
   }
@@ -92,25 +87,33 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                       ),
                     ),
                     TextField(
-                      controller: _dateControllerEC,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: "Data",
-                        prefixIcon: Icon(Icons.calendar_month),
-                        border: OutlineInputBorder(),
-                      ),
-                      onTap: () async {
-                        final DateTimeRange? picked = await showDateRangePicker(
-                          context: context,
-                          firstDate: _dataService.firstEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2000),
-                          lastDate: _dataService.lastEvaluationOrVisitScheduleDate ?? DateTimeHelper.create(2100),
-                          initialDateRange: _homeController.filter.selectedDateRange,
-                        );
+                        controller: _dateControllerEC,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: "Data",
+                          prefixIcon: Icon(Icons.calendar_month),
+                          border: OutlineInputBorder(),
+                        ),
+                        onTap: () async {
+                          final ctx = context; // 👈 captura síncrona
 
-                        _homeController.filter.setDateRange(picked);
-                        _dateControllerEC.text = _homeController.filter.selectedDateRangeText;
-                      },
-                    ),
+                          final min = await _homeController.filter.minimumDate;
+                          final max = await _homeController.filter.maximumDate;
+
+                          if (!ctx.mounted) return;
+
+                          final DateTimeRange? picked = await showDateRangePicker(
+                            context: ctx,
+                            firstDate: min,
+                            lastDate: max,
+                            initialDateRange: _homeController.filter.selectedDateRange,
+                          );
+
+                          if (picked == null) return;
+
+                          _homeController.filter.setDateRange(picked);
+                          _dateControllerEC.text = _homeController.filter.selectedDateRangeText;
+                        }),
                     Divider(),
                   ],
                 ),

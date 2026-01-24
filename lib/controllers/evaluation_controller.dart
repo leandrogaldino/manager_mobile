@@ -13,7 +13,6 @@ import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
-import 'package:manager_mobile/services/data_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 
 import 'package:manager_mobile/services/visit_schedule_service.dart';
@@ -25,7 +24,6 @@ class EvaluationController extends ChangeNotifier {
   EvaluationController({
     required EvaluationService evaluationService,
     required VisitScheduleService visitScheduleService,
-    required DataService dataService,
   })  : _evaluationService = evaluationService,
         _visitScheduleService = visitScheduleService;
 

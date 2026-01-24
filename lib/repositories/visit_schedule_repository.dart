@@ -23,6 +23,34 @@ class VisitScheduleRepository {
         _compressorRepository = compressorRepository,
         _personRepository = personRepository;
 
+  Future<DateTime> get minimumDate async {
+    DateTime minDate;
+    var result = await _localDatabase.rawQuery('''
+      SELECT MIN(creationdate) AS oldest
+      FROM visitschedule;
+      ''');
+    if (result.isEmpty || result[0]['oldest'] == null) {
+      minDate = DateTime(2000, 1, 1);
+    } else {
+      minDate = DateTimeHelper.fromMillisecondsSinceEpoch(result[0]['oldest'] as int);
+    }
+    return minDate;
+  }
+
+  Future<DateTime> get maximumDate async {
+    DateTime maxDate;
+    var result = await _localDatabase.rawQuery('''
+      SELECT MAX(creationdate) AS newest
+      FROM visitschedule;
+      ''');
+    if (result.isEmpty || result[0]['newest'] == null) {
+      maxDate = DateTime(2100, 1, 1);
+    } else {
+      maxDate = DateTimeHelper.fromMillisecondsSinceEpoch(result[0]['newest'] as int);
+    }
+    return maxDate;
+  }
+
   Future<List<Map<String, Object?>>> searchVisibles({
     required int offset,
     required int limit,
@@ -34,7 +62,7 @@ class VisitScheduleRepository {
       String where = 's.visible = ?';
       List<Object?> whereArgs = [1];
       if (search != null && search.trim().isNotEmpty) {
-        where+= ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
+        where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');

@@ -84,6 +84,34 @@ class EvaluationRepository {
   //   }
   // }
 
+  Future<DateTime> get minimumDate async {
+    DateTime minDate;
+    var result = await _localDatabase.rawQuery('''
+      SELECT MIN(creationdate) AS oldest
+      FROM evaluation;
+      ''');
+    if (result.isEmpty || result[0]['oldest'] == null) {
+      minDate = DateTime(2000, 1, 1);
+    } else {
+      minDate = DateTimeHelper.fromMillisecondsSinceEpoch(result[0]['oldest'] as int);
+    }
+    return minDate;
+  }
+
+  Future<DateTime> get maximumDate async {
+    DateTime maxDate;
+    var result = await _localDatabase.rawQuery('''
+      SELECT MAX(creationdate) AS newest
+      FROM evaluation;
+      ''');
+    if (result.isEmpty || result[0]['newest'] == null) {
+      maxDate = DateTime(2100, 1, 1);
+    } else {
+      maxDate = DateTimeHelper.fromMillisecondsSinceEpoch(result[0]['newest'] as int);
+    }
+    return maxDate;
+  }
+
   Future<Map<String, Object?>> save(Map<String, Object?> data, int? visitScheduleId) async {
     var coalescentsMap = data['coalescents'] as List<Map<String, Object?>>;
     data.remove('coalescents');

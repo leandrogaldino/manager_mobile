@@ -8,6 +8,14 @@ class VisitScheduleService {
     required VisitScheduleRepository scheduleRepository,
   }) : _scheduleRepository = scheduleRepository;
 
+  Future<DateTime> get minimumDate async {
+    return _scheduleRepository.minimumDate;
+  }
+
+  Future<DateTime> get maximumDate async {
+    return _scheduleRepository.maximumDate;
+  }
+
   Future<void> updateVisibility(int scheduleId, bool isVisible) async {
     _scheduleRepository.updateVisibility(scheduleId, isVisible);
   }

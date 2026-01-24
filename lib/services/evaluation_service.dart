@@ -17,6 +17,14 @@ class EvaluationService {
     required EvaluationRepository evaluationRepository,
   }) : _evaluationRepository = evaluationRepository;
 
+  Future<DateTime> get minimumDate async {
+    return _evaluationRepository.minimumDate;
+  }
+
+  Future<DateTime> get maximumDate async {
+    return _evaluationRepository.maximumDate;
+  }
+
   Future<String> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
     try {
       final rootDirectory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
@@ -39,11 +47,11 @@ class EvaluationService {
 
   Future<void> deletePhotos({required List<EvaluationPhotoModel> photos}) async {
     for (var photo in photos) {
-        final file = File(photo.path);
-        if (await file.exists()) {
-          await file.delete();
-        }
+      final file = File(photo.path);
+      if (await file.exists()) {
+        await file.delete();
       }
+    }
   }
 
   Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
