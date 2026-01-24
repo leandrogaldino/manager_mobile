@@ -109,10 +109,6 @@ class EvaluationRepository {
       } else {
         id = data['id'] as String;
         data.remove('id');
-
-        //TODO: Ao dar update em uma avaliação, as fotos podem ter sido alteradas, deveria apagar todos os arquivos do dispositivo, e salvar novamente.
-        //Onde fazer isso?
-
         await _localDatabase.update('evaluation', data, where: 'id = ?', whereArgs: [id]);
       }
 

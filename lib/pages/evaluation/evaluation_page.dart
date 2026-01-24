@@ -38,11 +38,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _readingKey = GlobalKey<FormState>();
     _scrollController = ScrollController();
     _controller = Locator.get<EvaluationController>();
-    if (_controller.source == SourceTypes.fromSavedWithSign) {
-      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-        await _controller.updateImagesBytes();
-      });
-    }
+    //if (_controller.source == SourceTypes.fromSavedWithSign ) {
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
+      await _controller.updateImagesBytes();
+    });
+    //}
   }
 
   @override
@@ -67,6 +67,24 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String instructions = _controller.schedule != null ? _controller.schedule!.instructions : '';
+    final bool showInstructions = _controller.source == SourceTypes.fromSchedule && _controller.schedule != null && _controller.schedule!.instructions.isNotEmpty;
+    final bool showHeader = _controller.source == SourceTypes.fromSavedWithSign;
+    final bool savedWithoutSign = _controller.source != SourceTypes.fromSavedWithoutSign;
+    final bool showCoalescents = _controller.evaluation!.coalescents.isNotEmpty;
+
+    final bool hasCompressor = _controller.evaluation!.compressor != null;
+    final bool savedWithSign = _controller.source == SourceTypes.fromSavedWithSign;
+    final bool hasReplacedProducts = _controller.evaluation!.replacedProducts.isNotEmpty;
+    final bool hasPerformedServices = _controller.evaluation!.performedServices.isNotEmpty;
+    final bool hasPhotos = _controller.evaluation!.photos.isNotEmpty;
+
+    final bool showReplacedProducts = hasCompressor && (!savedWithSign || hasReplacedProducts);
+    final bool showPerformedServices = hasCompressor && (!savedWithSign || hasPerformedServices);
+    final bool showPhotos = hasCompressor && (!savedWithSign || hasPhotos);
+
+    final bool showBottomBar = _controller.source != SourceTypes.fromSavedWithSign;
+
     return PopScope(
       canPop: _controller.source == SourceTypes.fromSavedWithSign,
       onPopInvokedWithResult: (didPop, result) async {
@@ -89,23 +107,23 @@ class _EvaluationPageState extends State<EvaluationPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
+                  visible: showInstructions,
                   child: ExpandableSectionWidget(
                     initiallyExpanded: true,
                     title: 'Instruções',
                     children: [
                       InstructionsSectionWidget(
-                        instructions: _controller.schedule != null ? _controller.schedule!.instructions : '',
+                        instructions: instructions,
                       ),
                     ],
                   ),
                 ),
                 Visibility(
-                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
+                  visible: showInstructions,
                   child: SizedBox(height: 5),
                 ),
                 Visibility(
-                  visible: _controller.source == SourceTypes.fromSavedWithSign,
+                  visible: showHeader,
                   child: ExpandableSectionWidget(
                     title: 'Cabeçalho',
                     children: [
@@ -114,14 +132,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   ),
                 ),
                 Visibility(
-                  visible: _controller.source == SourceTypes.fromSavedWithSign,
+                  visible: showHeader,
                   child: SizedBox(height: 5),
                 ),
                 ListenableBuilder(
                   listenable: _controller,
                   builder: (context, child) {
                     return ExpandableSectionWidget(
-                      initiallyExpanded: _controller.source != SourceTypes.fromSavedWithoutSign,
+                      initiallyExpanded: savedWithoutSign,
                       title: 'Dados do Compressor',
                       children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: _controller)],
                     );
@@ -132,7 +150,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.coalescents.isNotEmpty,
+                      visible: showCoalescents,
                       child: ExpandableSectionWidget(
                         key: _coalescentKey,
                         onExpand: () => _scrollToKey(_coalescentKey),
@@ -150,7 +168,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.coalescents.isNotEmpty,
+                      visible: showCoalescents,
                       child: SizedBox(height: 5),
                     );
                   },
@@ -159,7 +177,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showReplacedProducts,
                       child: ExpandableSectionWidget(
                         key: _replacedProductKey,
                         onExpand: () => _scrollToKey(_replacedProductKey),
@@ -173,7 +191,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showReplacedProducts,
                       child: SizedBox(height: 5),
                     );
                   },
@@ -182,7 +200,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showPerformedServices,
                       child: ExpandableSectionWidget(
                         key: _performedServiceKey,
                         onExpand: () => _scrollToKey(_performedServiceKey),
@@ -196,7 +214,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showPerformedServices,
                       child: SizedBox(height: 5),
                     );
                   },
@@ -219,7 +237,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showPhotos,
                       child: ExpandableSectionWidget(
                         key: _photoKey,
                         onExpand: () => _scrollToKey(_photoKey),
@@ -233,7 +251,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                      visible: showPhotos,
                       child: SizedBox(height: 5),
                     );
                   },
@@ -241,32 +259,26 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 ListenableBuilder(
                   listenable: _controller,
                   builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
-                      child: ExpandableSectionWidget(
-                        key: _signatureKey,
-                        initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
-                        onExpand: () => _scrollToKey(_signatureKey),
-                        title: 'Assinatura',
-                        children: [SignatureSectionWidget(evaluationController: _controller)],
-                      ),
+                    return ExpandableSectionWidget(
+                      key: _signatureKey,
+                      initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
+                      onExpand: () => _scrollToKey(_signatureKey),
+                      title: 'Assinatura',
+                      children: [SignatureSectionWidget(evaluationController: _controller)],
                     );
                   },
                 ),
                 ListenableBuilder(
                   listenable: _controller,
                   builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
-                      child: SizedBox(height: 5),
-                    );
+                    return SizedBox(height: 5);
                   },
                 ),
               ],
             ),
           ),
         ),
-        bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign || (_controller.source == SourceTypes.fromSavedWithSign && _controller.photosBytes.isEmpty)
+        bottomNavigationBar: showBottomBar
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
