@@ -297,6 +297,7 @@ class EvaluationController extends ChangeNotifier {
     for (var evaluation in allEvaluations) {
       if (evaluation.creationDate!.isBefore(DateTimeHelper.now().subtract(Duration(days: 120)))) {
         await _evaluationService.delete(evaluation.id);
+        await _evaluationService.deleteSignature(signature: evaluation.signaturePath);
         await _evaluationService.deletePhotos(photos: evaluation.photos);
         count += 1;
       }

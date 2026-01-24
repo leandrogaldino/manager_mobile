@@ -45,6 +45,14 @@ class EvaluationService {
     }
   }
 
+  Future<void> deleteSignature({required String? signature}) async {
+    if (signature == null) return;
+    final file = File(signature);
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+
   Future<void> deletePhotos({required List<EvaluationPhotoModel> photos}) async {
     for (var photo in photos) {
       final file = File(photo.path);
