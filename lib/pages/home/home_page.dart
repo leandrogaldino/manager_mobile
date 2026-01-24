@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
@@ -10,6 +9,7 @@ import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/timers/synchronize_timer.dart';
+import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
@@ -36,11 +36,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final LoginController _loginController;
   late final EvaluationController _evaluationController;
   late final AppPreferences _appPreferences;
-  late final StreamSubscription<InternetStatus> _connectionSubscription;
   late final ScrollController _visitScheduleScrollController;
   late final ScrollController _evaluationScrollController;
   PersonModel? _loggedUser;
   bool _hasShownError = false;
+
+  late final StreamSubscription<bool> _internetSub;
+  bool _wasOnline = true;
 
   @override
   void initState() {
@@ -62,13 +64,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         _homeController.evaluations.loadMore();
       }
     });
-    _connectionSubscription = InternetConnection().onStatusChange.listen((status) async {
-      if (status == InternetStatus.disconnected && _homeController.synchronizing) {
-        log('AppLifecycleState: App perdeu a conexao com a internet. Salvando estado...', time: DateTimeHelper.now());
+
+    InternetConnectionStream.start();
+    _internetSub = InternetConnectionStream.stream.listen((hasInternet) async {
+      // só reage quando CAI a conexão
+      if (_wasOnline && !hasInternet) {
+        _wasOnline = false;
+
+        log(
+          'App perdeu a conexão com a internet. Salvando estado...',
+          time: DateTimeHelper.now(),
+        );
+
         await _appPreferences.setIgnoreLastSynchronize(true);
-        log('Estado salvo com sucesso. O valor de ignoreLastSync é: ${await _appPreferences.ignoreLastSynchronize}', time: DateTimeHelper.now());
+
+        log(
+          'Estado salvo. ignoreLastSync: '
+          '${await _appPreferences.ignoreLastSynchronize}',
+          time: DateTimeHelper.now(),
+        );
+      }
+
+      if (hasInternet) {
+        _wasOnline = true;
       }
     });
+
     SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
@@ -86,7 +107,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     SynchronizeTimer.stop();
     _evaluationScrollController.dispose();
     _visitScheduleScrollController.dispose();
-    _connectionSubscription.cancel();
+    _internetSub.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

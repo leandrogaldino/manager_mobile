@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
+import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/interfaces/auth.dart';
 
 import 'package:manager_mobile/models/person_model.dart';
@@ -29,7 +29,7 @@ class LoginController extends ChangeNotifier {
   Future<void> signIn(String email, String password) async {
     _setState(LoginStateLoading());
     try {
-      final hasConnection = await InternetConnection().hasInternetAccess;
+      final hasConnection = await InternetConnectionStream.hasInternetNow();
       if (!hasConnection) {
         _setState(LoginStateError('Sem conexão com a internet.'));
         return;

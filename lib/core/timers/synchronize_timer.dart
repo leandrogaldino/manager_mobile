@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/controllers/home_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class SynchronizeTimer {
@@ -16,7 +16,7 @@ class SynchronizeTimer {
 
     final HomeController homeController = Locator.get<HomeController>();
     _timer = Timer.periodic(const Duration(minutes: 1), (_) async {
-      bool hasConnection = await InternetConnection().hasInternetAccess;
+      bool hasConnection = await InternetConnectionStream.hasInternetNow();
       if (hasConnection) {
         await WakelockPlus.enable();
         try {

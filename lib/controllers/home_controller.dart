@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:manager_mobile/controllers/filter_controller.dart';
 import 'package:manager_mobile/controllers/paged_list_controller.dart';
+import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -56,10 +56,12 @@ class HomeController extends ChangeNotifier {
     _showingUpdateBanner = true;
     notifyListeners();
   }
+
   void hideUpdateBanner() {
     _showingUpdateBanner = false;
     notifyListeners();
   }
+
   HomeState _state = HomeStateInitial();
   HomeState get state => _state;
 
@@ -104,7 +106,7 @@ class HomeController extends ChangeNotifier {
     try {
       if (showLoading) _setState(HomeStateLoading());
 
-      final hasConnection = await InternetConnection().hasInternetAccess;
+      final hasConnection = await InternetConnectionStream.hasInternetNow();
 
       if (!hasConnection) {
         _setState(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
-import 'package:manager_mobile/core/util/connection_notifier.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/pages/evaluation/evaluation_page.dart';
 import 'package:manager_mobile/pages/photos/photos_page.dart';
@@ -22,9 +21,7 @@ class App extends StatelessWidget {
     TextTheme textTheme = AppTheme.appTextTheme;
     AppTheme appTheme = AppTheme(textTheme);
     AppController appController = GetIt.I<AppController>();
-    return ConnectionNotifier(
-      notifier: ValueNotifier<bool>(true),
-      child: ListenableBuilder(
+    return  ListenableBuilder(
         listenable: appController,
         builder: (context, child) => MaterialApp(
           title: 'Gerenciador',
@@ -64,8 +61,7 @@ class App extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-        ),
-      ),
+        ),      
     );
   }
 }
