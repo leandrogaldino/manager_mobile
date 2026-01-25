@@ -220,14 +220,26 @@ class EvaluationRepository {
         whereArgs.add('%$search%');
       }
       if (initialDate != null) {
+        final start = DateTime(
+          initialDate.year,
+          initialDate.month,
+          initialDate.day,
+        );
+
         where += ' AND e.creationdate >= ?';
-        whereArgs.add(initialDate.millisecondsSinceEpoch);
-      }
-      if (finalDate != null) {
-        where += ' AND e.creationdate <= ?';
-        whereArgs.add(finalDate.millisecondsSinceEpoch);
+        whereArgs.add(start.millisecondsSinceEpoch);
       }
 
+      if (finalDate != null) {
+        final endExclusive = DateTime(
+          finalDate.year,
+          finalDate.month,
+          finalDate.day + 1,
+        );
+
+        where += ' AND e.creationdate < ?';
+        whereArgs.add(endExclusive.millisecondsSinceEpoch);
+      }
       whereArgs.addAll([limit, offset]);
 
       final evaluations = await _localDatabase.rawQuery(
@@ -439,100 +451,97 @@ class EvaluationRepository {
   }
 
   Future<int> _synchronizeFromCloudToLocal(
-  int lastSync, {
-  void Function(String id)? onItemSynced,
-}) async {
-  int count = 0;
+    int lastSync, {
+    void Function(String id)? onItemSynced,
+  }) async {
+    int count = 0;
 
-  final remoteResult = await _remoteDatabase.get(
-    collection: 'evaluations',
-    filters: [
-      RemoteDatabaseFilter(
-        field: 'lastupdate',
-        operator: FilterOperator.isGreaterThan,
-        value: lastSync,
-      ),
-    ],
-  );
+    final remoteResult = await _remoteDatabase.get(
+      collection: 'evaluations',
+      filters: [
+        RemoteDatabaseFilter(
+          field: 'lastupdate',
+          operator: FilterOperator.isGreaterThan,
+          value: lastSync,
+        ),
+      ],
+    );
 
-  for (var evaluationMap in remoteResult) {
-    final String evaluationId = evaluationMap['id'].toString();
+    for (var evaluationMap in remoteResult) {
+      final String evaluationId = evaluationMap['id'].toString();
 
-    final exists =
-        await _localDatabase.isSaved('evaluation', id: evaluationId);
-    if (exists) continue;
+      final exists = await _localDatabase.isSaved('evaluation', id: evaluationId);
+      if (exists) continue;
 
-    count++;
+      count++;
 
-    // ---- filhos ----
-    for (var replacedProduct in evaluationMap['replacedproducts']) {
-      replacedProduct['evaluationid'] = evaluationId;
-      await _evaluationReplacedProductRepository.save(replacedProduct);
-    }
+      // ---- filhos ----
+      for (var replacedProduct in evaluationMap['replacedproducts']) {
+        replacedProduct['evaluationid'] = evaluationId;
+        await _evaluationReplacedProductRepository.save(replacedProduct);
+      }
 
-    for (var performedService in evaluationMap['performedservices']) {
-      performedService['evaluationid'] = evaluationId;
-      await _evaluationPerformedServiceRepository.save(performedService);
-    }
+      for (var performedService in evaluationMap['performedservices']) {
+        performedService['evaluationid'] = evaluationId;
+        await _evaluationPerformedServiceRepository.save(performedService);
+      }
 
-    for (var technician in evaluationMap['technicians']) {
-      technician['evaluationid'] = evaluationId;
-      await _evaluationTechnicianRepository.save(technician);
-    }
+      for (var technician in evaluationMap['technicians']) {
+        technician['evaluationid'] = evaluationId;
+        await _evaluationTechnicianRepository.save(technician);
+      }
 
-    for (var coalescent in evaluationMap['coalescents']) {
-      coalescent['evaluationid'] = evaluationId;
-      await _evaluationCoalescentRepository.save(coalescent);
-    }
+      for (var coalescent in evaluationMap['coalescents']) {
+        coalescent['evaluationid'] = evaluationId;
+        await _evaluationCoalescentRepository.save(coalescent);
+      }
 
-    // ---- fotos ----
-    for (var photo in evaluationMap['photos']) {
-      photo['evaluationid'] = evaluationId;
-      var photoData = await _storage.downloadFile(photo['path']);
-      if (photoData != null) {
-        photo['path'] = await _saveImage(
-          photoData,
-          photo['path'].toString().split('/').last,
+      // ---- fotos ----
+      for (var photo in evaluationMap['photos']) {
+        photo['evaluationid'] = evaluationId;
+        var photoData = await _storage.downloadFile(photo['path']);
+        if (photoData != null) {
+          photo['path'] = await _saveImage(
+            photoData,
+            photo['path'].toString().split('/').last,
+          );
+        } else {
+          photo['path'] = '';
+        }
+        await _evaluationPhotoRepository.save(photo);
+      }
+
+      // ---- limpeza ----
+      evaluationMap.remove('documentid');
+      evaluationMap.remove('replacedproducts');
+      evaluationMap.remove('performedservices');
+      evaluationMap.remove('technicians');
+      evaluationMap.remove('coalescents');
+      evaluationMap.remove('photos');
+
+      // ---- assinatura ----
+      var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
+      if (signData != null) {
+        evaluationMap['signaturepath'] = await _saveImage(
+          signData,
+          evaluationMap['signaturepath'].toString().split('/').last,
         );
       } else {
-        photo['path'] = '';
+        evaluationMap['signaturepath'] = '';
       }
-      await _evaluationPhotoRepository.save(photo);
+
+      evaluationMap['existsincloud'] = 1;
+      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
+      evaluationMap.remove('info');
+
+      await _localDatabase.insert('evaluation', evaluationMap);
+
+      // 🔔 CALLBACK POR ITEM NOVO
+      onItemSynced?.call(evaluationId);
     }
 
-    // ---- limpeza ----
-    evaluationMap.remove('documentid');
-    evaluationMap.remove('replacedproducts');
-    evaluationMap.remove('performedservices');
-    evaluationMap.remove('technicians');
-    evaluationMap.remove('coalescents');
-    evaluationMap.remove('photos');
-
-    // ---- assinatura ----
-    var signData =
-        await _storage.downloadFile(evaluationMap['signaturepath']);
-    if (signData != null) {
-      evaluationMap['signaturepath'] = await _saveImage(
-        signData,
-        evaluationMap['signaturepath'].toString().split('/').last,
-      );
-    } else {
-      evaluationMap['signaturepath'] = '';
-    }
-
-    evaluationMap['existsincloud'] = 1;
-    evaluationMap['importedid'] = evaluationMap['info']['importedid'];
-    evaluationMap.remove('info');
-
-    await _localDatabase.insert('evaluation', evaluationMap);
-
-    // 🔔 CALLBACK POR ITEM NOVO
-    onItemSynced?.call(evaluationId);
+    return count;
   }
-
-  return count;
-}
-
 
   Future<Map<String, Object?>> _processEvaluation(Map<String, Object?> evaluationData) async {
     var customer = await _personRepository.getById(evaluationData['customerid'] as int);

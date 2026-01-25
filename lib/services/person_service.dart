@@ -4,11 +4,16 @@ import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
+import 'package:manager_mobile/sync_event.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 
 class PersonService {
   final PersonRepository _personRepository;
+  final SyncEventBus _eventBus;
 
-  PersonService({required PersonRepository personRepository}) : _personRepository = personRepository;
+  PersonService({required PersonRepository personRepository, required SyncEventBus eventBus})
+      : _personRepository = personRepository,
+        _eventBus = eventBus;
 
   Future<List<PersonModel>> searchVisibleTechnicians({
     required int offset,
@@ -16,12 +21,7 @@ class PersonService {
     String? search,
     List<int>? remove,
   }) async {
-    final data = await _personRepository.searchVisibleTechnicians(
-      offset: offset,
-      limit: limit,
-      search: search,
-      remove: remove
-    );
+    final data = await _personRepository.searchVisibleTechnicians(offset: offset, limit: limit, search: search, remove: remove);
     return data.map((item) => PersonModel.fromMap(item)).toList();
   }
 
@@ -38,6 +38,13 @@ class PersonService {
   }
 
   Future<int> synchronize(int lastSync) async {
-    return await _personRepository.synchronize(lastSync);
+    return _personRepository.synchronize(
+      lastSync,
+      onItemSynced: (id) {
+        _eventBus.emit(
+          SyncEvent.person(id),
+        );
+      },
+    );
   }
 }

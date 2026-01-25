@@ -79,8 +79,13 @@ class Locator {
         ));
 
     _getIt.registerLazySingleton(
+      () => SyncEventBus(),
+    );
+
+    _getIt.registerLazySingleton(
       () => ProductService(
         productRepository: _getIt.get<ProductRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -94,6 +99,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => ProductCodeService(
         productCodeRepository: _getIt.get<ProductCodeRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -107,6 +113,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => ServiceService(
         serviceRepository: _getIt.get<ServiceRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -115,10 +122,6 @@ class Locator {
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
-    );
-
-    _getIt.registerLazySingleton(
-      () => SyncEventBus(),
     );
 
     _getIt.registerLazySingleton(
@@ -139,6 +142,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => PersonCompressorCoalescentService(
         coalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -155,6 +159,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => PersonCompressorService(
         personCompressorRepository: _getIt.get<PersonCompressorRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -168,6 +173,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => PersonService(
         personRepository: _getIt.get<PersonRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -222,7 +228,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => EvaluationService(
         evaluationRepository: _getIt.get<EvaluationRepository>(),
-        eventBus:  _getIt.get<SyncEventBus>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -236,7 +242,10 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => VisitScheduleService(scheduleRepository: _getIt.get<VisitScheduleRepository>()),
+      () => VisitScheduleService(
+        scheduleRepository: _getIt.get<VisitScheduleRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
+      ),
     );
 
     _getIt.registerLazySingleton<AppController>(() => AppController(

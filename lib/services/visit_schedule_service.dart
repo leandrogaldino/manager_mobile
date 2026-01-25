@@ -7,8 +7,9 @@ class VisitScheduleService {
   final VisitScheduleRepository _scheduleRepository;
   final SyncEventBus _eventBus;
 
-  VisitScheduleService({required VisitScheduleRepository scheduleRepository, required SyncEventBus eventBus}) : _scheduleRepository = scheduleRepository, _eventBus = eventBus;
-
+  VisitScheduleService({required VisitScheduleRepository scheduleRepository, required SyncEventBus eventBus})
+      : _scheduleRepository = scheduleRepository,
+        _eventBus = eventBus;
 
   Future<DateTime> get minimumDate async {
     return _scheduleRepository.minimumDate;

@@ -1,12 +1,15 @@
 import 'package:manager_mobile/models/service_model.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
+import 'package:manager_mobile/sync_event.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 
 class ServiceService {
   final ServiceRepository _serviceRepository;
+  final SyncEventBus _eventBus;
 
-  ServiceService({
-    required ServiceRepository serviceRepository,
-  }) : _serviceRepository = serviceRepository;
+  ServiceService({required ServiceRepository serviceRepository, required SyncEventBus eventBus})
+      : _serviceRepository = serviceRepository,
+        _eventBus = eventBus;
 
   Future<List<ServiceModel>> searchVisibles({
     required int offset,
@@ -24,6 +27,13 @@ class ServiceService {
   }
 
   Future<int> synchronize(int lastSync) async {
-    return await _serviceRepository.synchronize(lastSync);
+   return _serviceRepository.synchronize(
+      lastSync,
+      onItemSynced: (id) {
+        _eventBus.emit(
+          SyncEvent.service(id),
+        );
+      },
+    );
   }
 }

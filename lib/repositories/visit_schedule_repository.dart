@@ -69,13 +69,26 @@ class VisitScheduleRepository {
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
       }
-      if (initialDate != null) {
+       if (initialDate != null) {
+        final start = DateTime(
+          initialDate.year,
+          initialDate.month,
+          initialDate.day,
+        );
+
         where += ' AND s.creationdate >= ?';
-        whereArgs.add(initialDate.millisecondsSinceEpoch);
+        whereArgs.add(start.millisecondsSinceEpoch);
       }
+
       if (finalDate != null) {
-        where += ' AND s.creationdate <= ?';
-        whereArgs.add(finalDate.millisecondsSinceEpoch);
+        final endExclusive = DateTime(
+          finalDate.year,
+          finalDate.month,
+          finalDate.day + 1,
+        );
+
+        where += ' AND s.creationdate < ?';
+        whereArgs.add(endExclusive.millisecondsSinceEpoch);
       }
 
       whereArgs.addAll([limit, offset]);
