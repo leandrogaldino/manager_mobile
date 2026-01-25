@@ -23,6 +23,8 @@ import 'package:manager_mobile/pages/home/widgets/loader_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/schedule/schedule_list_widget.dart';
 import 'package:manager_mobile/pages/home/widgets/update_banner_widget.dart';
 import 'package:manager_mobile/states/home_state.dart';
+import 'package:manager_mobile/sync_event.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,6 +40,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final AppPreferences _appPreferences;
   late final ScrollController _visitScheduleScrollController;
   late final ScrollController _evaluationScrollController;
+  late final SyncEventBus _syncEventBus;
   PersonModel? _loggedUser;
   bool _hasShownError = false;
 
@@ -52,6 +55,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _loginController = Locator.get<LoginController>();
     _evaluationController = Locator.get<EvaluationController>();
     _appPreferences = Locator.get<AppPreferences>();
+    _syncEventBus = Locator.get<SyncEventBus>();
     _visitScheduleScrollController = ScrollController();
     _visitScheduleScrollController.addListener(() {
       if (_visitScheduleScrollController.position.pixels >= _visitScheduleScrollController.position.maxScrollExtent - 200) {
@@ -64,7 +68,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         _homeController.evaluations.loadMore();
       }
     });
-
     InternetConnectionStream.start();
     _internetSub = InternetConnectionStream.stream.listen((hasInternet) async {
       // só reage quando CAI a conexão
@@ -88,6 +91,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       if (hasInternet) {
         _wasOnline = true;
       }
+    });
+
+    _syncEventBus.addListener(() {
+      final event = _syncEventBus.lastEvent;
+      if (event == null) return;
+      if(event is EvaluationSynced) {
+          _homeController.evaluations.updateItem(
+            (item) => item.id == event.uuid,
+            (old) => old.copyWith(existsInCloud: true),
+          );
+      }    
     });
 
     SynchronizeTimer.start();

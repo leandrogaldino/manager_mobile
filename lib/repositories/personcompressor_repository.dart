@@ -137,7 +137,10 @@ class PersonCompressorRepository {
     }
   }
 
-  Future<int> synchronize(int lastSync) async {
+  Future<int> synchronize(
+    int lastSync, {
+    void Function(int personCompressorId)? onItemSynced,
+  }) async {
     int count = 0;
     try {
       bool hasMore = true;
@@ -151,7 +154,8 @@ class PersonCompressorRepository {
           hasMore = false;
           break;
         }
-        for (var data in remoteResult) {
+        for (final data in remoteResult) {
+          final int id = data['id'] as int;
           final bool exists = await _localDatabase.isSaved('personcompressor', id: data['id']);
           data.remove('documentid');
           if (exists) {
@@ -159,7 +163,8 @@ class PersonCompressorRepository {
           } else {
             await _localDatabase.insert('personcompressor', data);
           }
-          count += 1;
+          count++;
+          onItemSynced?.call(id);
         }
         lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
         final newer = await _remoteDatabase.get(

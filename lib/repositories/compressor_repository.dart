@@ -19,51 +19,73 @@ class CompressorRepository {
 
   Future<Map<String, Object?>> getById(int id) async {
     try {
-      final Map<String, Object?> compressor = await _localDatabase.query('compressor', where: 'id = ?', whereArgs: [id]).then((list) {
-        if (list.isEmpty) return {};
-        return list[0];
-      });
+      final result = await _localDatabase.query(
+        'compressor',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
 
-      return compressor;
+      if (result.isEmpty) return {};
+      return result.first;
     } on LocalDatabaseException {
       rethrow;
-    } on Exception catch (e, s) {
-      String code = 'COM001';
-      String message = 'Erro ao obter os dados';
+    } catch (e, s) {
+      const code = 'COM001';
+      const message = 'Erro ao obter compressor';
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }
   }
 
-  Future<int> synchronize(int lastSync) async {
+  Future<int> synchronize(
+    int lastSync, {
+    void Function(int compressorId)? onItemSynced,
+  }) async {
     int count = 0;
     try {
       bool hasMore = true;
       while (hasMore) {
-        final int startTime = DateTimeHelper.now().millisecondsSinceEpoch;
+        final startTime = DateTimeHelper.now().millisecondsSinceEpoch;
         final remoteResult = await _remoteDatabase.get(
           collection: 'compressors',
-          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
+          filters: [
+            RemoteDatabaseFilter(
+              field: 'lastupdate',
+              operator: FilterOperator.isGreaterThan,
+              value: lastSync,
+            ),
+          ],
         );
-        if (remoteResult.isEmpty) {
-          hasMore = false;
-          break;
-        }
-        for (var data in remoteResult) {
-          final bool exists = await _localDatabase.isSaved('compressor', id: data['id']);
+        if (remoteResult.isEmpty) break;
+        for (final data in remoteResult) {
+          final int id = data['id'] as int;
+          final exists = await _localDatabase.isSaved('compressor', id: id);
           data.remove('documentid');
           if (exists) {
-            await _localDatabase.update('compressor', data, where: 'id = ?', whereArgs: [data['id']]);
+            await _localDatabase.update(
+              'compressor',
+              data,
+              where: 'id = ?',
+              whereArgs: [id],
+            );
           } else {
             await _localDatabase.insert('compressor', data);
           }
-          count += 1;
+          count++;
+          onItemSynced?.call(id);
         }
-        lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
+        lastSync = remoteResult.map((e) => e['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
         final newer = await _remoteDatabase.get(
           collection: 'compressors',
-          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: startTime)],
+          filters: [
+            RemoteDatabaseFilter(
+              field: 'lastupdate',
+              operator: FilterOperator.isGreaterThan,
+              value: startTime,
+            ),
+          ],
         );
+
         hasMore = newer.isNotEmpty;
       }
       return count;
@@ -71,9 +93,9 @@ class CompressorRepository {
       rethrow;
     } on RemoteDatabaseException {
       rethrow;
-    } on Exception catch (e, s) {
-      String code = 'COM002';
-      String message = 'Erro ao sincronizar os dados';
+    } catch (e, s) {
+      const code = 'COM002';
+      const message = 'Erro ao sincronizar compressores';
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);
     }

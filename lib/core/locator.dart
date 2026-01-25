@@ -37,6 +37,7 @@ import 'package:manager_mobile/services/productcode_service.dart';
 import 'package:manager_mobile/services/sync_service.dart';
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 import 'package:manager_mobile/services/service_service.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 
 class Locator {
   Locator._();
@@ -115,9 +116,15 @@ class Locator {
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
+
+    _getIt.registerLazySingleton(
+      () => SyncEventBus(),
+    );
+
     _getIt.registerLazySingleton(
       () => CompressorService(
         compressorRepository: _getIt.get<CompressorRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
       ),
     );
 
@@ -215,6 +222,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => EvaluationService(
         evaluationRepository: _getIt.get<EvaluationRepository>(),
+        eventBus:  _getIt.get<SyncEventBus>(),
       ),
     );
 

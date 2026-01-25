@@ -61,7 +61,10 @@ class PersonCompressorCoalescentRepository {
     }
   }
 
-  Future<int> synchronize(int lastSync) async {
+  Future<int> synchronize(
+    int lastSync, {
+    void Function(int personCompressorCoalescentId)? onItemSynced,
+  }) async {
     int count = 0;
     try {
       bool hasMore = true;
@@ -75,15 +78,17 @@ class PersonCompressorCoalescentRepository {
           hasMore = false;
           break;
         }
-        for (var data in remoteResult) {
-          final bool exists = await _localDatabase.isSaved('personcompressorcoalescent', id: data['id']);
+        for (final data in remoteResult) {
+          final int id = data['id'] as int;
+          final bool exists = await _localDatabase.isSaved('personcompressorcoalescent', id: id);
           data.remove('documentid');
           if (exists) {
-            await _localDatabase.update('personcompressorcoalescent', data, where: 'id = ?', whereArgs: [data['id']]);
+            await _localDatabase.update('personcompressorcoalescent', data, where: 'id = ?', whereArgs: [id]);
           } else {
             await _localDatabase.insert('personcompressorcoalescent', data);
           }
-          count += 1;
+          count++;
+          onItemSynced?.call(id);
         }
         lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
         final newer = await _remoteDatabase.get(

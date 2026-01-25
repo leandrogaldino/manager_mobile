@@ -7,15 +7,18 @@ import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
+import 'package:manager_mobile/sync_event.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
 
 class EvaluationService {
   final EvaluationRepository _evaluationRepository;
+  final SyncEventBus _eventBus;
 
-  EvaluationService({
-    required EvaluationRepository evaluationRepository,
-  }) : _evaluationRepository = evaluationRepository;
+  EvaluationService({required EvaluationRepository evaluationRepository, required SyncEventBus eventBus})
+      : _evaluationRepository = evaluationRepository,
+        _eventBus = eventBus;
 
   Future<bool> get hasPendingEvaluation async {
     return await _evaluationRepository.hasPendingEvaluation;
@@ -122,6 +125,13 @@ class EvaluationService {
   // }
 
   Future<int> synchronize(int lastSync) async {
-    return await _evaluationRepository.synchronize(lastSync);
+  return _evaluationRepository.synchronize(
+      lastSync,
+      onItemSynced: (id) {
+        _eventBus.emit(
+          SyncEvent.evaluation(id),
+        );
+      },
+    );
   }
 }

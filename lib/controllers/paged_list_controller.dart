@@ -14,6 +14,18 @@ class PagedListController<T> extends ChangeNotifier {
     this.limit = 15,
   });
 
+  bool updateItem(
+    bool Function(T item) where,
+    T Function(T old) update,
+  ) {
+    final index = items.indexWhere(where);
+    if (index == -1) return false;
+
+    items[index] = update(items[index]);
+    notifyListeners();
+    return true;
+  }
+
   Future<void> loadInitial() async {
     items.clear();
     offset = 0;

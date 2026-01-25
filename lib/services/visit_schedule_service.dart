@@ -1,12 +1,14 @@
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
+import 'package:manager_mobile/sync_event.dart';
+import 'package:manager_mobile/sync_event_bus.dart';
 
 class VisitScheduleService {
   final VisitScheduleRepository _scheduleRepository;
+  final SyncEventBus _eventBus;
 
-  VisitScheduleService({
-    required VisitScheduleRepository scheduleRepository,
-  }) : _scheduleRepository = scheduleRepository;
+  VisitScheduleService({required VisitScheduleRepository scheduleRepository, required SyncEventBus eventBus}) : _scheduleRepository = scheduleRepository, _eventBus = eventBus;
+
 
   Future<DateTime> get minimumDate async {
     return _scheduleRepository.minimumDate;
@@ -47,6 +49,13 @@ class VisitScheduleService {
   }
 
   Future<int> synchronize(int lastSync) async {
-    return await _scheduleRepository.synchronize(lastSync);
+    return _scheduleRepository.synchronize(
+      lastSync,
+      onItemSynced: (id) {
+        _eventBus.emit(
+          SyncEvent.visitSchedule(id),
+        );
+      },
+    );
   }
 }

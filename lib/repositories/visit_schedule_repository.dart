@@ -137,24 +137,6 @@ class VisitScheduleRepository {
     }
   }
 
-  Future<int> synchronize(int lastSync) async {
-    int count = 0;
-    try {
-      count = await _synchronizeFromLocalToCloud(lastSync);
-      count += await _synchronizeFromCloudToLocal(lastSync);
-      return count;
-    } on LocalDatabaseException {
-      rethrow;
-    } on RemoteDatabaseException {
-      rethrow;
-    } on Exception catch (e, s) {
-      String code = 'SHC004';
-      String message = 'Erro ao sincronizar os dados';
-      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
-      throw RepositoryException(code, message);
-    }
-  }
-
   Future<Map<String, Object?>> _processSchedule(Map<String, Object?> scheduleData) async {
     var technician = await _personRepository.getById(scheduleData['technicianid'] as int);
     scheduleData['technician'] = technician;
@@ -168,46 +150,114 @@ class VisitScheduleRepository {
     return scheduleData;
   }
 
-  Future<int> _synchronizeFromLocalToCloud(int lastSync) async {
+  Future<int> synchronize(
+    int lastSync, {
+    void Function(int visitScheduleId)? onItemSynced,
+  }) async {
+    int count = 0;
+    try {
+      count = await _synchronizeFromLocalToCloud(lastSync, onItemSynced: onItemSynced);
+      count += await _synchronizeFromCloudToLocal(lastSync, onItemSynced: onItemSynced);
+      return count;
+    } on LocalDatabaseException {
+      rethrow;
+    } on RemoteDatabaseException {
+      rethrow;
+    } on Exception catch (e, s) {
+      String code = 'SHC004';
+      String message = 'Erro ao sincronizar os dados';
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
+    }
+  }
+
+  Future<int> _synchronizeFromLocalToCloud(
+    int lastSync, {
+    void Function(int visitScheduleId)? onItemSynced,
+  }) async {
     final localResult = await _localDatabase.query('visitschedule', where: 'lastupdate > ?', whereArgs: [lastSync]);
+
     for (var scheduleMap in localResult) {
       scheduleMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
-      await _remoteDatabase.set(collection: 'visitschedules', data: scheduleMap, id: scheduleMap['id'].toString());
+
+      await _remoteDatabase.set(
+        collection: 'visitschedules',
+        data: scheduleMap,
+        id: scheduleMap['id'].toString(),
+      );
+
+      // 🔥 callback por item sincronizado
+      onItemSynced?.call(scheduleMap['id'] as int);
     }
+
     return localResult.length;
   }
 
-  Future<int> _synchronizeFromCloudToLocal(int lastSync) async {
+  Future<int> _synchronizeFromCloudToLocal(
+    int lastSync, {
+    void Function(int visitScheduleId)? onItemSynced,
+  }) async {
     int count = 0;
+
     try {
       bool hasMore = true;
+
       while (hasMore) {
         final int startTime = DateTimeHelper.now().millisecondsSinceEpoch;
+
         final remoteResult = await _remoteDatabase.get(
           collection: 'visitschedules',
-          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: lastSync)],
+          filters: [
+            RemoteDatabaseFilter(
+              field: 'lastupdate',
+              operator: FilterOperator.isGreaterThan,
+              value: lastSync,
+            ),
+          ],
         );
+
         if (remoteResult.isEmpty) {
           hasMore = false;
           break;
         }
+
         for (var data in remoteResult) {
           final bool exists = await _localDatabase.isSaved('visitschedule', id: data['id']);
           data.remove('documentid');
+
           if (exists) {
-            await _localDatabase.update('visitschedule', data, where: 'id = ?', whereArgs: [data['id']]);
+            await _localDatabase.update(
+              'visitschedule',
+              data,
+              where: 'id = ?',
+              whereArgs: [data['id']],
+            );
           } else {
             await _localDatabase.insert('visitschedule', data);
           }
+
           count += 1;
+
+          // 🔥 callback por item sincronizado
+          onItemSynced?.call(data['id'] as int);
         }
+
         lastSync = remoteResult.map((r) => r['lastupdate'] as int).reduce((a, b) => a > b ? a : b);
+
         final newer = await _remoteDatabase.get(
           collection: 'visitschedules',
-          filters: [RemoteDatabaseFilter(field: 'lastupdate', operator: FilterOperator.isGreaterThan, value: startTime)],
+          filters: [
+            RemoteDatabaseFilter(
+              field: 'lastupdate',
+              operator: FilterOperator.isGreaterThan,
+              value: startTime,
+            ),
+          ],
         );
+
         hasMore = newer.isNotEmpty;
       }
+
       return count;
     } on LocalDatabaseException {
       rethrow;
