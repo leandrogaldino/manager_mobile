@@ -67,7 +67,7 @@ class ProductRepository {
       var products = await _localDatabase.rawQuery('''
         SELECT p.*
         FROM product p
-        JOIN productcode pc ON p.id = pc.productid
+        LEFT JOIN productcode pc ON p.id = pc.productid
         WHERE $where
         ORDER BY pc.code ASC
         LIMIT ? OFFSET ?;
