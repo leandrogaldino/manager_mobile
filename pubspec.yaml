@@ -48,7 +48,6 @@ dependencies:
   firebase_storage: ^13.0.3
   intl: ^0.20.2
   signature: ^6.3.0
-  camera_camera: ^3.0.0
   flutter_localizations:
     sdk: flutter
   image: ^4.5.2  
@@ -58,6 +57,7 @@ dependencies:
   lottie: ^3.3.2
   timezone: ^0.10.1
   http: ^1.6.0
+  camera: ^0.11.3+1
  
   
 flutter_launcher_icons:
