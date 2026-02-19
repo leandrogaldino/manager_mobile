@@ -39,9 +39,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _scrollController = ScrollController();
     _controller = Locator.get<EvaluationController>();
     //if (_controller.source == SourceTypes.fromSavedWithSign ) {
-      WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-        await _controller.updateImagesBytes();
-      });
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
+      await _controller.updateImagesBytes();
+    });
     //}
   }
 
@@ -242,7 +242,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: ExpandableSectionWidget(
                         key: _signatureKey,
                         initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
@@ -257,7 +257,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   listenable: _controller,
                   builder: (context, child) {
                     return Visibility(
-                      visible: _controller.evaluation!.compressor != null && _controller.source != SourceTypes.fromSavedWithSign,
+                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
                       child: SizedBox(height: 5),
                     );
                   },
@@ -266,7 +266,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             ),
           ),
         ),
-        bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign 
+        bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign
             ? SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),

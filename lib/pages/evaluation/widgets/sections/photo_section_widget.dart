@@ -14,7 +14,6 @@ class PhotoSectionWidget extends StatefulWidget {
 }
 
 class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
-
   @override
   Widget build(BuildContext context) {
     final EvaluationController controller = widget.evaluationController;
@@ -22,7 +21,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     const int crossAxisCount = 3;
     const double spacing = 8;
     final double cellWidth = (MediaQuery.of(context).size.width - (spacing * (crossAxisCount - 1))) / crossAxisCount;
-    final double cellHeight = cellWidth * 1.3;
+    final double cellHeight = cellWidth * 1.9;
     final List<String?> photoPaths = List.generate(
       maxPhotos,
       (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].path : null,
