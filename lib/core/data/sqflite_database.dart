@@ -14,7 +14,7 @@ class SqfliteDatabase implements LocalDatabase {
       _database = await openDatabase(
         inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db'),
         password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
-        version: 1,
+        version: 2,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);
           await db.execute(SQLScripts.createTablePerson);

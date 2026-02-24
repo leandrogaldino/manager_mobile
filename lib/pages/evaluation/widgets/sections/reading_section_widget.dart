@@ -28,10 +28,12 @@ class ReadingSectionWidget extends StatefulWidget {
 class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final TextEditingController _customerEC;
   late final TextEditingController _compressorEC;
+  late final TextEditingController _interfaceEC;
   late final TextEditingController _unitEC;
   late final TextEditingController _temperatureEC;
   late final TextEditingController _pressureEC;
   late final TextEditingController _horimeterEC;
+  late final TextEditingController _greasingEC;
   late final TextEditingController _airFilterEC;
   late final TextEditingController _oilFilterEC;
   late final TextEditingController _separatorEC;
@@ -44,10 +46,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void dispose() {
     _customerEC.dispose();
     _compressorEC.dispose();
+    _interfaceEC.dispose();
     _unitEC.dispose();
     _temperatureEC.dispose();
     _pressureEC.dispose();
     _horimeterEC.dispose();
+    _greasingEC.dispose();
     _airFilterEC.dispose();
     _oilFilterEC.dispose();
     _separatorEC.dispose();
@@ -74,10 +78,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
         widget.evaluationController.updateCompressor(null);
       }
     });
+    _interfaceEC = TextEditingController();
     _unitEC = TextEditingController();
     _temperatureEC = TextEditingController();
     _pressureEC = TextEditingController();
     _horimeterEC = TextEditingController();
+    _greasingEC = TextEditingController();
     _airFilterEC = TextEditingController();
     _oilFilterEC = TextEditingController();
     _separatorEC = TextEditingController();
@@ -92,11 +98,16 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _customerEC.text = widget.evaluationController.evaluation!.compressor!.person.shortName;
     _compressorEC.text = _compressorFullName;
 
+    _interfaceEC.text = widget.evaluationController.evaluation!.interfaceName == null ? '' : widget.evaluationController.evaluation!.interfaceName.toString();
+
     _unitEC.text = widget.evaluationController.evaluation!.unitName == null ? '' : widget.evaluationController.evaluation!.unitName.toString();
     _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
     _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
 
     _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
+
+    _horimeterEC.text = widget.evaluationController.evaluation!.greasing == null ? '' : widget.evaluationController.evaluation!.greasing.toString();
+
     _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = widget.evaluationController.evaluation!.oilFilter == null ? '' : widget.evaluationController.evaluation!.oilFilter.toString();
     _separatorEC.text = widget.evaluationController.evaluation!.separator == null ? '' : widget.evaluationController.evaluation!.separator.toString();
@@ -173,26 +184,39 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         spacing: 12,
                         children: [
                           Expanded(
-                            child: DropdownButtonFormField<CallTypes>(
-                              alignment: AlignmentDirectional.center,
-                              initialValue: controller.evaluation!.callType,
-                              decoration: InputDecoration(
-                                labelText: 'Tipo de Visita',
+                            child: TextFormField(
+                              controller: _interfaceEC,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                              textAlign: TextAlign.center,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [
+                                TextInputFormatter.withFunction(
+                                  (oldValue, newValue) {
+                                    return newValue.copyWith(
+                                      text: newValue.text.toUpperCase(),
+                                      selection: newValue.selection,
+                                    );
+                                  },
+                                ),
+                                // Permite somente A-Z e 0-9
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[A-Z0-9]'),
+                                ),
+                              ],
+                              validator: Validatorless.multiple(
+                                [
+                                  Validatorless.required('Campo obrigatório'),
+                                ],
                               ),
-                              items: CallTypes.values.map((callType) {
-                                return DropdownMenuItem<CallTypes>(
-                                  value: callType,
-                                  child: Text(
-                                    callType.stringValue,
-                                    style: theme.textTheme.bodyLarge!.copyWith(color: controller.source == SourceTypes.fromNew ? theme.colorScheme.onSurface : theme.colorScheme.primary),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: controller.source == SourceTypes.fromNew
-                                  ? (callType) {
-                                      controller.updateCallType(callType!);
-                                    }
-                                  : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Interface',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) {
+                                // troca vírgula por ponto antes de fazer parse
+                                final raw = value.replaceAll(',', '.');
+                                controller.updatePresure(double.tryParse(raw) ?? 0);
+                              },
                             ),
                           ),
                           Expanded(
@@ -284,18 +308,26 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                         spacing: 12,
                         children: [
                           Expanded(
-                            child: TextFormField(
-                              controller: _horimeterEC,
-                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              validator: Validatorless.required('Campo obrigatório'),
+                            child: DropdownButtonFormField<CallTypes>(
+                              alignment: AlignmentDirectional.center,
+                              initialValue: controller.evaluation!.callType,
                               decoration: InputDecoration(
-                                labelText: 'Horímetro',
-                                border: OutlineInputBorder(),
+                                labelText: 'Tipo de Visita',
                               ),
-                              onChanged: (value) => controller.updateHorimeter(int.tryParse(value) ?? 0),
+                              items: CallTypes.values.map((callType) {
+                                return DropdownMenuItem<CallTypes>(
+                                  value: callType,
+                                  child: Text(
+                                    callType.stringValue,
+                                    style: theme.textTheme.bodyLarge!.copyWith(color: controller.source == SourceTypes.fromNew ? theme.colorScheme.onSurface : theme.colorScheme.primary),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: controller.source == SourceTypes.fromNew
+                                  ? (callType) {
+                                      controller.updateCallType(callType!);
+                                    }
+                                  : null,
                             ),
                           ),
                           Expanded(
@@ -321,6 +353,47 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   : null,
                             ),
                           )
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 12,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _horimeterEC,
+                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              validator: Validatorless.required('Campo obrigatório'),
+                              decoration: InputDecoration(
+                                labelText: 'Horímetro',
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) => controller.updateHorimeter(int.tryParse(value) ?? 0),
+                            ),
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _customerEC,
+                              readOnly: _customerEnabled,
+                              validator: Validatorless.required('Campo obrigatório'),
+                              decoration: InputDecoration(
+                                labelText: 'Engraxamento',
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _customerEnabled ? Icons.lock_open : Icons.lock,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _customerEnabled = !_customerEnabled;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       Row(

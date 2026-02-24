@@ -21,6 +21,7 @@ class EvaluationModel {
   bool existsInCloud;
   bool needProposal;
   CallTypes callType;
+  String? interfaceName;
   String? unitName;
   int? temperature;
   double? pressure;
@@ -30,6 +31,7 @@ class EvaluationModel {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   int? horimeter;
+  int? greasing;
   OilTypes oilType;
   int? airFilter;
   int? oilFilter;
@@ -53,6 +55,7 @@ class EvaluationModel {
     this.needProposal = false,
     this.callType = CallTypes.none,
     this.unitName,
+    this.interfaceName,
     this.temperature,
     this.pressure,
     this.customer,
@@ -61,6 +64,7 @@ class EvaluationModel {
     TimeOfDay? startTime,
     this.endTime,
     this.horimeter,
+    this.greasing,
     this.oilType = OilTypes.none,
     this.airFilter,
     this.oilFilter,
@@ -94,6 +98,7 @@ class EvaluationModel {
       needProposal: false,
       callType: schedule != null ? schedule.callType : CallTypes.none,
       unitName: null,
+      interfaceName: null,
       temperature: null,
       pressure: null,
       customer: schedule?.customer,
@@ -101,6 +106,7 @@ class EvaluationModel {
       creationDate: DateTimeHelper.now(),
       startTime: TimeOfDay.now(),
       endTime: null,
+      greasing: null,
       horimeter: null,
       oilType: OilTypes.none,
       airFilter: null,
@@ -128,6 +134,7 @@ class EvaluationModel {
     bool? needProposal,
     CallTypes? callType,
     String? unitName,
+    String? interfaceName,
     int? temperature,
     double? pressure,
     PersonModel? customer,
@@ -136,6 +143,7 @@ class EvaluationModel {
     TimeOfDay? startTime,
     TimeOfDay? endTime,
     int? horimeter,
+    int? greasing,
     OilTypes? oilType,
     int? airFilter,
     int? oilFilter,
@@ -160,6 +168,7 @@ class EvaluationModel {
       needProposal: needProposal ?? this.needProposal,
       callType: callType ?? this.callType,
       unitName: unitName ?? this.unitName,
+      interfaceName: interfaceName ?? this.interfaceName,
       temperature: temperature ?? this.temperature,
       pressure: pressure ?? this.pressure,
       customer: customer ?? this.customer,
@@ -168,6 +177,7 @@ class EvaluationModel {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       horimeter: horimeter ?? this.horimeter,
+      greasing: greasing ?? this.greasing,
       oilType: oilType ?? this.oilType,
       airFilter: airFilter ?? this.airFilter,
       oilFilter: oilFilter ?? this.oilFilter,
@@ -195,6 +205,7 @@ class EvaluationModel {
       'needproposal': needProposal ? 1 : 0,
       'calltypeid': callType.index,
       'unitname': unitName,
+      'interfacename': interfaceName,
       'temperature': temperature,
       'pressure': pressure,
       'customerid': customer?.id,
@@ -203,6 +214,7 @@ class EvaluationModel {
       'starttime': '${startTime?.hour.toString().padLeft(2, '0')}:${startTime?.minute.toString().padLeft(2, '0')}',
       'endtime': '${endTime?.hour.toString().padLeft(2, '0')}:${endTime?.minute.toString().padLeft(2, '0')}',
       'horimeter': horimeter,
+      'greasing': greasing,
       'oiltypeid': oilType.index,
       'airfilter': airFilter,
       'oilfilter': oilFilter,
@@ -230,6 +242,7 @@ class EvaluationModel {
       needProposal: map['needproposal'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
       unitName: map['unitname'] != null ? map['unitname'] as String : null,
+      interfaceName: map['interfacename'] != null ? map['interfacename'] as String : null,
       temperature: map['temperature'] != null ? map['temperature'] as int : null,
       pressure: map['pressure'] != null ? map['pressure'] as double : null,
       advice: map['advice'] != null ? map['advice'] as String : null,
@@ -239,6 +252,7 @@ class EvaluationModel {
       startTime: TimeOfDay(hour: int.parse(map['starttime'].toString().split(':')[0]), minute: int.parse(map['starttime'].toString().split(':')[1])),
       endTime: TimeOfDay(hour: int.parse(map['endtime'].toString().split(':')[0]), minute: int.parse(map['endtime'].toString().split(':')[1])),
       horimeter: map['horimeter'] != null ? map['horimeter'] as int : null,
+      greasing: map['greasing'] != null ? map['greasing'] as int : null,
       oilType: OilTypes.values[map['oiltypeid'] as int],
       airFilter: map['airfilter'] != null ? map['airfilter'] as int : null,
       oilFilter: map['oilfilter'] != null ? map['oilfilter'] as int : null,
@@ -281,7 +295,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, interfacename: $interfaceName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -296,6 +310,7 @@ class EvaluationModel {
         other.needProposal == needProposal &&
         other.callType == callType &&
         other.unitName == unitName &&
+        other.interfaceName == interfaceName &&
         other.temperature == temperature &&
         other.pressure == pressure &&
         other.customer == customer &&
@@ -304,6 +319,7 @@ class EvaluationModel {
         other.startTime == startTime &&
         other.endTime == endTime &&
         other.horimeter == horimeter &&
+        other.greasing == greasing &&
         other.oilType == oilType &&
         other.airFilter == airFilter &&
         other.oilFilter == oilFilter &&
@@ -330,6 +346,7 @@ class EvaluationModel {
         needProposal.hashCode ^
         callType.hashCode ^
         unitName.hashCode ^
+        interfaceName.hashCode ^
         temperature.hashCode ^
         pressure.hashCode ^
         customer.hashCode ^
@@ -338,6 +355,7 @@ class EvaluationModel {
         startTime.hashCode ^
         endTime.hashCode ^
         horimeter.hashCode ^
+        greasing.hashCode ^
         oilType.hashCode ^
         airFilter.hashCode ^
         oilFilter.hashCode ^
