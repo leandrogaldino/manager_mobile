@@ -158,6 +158,24 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _greasable = true;
+  bool get greasable => _greasable;
+
+  void updateGreasable(bool greasable) {
+    _greasable = greasable;
+    notifyListeners();
+  }
+
+  void updateInterface(String interfaceName) {
+    _evaluation!.interfaceName = interfaceName;
+    notifyListeners();
+  }
+
+  void updateGreasing(int greasing) {
+    _evaluation!.greasing = greasing;
+    notifyListeners();
+  }
+
   void updateResponsible(String responsible) {
     _evaluation!.responsible = responsible;
     notifyListeners();

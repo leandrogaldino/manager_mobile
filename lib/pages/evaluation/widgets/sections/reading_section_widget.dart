@@ -213,9 +213,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 border: OutlineInputBorder(),
                               ),
                               onChanged: (value) {
-                                // troca vírgula por ponto antes de fazer parse
-                                final raw = value.replaceAll(',', '.');
-                                controller.updatePresure(double.tryParse(raw) ?? 0);
+                                controller.updateInterface(value);
                               },
                             ),
                           ),
@@ -377,21 +375,26 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _customerEC,
-                              readOnly: _customerEnabled,
-                              validator: Validatorless.required('Campo obrigatório'),
+                              readOnly: !controller.greasable,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              validator: (value) {
+                                if (controller.greasable) {
+                                  return Validatorless.required('Campo obrigatório')(value);
+                                }
+                                return null;
+                              },
                               decoration: InputDecoration(
                                 labelText: 'Engraxamento',
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _customerEnabled ? Icons.lock_open : Icons.lock,
+                                    controller.greasable ? Icons.lock_open : Icons.lock,
                                   ),
                                   onPressed: () {
-                                    setState(() {
-                                      _customerEnabled = !_customerEnabled;
-                                    });
+                                    controller.updateGreasable(!controller.greasable);
                                   },
                                 ),
                               ),
+                              onChanged: (value) => controller.updateGreasing(int.tryParse(value) ?? 0),
                             ),
                           ),
                         ],
