@@ -88,6 +88,27 @@ class SQLScripts {
     );
   ''';
 
+  static const String createTableCompressorInterface = '''
+    CREATE TABLE compressorinterface (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      productid INT NOT NULL,
+      direction INT NOT NULL,      
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableCompressorUnit = '''
+    CREATE TABLE compressorunit (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      productid INT NOT NULL,   
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
+    );
+  ''';
+
   static const String createTablePersonCompressor = '''
     CREATE TABLE personcompressor (
       id INTEGER PRIMARY KEY,
@@ -97,9 +118,13 @@ class SQLScripts {
       serialnumber TEXT NOT NULL,
       patrimony TEXT NOT NULL,
       sector TEXT NOT NULL,
+      compressorinterfaceid INT NOT NULL,
+      compressorunitid INT NOT NULL,
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
+      FOREIGN KEY (compressorinterfaceid) REFERENCES compressorinterface (id) ON DELETE RESTRICT
+      FOREIGN KEY (compressorunitid) REFERENCES compressorunit (id) ON DELETE RESTRICT
     );
   ''';
 
@@ -151,8 +176,6 @@ class SQLScripts {
       existsincloud INTEGER NOT NULL,
       needproposal INTEGER NOT NULL,
       calltypeid INTEGER NOT NULL,
-      interfaceName TEXT NOT NULL,
-      unitname TEXT NOT NULL,
       temperature INTEGER NOT NULL,
       pressure REAL NOT NULL,
       customerid INT NOT NULL,

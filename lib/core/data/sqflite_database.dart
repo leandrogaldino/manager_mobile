@@ -8,17 +8,20 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
+
   @override
   Future<void> init({bool inMemory = false}) async {
     try {
       _database = await openDatabase(
         inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db'),
         password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
-        version: 2,
+        version: 1,
         onCreate: (db, version) async {
           await db.execute(SQLScripts.createTablePreferences);
           await db.execute(SQLScripts.createTablePerson);
           await db.execute(SQLScripts.createTableCompressor);
+          await db.execute(SQLScripts.createTableCompressorInterface);
+          await db.execute(SQLScripts.createTableCompressorUnit);
           await db.execute(SQLScripts.createTablePersonCompressor);
           await db.execute(SQLScripts.createTableProduct);
           await db.execute(SQLScripts.createTableProductCode);
