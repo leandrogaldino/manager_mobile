@@ -10,7 +10,10 @@ import 'package:manager_mobile/interfaces/auth.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
+import 'package:manager_mobile/models/compressor_interface_model.dart';
+import 'package:manager_mobile/repositories/compressor_interface_repository.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/compressor_unit_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_performed_service_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_replaced_product_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
@@ -27,7 +30,9 @@ import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
+import 'package:manager_mobile/services/compressor_interface_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/compressor_unit_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -132,6 +137,34 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
+      () => CompressorInterfaceRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => CompressorInterfaceService(
+        compressorInterfaceRepository: _getIt.get<CompressorInterfaceRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => CompressorUnitRepository(
+        remoteDatabase: _getIt.get<RemoteDatabase>(),
+        localDatabase: _getIt.get<LocalDatabase>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
+      () => CompressorUnitService(
+        compressorUnitRepository: _getIt.get<CompressorUnitRepository>(),
+        eventBus: _getIt.get<SyncEventBus>(),
+      ),
+    );
+
+    _getIt.registerLazySingleton(
       () => PersonCompressorCoalescentRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
@@ -152,6 +185,8 @@ class Locator {
         localDatabase: _getIt.get<LocalDatabase>(),
         personRepository: _getIt.get<PersonRepository>(),
         compressorRepository: _getIt.get<CompressorRepository>(),
+        compressorInterfaceRepository: _getIt.get<CompressorInterfaceRepository>(),
+        compressorUnitRepository: _getIt.get<CompressorUnitRepository>(),
         personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
       ),
     );
@@ -257,6 +292,8 @@ class Locator {
           productCodeService: _getIt.get<ProductCodeService>(),
           serviceService: _getIt.get<ServiceService>(),
           compressorService: _getIt.get<CompressorService>(),
+          compressorInterfaceService: _getIt.get<CompressorInterfaceService>(),
+          compressorUnitService: _getIt.get<CompressorUnitService>(),
           personCompressorcoalescentService: _getIt.get<PersonCompressorCoalescentService>(),
           personCompressorService: _getIt.get<PersonCompressorService>(),
           personService: _getIt.get<PersonService>(),

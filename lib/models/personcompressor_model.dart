@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
+import 'package:manager_mobile/models/compressor_interface_model.dart';
+import 'package:manager_mobile/models/compressor_unit_model.dart';
 import 'package:manager_mobile/models/personcompressorcoalescent_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/compressor_model.dart';
@@ -14,6 +16,8 @@ class PersonCompressorModel {
   final String serialNumber;
   final String sector;
   final String patrimony;
+  final CompressorInterfaceModel interface;
+  final CompressorUnitModel unit;
   final List<PersonCompressorCoalescentModel> coalescents;
 
   PersonCompressorModel({
@@ -25,6 +29,8 @@ class PersonCompressorModel {
     required this.serialNumber,
     required this.sector,
     required this.patrimony,
+    required this.interface,
+    required this.unit,
     required this.coalescents,
   });
 
@@ -37,6 +43,8 @@ class PersonCompressorModel {
     String? serialNumber,
     String? sector,
     String? patrimony,
+    CompressorInterfaceModel? interface,
+    CompressorUnitModel? unit,
     List<PersonCompressorCoalescentModel>? coalescents,
   }) {
     return PersonCompressorModel(
@@ -48,6 +56,8 @@ class PersonCompressorModel {
       serialNumber: serialNumber ?? this.serialNumber,
       sector: sector ?? this.sector,
       patrimony: patrimony ?? this.patrimony,
+      interface: interface ?? this.interface,
+      unit: unit ?? this.unit,
       coalescents: coalescents ?? this.coalescents,
     );
   }
@@ -62,6 +72,8 @@ class PersonCompressorModel {
       serialNumber: (map['serialnumber'] ?? '') as String,
       sector: (map['sector'] ?? '') as String,
       patrimony: (map['patrimony'] ?? '') as String,
+      interface: CompressorInterfaceModel.fromMap(map['interface']),
+      unit: CompressorUnitModel.fromMap(map['unit']),
       coalescents: List<PersonCompressorCoalescentModel>.from(
         (map['coalescents'] as List<Map<String, dynamic>>).map<PersonCompressorCoalescentModel>(
           (x) => PersonCompressorCoalescentModel.fromMap(x),
@@ -79,13 +91,15 @@ class PersonCompressorModel {
       'serialnumber': serialNumber,
       'sector': sector,
       'patrimony': patrimony,
+      'interface': interface.toMap(),
+      'unit': unit.toMap(),
       'coalescents': coalescents.map((x) => x.toMap),
     };
   }
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, visible: $visible, person: $person, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, patrimony: $patrimony, coalescents: $coalescents)';
+    return 'CompressorModel(id: $id, visible: $visible, person: $person, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, patrimony: $patrimony, interface: $interface, unit: $unit, coalescents: $coalescents)';
   }
 
   @override
@@ -99,6 +113,8 @@ class PersonCompressorModel {
         other.serialNumber == serialNumber &&
         other.sector == sector &&
         other.patrimony == patrimony &&
+        other.interface == interface &&
+        other.unit == unit &&
         listEquals(
           other.coalescents,
           coalescents,
@@ -107,7 +123,7 @@ class PersonCompressorModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ person.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ patrimony.hashCode ^ coalescents.hashCode;
+    return id.hashCode ^ visible.hashCode ^ person.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ patrimony.hashCode ^ interface.hashCode ^ unit.hashCode ^ coalescents.hashCode;
   }
 
   String toJson() => json.encode(toMap());

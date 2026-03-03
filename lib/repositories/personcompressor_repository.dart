@@ -6,7 +6,9 @@ import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
+import 'package:manager_mobile/repositories/compressor_interface_repository.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
+import 'package:manager_mobile/repositories/compressor_unit_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 
@@ -16,6 +18,8 @@ class PersonCompressorRepository {
   final PersonRepository _personRepository;
   final CompressorRepository _compressorRepository;
   final PersonCompressorCoalescentRepository _personCompressorCoalescentRepository;
+  final CompressorInterfaceRepository _compressorInterfaceRepository;
+  final CompressorUnitRepository _compressorUnitRepository;
 
   PersonCompressorRepository({
     required RemoteDatabase remoteDatabase,
@@ -23,11 +27,15 @@ class PersonCompressorRepository {
     required PersonRepository personRepository,
     required CompressorRepository compressorRepository,
     required PersonCompressorCoalescentRepository personCompressorCoalescentRepository,
+    required CompressorInterfaceRepository compressorInterfaceRepository,
+    required CompressorUnitRepository compressorUnitRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _personRepository = personRepository,
         _compressorRepository = compressorRepository,
-        _personCompressorCoalescentRepository = personCompressorCoalescentRepository;
+        _personCompressorCoalescentRepository = personCompressorCoalescentRepository,
+        _compressorInterfaceRepository = compressorInterfaceRepository,
+        _compressorUnitRepository = compressorUnitRepository;
 
   Future<List<Map<String, Object?>>> searchVisibles({
     required int offset,
@@ -63,6 +71,14 @@ class PersonCompressorRepository {
         personCompressor.remove('compressorid');
         final compressor = await _compressorRepository.getById(compressorId);
         personCompressor['compressor'] = compressor;
+        final interfaceId = personCompressor['interfaceid'] as int;
+        personCompressor.remove('interfaceid');
+        final compressorInterface = await _compressorInterfaceRepository.getById(interfaceId);
+        personCompressor['interface'] = compressorInterface;
+        final unitId = personCompressor['unitid'] as int;
+        personCompressor.remove('unitid');
+        final compressorUnit = await _compressorUnitRepository.getById(unitId);
+        personCompressor['unit'] = compressorUnit;
         var personId = personCompressor['personid'] as int;
         personCompressor.remove('personid');
         var person = await _personRepository.getById(personId);
@@ -92,6 +108,16 @@ class PersonCompressorRepository {
       personCompressor.remove('compressorid');
       final compressor = await _compressorRepository.getById(compressorId);
       personCompressor['compressor'] = compressor;
+
+      final interfaceId = personCompressor['compressorinterfaceid'] as int;
+      personCompressor.remove('compressorinterfaceid');
+      final compressorInterface = await _compressorInterfaceRepository.getById(interfaceId);
+      personCompressor['interface'] = compressorInterface;
+      final unitId = personCompressor['compressorunitid'] as int;
+      personCompressor.remove('compressorunitid');
+      final compressorUnit = await _compressorUnitRepository.getById(unitId);
+      personCompressor['unit'] = compressorUnit;
+
       var personId = personCompressor['personid'] as int;
       personCompressor.remove('personid');
       var person = await _personRepository.getById(personId);
@@ -118,6 +144,16 @@ class PersonCompressorRepository {
         personCompressor.remove('compressorid');
         final compressor = await _compressorRepository.getById(compressorId);
         personCompressor['compressor'] = compressor;
+
+        final interfaceId = personCompressor['interfaceid'] as int;
+        personCompressor.remove('interfaceid');
+        final compressorInterface = await _compressorInterfaceRepository.getById(interfaceId);
+        personCompressor['interface'] = compressorInterface;
+        final unitId = personCompressor['unitid'] as int;
+        personCompressor.remove('unitid');
+        final compressorUnit = await _compressorUnitRepository.getById(unitId);
+        personCompressor['unit'] = compressorUnit;
+
         var personId = personCompressor['personid'] as int;
         personCompressor.remove('personid');
         var person = await _personRepository.getById(personId);

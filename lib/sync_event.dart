@@ -8,6 +8,8 @@ enum SyncEntityType {
   product,
   productCode,
   service,
+  compressorInterface,
+  compressorUnit,
 }
 
 sealed class SyncEvent {
@@ -23,6 +25,18 @@ sealed class SyncEvent {
   factory SyncEvent.product(int id) = ProductSynced;
   factory SyncEvent.productCode(int id) = ProductCodeSynced;
   factory SyncEvent.service(int id) = ServiceSynced;
+  factory SyncEvent.compressorInterface(int id) = CompressorInterfaceSynced;
+  factory SyncEvent.compressorUnit(int id) = CompressorUnitSynced;
+}
+
+class CompressorInterfaceSynced extends SyncEvent {
+  final int id;
+  const CompressorInterfaceSynced(this.id) : super(SyncEntityType.compressorInterface);
+}
+
+class CompressorUnitSynced extends SyncEvent {
+  final int id;
+  const CompressorUnitSynced(this.id) : super(SyncEntityType.compressorUnit);
 }
 
 class EvaluationSynced extends SyncEvent {

@@ -88,27 +88,6 @@ class SQLScripts {
     );
   ''';
 
-  static const String createTableCompressorInterface = '''
-    CREATE TABLE compressorinterface (
-      id INTEGER PRIMARY KEY,
-      visible INTEGER NOT NULL,
-      productid INT NOT NULL,
-      direction INT NOT NULL,      
-      lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
-    );
-  ''';
-
-  static const String createTableCompressorUnit = '''
-    CREATE TABLE compressorunit (
-      id INTEGER PRIMARY KEY,
-      visible INTEGER NOT NULL,
-      productid INT NOT NULL,   
-      lastupdate INTEGER NOT NULL,
-      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
-    );
-  ''';
-
   static const String createTablePersonCompressor = '''
     CREATE TABLE personcompressor (
       id INTEGER PRIMARY KEY,
@@ -155,6 +134,30 @@ class SQLScripts {
       lastupdate INTEGER NOT NULL
     );
   ''';
+
+  static const String createTableCompressorInterface = '''
+    CREATE TABLE compressorinterface (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      productid INT NOT NULL,
+      directionid INT NOT NULL,      
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const String createTableCompressorUnit = '''
+    CREATE TABLE compressorunit (
+      id INTEGER PRIMARY KEY,
+      visible INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      productid INT NOT NULL,   
+      lastupdate INTEGER NOT NULL,
+      FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
+    );
+  ''';
+
   static const String createTablePersonCompressorCoalescent = '''
     CREATE TABLE personcompressorcoalescent (
       id INTEGER PRIMARY KEY,

@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/timers/refresh_sync_lock_timer.dart';
+import 'package:manager_mobile/services/compressor_interface_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
+import 'package:manager_mobile/services/compressor_unit_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/person_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
@@ -17,6 +19,8 @@ class SyncService {
   final ProductCodeService _productCodeService;
   final ServiceService _serviceService;
   final CompressorService _compressorService;
+  final CompressorInterfaceService _compressorInterfaceService;
+  final CompressorUnitService _compressorUnitService;
   final PersonCompressorCoalescentService _personCompressorcoalescentService;
   final PersonCompressorService _personCompressorService;
   final PersonService _personService;
@@ -29,6 +33,8 @@ class SyncService {
     required ProductCodeService productCodeService,
     required ServiceService serviceService,
     required CompressorService compressorService,
+    required CompressorInterfaceService compressorInterfaceService,
+    required CompressorUnitService compressorUnitService,
     required PersonCompressorCoalescentService personCompressorcoalescentService,
     required PersonCompressorService personCompressorService,
     required PersonService personService,
@@ -39,6 +45,8 @@ class SyncService {
         _productCodeService = productCodeService,
         _serviceService = serviceService,
         _compressorService = compressorService,
+        _compressorInterfaceService = compressorInterfaceService,
+        _compressorUnitService = compressorUnitService,
         _personCompressorcoalescentService = personCompressorcoalescentService,
         _personCompressorService = personCompressorService,
         _personService = personService,
@@ -93,6 +101,16 @@ class SyncService {
       final int compressorsCount = await _compressorService.synchronize(lastSync);
       totalCount += compressorsCount;
 
+      // --- INTERFACES ---
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Interfaces...', time: DateTimeHelper.now());
+      final int interfaceCount = await _compressorInterfaceService.synchronize(lastSync);
+      totalCount += interfaceCount;
+
+      // --- UNIDADES ---
+      log('${isAuto ? "(Auto) " : ""}Sincronizando Unidades...', time: DateTimeHelper.now());
+      final int unitCount = await _compressorUnitService.synchronize(lastSync);
+      totalCount += unitCount;
+
       // --- COALESCENTES ---
       log('${isAuto ? "(Auto) " : ""}Sincronizando Coalescentes dos Compressores...', time: DateTimeHelper.now());
       final int personCompressorCoalescentCount = await _personCompressorcoalescentService.synchronize(lastSync);
@@ -119,7 +137,7 @@ class SyncService {
       log('${isAuto ? "(Auto) " : ""}Sincronizando Avaliações...', time: DateTimeHelper.now());
       final int evaluationsCount = await _evaluationService.synchronize(lastSync);
       totalCount += evaluationsCount;
-      
+
       newVisitScheduleOrEvaluation = newVisitScheduleOrEvaluation == true ? newVisitScheduleOrEvaluation : evaluationsCount > 0;
 
       log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTimeHelper.now());

@@ -21,8 +21,6 @@ class EvaluationModel {
   bool existsInCloud;
   bool needProposal;
   CallTypes callType;
-  String? interfaceName;
-  String? unitName;
   int? temperature;
   double? pressure;
   PersonModel? customer;
@@ -54,8 +52,6 @@ class EvaluationModel {
     this.existsInCloud = false,
     this.needProposal = false,
     this.callType = CallTypes.none,
-    this.unitName,
-    this.interfaceName,
     this.temperature,
     this.pressure,
     this.customer,
@@ -97,8 +93,6 @@ class EvaluationModel {
       existsInCloud: false,
       needProposal: false,
       callType: schedule != null ? schedule.callType : CallTypes.none,
-      unitName: null,
-      interfaceName: null,
       temperature: null,
       pressure: null,
       customer: schedule?.customer,
@@ -133,8 +127,6 @@ class EvaluationModel {
     bool? existsInCloud,
     bool? needProposal,
     CallTypes? callType,
-    String? unitName,
-    String? interfaceName,
     int? temperature,
     double? pressure,
     PersonModel? customer,
@@ -167,8 +159,6 @@ class EvaluationModel {
       existsInCloud: existsInCloud ?? this.existsInCloud,
       needProposal: needProposal ?? this.needProposal,
       callType: callType ?? this.callType,
-      unitName: unitName ?? this.unitName,
-      interfaceName: interfaceName ?? this.interfaceName,
       temperature: temperature ?? this.temperature,
       pressure: pressure ?? this.pressure,
       customer: customer ?? this.customer,
@@ -204,8 +194,6 @@ class EvaluationModel {
       'existsincloud': existsInCloud ? 1 : 0,
       'needproposal': needProposal ? 1 : 0,
       'calltypeid': callType.index,
-      'unitname': unitName,
-      'interfacename': interfaceName,
       'temperature': temperature,
       'pressure': pressure,
       'customerid': customer?.id,
@@ -241,8 +229,6 @@ class EvaluationModel {
       existsInCloud: map['existsincloud'] == 0 ? false : true,
       needProposal: map['needproposal'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
-      unitName: map['unitname'] != null ? map['unitname'] as String : null,
-      interfaceName: map['interfacename'] != null ? map['interfacename'] as String : null,
       temperature: map['temperature'] != null ? map['temperature'] as int : null,
       pressure: map['pressure'] != null ? map['pressure'] as double : null,
       advice: map['advice'] != null ? map['advice'] as String : null,
@@ -295,7 +281,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, unitname: $unitName, interfacename: $interfaceName, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -309,8 +295,6 @@ class EvaluationModel {
         other.existsInCloud == existsInCloud &&
         other.needProposal == needProposal &&
         other.callType == callType &&
-        other.unitName == unitName &&
-        other.interfaceName == interfaceName &&
         other.temperature == temperature &&
         other.pressure == pressure &&
         other.customer == customer &&
@@ -345,8 +329,6 @@ class EvaluationModel {
         existsInCloud.hashCode ^
         needProposal.hashCode ^
         callType.hashCode ^
-        unitName.hashCode ^
-        interfaceName.hashCode ^
         temperature.hashCode ^
         pressure.hashCode ^
         customer.hashCode ^

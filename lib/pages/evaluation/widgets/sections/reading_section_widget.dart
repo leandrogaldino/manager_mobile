@@ -98,9 +98,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _customerEC.text = widget.evaluationController.evaluation!.compressor!.person.shortName;
     _compressorEC.text = _compressorFullName;
 
-    _interfaceEC.text = widget.evaluationController.evaluation!.interfaceName == null ? '' : widget.evaluationController.evaluation!.interfaceName.toString();
+    _interfaceEC.text = widget.evaluationController.evaluation!.compressor!.interface.name;
 
-    _unitEC.text = widget.evaluationController.evaluation!.unitName == null ? '' : widget.evaluationController.evaluation!.unitName.toString();
+    _unitEC.text = widget.evaluationController.evaluation!.compressor!.unit.name;
     _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
     _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
 
@@ -186,7 +186,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _interfaceEC,
-                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                              readOnly: true,
                               textAlign: TextAlign.center,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               inputFormatters: [
@@ -212,15 +212,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Interface',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) {
-                                controller.updateInterface(value);
-                              },
                             ),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _unitEC,
-                              readOnly: controller.source == SourceTypes.fromSavedWithSign,
+                              readOnly: true,
                               textAlign: TextAlign.center,
                               textCapitalization: TextCapitalization.characters,
                               inputFormatters: [
@@ -246,7 +243,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Unidade',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateUnit(value),
                             ),
                           ),
                         ],

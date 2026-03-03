@@ -166,11 +166,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateInterface(String interfaceName) {
-    _evaluation!.interfaceName = interfaceName;
-    notifyListeners();
-  }
-
   void updateGreasing(int greasing) {
     _evaluation!.greasing = greasing;
     notifyListeners();
@@ -208,11 +203,6 @@ class EvaluationController extends ChangeNotifier {
 
   void updateOilType(OilTypes oilType) {
     _evaluation!.oilType = oilType;
-    notifyListeners();
-  }
-
-  void updateUnit(String unit) {
-    _evaluation!.unitName = unit;
     notifyListeners();
   }
 

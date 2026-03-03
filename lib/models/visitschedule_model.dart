@@ -80,14 +80,14 @@ class VisitScheduleModel {
   factory VisitScheduleModel.fromMap(Map<String, dynamic> map) {
     return VisitScheduleModel(
       id: (map['id'] ?? 0) as int,
-      visible:  map['visible'] == 0 ? false : true,
+      visible: map['visible'] == 0 ? false : true,
       callType: CallTypes.values[map['calltypeid'] as int],
       creationDate: DateTimeHelper.fromMillisecondsSinceEpoch((map['creationdate'] ?? 0) as int),
       scheduleDate: DateTimeHelper.fromMillisecondsSinceEpoch((map['scheduleddate'] ?? 0) as int),
       performedDate: map['performedDate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['performeddate'] ?? 0) as int) : null,
       technician: PersonModel.fromMap(map['technician']),
       customer: PersonModel.fromMap(map['customer']),
-      compressor: PersonCompressorModel.fromMap(map['compressor'] ),
+      compressor: PersonCompressorModel.fromMap(map['compressor']),
       instructions: (map['instructions'] ?? '') as String,
       lastUpdate: DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int),
     );
@@ -121,6 +121,6 @@ class VisitScheduleModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ callType.hashCode ^  creationDate.hashCode ^ scheduleDate.hashCode ^ performedDate.hashCode ^ technician.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
+    return id.hashCode ^ visible.hashCode ^ callType.hashCode ^ creationDate.hashCode ^ scheduleDate.hashCode ^ performedDate.hashCode ^ technician.hashCode ^ customer.hashCode ^ compressor.hashCode ^ instructions.hashCode ^ lastUpdate.hashCode;
   }
 }
