@@ -2,7 +2,8 @@ enum PartTypes {
   airFilter,
   oilFilter,
   separator,
-  oil;
+  oil,
+  greasing;
 
   String get stringValue {
     switch (this) {
@@ -14,6 +15,8 @@ enum PartTypes {
         return 'Elemento Separador';
       case PartTypes.oil:
         return 'Óleo';
+      case PartTypes.greasing:
+        return 'Engraxamento';
     }
   }
 }

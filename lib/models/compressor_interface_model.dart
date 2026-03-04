@@ -46,7 +46,7 @@ class CompressorInterfaceModel {
     return CompressorInterfaceModel(
       id: (map['id'] ?? 0) as int,
       name: (map['name'] ?? '') as String,
-      visible: (map['visible'] ?? false) as bool,
+      visible: map['visible'] == 0 ? false : true,
       direction: InterfaceDirectionTypes.values[map['directionid'] as int],
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
     );

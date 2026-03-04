@@ -71,12 +71,12 @@ class PersonCompressorRepository {
         personCompressor.remove('compressorid');
         final compressor = await _compressorRepository.getById(compressorId);
         personCompressor['compressor'] = compressor;
-        final interfaceId = personCompressor['interfaceid'] as int;
-        personCompressor.remove('interfaceid');
+        final interfaceId = personCompressor['compressorinterfaceid'] as int;
+        personCompressor.remove('compressorinterfaceid');
         final compressorInterface = await _compressorInterfaceRepository.getById(interfaceId);
         personCompressor['interface'] = compressorInterface;
-        final unitId = personCompressor['unitid'] as int;
-        personCompressor.remove('unitid');
+        final unitId = personCompressor['compressorunitid'] as int;
+        personCompressor.remove('compressorunitid');
         final compressorUnit = await _compressorUnitRepository.getById(unitId);
         personCompressor['unit'] = compressorUnit;
         var personId = personCompressor['personid'] as int;

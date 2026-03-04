@@ -133,6 +133,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
     _customerEC.text = controller.evaluation!.compressor?.person.shortName ?? '';
     _compressorEC.text = _compressorFullName;
+    _interfaceEC.text = widget.evaluationController.evaluation!.compressor?.interface.name ?? '';
+    _unitEC.text = widget.evaluationController.evaluation!.compressor?.unit.name ?? '';
     final theme = Theme.of(context);
     return ListenableBuilder(
       listenable: controller,
@@ -208,10 +210,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   Validatorless.required('Campo obrigatório'),
                                 ],
                               ),
-                              decoration: const InputDecoration(
-                                labelText: 'Interface',
-                                border: OutlineInputBorder(),
-                              ),
+                              decoration: const InputDecoration(labelText: 'Interface', border: OutlineInputBorder()),
+                              style: TextStyle(color: theme.colorScheme.primary),
                             ),
                           ),
                           Expanded(
@@ -239,10 +239,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   Validatorless.required('Campo obrigatório'),
                                 ],
                               ),
-                              decoration: InputDecoration(
-                                labelText: 'Unidade',
-                                border: OutlineInputBorder(),
-                              ),
+                              decoration: InputDecoration(labelText: 'Unidade', border: OutlineInputBorder()),
+                              style: TextStyle(color: theme.colorScheme.primary),
                             ),
                           ),
                         ],
@@ -370,14 +368,23 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: _customerEC,
+                              controller: _greasingEC,
                               readOnly: !controller.greasable,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               validator: (value) {
-                                if (controller.greasable) {
-                                  return Validatorless.required('Campo obrigatório')(value);
+                                if (!controller.greasable) {
+                                  return null; // não valida nada
                                 }
-                                return null;
+
+                                return Validatorless.multiple([
+                                  Validatorless.required('Campo obrigatório'),
+                                  EvaluationValidators.validPartTimeRange(
+                                    controller.evaluation!.oilType,
+                                    PartTypes.greasing,
+                                  ),
+                                ])(value);
                               },
                               decoration: InputDecoration(
                                 labelText: 'Engraxamento',

@@ -14,18 +14,21 @@ class EvaluationValidators {
           if (partType == PartTypes.oilFilter && hours > 1000) return 'Máximo: 1000';
           if (partType == PartTypes.separator && hours > 3000) return 'Máximo: 3000';
           if (partType == PartTypes.oil && hours > 1000) return 'Máximo: 1000';
+          if (partType == PartTypes.greasing && hours > 1000) return 'Máximo: 1000';
           return null;
         case OilTypes.semiSynthetic:
           if (partType == PartTypes.airFilter && hours > 2000) return 'Máximo: 2000';
           if (partType == PartTypes.oilFilter && hours > 2000) return 'Máximo: 2000';
           if (partType == PartTypes.separator && hours > 4000) return 'Máximo: 4000';
           if (partType == PartTypes.oil && hours > 4000) return 'Máximo: 4000';
+          if (partType == PartTypes.greasing && hours > 2000) return 'Máximo: 2000';
           return null;
         case OilTypes.synthetic:
           if (partType == PartTypes.airFilter && hours > 2000) return 'Máximo: 2000';
           if (partType == PartTypes.oilFilter && hours > 2000) return 'Máximo: 2000';
           if (partType == PartTypes.separator && hours > 4000) return 'Máximo: 4000';
           if (partType == PartTypes.oil && hours > 8000) return 'Máximo: 8000';
+          if (partType == PartTypes.greasing && hours > 2000) return 'Máximo: 2000';
           return null;
         case OilTypes.none:
           return null;

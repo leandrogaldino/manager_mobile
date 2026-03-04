@@ -40,7 +40,7 @@ class CompressorUnitModel {
     return CompressorUnitModel(
       id: (map['id'] ?? 0) as int,
       name: (map['name'] ?? '') as String,
-      visible: (map['visible'] ?? false) as bool,
+      visible: map['visible'] == 0 ? false : true,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch((map['lastUpdate'] ?? 0) as int),
     );
   }
