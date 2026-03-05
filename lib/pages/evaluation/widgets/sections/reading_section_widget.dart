@@ -97,17 +97,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   void _fillForm() {
     _customerEC.text = widget.evaluationController.evaluation!.compressor!.person.shortName;
     _compressorEC.text = _compressorFullName;
-
     _interfaceEC.text = widget.evaluationController.evaluation!.compressor!.interface.name;
-
     _unitEC.text = widget.evaluationController.evaluation!.compressor!.unit.name;
     _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
     _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
-
     _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
-
-    _horimeterEC.text = widget.evaluationController.evaluation!.greasing == null ? '' : widget.evaluationController.evaluation!.greasing.toString();
-
+    _greasingEC.text = widget.evaluationController.evaluation!.greasing == null || widget.evaluationController.evaluation!.greasing == 0 ? '' : widget.evaluationController.evaluation!.greasing.toString();
     _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = widget.evaluationController.evaluation!.oilFilter == null ? '' : widget.evaluationController.evaluation!.oilFilter.toString();
     _separatorEC.text = widget.evaluationController.evaluation!.separator == null ? '' : widget.evaluationController.evaluation!.separator.toString();
@@ -369,7 +364,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           Expanded(
                             child: TextFormField(
                               controller: _greasingEC,
-                              readOnly: !controller.greasable,
+                              readOnly: !controller.greasable || controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -388,14 +383,18 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               },
                               decoration: InputDecoration(
                                 labelText: 'Engraxamento',
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.greasable ? Icons.lock_open : Icons.lock,
-                                  ),
-                                  onPressed: () {
-                                    controller.updateGreasable(!controller.greasable);
-                                  },
-                                ),
+                                suffixIcon: controller.source == SourceTypes.fromSavedWithSign
+                                    ? null
+                                    : IconButton(
+                                        icon: Icon(
+                                          controller.greasable ? Icons.lock_open : Icons.lock,
+                                        ),
+                                        onPressed: () {
+                                          controller.updateGreasable(!controller.greasable);
+                                          if (!controller.greasable) controller.updateGreasing(0);
+                                          _greasingEC.text = '';
+                                        },
+                                      ),
                               ),
                               onChanged: (value) => controller.updateGreasing(int.tryParse(value) ?? 0),
                             ),

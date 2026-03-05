@@ -425,7 +425,7 @@ class EvaluationRepository {
         'importedby': null,
         'importeddate': null,
         'visitscheduleid': evaluationMap['visitscheduleid'],
-        'requestprocessed': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isNotEmpty ? true : false,
+        'requestprocessed': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isEmpty ? true : false,
         'hasreplacedproducts': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isNotEmpty,
       };
 
