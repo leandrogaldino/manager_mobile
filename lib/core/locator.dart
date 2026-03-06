@@ -10,7 +10,6 @@ import 'package:manager_mobile/interfaces/auth.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
 import 'package:manager_mobile/interfaces/storage.dart';
-import 'package:manager_mobile/models/compressor_interface_model.dart';
 import 'package:manager_mobile/repositories/compressor_interface_repository.dart';
 import 'package:manager_mobile/repositories/compressor_repository.dart';
 import 'package:manager_mobile/repositories/compressor_unit_repository.dart';
