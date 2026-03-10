@@ -404,15 +404,20 @@ class EvaluationRepository {
         photoMap['path'] = photoPath;
       }
       evaluationMap['photos'] = photosListMap;
+      (evaluationMap['photos'] as Map?)?.remove('id');
 
       // ---- relacionamentos ----
       evaluationMap['replacedproducts'] = await _evaluationReplacedProductRepository.getByParentId(evaluationId);
+      (evaluationMap['replacedproducts'] as Map?)?.remove('id');
 
       evaluationMap['performedservices'] = await _evaluationPerformedServiceRepository.getByParentId(evaluationId);
+      (evaluationMap['performedservices'] as Map?)?.remove('id');
 
       evaluationMap['technicians'] = await _evaluationTechnicianRepository.getByParentId(evaluationId);
+      (evaluationMap['technicians'] as Map?)?.remove('id');
 
       evaluationMap['coalescents'] = await _evaluationCoalescentRepository.getByParentId(evaluationId);
+      (evaluationMap['coalescents'] as Map?)?.remove('id');
 
       // ---- limpeza / ajustes ----
       evaluationMap.remove('existsincloud');
