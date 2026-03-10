@@ -403,21 +403,36 @@ class EvaluationRepository {
         await _storage.uploadFile(photoPath, photoData);
         photoMap['path'] = photoPath;
       }
+      for (final item in photosListMap) {
+        item.remove('id');
+      }
       evaluationMap['photos'] = photosListMap;
-      (evaluationMap['photos'] as Map?)?.remove('id');
 
       // ---- relacionamentos ----
-      evaluationMap['replacedproducts'] = await _evaluationReplacedProductRepository.getByParentId(evaluationId);
-      (evaluationMap['replacedproducts'] as Map?)?.remove('id');
 
-      evaluationMap['performedservices'] = await _evaluationPerformedServiceRepository.getByParentId(evaluationId);
-      (evaluationMap['performedservices'] as Map?)?.remove('id');
+      var replacedProductsMap = await _evaluationReplacedProductRepository.getByParentId(evaluationId);
+      for (final item in replacedProductsMap) {
+        item.remove('id');
+      }
+      evaluationMap['replacedproducts'] = replacedProductsMap;
 
-      evaluationMap['technicians'] = await _evaluationTechnicianRepository.getByParentId(evaluationId);
-      (evaluationMap['technicians'] as Map?)?.remove('id');
+      var performedServicesMap = await _evaluationPerformedServiceRepository.getByParentId(evaluationId);
+      for (final item in performedServicesMap) {
+        item.remove('id');
+      }
+      evaluationMap['performedservices'] = performedServicesMap;
 
-      evaluationMap['coalescents'] = await _evaluationCoalescentRepository.getByParentId(evaluationId);
-      (evaluationMap['coalescents'] as Map?)?.remove('id');
+      var techniciansMap = await _evaluationTechnicianRepository.getByParentId(evaluationId);
+      for (final item in techniciansMap) {
+        item.remove('id');
+      }
+      evaluationMap['technicians'] = techniciansMap;
+
+      var coalescentsMap = await _evaluationCoalescentRepository.getByParentId(evaluationId);
+      for (final item in coalescentsMap) {
+        item.remove('id');
+      }
+      evaluationMap['coalescents'] = coalescentsMap;
 
       // ---- limpeza / ajustes ----
       evaluationMap.remove('existsincloud');
