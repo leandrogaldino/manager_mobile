@@ -441,16 +441,18 @@ class EvaluationRepository {
       evaluationMap.remove('existsincloud');
       evaluationMap.remove('importedid');
 
-      evaluationMap['info'] = {
-        'importedid': null,
-        'importingdate': null,
-        'importingby': null,
-        'importedby': null,
-        'importeddate': null,
-        'visitscheduleid': evaluationMap['visitscheduleid'],
-        'requestprocessed': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isEmpty ? true : false,
-        'hasreplacedproducts': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isNotEmpty,
-      };
+      if (evaluationMap['existsincloud'] == 0) {
+        evaluationMap['info'] = {
+          'importedid': null,
+          'importingdate': null,
+          'importingby': null,
+          'importedby': null,
+          'importeddate': null,
+          'visitscheduleid': evaluationMap['visitscheduleid'],
+          'requestprocessed': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isEmpty ? true : false,
+          'hasreplacedproducts': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isNotEmpty,
+        };
+      }
 
       evaluationMap.remove('visitscheduleid');
       evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
@@ -565,6 +567,8 @@ class EvaluationRepository {
 
       // 🔔 CALLBACK POR ITEM NOVO
       onItemSynced?.call(evaluationId);
+
+      log('......................$count AVALIACOES SINCRONIZADAS......................');
     }
 
     return count;
