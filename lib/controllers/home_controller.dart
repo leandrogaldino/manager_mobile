@@ -109,11 +109,7 @@ class HomeController extends ChangeNotifier {
       final hasConnection = await InternetConnectionStream.hasInternetNow();
 
       if (!hasConnection) {
-        _setState(
-          HomeStateConnection(
-            infoMessage: 'Sem conexão com a internet',
-          ),
-        );
+        _setState(HomeStateConnection(infoMessage: 'Sem conexão com a internet'));
         return;
       }
 

@@ -20,6 +20,7 @@ import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
@@ -392,6 +393,7 @@ class EvaluationRepository {
       String signPath = '$rootPath/signature/$signFilename';
       Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
+      await WakelockPlus.enable();
       evaluationMap['signaturepath'] = signPath;
 
       // ---- fotos ----
@@ -401,6 +403,7 @@ class EvaluationRepository {
         String photoPath = '$rootPath/photo/$photoFilename';
         Uint8List photoData = await File(photoMap['path'].toString()).readAsBytes();
         await _storage.uploadFile(photoPath, photoData);
+        await WakelockPlus.enable();
         photoMap['path'] = photoPath;
       }
       for (final item in photosListMap) {
@@ -522,6 +525,7 @@ class EvaluationRepository {
       for (var photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
         var photoData = await _storage.downloadFile(photo['path']);
+        await WakelockPlus.enable();
         if (photoData != null) {
           photo['path'] = await _saveImage(
             photoData,
@@ -543,6 +547,7 @@ class EvaluationRepository {
 
       // ---- assinatura ----
       var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
+      await WakelockPlus.enable();
       if (signData != null) {
         evaluationMap['signaturepath'] = await _saveImage(
           signData,

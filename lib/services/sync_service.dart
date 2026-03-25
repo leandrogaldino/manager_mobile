@@ -149,12 +149,13 @@ class SyncService {
       }
       await _appPreferences.setLastSynchronize();
       await _appPreferences.setSyncCount((await _appPreferences.syncCount) + 1);
-      _synchronizing = false;
+
       return newVisitScheduleOrEvaluation;
     } catch (e, s) {
       log('${isAuto ? "(Auto) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTimeHelper.now());
       rethrow;
     } finally {
+      _synchronizing = false;
       // Para de renovar o lock
       await RefreshSyncLockTimer.stop();
       log('${isAuto ? "(Auto) " : ""}==============RefreshSyncLockTimer parado!===================', time: DateTimeHelper.now());
