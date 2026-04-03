@@ -364,6 +364,11 @@ class EvaluationRepository {
     for (var evaluationMap in localResult) {
       if (evaluationMap['signaturepath'] == null) continue;
 
+      var cloudResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'id', operator: FilterOperator.isEqualTo, value: evaluationMap['id'])]);
+      var existsInCloud = cloudResult.isNotEmpty;
+
+      if (existsInCloud) continue;
+
       final String evaluationId = evaluationMap['id'].toString();
 
       int customerId = await _localDatabase
@@ -388,7 +393,7 @@ class EvaluationRepository {
 
       String rootPath = '$customerDocument/$evaluationId';
 
-      // ---- assinatura ----
+      // ---- assinatura ---- (Sobrescreve se já estiver salvo antes)
       String signFilename = evaluationMap['signaturepath'].toString().split('/').last;
       String signPath = '$rootPath/signature/$signFilename';
       Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
@@ -504,21 +509,25 @@ class EvaluationRepository {
 
       // ---- filhos ----
       for (var replacedProduct in evaluationMap['replacedproducts']) {
+        await _evaluationReplacedProductRepository.deleteByParentId(evaluationId);
         replacedProduct['evaluationid'] = evaluationId;
         await _evaluationReplacedProductRepository.save(replacedProduct);
       }
 
       for (var performedService in evaluationMap['performedservices']) {
+        await _evaluationPerformedServiceRepository.deleteByParentId(evaluationId);
         performedService['evaluationid'] = evaluationId;
         await _evaluationPerformedServiceRepository.save(performedService);
       }
 
       for (var technician in evaluationMap['technicians']) {
+        await _evaluationTechnicianRepository.deleteByParentId(evaluationId);
         technician['evaluationid'] = evaluationId;
         await _evaluationTechnicianRepository.save(technician);
       }
 
       for (var coalescent in evaluationMap['coalescents']) {
+        await _evaluationCoalescentRepository.deleteByParentId(evaluationId);
         coalescent['evaluationid'] = evaluationId;
         await _evaluationCoalescentRepository.save(coalescent);
       }
@@ -536,6 +545,7 @@ class EvaluationRepository {
         } else {
           photo['path'] = '';
         }
+        await _evaluationPhotoRepository.deleteByParentId(evaluationId);
         await _evaluationPhotoRepository.save(photo);
       }
 
