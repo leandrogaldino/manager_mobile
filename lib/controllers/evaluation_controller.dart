@@ -36,6 +36,7 @@ class EvaluationController extends ChangeNotifier {
 
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
     _signatureBytes = null;
+    _greasable = evaluation?.id == null ? _greasable = true : evaluation?.greasing != null;
     _selectedPhotoIndex = 0;
     _photosBytes.clear();
     _schedule = null;
@@ -88,14 +89,40 @@ class EvaluationController extends ChangeNotifier {
   Future<void> save() async {
     _isSaving = true;
     notifyListeners();
-    if (_signatureBytes != null) await _saveSignature(signatureBytes: _signatureBytes!);
 
-    await _savePhotos(photosBytes: _photosBytes);
-    await _evaluationService.save(evaluation!, schedule?.id);
+    try {
+      if (_signatureBytes != null) {
+        await _saveSignature(signatureBytes: _signatureBytes!);
+      }
 
-    if (_schedule != null) await _visitScheduleService.updateVisibility(_schedule!.id, false);
-    _isSaving = false;
-    notifyListeners();
+      await _savePhotos(photosBytes: _photosBytes);
+
+      await _evaluationService.save(
+        evaluation!.copyWith(),
+        schedule?.id,
+      );
+
+      if (_schedule != null) {
+        await _visitScheduleService.updateVisibility(
+          _schedule!.id,
+          false,
+        );
+      }
+    } catch (e) {
+      _uiMessage = 'Erro ao salvar avaliação';
+    } finally {
+      // 🔥 ESSENCIAL
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  String? _uiMessage;
+
+  String? consumeMessage() {
+    final message = _uiMessage;
+    _uiMessage = null;
+    return message;
   }
 
   // Future<void> updateSignature(String evaluationId, String signaturePath) async {
@@ -166,7 +193,7 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateGreasing(int greasing) {
+  void updateGreasing(int? greasing) {
     _evaluation!.greasing = greasing;
     notifyListeners();
   }

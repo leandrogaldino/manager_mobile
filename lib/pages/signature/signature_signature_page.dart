@@ -13,88 +13,121 @@ class EvaluationSignaturePage extends StatefulWidget {
 }
 
 class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
-  SignatureController? _signatureController;
+  late final SignatureController _signatureController;
   late final EvaluationController _evaluationController;
+
   @override
   void initState() {
     super.initState();
+
     _evaluationController = Locator.get<EvaluationController>();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
+
+    _signatureController = SignatureController(
+      penStrokeWidth: 2,
+      penColor: Colors.black,
+    );
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
   }
 
   @override
   void dispose() {
-    _signatureController?.dispose;
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    _signatureController.dispose(); // ✅ corrigido
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_signatureController != null) return;
-    _signatureController = SignatureController(
-      penStrokeWidth: 2,
-    );
+  Future<void> _onAccept() async {
+    if (_signatureController.isEmpty) {
+      Message.showInfoSnackbar(
+        context: context,
+        message: 'Assine antes de aceitar',
+      );
+      return;
+    }
+
+    final bytes = await _signatureController.toPngBytes();
+
+    if (bytes != null) {
+      await _evaluationController.saveTempSignature(
+        signatureBytes: bytes,
+      );
+      await _evaluationController.updateImagesBytes();
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Assinatura'),
+        title: const Text('Assinatura'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            spacing: 12,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
                 child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  child: Signature(
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    controller: _signatureController!,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Signature(
+                      controller: _signatureController,
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    ),
                   ),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  spacing: 12,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(onPressed: () => _signatureController!.undo(), child: Text('Desfazer')),
-                    ElevatedButton(onPressed: () => _signatureController!.clear(), child: Text('Limpar')),
-                    ElevatedButton(onPressed: () => _signatureController!.redo(), child: Text('Refazer')),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_signatureController!.isNotEmpty) {
-                          var signatureBytes = await _signatureController!.toPngBytes();
-                          if (signatureBytes != null) {
-                            await _evaluationController.saveTempSignature(signatureBytes: signatureBytes);
-                            await _evaluationController.updateImagesBytes();
-                          }
-                          if (!context.mounted) return;
-                          Navigator.pop(context);
-                        } else {
-                          Message.showInfoSnackbar(context: context, message: 'Assine antes de aceitar');
-                        }
-                      },
-                      child: Text('Aceitar'),
-                    ),
-                  ],
-                ),
+            ),
+
+            /// Botões
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: _signatureController.undo,
+                    child: const Text('Desfazer'),
+                  ),
+                  OutlinedButton(
+                    onPressed: _signatureController.redo,
+                    child: const Text('Refazer'),
+                  ),
+                  OutlinedButton(
+                    onPressed: _signatureController.clear,
+                    child: const Text('Limpar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _onAccept,
+                    child: const Text('Aceitar'),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -67,253 +67,267 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: _controller.source == SourceTypes.fromSavedWithSign,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) {
-          return;
-        }
-        final bool shouldPop = await _showBackDialog(context) ?? false;
-        if (context.mounted && shouldPop) {
-          if (context.mounted) Navigator.pop(context, result);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Avaliação'),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              children: [
-                Visibility(
-                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null && _controller.schedule!.instructions.isNotEmpty,
-                  child: ExpandableSectionWidget(
-                    initiallyExpanded: true,
-                    title: 'Instruções',
-                    children: [
-                      InstructionsSectionWidget(
-                        instructions: _controller.schedule != null ? _controller.schedule!.instructions : '',
-                      ),
-                    ],
-                  ),
-                ),
-                Visibility(
-                  visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
-                  child: SizedBox(height: 5),
-                ),
-                Visibility(
-                  visible: _controller.source == SourceTypes.fromSavedWithSign,
-                  child: ExpandableSectionWidget(
-                    title: 'Cabeçalho',
-                    children: [
-                      HeaderSectionWidget(evaluationController: _controller),
-                    ],
-                  ),
-                ),
-                Visibility(
-                  visible: _controller.source == SourceTypes.fromSavedWithSign,
-                  child: SizedBox(height: 5),
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return ExpandableSectionWidget(
-                      initiallyExpanded: _controller.source != SourceTypes.fromSavedWithoutSign,
-                      title: 'Dados do Compressor',
-                      children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: _controller)],
-                    );
-                  },
-                ),
-                SizedBox(height: 5),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.coalescents.isNotEmpty,
-                      child: ExpandableSectionWidget(
-                        key: _coalescentKey,
-                        onExpand: () => _scrollToKey(_coalescentKey),
-                        title: 'Coalescentes',
-                        children: [
-                          CoalescentSectionWidget(
-                            evaluationController: _controller,
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.coalescents.isNotEmpty,
-                      child: SizedBox(height: 5),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: ExpandableSectionWidget(
-                        key: _replacedProductKey,
-                        onExpand: () => _scrollToKey(_replacedProductKey),
-                        title: 'Peças Substituídas',
-                        children: [ReplacedProductSectionWidget(evaluationController: _controller)],
-                      ),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: SizedBox(height: 5),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: ExpandableSectionWidget(
-                        key: _performedServiceKey,
-                        onExpand: () => _scrollToKey(_performedServiceKey),
-                        title: 'Serviços Realizados',
-                        children: [PerformedServiceSectionWidget(evaluationController: _controller)],
-                      ),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: SizedBox(height: 5),
-                    );
-                  },
-                ),
-                ExpandableSectionWidget(
-                  key: _technicianKey,
-                  onExpand: () => _scrollToKey(_technicianKey),
-                  title: 'Técnicos',
-                  children: [TechnicianSectionWidget(evaluationController: _controller)],
-                ),
-                ListenableBuilder(
-                    listenable: _controller,
-                    builder: (context, child) {
-                      return Visibility(
-                        visible: _controller.evaluation!.technicians.isNotEmpty,
-                        child: SizedBox(height: 5),
-                      );
-                    }),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: ExpandableSectionWidget(
-                        key: _photoKey,
-                        onExpand: () => _scrollToKey(_photoKey),
-                        title: 'Fotos',
-                        children: [PhotoSectionWidget(evaluationController: _controller)],
-                      ),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: SizedBox(height: 5),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: ExpandableSectionWidget(
-                        key: _signatureKey,
-                        initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
-                        onExpand: () => _scrollToKey(_signatureKey),
-                        title: 'Assinatura',
-                        children: [SignatureSectionWidget(evaluationController: _controller)],
-                      ),
-                    );
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: _controller,
-                  builder: (context, child) {
-                    return Visibility(
-                      visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: SizedBox(height: 15),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign
-            ? SafeArea(
+    return ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) {
+          final message = _controller.consumeMessage();
+
+          if (message != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              );
+            });
+          }
+
+          return PopScope(
+            canPop: _controller.source == SourceTypes.fromSavedWithSign,
+            onPopInvokedWithResult: (didPop, result) async {
+              if (didPop) {
+                return;
+              }
+              final bool shouldPop = await _showBackDialog(context) ?? false;
+              if (context.mounted && shouldPop) {
+                if (context.mounted) Navigator.pop(context, result);
+              }
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text('Avaliação'),
+                centerTitle: true,
+              ),
+              body: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ListenableBuilder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Column(
+                    children: [
+                      Visibility(
+                        visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null && _controller.schedule!.instructions.isNotEmpty,
+                        child: ExpandableSectionWidget(
+                          initiallyExpanded: true,
+                          title: 'Instruções',
+                          children: [
+                            InstructionsSectionWidget(
+                              instructions: _controller.schedule != null ? _controller.schedule!.instructions : '',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: _controller.source == SourceTypes.fromSchedule && _controller.schedule != null,
+                        child: SizedBox(height: 5),
+                      ),
+                      Visibility(
+                        visible: _controller.source == SourceTypes.fromSavedWithSign,
+                        child: ExpandableSectionWidget(
+                          title: 'Cabeçalho',
+                          children: [
+                            HeaderSectionWidget(evaluationController: _controller),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: _controller.source == SourceTypes.fromSavedWithSign,
+                        child: SizedBox(height: 5),
+                      ),
+                      ListenableBuilder(
                         listenable: _controller,
                         builder: (context, child) {
-                          return ElevatedButton(
-                            onPressed: _controller.isSaving
-                                ? null
-                                : () async {
-                                    final isValid = _readingKey.currentState?.validate() ?? false;
-                                    if (!isValid) {
-                                      Message.showInfoSnackbar(
-                                        context: context,
-                                        message: 'Verifique a seção de dados do compressor',
-                                      );
-                                      return;
-                                    }
-                                    if (!_validateCoalescentsNextChange(_controller)) return;
-                                    await _controller.save();
-                                    if (!context.mounted) return;
-                                    Navigator.pop(context);
-                                  },
-                            child: _controller.isSaving
-                                ? const SizedBox(
-                                    height: 22,
-                                    width: 22,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : Text(
-                                    'Salvar',
-                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                          color: Theme.of(context).colorScheme.surface,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
+                          return ExpandableSectionWidget(
+                            initiallyExpanded: _controller.source != SourceTypes.fromSavedWithoutSign,
+                            title: 'Dados do Compressor',
+                            children: [ReadingSectionWidget(formKey: _readingKey, evaluationController: _controller)],
                           );
-                        }),
+                        },
+                      ),
+                      SizedBox(height: 5),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.coalescents.isNotEmpty,
+                            child: ExpandableSectionWidget(
+                              key: _coalescentKey,
+                              onExpand: () => _scrollToKey(_coalescentKey),
+                              title: 'Coalescentes',
+                              children: [
+                                CoalescentSectionWidget(
+                                  evaluationController: _controller,
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.coalescents.isNotEmpty,
+                            child: SizedBox(height: 5),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: ExpandableSectionWidget(
+                              key: _replacedProductKey,
+                              onExpand: () => _scrollToKey(_replacedProductKey),
+                              title: 'Peças Substituídas',
+                              children: [ReplacedProductSectionWidget(evaluationController: _controller)],
+                            ),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.replacedProducts.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: SizedBox(height: 5),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: ExpandableSectionWidget(
+                              key: _performedServiceKey,
+                              onExpand: () => _scrollToKey(_performedServiceKey),
+                              title: 'Serviços Realizados',
+                              children: [PerformedServiceSectionWidget(evaluationController: _controller)],
+                            ),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.performedServices.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: SizedBox(height: 5),
+                          );
+                        },
+                      ),
+                      ExpandableSectionWidget(
+                        key: _technicianKey,
+                        onExpand: () => _scrollToKey(_technicianKey),
+                        title: 'Técnicos',
+                        children: [TechnicianSectionWidget(evaluationController: _controller)],
+                      ),
+                      ListenableBuilder(
+                          listenable: _controller,
+                          builder: (context, child) {
+                            return Visibility(
+                              visible: _controller.evaluation!.technicians.isNotEmpty,
+                              child: SizedBox(height: 5),
+                            );
+                          }),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: ExpandableSectionWidget(
+                              key: _photoKey,
+                              onExpand: () => _scrollToKey(_photoKey),
+                              title: 'Fotos',
+                              children: [PhotoSectionWidget(evaluationController: _controller)],
+                            ),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.photos.isNotEmpty) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: SizedBox(height: 5),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: ExpandableSectionWidget(
+                              key: _signatureKey,
+                              initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
+                              onExpand: () => _scrollToKey(_signatureKey),
+                              title: 'Assinatura',
+                              children: [SignatureSectionWidget(evaluationController: _controller)],
+                            ),
+                          );
+                        },
+                      ),
+                      ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return Visibility(
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            child: SizedBox(height: 15),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
-              )
-            : null,
-      ),
-    );
+              ),
+              bottomNavigationBar: _controller.source != SourceTypes.fromSavedWithSign
+                  ? SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ListenableBuilder(
+                              listenable: _controller,
+                              builder: (context, child) {
+                                return ElevatedButton(
+                                  onPressed: _controller.isSaving
+                                      ? null
+                                      : () async {
+                                          final isValid = _readingKey.currentState?.validate() ?? false;
+                                          if (!isValid) {
+                                            Message.showInfoSnackbar(
+                                              context: context,
+                                              message: 'Verifique a seção de dados do compressor',
+                                            );
+                                            return;
+                                          }
+                                          if (!_validateCoalescentsNextChange(_controller)) return;
+                                          await _controller.save();
+                                          if (!context.mounted) return;
+                                          Navigator.pop(context);
+                                        },
+                                  child: _controller.isSaving
+                                      ? const SizedBox(
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : Text(
+                                          'Salvar',
+                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                color: Theme.of(context).colorScheme.surface,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                );
+                              }),
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+          );
+        });
   }
 
   bool _validateCoalescentsNextChange(EvaluationController controller) {

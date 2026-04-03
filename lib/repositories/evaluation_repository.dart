@@ -443,7 +443,7 @@ class EvaluationRepository {
       evaluationMap['coalescents'] = coalescentsMap;
 
       // ---- limpeza / ajustes ----
-      evaluationMap.remove('existsincloud');
+
       evaluationMap.remove('importedid');
 
       if (evaluationMap['existsincloud'] == 0) {
@@ -458,7 +458,7 @@ class EvaluationRepository {
           'hasreplacedproducts': (evaluationMap['replacedproducts'] as List<Map<String, Object?>>).isNotEmpty,
         };
       }
-
+      evaluationMap.remove('existsincloud');
       evaluationMap.remove('visitscheduleid');
       evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
 

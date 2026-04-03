@@ -387,12 +387,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                         ),
                                         onPressed: () {
                                           controller.updateGreasable(!controller.greasable);
-                                          if (!controller.greasable) controller.updateGreasing(0);
+                                          if (!controller.greasable) controller.updateGreasing(null);
                                           _greasingEC.text = '';
                                         },
                                       ),
                               ),
-                              onChanged: (value) => controller.updateGreasing(int.tryParse(value) ?? 0),
+                              onChanged: (value) => controller.updateGreasing(int.tryParse(value)),
                             ),
                           ),
                         ],
