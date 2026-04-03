@@ -250,7 +250,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               validator: Validatorless.multiple(
                                 [
                                   Validatorless.required('Campo obrigatório'),
@@ -269,11 +269,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+(,\d{0,1})?$'), // vírgula e 1 casa decimal
-                                ),
-                              ],
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9,]'))],
                               validator: Validatorless.multiple([
                                 Validatorless.required('Campo obrigatório'),
                               ]),
@@ -366,8 +362,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _greasingEC,
                               readOnly: !controller.greasable || controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
                               validator: (value) {
                                 if (!controller.greasable) {
                                   return null; // não valida nada
@@ -410,8 +406,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _airFilterEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.text,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
                               validator: Validatorless.multiple(
                                 [
                                   Validatorless.required('Campo obrigatório'),
@@ -433,8 +429,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _oilFilterEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.text,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
                               validator: Validatorless.multiple(
                                 [
                                   Validatorless.required('Campo obrigatório'),
@@ -462,8 +458,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _separatorEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.text,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
                               validator: Validatorless.multiple(
                                 [
                                   Validatorless.required('Campo obrigatório'),
@@ -485,8 +481,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                               controller: _oilEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
-                              keyboardType: TextInputType.text,
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*$'))],
+                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
                               validator: Validatorless.multiple(
                                 [
                                   Validatorless.required('Campo obrigatório'),

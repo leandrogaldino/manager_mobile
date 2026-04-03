@@ -258,7 +258,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   builder: (context, child) {
                     return Visibility(
                       visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
-                      child: SizedBox(height: 5),
+                      child: SizedBox(height: 15),
                     );
                   },
                 ),
