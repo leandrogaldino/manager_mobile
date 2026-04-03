@@ -23,9 +23,9 @@ void main() async {
   Locator.setup();
   DateTimeHelper.initialize();
   await Locator.get<LocalDatabase>().init();
-  await Locator.get<AppController>().clearOldTemporaryFiles();
   await GetIt.I<AppController>().loadTheme();
-  await Locator.get<EvaluationController>().periodicClean();
+  Locator.get<AppController>().clearOldTemporaryFiles();
+  Locator.get<EvaluationController>().periodicClean();
 
   if (kReleaseMode) {
     runZonedGuarded(

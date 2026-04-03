@@ -508,31 +508,29 @@ class EvaluationRepository {
       count++;
 
       // ---- filhos ----
+      await _evaluationReplacedProductRepository.deleteByParentId(evaluationId);
       for (var replacedProduct in evaluationMap['replacedproducts']) {
-        await _evaluationReplacedProductRepository.deleteByParentId(evaluationId);
         replacedProduct['evaluationid'] = evaluationId;
         await _evaluationReplacedProductRepository.save(replacedProduct);
       }
-
+      await _evaluationPerformedServiceRepository.deleteByParentId(evaluationId);
       for (var performedService in evaluationMap['performedservices']) {
-        await _evaluationPerformedServiceRepository.deleteByParentId(evaluationId);
         performedService['evaluationid'] = evaluationId;
         await _evaluationPerformedServiceRepository.save(performedService);
       }
-
+      await _evaluationTechnicianRepository.deleteByParentId(evaluationId);
       for (var technician in evaluationMap['technicians']) {
-        await _evaluationTechnicianRepository.deleteByParentId(evaluationId);
         technician['evaluationid'] = evaluationId;
         await _evaluationTechnicianRepository.save(technician);
       }
-
+      await _evaluationCoalescentRepository.deleteByParentId(evaluationId);
       for (var coalescent in evaluationMap['coalescents']) {
-        await _evaluationCoalescentRepository.deleteByParentId(evaluationId);
         coalescent['evaluationid'] = evaluationId;
         await _evaluationCoalescentRepository.save(coalescent);
       }
 
       // ---- fotos ----
+      await _evaluationPhotoRepository.deleteByParentId(evaluationId);
       for (var photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
         var photoData = await _storage.downloadFile(photo['path']);
@@ -545,7 +543,6 @@ class EvaluationRepository {
         } else {
           photo['path'] = '';
         }
-        await _evaluationPhotoRepository.deleteByParentId(evaluationId);
         await _evaluationPhotoRepository.save(photo);
       }
 
