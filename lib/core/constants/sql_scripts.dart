@@ -99,6 +99,12 @@ class SQLScripts {
       sector TEXT NOT NULL,
       compressorinterfaceid INT NOT NULL,
       compressorunitid INT NOT NULL,
+      oiltypeid INT NOT NULL,
+      airfiltercapacity INT NOT NULL,
+      oilfiltercapacity INT NOT NULL,
+      separatorcapacity INT NOT NULL,
+      oilcapacity INT NOT NULL,
+      greasingcapacity INT NOT NULL,      
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT
