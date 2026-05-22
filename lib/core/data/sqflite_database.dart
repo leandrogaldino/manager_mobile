@@ -15,12 +15,8 @@ class SqfliteDatabase implements LocalDatabase {
       const currentVersion = 1;
 
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
-
-      // verifica se o banco já existe
       final exists = await databaseExists(path);
-
       if (exists && !inMemory) {
-        // abre temporariamente sem versão para ler a versão atual
         final tempDb = await openDatabase(
           path,
           password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',

@@ -141,12 +141,11 @@ class EvaluationRepository {
     try {
       String? id = data['id'] as String?;
       bool isInsert = (id == null || id == '');
-
+      data['endtime'] = DateTimeHelper.formatTime(DateTimeHelper.now());
       if (isInsert) {
         id = StringHelper.getUniqueString(prefix: data['compressorid'].toString());
         data['id'] = id;
         visitScheduleId == null ? data['visitscheduleid'] = null : data['visitscheduleid'] = visitScheduleId;
-        data['endtime'] = DateTimeHelper.formatTime(DateTimeHelper.now());
         await _localDatabase.insert('evaluation', data);
       } else {
         id = data['id'] as String;
