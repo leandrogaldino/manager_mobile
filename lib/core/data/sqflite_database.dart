@@ -30,13 +30,12 @@ class SqfliteDatabase implements LocalDatabase {
 
         await tempDb.close();
 
-        // se mudou a versão, apaga tudo
         if (oldVersion != currentVersion) {
+          log('DELETANDO DB ANTIGO');
           await deleteDatabase(path);
         }
       }
 
-      // cria/abre o banco normalmente
       _database = await openDatabase(
         path,
         password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',

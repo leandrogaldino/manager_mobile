@@ -69,7 +69,7 @@ class VisitScheduleRepository {
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
       }
-       if (initialDate != null) {
+      if (initialDate != null) {
         final start = DateTime(
           initialDate.year,
           initialDate.month,
@@ -139,7 +139,7 @@ class VisitScheduleRepository {
 
   Future<int> delete(int id) async {
     try {
-      return await _localDatabase.delete('visitschedule', where: 'id = ?', whereArgs: [id as String]);
+      return await _localDatabase.delete('visitschedule', where: 'id = ?', whereArgs: [id]);
     } on LocalDatabaseException {
       rethrow;
     } on Exception catch (e, s) {
