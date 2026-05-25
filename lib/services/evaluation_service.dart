@@ -83,8 +83,23 @@ class EvaluationService {
         log('[$code] $message', time: DateTimeHelper.now());
         throw Exception(message);
       }
-      if (image.width > 1024 || image.height > 768) {
-        image = img.copyResize(image, width: 1024, height: 768, maintainAspect: true);
+      const maxWidth = 1024;
+      const maxHeight = 1024;
+
+      if (image.width > maxWidth || image.height > maxHeight) {
+        final widthRatio = maxWidth / image.width;
+        final heightRatio = maxHeight / image.height;
+
+        final ratio = widthRatio < heightRatio ? widthRatio : heightRatio;
+
+        final newWidth = (image.width * ratio).round();
+        final newHeight = (image.height * ratio).round();
+
+        image = img.copyResize(
+          image,
+          width: newWidth,
+          height: newHeight,
+        );
       }
       final Uint8List resizedBytes = Uint8List.fromList(img.encodeJpg(image, quality: 85));
       final String fileName = StringHelper.getUniqueString(suffix: '.jpg');
@@ -125,7 +140,7 @@ class EvaluationService {
   // }
 
   Future<int> synchronize(int lastSync) async {
-  return _evaluationRepository.synchronize(
+    return _evaluationRepository.synchronize(
       lastSync,
       onItemSynced: (id) {
         _eventBus.emit(
