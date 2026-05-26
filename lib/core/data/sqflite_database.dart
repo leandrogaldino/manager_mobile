@@ -13,7 +13,6 @@ class SqfliteDatabase implements LocalDatabase {
   Future<void> init({bool inMemory = false}) async {
     try {
       const currentVersion = 1;
-
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
       final exists = await databaseExists(path);
       if (exists && !inMemory) {
@@ -21,12 +20,9 @@ class SqfliteDatabase implements LocalDatabase {
           path,
           password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
         );
-
         final oldVersion = await tempDb.getVersion();
-
         await tempDb.close();
-
-        if (oldVersion != currentVersion) {
+        if (oldVersion < currentVersion) {
           log('DELETANDO DB ANTIGO');
           await deleteDatabase(path);
         }
