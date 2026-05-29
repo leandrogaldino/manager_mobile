@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/compressor_interface_model.dart';
 import 'package:manager_mobile/models/compressor_unit_model.dart';
@@ -18,6 +19,12 @@ class PersonCompressorModel {
   final String patrimony;
   final CompressorInterfaceModel interface;
   final CompressorUnitModel unit;
+  final OilTypes oilType;
+  final int airFilterCapacity;
+  final int oilFilterCapacity;
+  final int separatorCapacity;
+  final int? greasingCapacity;
+  final int oilCapacity;
   final List<PersonCompressorCoalescentModel> coalescents;
 
   PersonCompressorModel({
@@ -31,6 +38,7 @@ class PersonCompressorModel {
     required this.patrimony,
     required this.interface,
     required this.unit,
+    
     required this.coalescents,
   });
 
