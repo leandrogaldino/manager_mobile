@@ -13,7 +13,6 @@ import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
-
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 
 class EvaluationController extends ChangeNotifier {
@@ -35,7 +34,6 @@ class EvaluationController extends ChangeNotifier {
 
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
     _signatureBytes = null;
-    _greasable = evaluation?.id == null ? _greasable = true : evaluation?.greasing != null;
     _selectedPhotoIndex = 0;
     _photosBytes.clear();
     _schedule = null;
@@ -110,7 +108,6 @@ class EvaluationController extends ChangeNotifier {
     } catch (e) {
       _uiMessage = 'Erro ao salvar avaliação';
     } finally {
-      // 🔥 ESSENCIAL
       _isSaving = false;
       notifyListeners();
     }
@@ -123,14 +120,6 @@ class EvaluationController extends ChangeNotifier {
     _uiMessage = null;
     return message;
   }
-
-  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
-  //   _isSaving = true;
-  //   notifyListeners();
-  //   await _evaluationService.updateSignature(evaluationId, signaturePath);
-  //   _isSaving = false;
-  //   notifyListeners();
-  // }
 
   Future<void> _saveSignature({required Uint8List signatureBytes}) async {
     _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
@@ -155,11 +144,6 @@ class EvaluationController extends ChangeNotifier {
   Uint8List? _signatureBytes;
   Uint8List? get signatureBytes => _signatureBytes;
 
-  //void updateSignaturePath(String signaturePath) {
-  //_evaluation!.signaturePath = signaturePath;
-  //notifyListeners();
-  //}
-
   final List<Uint8List> _photosBytes = [];
 
   List<Uint8List> get photosBytes => _photosBytes;
@@ -181,14 +165,6 @@ class EvaluationController extends ChangeNotifier {
 
   void updateNeedProposal(bool needProposal) {
     _evaluation!.needProposal = needProposal;
-    notifyListeners();
-  }
-
-  bool _greasable = true;
-  bool get greasable => _greasable;
-
-  void updateGreasable(bool greasable) {
-    _greasable = greasable;
     notifyListeners();
   }
 
