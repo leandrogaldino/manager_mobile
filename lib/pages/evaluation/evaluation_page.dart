@@ -38,16 +38,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _readingKey = GlobalKey<FormState>();
     _scrollController = ScrollController();
     _controller = Locator.get<EvaluationController>();
-    //if (_controller.source == SourceTypes.fromSavedWithSign ) {
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
       await _controller.updateImagesBytes();
     });
-    //}
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _controller.clean();
     super.dispose();
   }
 

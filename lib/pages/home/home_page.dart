@@ -96,12 +96,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _syncEventBus.addListener(() {
       final event = _syncEventBus.lastEvent;
       if (event == null) return;
-      if(event is EvaluationSynced) {
-          _homeController.evaluations.updateItem(
-            (item) => item.id == event.uuid,
-            (old) => old.copyWith(existsInCloud: true),
-          );
-      }    
+      if (event is EvaluationSynced) {
+        _homeController.evaluations.updateItem(
+          (item) => item.id == event.uuid,
+          (old) => old.copyWith(existsInCloud: true),
+        );
+      }
     });
 
     SynchronizeTimer.start();
@@ -246,7 +246,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             if (!context.mounted) return;
                             await Navigator.of(context).pushNamed(Routes.evaluation);
                             await _homeController.loadInitial();
-                            _evaluationController.clean();
                           },
                           child: const Icon(Icons.add),
                         )
