@@ -5,7 +5,6 @@ import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
-import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/enums/part_types.dart';
 import 'package:manager_mobile/pages/evaluation/validation/evaluation_validators.dart';
 import 'package:validatorless/validatorless.dart';
@@ -32,6 +31,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   late final TextEditingController _unitEC;
   late final TextEditingController _temperatureEC;
   late final TextEditingController _pressureEC;
+  late final TextEditingController _oilTypeEC;
   late final TextEditingController _horimeterEC;
   late final TextEditingController _greasingEC;
   late final TextEditingController _airFilterEC;
@@ -50,6 +50,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _unitEC.dispose();
     _temperatureEC.dispose();
     _pressureEC.dispose();
+    _oilTypeEC.dispose();
     _horimeterEC.dispose();
     _greasingEC.dispose();
     _airFilterEC.dispose();
@@ -82,6 +83,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _unitEC = TextEditingController();
     _temperatureEC = TextEditingController();
     _pressureEC = TextEditingController();
+    _oilTypeEC = TextEditingController();
     _horimeterEC = TextEditingController();
     _greasingEC = TextEditingController();
     _airFilterEC = TextEditingController();
@@ -101,8 +103,9 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _unitEC.text = widget.evaluationController.evaluation!.compressor!.unit.name;
     _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
     _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
+    _oilTypeEC.text = widget.evaluationController.evaluation!.compressor!.oilType.stringValue;
     _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
-    _greasingEC.text = widget.evaluationController.evaluation!.greasing == null || widget.evaluationController.evaluation!.greasing == 0 ? '' : widget.evaluationController.evaluation!.greasing.toString();
+    _greasingEC.text = widget.evaluationController.evaluation!.greasing == null ? 'N/A' : widget.evaluationController.evaluation!.greasing.toString();
     _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
     _oilFilterEC.text = widget.evaluationController.evaluation!.oilFilter == null ? '' : widget.evaluationController.evaluation!.oilFilter.toString();
     _separatorEC.text = widget.evaluationController.evaluation!.separator == null ? '' : widget.evaluationController.evaluation!.separator.toString();
@@ -125,11 +128,30 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
   @override
   Widget build(BuildContext context) {
     EvaluationController controller = widget.evaluationController;
-
     _customerEC.text = controller.evaluation!.compressor?.person.shortName ?? '';
     _compressorEC.text = _compressorFullName;
+    _oilTypeEC.text = controller.evaluation!.compressor?.oilType.stringValue ?? '';
     _interfaceEC.text = widget.evaluationController.evaluation!.compressor?.interface.name ?? '';
     _unitEC.text = widget.evaluationController.evaluation!.compressor?.unit.name ?? '';
+    bool greasable;
+    if (controller.source == SourceTypes.fromSavedWithSign) {
+      if (widget.evaluationController.evaluation!.greasing != null) {
+        _greasingEC.text = widget.evaluationController.evaluation!.greasing.toString();
+        greasable = true;
+      } else {
+        greasable = false;
+        _greasingEC.text = 'N/A';
+      }
+    } else {
+      if (widget.evaluationController.evaluation!.compressor?.greasingCapacity != null) {
+        greasable = true;
+        _greasingEC.text = widget.evaluationController.evaluation!.greasing?.toString() ?? '';
+      } else {
+        greasable = false;
+        _greasingEC.text = 'N/A';
+      }
+    }
+
     final theme = Theme.of(context);
     return ListenableBuilder(
       listenable: controller,
@@ -149,6 +171,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       PersonCompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
                         controller.updateCompressor(compressor);
+                        controller.updateGreasing(null);
                       }
                     },
                     child: Text('Buscar Cliente/Compressor'),
@@ -314,26 +337,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             ),
                           ),
                           Expanded(
-                            child: DropdownButtonFormField<OilTypes>(
-                              alignment: AlignmentDirectional.center,
-                              initialValue: controller.evaluation!.oilType,
-                              decoration: InputDecoration(
-                                labelText: 'Tipo de Óleo',
-                              ),
-                              items: OilTypes.values.map((oilType) {
-                                return DropdownMenuItem<OilTypes>(
-                                  value: oilType,
-                                  child: Text(
-                                    oilType.stringValue,
-                                    style: theme.textTheme.bodyLarge,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: controller.source != SourceTypes.fromSavedWithSign
-                                  ? (oilType) {
-                                      controller.updateOilType(oilType!);
-                                    }
-                                  : null,
+                            child: TextFormField(
+                              controller: _oilTypeEC,
+                              readOnly: true,
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(labelText: 'Tipo de Óleo', border: OutlineInputBorder()),
+                              style: TextStyle(color: theme.colorScheme.primary),
                             ),
                           )
                         ],
@@ -359,41 +368,28 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: _greasingEC,
-                              readOnly: !controller.greasable || controller.source == SourceTypes.fromSavedWithSign,
-                              textAlign: TextAlign.center,
-                              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
-                              validator: (value) {
-                                if (!controller.greasable) {
-                                  return null; // não valida nada
-                                }
-
-                                return Validatorless.multiple([
-                                  Validatorless.required('Campo obrigatório'),
-                                  EvaluationValidators.validPartTimeRange(
-                                    controller.evaluation!.oilType,
-                                    PartTypes.greasing,
-                                  ),
-                                ])(value);
-                              },
-                              decoration: InputDecoration(
-                                labelText: 'Engraxamento',
-                                suffixIcon: controller.source == SourceTypes.fromSavedWithSign
-                                    ? null
-                                    : IconButton(
-                                        icon: Icon(
-                                          controller.greasable ? Icons.lock_open : Icons.lock,
-                                        ),
-                                        onPressed: () {
-                                          controller.updateGreasable(!controller.greasable);
-                                          if (!controller.greasable) controller.updateGreasing(null);
-                                          _greasingEC.text = '';
-                                        },
-                                      ),
-                              ),
-                              onChanged: (value) => controller.updateGreasing(int.tryParse(value)),
-                            ),
+                                controller: _greasingEC,
+                                readOnly: controller.evaluation!.compressor?.greasingCapacity == null || controller.source == SourceTypes.fromSavedWithSign,
+                                //readOnly: false,
+                                textAlign: TextAlign.center,
+                                keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
+                                validator: (value) {
+                                  return Validatorless.multiple([
+                                    Validatorless.required('Campo obrigatório'),
+                                    EvaluationValidators.validPartTimeRange(
+                                      controller.evaluation!.compressor,
+                                      PartTypes.greasing,
+                                    ),
+                                  ])(value);
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Engraxamento',
+                                ),
+                                style: greasable ? TextStyle(color: theme.colorScheme.onSurface) : TextStyle(color: theme.colorScheme.primary),
+                                onChanged: (value) {
+                                  controller.updateGreasing(int.tryParse(value));
+                                }),
                           ),
                         ],
                       ),
@@ -412,7 +408,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    controller.evaluation!.oilType,
+                                    controller.evaluation!.compressor,
                                     PartTypes.airFilter,
                                   ),
                                 ],
@@ -435,7 +431,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    controller.evaluation!.oilType,
+                                    controller.evaluation!.compressor,
                                     PartTypes.oilFilter,
                                   ),
                                 ],
@@ -464,7 +460,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    controller.evaluation!.oilType,
+                                    controller.evaluation!.compressor,
                                     PartTypes.separator,
                                   ),
                                 ],
@@ -487,7 +483,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 [
                                   Validatorless.required('Campo obrigatório'),
                                   EvaluationValidators.validPartTimeRange(
-                                    controller.evaluation!.oilType,
+                                    controller.evaluation!.compressor,
                                     PartTypes.oil,
                                   ),
                                 ],

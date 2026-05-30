@@ -12,7 +12,6 @@ import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
-import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 
 import 'package:manager_mobile/services/visit_schedule_service.dart';
@@ -225,11 +224,6 @@ class EvaluationController extends ChangeNotifier {
 
   void updateAirFilter(int airFilter) {
     _evaluation!.airFilter = airFilter;
-    notifyListeners();
-  }
-
-  void updateOilType(OilTypes oilType) {
-    _evaluation!.oilType = oilType;
     notifyListeners();
   }
 
