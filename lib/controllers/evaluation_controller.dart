@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
+import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
@@ -200,6 +201,11 @@ class EvaluationController extends ChangeNotifier {
 
   void updateAirFilter(int airFilter) {
     _evaluation!.airFilter = airFilter;
+    notifyListeners();
+  }
+
+  void updateOilType(OilTypes oilType) {
+    _evaluation!.oilType = oilType;
     notifyListeners();
   }
 

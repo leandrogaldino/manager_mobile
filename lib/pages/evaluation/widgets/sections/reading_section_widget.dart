@@ -103,7 +103,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _unitEC.text = widget.evaluationController.evaluation!.compressor!.unit.name;
     _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
     _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
-    _oilTypeEC.text = widget.evaluationController.evaluation!.compressor!.oilType.stringValue;
+    _oilTypeEC.text = widget.evaluationController.evaluation!.oilType.stringValue;
     _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
     _greasingEC.text = widget.evaluationController.evaluation!.greasing == null ? 'N/A' : widget.evaluationController.evaluation!.greasing.toString();
     _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
@@ -130,7 +130,12 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     EvaluationController controller = widget.evaluationController;
     _customerEC.text = controller.evaluation!.compressor?.person.shortName ?? '';
     _compressorEC.text = _compressorFullName;
-    _oilTypeEC.text = controller.evaluation!.compressor?.oilType.stringValue ?? '';
+    if (controller.source == SourceTypes.fromSavedWithSign) {
+      _oilTypeEC.text = controller.evaluation!.oilType.stringValue;
+    } else {
+      _oilTypeEC.text = controller.evaluation!.compressor?.oilType.stringValue ?? '';
+    }
+
     _interfaceEC.text = widget.evaluationController.evaluation!.compressor?.interface.name ?? '';
     _unitEC.text = widget.evaluationController.evaluation!.compressor?.unit.name ?? '';
     bool greasable;
@@ -172,6 +177,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       if (compressor != null) {
                         controller.updateCompressor(compressor);
                         controller.updateGreasing(null);
+                        controller.updateOilType(compressor.oilType);
                       }
                     },
                     child: Text('Buscar Cliente/Compressor'),
