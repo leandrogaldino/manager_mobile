@@ -104,7 +104,7 @@ class SQLScripts {
       oilfiltercapacity INT NOT NULL,
       separatorcapacity INT NOT NULL,
       oilcapacity INT NOT NULL,
-      greasingcapacity INT NOT NULL,      
+      greasingcapacity INT,      
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (personid) REFERENCES person (id) ON DELETE CASCADE,
       FOREIGN KEY (compressorid) REFERENCES compressor (id) ON DELETE RESTRICT

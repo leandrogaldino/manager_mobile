@@ -12,7 +12,7 @@ class SqfliteDatabase implements LocalDatabase {
   @override
   Future<void> init({bool inMemory = false}) async {
     try {
-      const currentVersion = 1;
+      const currentVersion = 2;
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
       final exists = await databaseExists(path);
       if (exists && !inMemory) {

@@ -23,8 +23,8 @@ class PersonCompressorModel {
   final int airFilterCapacity;
   final int oilFilterCapacity;
   final int separatorCapacity;
-  final int? greasingCapacity;
   final int oilCapacity;
+  final int? greasingCapacity;
   final List<PersonCompressorCoalescentModel> coalescents;
 
   PersonCompressorModel({
@@ -38,7 +38,12 @@ class PersonCompressorModel {
     required this.patrimony,
     required this.interface,
     required this.unit,
-    
+    required this.oilType,
+    required this.airFilterCapacity,
+    required this.oilFilterCapacity,
+    required this.separatorCapacity,
+    required this.oilCapacity,
+    this.greasingCapacity,
     required this.coalescents,
   });
 
@@ -53,6 +58,12 @@ class PersonCompressorModel {
     String? patrimony,
     CompressorInterfaceModel? interface,
     CompressorUnitModel? unit,
+    OilTypes? oilType,
+    int? airFilterCapacity,
+    int? oilFilterCapacity,
+    int? separatorCapacity,
+    int? oilCapacity,
+    int? greasingCapacity,
     List<PersonCompressorCoalescentModel>? coalescents,
   }) {
     return PersonCompressorModel(
@@ -66,6 +77,12 @@ class PersonCompressorModel {
       patrimony: patrimony ?? this.patrimony,
       interface: interface ?? this.interface,
       unit: unit ?? this.unit,
+      oilType: oilType ?? this.oilType,
+      airFilterCapacity: airFilterCapacity ?? this.airFilterCapacity,
+      oilFilterCapacity: oilFilterCapacity ?? this.oilFilterCapacity,
+      separatorCapacity: separatorCapacity ?? this.separatorCapacity,
+      oilCapacity: oilCapacity ?? this.oilCapacity,
+      greasingCapacity: greasingCapacity ?? this.greasingCapacity,
       coalescents: coalescents ?? this.coalescents,
     );
   }
@@ -82,6 +99,12 @@ class PersonCompressorModel {
       patrimony: (map['patrimony'] ?? '') as String,
       interface: CompressorInterfaceModel.fromMap(map['interface']),
       unit: CompressorUnitModel.fromMap(map['unit']),
+      oilType: OilTypes.values[map['oiltypeid'] as int],
+      airFilterCapacity: (map['airfiltercapacity'] ?? 0) as int,
+      oilFilterCapacity: (map['oilfiltercapacity'] ?? 0) as int,
+      separatorCapacity: (map['separatorcapacity'] ?? 0) as int,
+      oilCapacity: (map['oilcapacity'] ?? 0) as int,
+      greasingCapacity: map['greasingcapacity'] != null ? map['greasingcapacity'] as int : null,
       coalescents: List<PersonCompressorCoalescentModel>.from(
         (map['coalescents'] as List<Map<String, dynamic>>).map<PersonCompressorCoalescentModel>(
           (x) => PersonCompressorCoalescentModel.fromMap(x),
@@ -101,13 +124,18 @@ class PersonCompressorModel {
       'patrimony': patrimony,
       'interface': interface.toMap(),
       'unit': unit.toMap(),
+      'oiltypeid': oilType.index,
+      'airfiltercapacity': airFilterCapacity,
+      'oilfiltercapacity': oilFilterCapacity,
+      'separatorcapacity': separatorCapacity,
+      'greasingcapacity': greasingCapacity,
       'coalescents': coalescents.map((x) => x.toMap),
     };
   }
 
   @override
   String toString() {
-    return 'CompressorModel(id: $id, visible: $visible, person: $person, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, patrimony: $patrimony, interface: $interface, unit: $unit, coalescents: $coalescents)';
+    return 'CompressorModel(id: $id, visible: $visible, person: $person, compressor: $compressor, lastUpdate: $lastUpdate, serialNumber: $serialNumber, sector: $sector, patrimony: $patrimony, interface: $interface, unit: $unit, oilType: $oilType, airFilterCapacity: $airFilterCapacity, oilFilterCapacity: $oilFilterCapacity, separatorCapacity: $separatorCapacity, greasingCapacity: $greasingCapacity, coalescents: $coalescents)';
   }
 
   @override
@@ -123,6 +151,11 @@ class PersonCompressorModel {
         other.patrimony == patrimony &&
         other.interface == interface &&
         other.unit == unit &&
+        other.oilType == oilType &&
+        other.airFilterCapacity == airFilterCapacity &&
+        other.oilFilterCapacity == oilFilterCapacity &&
+        other.separatorCapacity == separatorCapacity &&
+        other.greasingCapacity == greasingCapacity &&
         listEquals(
           other.coalescents,
           coalescents,
@@ -131,7 +164,23 @@ class PersonCompressorModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^ visible.hashCode ^ person.hashCode ^ compressor.hashCode ^ lastUpdate.hashCode ^ serialNumber.hashCode ^ sector.hashCode ^ patrimony.hashCode ^ interface.hashCode ^ unit.hashCode ^ coalescents.hashCode;
+    return id.hashCode ^
+        visible.hashCode ^
+        person.hashCode ^
+        compressor.hashCode ^
+        lastUpdate.hashCode ^
+        serialNumber.hashCode ^
+        sector.hashCode ^
+        patrimony.hashCode ^
+        interface.hashCode ^
+        unit.hashCode ^
+        oilType.hashCode ^
+        airFilterCapacity.hashCode ^
+        oilFilterCapacity.hashCode ^
+        separatorCapacity.hashCode ^
+        oilCapacity.hashCode ^
+        greasingCapacity.hashCode ^
+        coalescents.hashCode;
   }
 
   String toJson() => json.encode(toMap());

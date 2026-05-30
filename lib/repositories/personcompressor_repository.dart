@@ -45,7 +45,6 @@ class PersonCompressorRepository {
     try {
       String where = 'pc.visible = ?';
       List<Object?> whereArgs = [1];
-
       if (search != null && search.trim().isNotEmpty) {
         where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ?)';
         whereArgs.add('%$search%');
