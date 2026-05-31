@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/core/app_info.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
@@ -14,7 +15,7 @@ class PopupButtonWidget extends StatelessWidget {
 
     return PopupMenuButton(
       icon: const Icon(Icons.more_vert),
-      itemBuilder: (_) => [
+      itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
         PopupMenuItem(
           child: ListTile(
             leading: Icon(
@@ -22,26 +23,46 @@ class PopupButtonWidget extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             title: FutureBuilder(
-                future: loginController.currentLoggedUser,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('Carregando...',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                        ));
-                  }
-                  if (!snapshot.hasData) {
-                    return Text('');
-                  }
+              future: loginController.currentLoggedUser,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return Text(
-                    snapshot.data!.shortName,
+                    'Carregando...',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   );
-                }),
+                }
+
+                if (!snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
+
+                return Text(
+                  snapshot.data!.shortName,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                );
+              },
+            ),
           ),
         ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(
+              Icons.info_outline,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(
+              'Versão ${AppInfo.version}',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+        ),
+        const PopupMenuDivider(),
         PopupMenuItem(
           child: ListTile(
             leading: const Icon(Icons.palette),
@@ -64,13 +85,20 @@ class PopupButtonWidget extends StatelessWidget {
                 context: context,
                 question: 'Deseja sair?',
               );
+
               if (answer == true && context.mounted) {
                 var canLoggount = await loginController.canLoggout();
+
                 if (canLoggount && context.mounted) {
                   Navigator.pop(context);
                   await loginController.signOut();
                 } else {
-                  if (context.mounted) Message.showInfoSnackbar(context: context, message: 'Sincronize todas as avaliações para antes de sair.');
+                  if (context.mounted) {
+                    Message.showInfoSnackbar(
+                      context: context,
+                      message: 'Sincronize todas as avaliações para antes de sair.',
+                    );
+                  }
                 }
               }
             },

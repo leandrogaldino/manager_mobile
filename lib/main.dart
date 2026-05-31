@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:manager_mobile/controllers/app_controller.dart';
 import 'package:manager_mobile/app.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
+import 'package:manager_mobile/core/app_info.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/firebase_options.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -24,6 +25,7 @@ void main() async {
   DateTimeHelper.initialize();
   await Locator.get<LocalDatabase>().init();
   await GetIt.I<AppController>().loadTheme();
+  await AppInfo.initialize();
   Locator.get<AppController>().clearOldTemporaryFiles();
   Locator.get<EvaluationController>().periodicClean();
 
