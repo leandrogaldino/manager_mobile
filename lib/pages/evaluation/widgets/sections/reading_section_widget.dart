@@ -153,7 +153,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
         _greasingEC.text = widget.evaluationController.evaluation!.greasing?.toString() ?? '';
       } else {
         greasable = false;
-        _greasingEC.text = 'N/A';
+        _greasingEC.text = '';
       }
     }
 
