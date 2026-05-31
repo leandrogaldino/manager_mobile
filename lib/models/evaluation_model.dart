@@ -76,7 +76,7 @@ class EvaluationModel {
     this.advice,
     this.lastUpdate,
   })  : creationDate = creationDate ?? DateTimeHelper.now(),
-        startTime = startTime ?? TimeOfDay.now();
+        startTime = startTime ?? TimeOfDay.fromDateTime(DateTimeHelper.now());
 
   factory EvaluationModel.fromScheduleOrNew({VisitScheduleModel? schedule}) {
     List<EvaluationCoalescentModel> coalescents = [];
