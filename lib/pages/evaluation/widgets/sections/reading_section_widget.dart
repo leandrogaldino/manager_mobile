@@ -127,36 +127,27 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    EvaluationController controller = widget.evaluationController;
-    _customerEC.text = controller.evaluation!.compressor?.person.shortName ?? '';
+    final controller = widget.evaluationController;
+    final evaluation = controller.evaluation!;
+    final compressor = evaluation.compressor;
+    final fromSaved = controller.source == SourceTypes.fromSavedWithSign;
+    _customerEC.text = compressor?.person.shortName ?? '';
     _compressorEC.text = _compressorFullName;
-    if (controller.source == SourceTypes.fromSavedWithSign) {
-      _oilTypeEC.text = controller.evaluation!.oilType.stringValue;
-    } else {
-      _oilTypeEC.text = controller.evaluation!.compressor?.oilType.stringValue ?? '';
-    }
-
-    _interfaceEC.text = widget.evaluationController.evaluation!.compressor?.interface.name ?? '';
-    _unitEC.text = widget.evaluationController.evaluation!.compressor?.unit.name ?? '';
+    _oilTypeEC.text = fromSaved ? evaluation.oilType.stringValue : compressor?.oilType.stringValue ?? '';
+    _interfaceEC.text = compressor?.interface.name ?? '';
+    _unitEC.text = compressor?.unit.name ?? '';
     bool greasable;
-    if (controller.source == SourceTypes.fromSavedWithSign) {
-      if (widget.evaluationController.evaluation!.greasing != null) {
-        _greasingEC.text = widget.evaluationController.evaluation!.greasing.toString();
-        greasable = true;
-      } else {
-        greasable = false;
-        _greasingEC.text = 'N/A';
-      }
+    if (fromSaved) {
+      greasable = evaluation.greasing != null;
+      _greasingEC.text = greasable ? evaluation.greasing.toString() : 'N/A';
     } else {
-      if (widget.evaluationController.evaluation!.compressor?.greasingCapacity != null) {
-        greasable = true;
-        _greasingEC.text = widget.evaluationController.evaluation!.greasing?.toString() ?? '';
+      greasable = compressor?.greasingCapacity != null;
+      if (greasable) {
+        _greasingEC.text = evaluation.greasing?.toString() ?? '';
       } else {
-        greasable = false;
-        _greasingEC.text = '';
+        _greasingEC.text = compressor == null ? '' : 'N/A';
       }
     }
-
     final theme = Theme.of(context);
     return ListenableBuilder(
       listenable: controller,
