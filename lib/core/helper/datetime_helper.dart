@@ -1,5 +1,6 @@
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter/material.dart';
 
 class DateTimeHelper {
   static bool _initialized = false;
@@ -13,6 +14,15 @@ class DateTimeHelper {
     _initialized = true;
   }
 
+  static TimeOfDay stringToTimeOfDay(String time) {
+    final parts = time.split(':');
+
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+
   // ----------------------------
   // Métodos equivalentes ao DateTime
   // ----------------------------
@@ -21,8 +31,6 @@ class DateTimeHelper {
   static DateTime now() {
     return tz.TZDateTime.now(_sp);
   }
-
-  
 
   /// DateTime.parse()
   static DateTime parse(String input) {

@@ -502,7 +502,19 @@ class EvaluationRepository {
       final String evaluationId = evaluationMap['id'].toString();
 
       final exists = await _localDatabase.isSaved('evaluation', id: evaluationId);
-      if (exists) continue;
+      if (exists) {
+        var importedId = evaluationMap['info']['importedid'];
+        var lastUpdate = evaluationMap['lastupdate'];
+
+        await _localDatabase.update(
+          'evaluation',
+          {'importedid': importedId, 'lastupdate': lastUpdate},
+          where: 'id = ?',
+          whereArgs: [evaluationId],
+        );
+
+        continue;
+      }
 
       count++;
 

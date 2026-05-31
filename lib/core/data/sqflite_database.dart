@@ -4,7 +4,7 @@ import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/core/constants/sql_scripts.dart';
 import 'package:path/path.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SqfliteDatabase implements LocalDatabase {
   late Database _database;
@@ -16,10 +16,7 @@ class SqfliteDatabase implements LocalDatabase {
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
       final exists = await databaseExists(path);
       if (exists && !inMemory) {
-        final tempDb = await openDatabase(
-          path,
-          password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
-        );
+        final tempDb = await openDatabase(path);
         final oldVersion = await tempDb.getVersion();
         await tempDb.close();
         if (oldVersion < currentVersion) {
@@ -30,7 +27,6 @@ class SqfliteDatabase implements LocalDatabase {
 
       _database = await openDatabase(
         path,
-        password: 'sG7!pX9r#Qw2*zV8@Lf4^tY1*Hj5%kN0',
         version: currentVersion,
         onCreate: (db, version) async {
           await _createDatabase(db);

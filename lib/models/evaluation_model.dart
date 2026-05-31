@@ -97,8 +97,6 @@ class EvaluationModel {
       pressure: null,
       customer: schedule?.customer,
       compressor: schedule?.compressor,
-      creationDate: DateTimeHelper.now(),
-      startTime: TimeOfDay.now(),
       endTime: null,
       greasing: null,
       horimeter: null,
