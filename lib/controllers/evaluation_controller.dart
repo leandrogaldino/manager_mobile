@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
-import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
@@ -160,7 +159,13 @@ class EvaluationController extends ChangeNotifier {
   }
 
   void setCoalescentNextChange(int index, DateTime? nextChange) {
-    _evaluation!.coalescents[index] = _evaluation!.coalescents[index].copyWith(nextChange: nextChange);
+    _evaluation!.coalescents[index].nextChange = nextChange;
+    notifyListeners();
+  }
+
+  void setIgnoreCoalescentNextChange(int index, bool ignore) {
+    _evaluation!.coalescents[index].ignoreNextChange = ignore;
+    _evaluation!.coalescents[index].nextChange = null;
     notifyListeners();
   }
 
@@ -306,7 +311,7 @@ class EvaluationController extends ChangeNotifier {
     int count = 0;
     var allEvaluations = await _evaluationService.getAll();
     for (var evaluation in allEvaluations) {
-      if (evaluation.creationDate!.isBefore(DateTimeHelper.now().subtract(Duration(days: 120)))) {
+      if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
         await _evaluationService.delete(evaluation.id);
         await _evaluationService.deleteSignature(signature: evaluation.signaturePath);
         await _evaluationService.deletePhotos(photos: evaluation.photos);
@@ -316,7 +321,7 @@ class EvaluationController extends ChangeNotifier {
 
     var allSchedules = await _visitScheduleService.getAll();
     for (var schedule in allSchedules) {
-      if (schedule.creationDate.isBefore(DateTimeHelper.now().subtract(Duration(days: 120)))) {
+      if (schedule.creationDate.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
         await _visitScheduleService.delete(schedule.id);
         count += 1;
       }

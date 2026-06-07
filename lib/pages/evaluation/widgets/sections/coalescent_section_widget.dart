@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -52,12 +54,36 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                                           lastDate: DateTimeHelper.create(2100),
                                         );
                                         if (selectedDate != null) {
-                                          controller.setCoalescentNextChange(index, selectedDate);
+                                          final spDate = DateTimeHelper.create(selectedDate.year, selectedDate.month, selectedDate.day);
+
+                                          controller.setCoalescentNextChange(index, spDate);
+                                          log(selectedDate.toString());
+                                          log(selectedDate.isUtc.toString());
+                                          log(selectedDate.millisecondsSinceEpoch.toString());
                                         }
                                       },
-                                child: Text(
-                                  controller.evaluation!.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(controller.evaluation!.coalescents[index].nextChange!),
-                                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                child: Column(
+                                  children: [
+                                    Visibility(
+                                      visible: !controller.evaluation!.coalescents[index].ignoreNextChange,
+                                      child: Text(
+                                        controller.evaluation!.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(controller.evaluation!.coalescents[index].nextChange!),
+                                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Checkbox(
+                                          value: controller.evaluation!.coalescents[index].ignoreNextChange,
+                                          onChanged: (value) {
+                                            controller.setIgnoreCoalescentNextChange(index, value!);
+                                          },
+                                        ),
+                                        const Text('Ignorar'),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               );
                             }),

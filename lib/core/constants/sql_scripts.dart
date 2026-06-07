@@ -213,7 +213,8 @@ class SQLScripts {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       coalescentid INT NOT NULL,
       evaluationid TEXT NOT NULL,
-      nextchange INTEGER NOT NULL,
+      ignorenextchange INTEGER NOT NULL,
+      nextchange INTEGER,
       FOREIGN KEY (coalescentid) REFERENCES personcompressorcoalescent (id) ON DELETE RESTRICT,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );

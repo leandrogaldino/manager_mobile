@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/app_preferences.dart';
-import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/states/app_state.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -72,13 +71,13 @@ class AppController extends ChangeNotifier {
       if (fileOrDir is File) {
         try {
           final lastModified = await fileOrDir.lastModified();
-          final now = DateTimeHelper.now();
+          final now = DateTime.now();
           if (now.difference(lastModified).inHours > 24) {
             await fileOrDir.delete();
           }
         } catch (e, s) {
           String message = 'Erro ao excluir arquivo temporário.';
-          log(message, time: DateTimeHelper.now(), error: e, stackTrace: s);
+          log(message, time: DateTime.now(), error: e, stackTrace: s);
         }
       }
     }

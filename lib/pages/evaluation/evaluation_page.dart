@@ -330,9 +330,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   bool _validateCoalescentsNextChange(EvaluationController controller) {
-    final bool valid = controller.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null);
+    final bool valid = controller.evaluation!.coalescents.every((coalescent) => coalescent.nextChange != null || coalescent.ignoreNextChange);
     if (!valid) {
-      Message.showInfoSnackbar(context: context, message: 'Selecione a data da próxima troca de todos os coalescentes.');
+      Message.showInfoSnackbar(context: context, message: 'Selecione a data da próxima troca de todos os coalescentes ou marque para ignorar.');
     }
     return valid;
   }

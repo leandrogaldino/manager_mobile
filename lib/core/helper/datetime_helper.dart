@@ -52,15 +52,6 @@ class DateTimeHelper {
     return tz.TZDateTime.from(dt, _sp);
   }
 
-  /// DateTime.fromMicrosecondsSinceEpoch()
-  static DateTime fromMicrosecondsSinceEpoch(
-    int us, {
-    bool isUtc = false,
-  }) {
-    final dt = DateTime.fromMicrosecondsSinceEpoch(us, isUtc: isUtc);
-    return tz.TZDateTime.from(dt, _sp);
-  }
-
   /// Construtor DateTime(...)
   static DateTime create(
     int year, [
