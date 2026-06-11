@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
@@ -38,55 +36,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                           controller.evaluation!.coalescents[index].coalescent.product.name,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                        ListenableBuilder(
-                            listenable: controller,
-                            builder: (context, child) {
-                              return TextButton(
-                                isSemanticButton: true,
-                                onPressed: controller.source == SourceTypes.fromSavedWithSign
-                                    ? null
-                                    : () async {
-                                        FocusScope.of(context).requestFocus(FocusNode());
-                                        DateTime? selectedDate = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTimeHelper.now(),
-                                          firstDate: DateTimeHelper.create(2000),
-                                          lastDate: DateTimeHelper.create(2100),
-                                        );
-                                        if (selectedDate != null) {
-                                          final spDate = DateTimeHelper.create(selectedDate.year, selectedDate.month, selectedDate.day);
-
-                                          controller.setCoalescentNextChange(index, spDate);
-                                          log(selectedDate.toString());
-                                          log(selectedDate.isUtc.toString());
-                                          log(selectedDate.millisecondsSinceEpoch.toString());
-                                        }
-                                      },
-                                child: Column(
-                                  children: [
-                                    Visibility(
-                                      visible: !controller.evaluation!.coalescents[index].ignoreNextChange,
-                                      child: Text(
-                                        controller.evaluation!.coalescents[index].nextChange == null ? 'Selecionar Próxima Troca' : DateFormat('dd/MM/yyyy').format(controller.evaluation!.coalescents[index].nextChange!),
-                                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Checkbox(
-                                          value: controller.evaluation!.coalescents[index].ignoreNextChange,
-                                          onChanged: (value) {
-                                            controller.setIgnoreCoalescentNextChange(index, value!);
-                                          },
-                                        ),
-                                        const Text('Ignorar'),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
+                        controller.source != SourceTypes.fromSavedWithSign ? getReadWrite(context, null, controller, index) : getReadOnly(context, null, controller, index)
                       ],
                     ),
                     index != controller.evaluation!.coalescents.length - 1
@@ -99,5 +49,62 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
                 );
               });
         });
+  }
+
+  Widget getReadOnly(BuildContext context, Widget? child, EvaluationController controller, int index) {
+    String text;
+
+    if (controller.evaluation!.coalescents[index].ignoreNextChange == true) {
+      text = 'IGNORADO';
+    } else {
+      String nextChange = DateTimeHelper.formatDate(controller.evaluation!.coalescents[index].nextChange!);
+      text = nextChange;
+    }
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(text),
+    );
+  }
+
+  Widget getReadWrite(BuildContext context, Widget? child, EvaluationController controller, int index) {
+    return TextButton(
+      isSemanticButton: true,
+      onPressed: () async {
+        FocusScope.of(context).requestFocus(FocusNode());
+        DateTime? selectedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTimeHelper.now(),
+          firstDate: DateTimeHelper.create(2000),
+          lastDate: DateTimeHelper.create(2100),
+        );
+        if (selectedDate != null) {
+          final spDate = DateTimeHelper.create(selectedDate.year, selectedDate.month, selectedDate.day);
+          controller.setCoalescentNextChange(index, spDate);
+        }
+      },
+      child: Column(
+        children: [
+          Visibility(
+            visible: !controller.evaluation!.coalescents[index].ignoreNextChange,
+            child: Text(
+              controller.evaluation!.coalescents[index].nextChange == null ? 'SELECIONAR  PRÓXIMA TROCA' : DateFormat('dd/MM/yyyy').format(controller.evaluation!.coalescents[index].nextChange!),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Checkbox(
+                value: controller.evaluation!.coalescents[index].ignoreNextChange,
+                onChanged: (value) {
+                  controller.setIgnoreCoalescentNextChange(index, value!);
+                },
+              ),
+              const Text('IGNORAR'),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
