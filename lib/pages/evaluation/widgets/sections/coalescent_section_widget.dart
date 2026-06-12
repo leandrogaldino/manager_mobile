@@ -24,6 +24,7 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
         listenable: controller,
         builder: (context, child) {
           return ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemCount: controller.evaluation!.coalescents.length,
@@ -62,7 +63,10 @@ class _CoalescentSectionWidgetState extends State<CoalescentSectionWidget> {
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Text(text),
+      child: Text(
+        text,
+        style: TextStyle(color: Theme.of(context).colorScheme.primary),
+      ),
     );
   }
 

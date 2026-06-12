@@ -45,7 +45,7 @@ class EvaluationCoalescentModel {
     return EvaluationCoalescentModel(
       id: map['id'] != null ? map['id'] as int : null,
       coalescent: PersonCompressorCoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
-      ignoreNextChange: map['ignorenextchange'] == 1 ? true : false,
+      ignoreNextChange: map['ignorenextchange'] as bool,
       nextChange: map['nextchange'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
     );
   }

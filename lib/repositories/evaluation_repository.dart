@@ -437,6 +437,7 @@ class EvaluationRepository {
 
       var coalescentsMap = await _evaluationCoalescentRepository.getByParentId(evaluationId);
       for (final item in coalescentsMap) {
+        item['ignorenextchange'] == 0 ? item['ignorenextchange'] = false : item['ignorenextchange'] = true;
         item.remove('id');
       }
       evaluationMap['coalescents'] = coalescentsMap;
@@ -604,6 +605,8 @@ class EvaluationRepository {
     for (var evaluationCoalescent in evaluationCoalescents) {
       var coalescent = await _personCompressorCoalescentRepository.getById(evaluationCoalescent['coalescentid'] as int);
       evaluationCoalescent['coalescent'] = coalescent;
+      evaluationCoalescent['ignorenextchange'] == 0 ? evaluationCoalescent['ignorenextchange'] = false : evaluationCoalescent['ignorenextchange'] = true;
+
       evaluationCoalescent.remove('coalescentid');
     }
     evaluationData['coalescents'] = evaluationCoalescents;
