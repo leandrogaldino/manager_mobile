@@ -9,7 +9,7 @@ import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
-import 'package:manager_mobile/models/evaluation_photo_model.dart';
+import 'package:manager_mobile/models/evaluation_image_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 
@@ -39,9 +39,9 @@ class EvaluationModel {
   List<EvaluationReplacedProductModel> replacedProducts;
   List<EvaluationPerformedServiceModel> performedServices;
   List<EvaluationTechnicianModel> technicians;
-  List<EvaluationPhotoModel> photos;
+  List<EvaluationImageModel> photos;
   String? responsible;
-  String? signaturePath;
+  EvaluationImageModel? signature;
   String? advice;
   DateTime? lastUpdate;
   EvaluationModel({
@@ -72,7 +72,7 @@ class EvaluationModel {
     required this.technicians,
     required this.photos,
     this.responsible,
-    this.signaturePath,
+    this.signature,
     this.advice,
     this.lastUpdate,
   })  : creationDate = creationDate ?? DateTimeHelper.now(),
@@ -111,7 +111,7 @@ class EvaluationModel {
       technicians: [],
       photos: [],
       responsible: null,
-      signaturePath: null,
+      signature: null,
       advice: null,
       lastUpdate: null,
     );
@@ -143,9 +143,9 @@ class EvaluationModel {
     List<EvaluationReplacedProductModel>? replacedProducts,
     List<EvaluationPerformedServiceModel>? performedServices,
     List<EvaluationTechnicianModel>? technicians,
-    List<EvaluationPhotoModel>? photos,
+    List<EvaluationImageModel>? photos,
     String? responsible,
-    String? signaturePath,
+    EvaluationImageModel? signature,
     String? advice,
     DateTime? lastUpdate,
   }) {
@@ -177,7 +177,7 @@ class EvaluationModel {
       technicians: technicians ?? List.of(this.technicians),
       photos: photos ?? List.of(this.photos),
       responsible: responsible ?? this.responsible,
-      signaturePath: signaturePath ?? this.signaturePath,
+      signature: signature ?? this.signature,
       advice: advice ?? this.advice,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
@@ -212,7 +212,7 @@ class EvaluationModel {
       'technicians': technicians.map((x) => x.toMap()).toList(),
       'photos': photos.map((x) => x.toMap()).toList(),
       'responsible': responsible,
-      'signaturepath': signaturePath,
+      'signature': signature?.toMap(),
       'advice': advice,
       'lastupdate': lastUpdate?.millisecondsSinceEpoch,
     };
@@ -262,13 +262,13 @@ class EvaluationModel {
           (x) => EvaluationTechnicianModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      photos: List<EvaluationPhotoModel>.from(
-        (map['photos'] as List<Map<String, Object?>>).map<EvaluationPhotoModel>(
-          (x) => EvaluationPhotoModel.fromMap(x as Map<String, dynamic>),
+      photos: List<EvaluationImageModel>.from(
+        (map['photos'] as List<Map<String, Object?>>).map<EvaluationImageModel>(
+          (x) => EvaluationImageModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
-      signaturePath: map['signaturepath'] != null ? map['signaturepath'] as String : null,
+      signature: map['signature'] != null ? EvaluationImageModel.fromMap(map['signature'] as Map<String, dynamic>) : null,
       lastUpdate: map['lastupdate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
     );
   }
@@ -279,7 +279,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signaturePath, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signature, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -313,7 +313,7 @@ class EvaluationModel {
         listEquals(other.technicians, technicians) &&
         listEquals(other.photos, photos) &&
         other.responsible == responsible &&
-        other.signaturePath == signaturePath &&
+        other.signature == signature &&
         other.advice == advice &&
         other.lastUpdate == lastUpdate;
   }
@@ -347,7 +347,7 @@ class EvaluationModel {
         technicians.hashCode ^
         photos.hashCode ^
         responsible.hashCode ^
-        signaturePath.hashCode ^
+        signature.hashCode ^
         advice.hashCode ^
         lastUpdate.hashCode;
   }

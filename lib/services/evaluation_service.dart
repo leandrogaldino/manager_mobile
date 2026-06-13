@@ -5,7 +5,7 @@ import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/evaluation_photo_model.dart';
+import 'package:manager_mobile/models/evaluation_image_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/sync_event.dart';
 import 'package:manager_mobile/sync_event_bus.dart';
@@ -60,16 +60,16 @@ class EvaluationService {
     }
   }
 
-  Future<void> deletePhotos({required List<EvaluationPhotoModel> photos}) async {
+  Future<void> deletePhotos({required List<EvaluationImageModel> photos}) async {
     for (var photo in photos) {
-      final file = File(photo.path);
+      final file = File(photo.localPath);
       if (await file.exists()) {
         await file.delete();
       }
     }
   }
 
-  Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
+  Future<EvaluationImageModel> savePhoto({required Uint8List photoBytes}) async {
     try {
       final rootDirectory = await getApplicationDocumentsDirectory();
       final photosDirectory = Directory('${rootDirectory.path}/photos');
@@ -106,7 +106,7 @@ class EvaluationService {
       final filePath = '${photosDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(resizedBytes);
-      return EvaluationPhotoModel(path: file.path);
+      return EvaluationImageModel(localPath: file.path);
     } catch (e, s) {
       String code = 'EVA010';
       String message = 'Erro ao salvar a imagem';

@@ -5,15 +5,15 @@ import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 
-class EvaluationPhotoRepository {
+class EvaluationImageRepository {
   final LocalDatabase _localDatabase;
 
-  EvaluationPhotoRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
+  EvaluationImageRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {
-        int id = await _localDatabase.insert('evaluationphoto', data);
-        data['id'] = id;
+      int id = await _localDatabase.insert('evaluationphoto', data);
+      data['id'] = id;
       return data;
     } on LocalDatabaseException {
       rethrow;
@@ -39,7 +39,7 @@ class EvaluationPhotoRepository {
     }
   }
 
-      Future<int> deleteByParentId(dynamic parentId) async {
+  Future<int> deleteByParentId(dynamic parentId) async {
     try {
       return await _localDatabase.delete('evaluationphoto', where: 'evaluationid = ?', whereArgs: [parentId]);
     } on LocalDatabaseException {

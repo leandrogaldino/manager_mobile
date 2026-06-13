@@ -8,7 +8,7 @@ import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/evaluation_photo_model.dart';
+import 'package:manager_mobile/models/evaluation_image_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
@@ -72,7 +72,7 @@ class EvaluationController extends ChangeNotifier {
     _signatureBytes = signatureBytes;
     _photosBytes.clear();
     for (var photo in _evaluation!.photos) {
-      final File photoFile = File(photo.path);
+      final File photoFile = File(photo.localPath);
       final Uint8List photoBytes = await photoFile.readAsBytes();
       _photosBytes.add(photoBytes);
     }
@@ -136,7 +136,7 @@ class EvaluationController extends ChangeNotifier {
     }
     _evaluation!.photos.clear();
     for (var photoBytes in _photosBytes) {
-      EvaluationPhotoModel photo = await _evaluationService.savePhoto(photoBytes: photoBytes);
+      EvaluationImageModel photo = await _evaluationService.savePhoto(photoBytes: photoBytes);
       _evaluation!.photos.add(photo);
     }
   }
@@ -148,12 +148,12 @@ class EvaluationController extends ChangeNotifier {
 
   List<Uint8List> get photosBytes => _photosBytes;
 
-  void addPhoto(EvaluationPhotoModel photo) {
+  void addPhoto(EvaluationImageModel photo) {
     _evaluation!.photos.add(photo);
     notifyListeners();
   }
 
-  void removePhoto(EvaluationPhotoModel photo) {
+  void removePhoto(EvaluationImageModel photo) {
     _evaluation!.photos.remove(photo);
     notifyListeners();
   }

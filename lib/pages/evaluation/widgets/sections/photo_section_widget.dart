@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
-import 'package:manager_mobile/models/evaluation_photo_model.dart';
+import 'package:manager_mobile/models/evaluation_image_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class PhotoSectionWidget extends StatefulWidget {
@@ -34,7 +34,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
     final List<String?> photoPaths = List.generate(
       maxPhotos,
-      (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].path : null,
+      (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].localPath : null,
     );
 
     return Padding(
@@ -74,7 +74,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
                     if (file != null) {
                       controller.addPhoto(
-                        EvaluationPhotoModel(path: file.path),
+                        EvaluationImageModel(localPath: file.path),
                       );
 
                       await controller.updateImagesBytes();

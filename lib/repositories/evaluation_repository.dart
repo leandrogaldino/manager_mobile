@@ -11,7 +11,7 @@ import 'package:manager_mobile/repositories/evaluation_performed_service_reposit
 import 'package:manager_mobile/repositories/evaluation_replaced_product_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_image_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
@@ -35,7 +35,7 @@ class EvaluationRepository {
   final EvaluationReplacedProductRepository _evaluationReplacedProductRepository;
   final EvaluationPerformedServiceRepository _evaluationPerformedServiceRepository;
   final EvaluationTechnicianRepository _evaluationTechnicianRepository;
-  final EvaluationPhotoRepository _evaluationPhotoRepository;
+  final EvaluationImageRepository _evaluationPhotoRepository;
   EvaluationRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
@@ -49,7 +49,7 @@ class EvaluationRepository {
     required EvaluationReplacedProductRepository evaluationReplacedProductRepository,
     required EvaluationPerformedServiceRepository evaluationPerformedServiceRepository,
     required EvaluationTechnicianRepository evaluationTechnicianRepository,
-    required EvaluationPhotoRepository evaluationPhotoRepository,
+    required EvaluationImageRepository evaluationPhotoRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
@@ -63,27 +63,6 @@ class EvaluationRepository {
         _evaluationPerformedServiceRepository = evaluationPerformedServiceRepository,
         _evaluationTechnicianRepository = evaluationTechnicianRepository,
         _evaluationPhotoRepository = evaluationPhotoRepository;
-
-  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
-  //   try {
-  //     await _localDatabase.update(
-  //       'evaluation',
-  //       {
-  //         'signaturepath': signaturePath,
-  //         'lastupdate': DateTimeHelper.formatTime(DateTimeHelper.now()),
-  //       },
-  //       where: 'id = ?',
-  //       whereArgs: [evaluationId],
-  //     );
-  //   } on LocalDatabaseException {
-  //     rethrow;
-  //   } on Exception catch (e, s) {
-  //     String code = 'EVA011';
-  //     String message = 'Erro ao salvar os dados';
-  //     log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
-  //     throw RepositoryException(code, message);
-  //   }
-  // }
 
   Future<bool> get hasPendingEvaluation async {
     var result = await _localDatabase.rawQuery("""
