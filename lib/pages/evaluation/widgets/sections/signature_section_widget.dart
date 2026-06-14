@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
@@ -29,7 +28,8 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
         children: [
           GestureDetector(
             onTap: () {
-              if (controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign) {
+              final signable = controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign;
+              if (signable) {
                 FocusScope.of(context).unfocus();
                 Navigator.of(context).pushNamed(Routes.captureSignature);
               }

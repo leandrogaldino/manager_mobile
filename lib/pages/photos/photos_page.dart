@@ -80,7 +80,7 @@ class _PhotosPageState extends State<PhotosPage> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    final file = File(photos[index].localPath);
+                    final file = File(photos[index].localPath!);
 
                     return FutureBuilder<bool>(
                       future: _isLandscape(file),
@@ -157,8 +157,6 @@ class _PhotosPageState extends State<PhotosPage> {
                                 _evaluationController.removePhoto(
                                   _evaluationController.evaluation!.photos[_currentIndex],
                                 );
-
-                                await _evaluationController.updateImagesBytes();
 
                                 if (_evaluationController.evaluation!.photos.isEmpty && context.mounted) {
                                   Navigator.pop(context);

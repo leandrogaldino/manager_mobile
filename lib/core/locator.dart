@@ -26,7 +26,6 @@ import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/productcode_repository.dart';
 import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
-import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_interface_service.dart';
@@ -317,6 +316,7 @@ class Locator {
       () => EvaluationController(
         evaluationService: _getIt.get<EvaluationService>(),
         visitScheduleService: _getIt.get<VisitScheduleService>(),
+        imageService: _getIt.get<ImageService>(),
       ),
     );
 

@@ -20,7 +20,6 @@ import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/services/image_service.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:path/path.dart' as path;
 
@@ -28,7 +27,7 @@ class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
-  final ImageService _imageService;
+
   final PersonCompressorCoalescentRepository _personCompressorCoalescentRepository;
   final PersonCompressorRepository _personCompressorRepository;
   final PersonRepository _personRepository;
@@ -57,7 +56,6 @@ class EvaluationRepository {
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
-        _imageService = imageService,
         _personCompressorCoalescentRepository = personCompressorCoalescentRepository,
         _personCompressorRepository = personCompressorRepository,
         _personRepository = personRepository,

@@ -41,6 +41,9 @@ class EvaluationController extends ChangeNotifier {
 
   String? get tempSignature => _tempSignature;
 
+  String? get currentSignaturePath => source == SourceTypes.fromSavedWithSign ? tempSignature : evaluation!.signature.localPath;
+  bool get hasSignature => currentSignaturePath != null && File(currentSignaturePath!).existsSync();
+
   Future<void> setTempSignature({Uint8List? signatureBytes}) async {
     if (signatureBytes == null) {
       _tempSignature = null;
@@ -286,8 +289,8 @@ class EvaluationController extends ChangeNotifier {
     _source = null;
     _selectedPhotoIndex = null;
     _isSaving = false;
-    _signatureBytes = null;
-    _photosBytes.clear();
+    _tempSignature = null;
+    _uiMessage = null;
   }
 
   static const int _retentionDays = 30;

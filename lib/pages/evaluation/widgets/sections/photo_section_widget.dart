@@ -32,10 +32,8 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
     final double cellHeight = cellWidth * 1.5;
 
-    final List<String?> photoPaths = List.generate(
-      maxPhotos,
-      (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].localPath : null,
-    );
+    final List<String?> localPhotos = List.generate(maxPhotos, (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].localPath : null);
+    final List<String?> cloudPhotos = List.generate(maxPhotos, (index) => index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index].cloudPath : null);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -50,38 +48,32 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
           childAspectRatio: cellWidth / cellHeight,
         ),
         itemBuilder: (context, index) {
-          final String? photoPath = photoPaths[index];
-          final bool isPhotoTaken = photoPath != null;
+          final String? localPath = localPhotos[index];
+          final String? cloudPath = cloudPhotos[index];
+          final bool isPhotoTaken = localPath != null || cloudPath != null;
 
           return RepaintBoundary(
             child: GestureDetector(
               onTap: () async {
-                if (isPhotoTaken) {
+                if (cloudPath != null && localPath == null) {
+                  //Baixa a foto
+                }
+                if (cloudPath == null && localPath != null) {
                   controller.setSelectedPhotoIndex(index);
-
-                  await Navigator.pushNamed(
-                    context,
-                    Routes.viewPhoto,
-                  );
-
+                  await Navigator.pushNamed(context, Routes.viewPhoto);
                   controller.setSelectedPhotoIndex(null);
-                } else {
-                  if (controller.source != SourceTypes.fromSavedWithSign) {
-                    final File? file = await Navigator.pushNamed<File?>(
-                      context,
-                      Routes.takePhoto,
+                }
+                if (cloudPath == null && localPath == null) {
+                  if (!context.mounted) return;
+                  final File? file = await Navigator.pushNamed<File?>(context, Routes.takePhoto);
+
+                  if (file != null) {
+                    controller.addPhoto(
+                      EvaluationImageModel(localPath: file.path),
                     );
 
-                    if (file != null) {
-                      controller.addPhoto(
-                        EvaluationImageModel(localPath: file.path),
-                      );
-
-                      await controller.updateImagesBytes();
-
-                      if (mounted) {
-                        setState(() {});
-                      }
+                    if (context.mounted) {
+                      setState(() {});
                     }
                   }
                 }
@@ -99,9 +91,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                       controller.evaluation!.photos[index],
                     );
 
-                    await controller.updateImagesBytes();
-
-                    if (mounted) {
+                    if (context.mounted) {
                       setState(() {});
                     }
                   }
@@ -117,18 +107,20 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                   ),
                 ),
                 child: isPhotoTaken
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          File(photoPath),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          filterQuality: FilterQuality.low,
-                          cacheWidth: 600,
-                          gaplessPlayback: true,
-                        ),
-                      )
+                    ? localPath != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(controller.currentSignaturePath!),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              filterQuality: FilterQuality.low,
+                              cacheWidth: 600,
+                              gaplessPlayback: true,
+                            ),
+                          )
+                        : Icon(Icons.cloud_download)
                     : Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
