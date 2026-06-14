@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
+import 'package:manager_mobile/core/enums/image_types.dart';
 import 'package:manager_mobile/core/enums/oil_types.dart';
 import 'package:manager_mobile/models/evaluation_performed_service_model.dart';
 import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
@@ -13,17 +14,21 @@ import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
+import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/services/visit_schedule_service.dart';
 
 class EvaluationController extends ChangeNotifier {
   final EvaluationService _evaluationService;
   final VisitScheduleService _visitScheduleService;
+  final ImageService _imageService;
 
   EvaluationController({
     required EvaluationService evaluationService,
     required VisitScheduleService visitScheduleService,
+    required ImageService imageService,
   })  : _evaluationService = evaluationService,
-        _visitScheduleService = visitScheduleService;
+        _visitScheduleService = visitScheduleService,
+        _imageService = imageService;
 
   EvaluationModel? _evaluation;
   EvaluationModel? get evaluation => _evaluation;
@@ -32,10 +37,29 @@ class EvaluationController extends ChangeNotifier {
 
   EvaluationModel? shadow;
 
+  String? _tempSignature;
+
+  String? get tempSignature => _tempSignature;
+
+  Future<void> setTempSignature({Uint8List? signatureBytes}) async {
+    if (signatureBytes == null) {
+      _tempSignature = null;
+    } else {
+      _tempSignature = await _imageService.saveTemporary(ImageTypes.signature, signatureBytes);
+    }
+    notifyListeners();
+  }
+
+  Future<void> _setPermanentSignature() async {
+    if (_tempSignature != null && await File(_tempSignature!).exists()) {
+      final signaturePath = await _imageService.savePermanentFromPath(type: ImageTypes.signature, tempImagePath: _tempSignature!);
+      _evaluation!.signature.localPath = signaturePath;
+    }
+  }
+
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
-    _signatureBytes = null;
     _selectedPhotoIndex = 0;
-    _photosBytes.clear();
+
     _schedule = null;
     _evaluation = evaluation;
     shadow = evaluation?.copyWith();
@@ -66,20 +90,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateImagesBytes() async {
-    final File? signatureFile = _evaluation!.signaturePath != null ? File(_evaluation!.signaturePath!) : null;
-    _signatureBytes = signatureFile != null ? await signatureFile.readAsBytes() : null;
-    _signatureBytes = signatureBytes;
-    _photosBytes.clear();
-    for (var photo in _evaluation!.photos) {
-      final File photoFile = File(photo.localPath);
-      final Uint8List photoBytes = await photoFile.readAsBytes();
-      _photosBytes.add(photoBytes);
-    }
-
-    notifyListeners();
-  }
-
   bool _isSaving = false;
   bool get isSaving => _isSaving;
 
@@ -88,8 +98,8 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (_signatureBytes != null) {
-        await _saveSignature(signatureBytes: _signatureBytes!);
+      if (_tempSignature != null) {
+        await _setPermanentSignature();
       }
 
       await _savePhotos(photosBytes: _photosBytes);
@@ -120,33 +130,6 @@ class EvaluationController extends ChangeNotifier {
     _uiMessage = null;
     return message;
   }
-
-  Future<void> _saveSignature({required Uint8List signatureBytes}) async {
-    _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: false);
-  }
-
-  Future<void> saveTempSignature({required Uint8List signatureBytes}) async {
-    _evaluation!.signaturePath = await _evaluationService.saveSignature(signatureBytes: signatureBytes, asTemporary: true);
-    notifyListeners();
-  }
-
-  Future<void> _savePhotos({required List<Uint8List> photosBytes}) async {
-    if (shadow != null) {
-      await _evaluationService.deletePhotos(photos: shadow!.photos);
-    }
-    _evaluation!.photos.clear();
-    for (var photoBytes in _photosBytes) {
-      EvaluationImageModel photo = await _evaluationService.savePhoto(photoBytes: photoBytes);
-      _evaluation!.photos.add(photo);
-    }
-  }
-
-  Uint8List? _signatureBytes;
-  Uint8List? get signatureBytes => _signatureBytes;
-
-  final List<Uint8List> _photosBytes = [];
-
-  List<Uint8List> get photosBytes => _photosBytes;
 
   void addPhoto(EvaluationImageModel photo) {
     _evaluation!.photos.add(photo);
@@ -307,13 +290,14 @@ class EvaluationController extends ChangeNotifier {
     _photosBytes.clear();
   }
 
+  static const int _retentionDays = 30;
   Future<int> periodicClean() async {
     int count = 0;
     var allEvaluations = await _evaluationService.getAll();
     for (var evaluation in allEvaluations) {
-      if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
+      if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: _retentionDays)))) {
         await _evaluationService.delete(evaluation.id);
-        await _evaluationService.deleteSignature(signature: evaluation.signaturePath);
+        await _evaluationService.deleteSignature(signaturePath: evaluation.signature.localPath);
         await _evaluationService.deletePhotos(photos: evaluation.photos);
         count += 1;
       }
@@ -321,7 +305,8 @@ class EvaluationController extends ChangeNotifier {
 
     var allSchedules = await _visitScheduleService.getAll();
     for (var schedule in allSchedules) {
-      if (schedule.creationDate.isBefore(DateTime.now().subtract(Duration(days: 120)))) {
+      final limit = DateTime.now().subtract(Duration(days: _retentionDays));
+      if (schedule.creationDate.isBefore(limit) && !schedule.visible) {
         await _visitScheduleService.delete(schedule.id);
         count += 1;
       }

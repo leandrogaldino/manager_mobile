@@ -41,7 +41,7 @@ class EvaluationModel {
   List<EvaluationTechnicianModel> technicians;
   List<EvaluationImageModel> photos;
   String? responsible;
-  EvaluationImageModel? signature;
+  EvaluationImageModel signature;
   String? advice;
   DateTime? lastUpdate;
   EvaluationModel({
@@ -72,7 +72,7 @@ class EvaluationModel {
     required this.technicians,
     required this.photos,
     this.responsible,
-    this.signature,
+    required this.signature,
     this.advice,
     this.lastUpdate,
   })  : creationDate = creationDate ?? DateTimeHelper.now(),
@@ -111,7 +111,7 @@ class EvaluationModel {
       technicians: [],
       photos: [],
       responsible: null,
-      signature: null,
+      signature: EvaluationImageModel(),
       advice: null,
       lastUpdate: null,
     );
@@ -212,7 +212,7 @@ class EvaluationModel {
       'technicians': technicians.map((x) => x.toMap()).toList(),
       'photos': photos.map((x) => x.toMap()).toList(),
       'responsible': responsible,
-      'signature': signature?.toMap(),
+      'signature': signature.toMap(),
       'advice': advice,
       'lastupdate': lastUpdate?.millisecondsSinceEpoch,
     };
@@ -268,7 +268,7 @@ class EvaluationModel {
         ),
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
-      signature: map['signature'] != null ? EvaluationImageModel.fromMap(map['signature'] as Map<String, dynamic>) : null,
+      signature: EvaluationImageModel.fromMap(map['signature'] as Map<String, dynamic>),
       lastUpdate: map['lastupdate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
     );
   }

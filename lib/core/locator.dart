@@ -32,6 +32,7 @@ import 'package:manager_mobile/core/data/sqflite_database.dart';
 import 'package:manager_mobile/services/compressor_interface_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/compressor_unit_service.dart';
+import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/services/personcompressorcoalescent_service.dart';
 import 'package:manager_mobile/services/personcompressor_service.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
@@ -62,10 +63,6 @@ class Locator {
 
     _getIt.registerLazySingleton<LocalDatabase>(
       () => SqfliteDatabase(),
-    );
-
-    _getIt.registerLazySingleton<Auth>(
-      () => AuthService(),
     );
 
     _getIt.registerLazySingleton<LoginController>(
@@ -241,11 +238,14 @@ class Locator {
       ),
     );
 
+    _getIt.registerLazySingleton(() => ImageService());
+
     _getIt.registerLazySingleton(
       () => EvaluationRepository(
         remoteDatabase: _getIt.get<RemoteDatabase>(),
         localDatabase: _getIt.get<LocalDatabase>(),
         storage: _getIt.get<Storage>(),
+        imageService: _getIt.get<ImageService>(),
         personCompressorCoalescentRepository: _getIt.get<PersonCompressorCoalescentRepository>(),
         personCompressorRepository: _getIt.get<PersonCompressorRepository>(),
         productRepository: _getIt.get<ProductRepository>(),
@@ -262,6 +262,7 @@ class Locator {
     _getIt.registerLazySingleton(
       () => EvaluationService(
         evaluationRepository: _getIt.get<EvaluationRepository>(),
+        imageService: _getIt.get<ImageService>(),
         eventBus: _getIt.get<SyncEventBus>(),
       ),
     );

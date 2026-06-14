@@ -138,7 +138,7 @@ class SyncService {
       final int evaluationsCount = await _evaluationService.synchronize(lastSync);
       totalCount += evaluationsCount;
 
-      newVisitScheduleOrEvaluation = newVisitScheduleOrEvaluation == true ? newVisitScheduleOrEvaluation : evaluationsCount > 0;
+      newVisitScheduleOrEvaluation |= (evaluationsCount > 0);
 
       log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTimeHelper.now());
 

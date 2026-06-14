@@ -40,7 +40,7 @@ dependencies:
   path_provider: ^2.1.5  
   validatorless: ^1.2.4
   connectivity_plus: ^7.0.0
-  path: ^1.9.0
+  path: ^1.9.1
   animated_toggle_switch: ^0.8.4
   top_snackbar_flutter: ^3.1.0
   cloud_firestore: ^6.0.3

@@ -38,9 +38,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _readingKey = GlobalKey<FormState>();
     _scrollController = ScrollController();
     _controller = Locator.get<EvaluationController>();
-    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-      await _controller.updateImagesBytes();
-    });
   }
 
   @override
@@ -254,7 +251,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         listenable: _controller,
                         builder: (context, child) {
                           return Visibility(
-                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signature.localPath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
                             child: ExpandableSectionWidget(
                               key: _signatureKey,
                               initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
@@ -269,7 +266,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         listenable: _controller,
                         builder: (context, child) {
                           return Visibility(
-                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signaturePath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signature.localPath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
                             child: SizedBox(height: 15),
                           );
                         },

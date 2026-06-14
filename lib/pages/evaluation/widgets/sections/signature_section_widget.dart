@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
@@ -14,7 +16,6 @@ class SignatureSectionWidget extends StatefulWidget {
 }
 
 class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
-
   @override
   Widget build(BuildContext context) {
     EvaluationController controller = widget.evaluationController;
@@ -29,34 +30,36 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
           GestureDetector(
             onTap: () {
               if (controller.evaluation!.compressor != null && controller.source != SourceTypes.fromSavedWithSign) {
-                FocusScope.of(context).requestFocus(FocusNode());
+                FocusScope.of(context).unfocus();
                 Navigator.of(context).pushNamed(Routes.captureSignature);
-              } else {
-                null;
               }
             },
             child: ListenableBuilder(
                 listenable: controller,
                 builder: (context, child) {
+                  final signaturePath = controller.currentSignaturePath;
+                  final hasSignature = controller.hasSignature;
                   return Container(
-                    width: double.infinity,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
-                    ),
-                    child: controller.signatureBytes == null
-                        ? Center(
-                            child: Text(
-                              'Toque para assinar',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSecondary,
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
+                      ),
+                      child: !hasSignature
+                          ? Center(
+                              child: Text(
+                                'Toque para assinar',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSecondary,
+                                ),
                               ),
-                            ),
-                          )
-                        : Image.memory(controller.signatureBytes!),
-                  );
+                            )
+                          : Image.file(
+                              File(signaturePath!),
+                              fit: BoxFit.contain,
+                            ));
                 }),
           ),
         ],

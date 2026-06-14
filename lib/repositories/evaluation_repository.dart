@@ -19,13 +19,16 @@ import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
 import 'package:manager_mobile/repositories/product_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
+import 'package:manager_mobile/services/image_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:path/path.dart' as path;
 
 class EvaluationRepository {
   final RemoteDatabase _remoteDatabase;
   final LocalDatabase _localDatabase;
   final Storage _storage;
+  final ImageService _imageService;
   final PersonCompressorCoalescentRepository _personCompressorCoalescentRepository;
   final PersonCompressorRepository _personCompressorRepository;
   final PersonRepository _personRepository;
@@ -40,6 +43,7 @@ class EvaluationRepository {
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
     required Storage storage,
+    required ImageService imageService,
     required PersonCompressorCoalescentRepository personCompressorCoalescentRepository,
     required PersonCompressorRepository personCompressorRepository,
     required PersonRepository personRepository,
@@ -53,6 +57,7 @@ class EvaluationRepository {
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,
+        _imageService = imageService,
         _personCompressorCoalescentRepository = personCompressorCoalescentRepository,
         _personCompressorRepository = personCompressorRepository,
         _personRepository = personRepository,
@@ -117,6 +122,9 @@ class EvaluationRepository {
     var photosMap = data['photos'] as List<Map<String, Object?>>;
     data.remove('photos');
     data['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
+    var signatureMap = data['signature'] as Map<String, Object?>;
+    data.remove('signature');
+    data['signaturepath'] = signatureMap['localpath'] as String;
     try {
       String? id = data['id'] as String?;
       bool isInsert = (id == null || id == '');
@@ -280,21 +288,6 @@ class EvaluationRepository {
     }
   }
 
-  Future<String> _saveImage(Uint8List imageData, String fileName) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/$fileName';
-      final file = File(filePath);
-      await file.writeAsBytes(imageData);
-      return filePath;
-    } catch (e, s) {
-      String code = 'EVA007';
-      String message = 'Erro ao salvar a imagem no dispositivo';
-      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
-      throw RepositoryException(code, message);
-    }
-  }
-
   Future<int> synchronize(
     int lastSync, {
     void Function(String id)? onItemSynced,
@@ -371,18 +364,18 @@ class EvaluationRepository {
 
       String rootPath = '$customerDocument/$evaluationId';
 
-      // ---- assinatura ---- (Sobrescreve se já estiver salvo antes)
-      String signFilename = evaluationMap['signaturepath'].toString().split('/').last;
+      //Assinatura
+      String signFilename = path.basename(evaluationMap['signaturepath'].toString());
       String signPath = '$rootPath/signature/$signFilename';
       Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
       await WakelockPlus.enable();
       evaluationMap['signaturepath'] = signPath;
 
-      // ---- fotos ----
+      // Fotos
       var photosListMap = await _evaluationPhotoRepository.getByParentId(evaluationId);
       for (var photoMap in photosListMap) {
-        String photoFilename = photoMap['path'].toString().split('/').last;
+        String photoFilename = path.basename(photoMap['path'].toString());
         String photoPath = '$rootPath/photo/$photoFilename';
         Uint8List photoData = await File(photoMap['path'].toString()).readAsBytes();
         await _storage.uploadFile(photoPath, photoData);
@@ -394,8 +387,7 @@ class EvaluationRepository {
       }
       evaluationMap['photos'] = photosListMap;
 
-      // ---- relacionamentos ----
-
+      // Relacionamentos
       var replacedProductsMap = await _evaluationReplacedProductRepository.getByParentId(evaluationId);
       for (final item in replacedProductsMap) {
         item.remove('id');
@@ -421,10 +413,8 @@ class EvaluationRepository {
       }
       evaluationMap['coalescents'] = coalescentsMap;
 
-      // ---- limpeza / ajustes ----
-
+      // Limpeza e ajustes
       evaluationMap.remove('importedid');
-
       if (evaluationMap['existsincloud'] == 0) {
         evaluationMap['info'] = {
           'importedid': null,
@@ -441,14 +431,14 @@ class EvaluationRepository {
       evaluationMap.remove('visitscheduleid');
       evaluationMap['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
 
-      // ---- envia para nuvem ----
+      // Envio para a núvem
       await _remoteDatabase.set(
         collection: 'evaluations',
         data: evaluationMap,
         id: evaluationId,
       );
 
-      // ---- atualiza local ----
+      // Atualização local
       await _localDatabase.update(
         'evaluation',
         {'existsincloud': 1},
@@ -456,49 +446,43 @@ class EvaluationRepository {
         whereArgs: [evaluationId],
       );
 
-      // 🔔 CALLBACK POR ITEM
+      // Callback por item
       onItemSynced?.call(evaluationId);
     }
   }
 
-  Future<int> _synchronizeFromCloudToLocal(
-    int lastSync, {
-    void Function(String id)? onItemSynced,
-  }) async {
+  Future<int> _synchronizeFromCloudToLocal(int lastSync, {void Function(String id)? onItemSynced}) async {
     int count = 0;
 
-    final remoteResult = await _remoteDatabase.get(
-      collection: 'evaluations',
-      filters: [
-        RemoteDatabaseFilter(
-          field: 'lastupdate',
-          operator: FilterOperator.isGreaterThan,
-          value: lastSync,
-        ),
-      ],
-    );
+    //Obtem as avaliações da núvem
+    final remoteResult = await _remoteDatabase.get(collection: 'evaluations', filters: [
+      RemoteDatabaseFilter(
+        field: 'lastupdate',
+        operator: FilterOperator.isGreaterThan,
+        value: lastSync,
+      ),
+    ]);
 
+    // Itera sobre as avaliações
     for (var evaluationMap in remoteResult) {
       final String evaluationId = evaluationMap['id'].toString();
 
+      // Caso a avaliação já exista, apenas sincroniza o Id importado e a data da ultima atualização.
       final exists = await _localDatabase.isSaved('evaluation', id: evaluationId);
       if (exists) {
         var importedId = evaluationMap['info']['importedid'];
         var lastUpdate = evaluationMap['lastupdate'];
-
         await _localDatabase.update(
           'evaluation',
           {'importedid': importedId, 'lastupdate': lastUpdate},
           where: 'id = ?',
           whereArgs: [evaluationId],
         );
-
         continue;
       }
 
-      count++;
-
-      // ---- filhos ----
+      // Caso seja nova avaliação, faz a transferência total
+      // Filhos
       await _evaluationReplacedProductRepository.deleteByParentId(evaluationId);
       for (var replacedProduct in evaluationMap['replacedproducts']) {
         replacedProduct['evaluationid'] = evaluationId;
@@ -520,55 +504,53 @@ class EvaluationRepository {
         await _evaluationCoalescentRepository.save(coalescent);
       }
 
-      // ---- fotos ----
+      // Fotos
       await _evaluationPhotoRepository.deleteByParentId(evaluationId);
       for (var photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
-        var photoData = await _storage.downloadFile(photo['path']);
-        await WakelockPlus.enable();
-        if (photoData != null) {
-          photo['path'] = await _saveImage(
-            photoData,
-            photo['path'].toString().split('/').last,
-          );
-        } else {
-          photo['path'] = '';
-        }
+        //var photoData = await _storage.downloadFile(photo['path']);
+        //await WakelockPlus.enable();
+        //if (photoData != null) {
+        //photo['path'] = await _saveImage(photoData, photo['path'].toString().split('/').last);
+        //} else {
+        //photo['path'] = '';
+        //}
         await _evaluationPhotoRepository.save(photo);
       }
 
-      // ---- limpeza ----
+      // ---- assinatura ----
+      //var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
+      //await WakelockPlus.enable();
+      //if (signData != null) {
+      //evaluationMap['signaturepath'] = await _saveImage(
+      //signData,
+      //evaluationMap['signaturepath'].toString().split('/').last,
+      //);
+      //} else {
+      ///evaluationMap['signaturepath'] = '';
+      //}
+
+      //Info
+      evaluationMap['existsincloud'] = 1;
+      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
+
+      // Limpeza
       evaluationMap.remove('documentid');
       evaluationMap.remove('replacedproducts');
       evaluationMap.remove('performedservices');
       evaluationMap.remove('technicians');
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
-
-      // ---- assinatura ----
-      var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
-      await WakelockPlus.enable();
-      if (signData != null) {
-        evaluationMap['signaturepath'] = await _saveImage(
-          signData,
-          evaluationMap['signaturepath'].toString().split('/').last,
-        );
-      } else {
-        evaluationMap['signaturepath'] = '';
-      }
-
-      evaluationMap['existsincloud'] = 1;
-      evaluationMap['importedid'] = evaluationMap['info']['importedid'];
       evaluationMap.remove('info');
 
       await _localDatabase.insert('evaluation', evaluationMap);
+      count++;
 
-      // 🔔 CALLBACK POR ITEM NOVO
+      // Callback por item novo
       onItemSynced?.call(evaluationId);
 
       log('......................$count AVALIACOES SINCRONIZADAS......................');
     }
-
     return count;
   }
 

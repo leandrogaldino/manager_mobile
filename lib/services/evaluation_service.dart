@@ -7,6 +7,7 @@ import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/models/evaluation_image_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
+import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/sync_event.dart';
 import 'package:manager_mobile/sync_event_bus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,10 +15,15 @@ import 'package:image/image.dart' as img;
 
 class EvaluationService {
   final EvaluationRepository _evaluationRepository;
+  final ImageService _imageService;
   final SyncEventBus _eventBus;
 
-  EvaluationService({required EvaluationRepository evaluationRepository, required SyncEventBus eventBus})
-      : _evaluationRepository = evaluationRepository,
+  EvaluationService({
+    required EvaluationRepository evaluationRepository,
+    required ImageService imageService,
+    required SyncEventBus eventBus,
+  })  : _evaluationRepository = evaluationRepository,
+        _imageService = imageService,
         _eventBus = eventBus;
 
   Future<bool> get hasPendingEvaluation async {
@@ -39,8 +45,8 @@ class EvaluationService {
       if (!await signatureDirectory.exists()) {
         await signatureDirectory.create(recursive: true);
       }
-      final String fileName = StringHelper.getUniqueString(suffix: '.png');
-      final filePath = '${signatureDirectory.path}/$fileName';
+      final String filename = StringHelper.getUniqueString(suffix: '.png');
+      final filePath = '${signatureDirectory.path}/$filename';
       final file = File(filePath);
       await file.writeAsBytes(signatureBytes);
       return filePath;
@@ -52,20 +58,15 @@ class EvaluationService {
     }
   }
 
-  Future<void> deleteSignature({required String? signature}) async {
-    if (signature == null) return;
-    final file = File(signature);
-    if (await file.exists()) {
-      await file.delete();
-    }
+  Future<void> deleteSignature({required String? signaturePath}) async {
+    if (signaturePath == null) return;
+    _imageService.delete(signaturePath);
   }
 
   Future<void> deletePhotos({required List<EvaluationImageModel> photos}) async {
     for (var photo in photos) {
-      final file = File(photo.localPath);
-      if (await file.exists()) {
-        await file.delete();
-      }
+      if (photo.localPath == null) continue;
+      _imageService.delete(photo.localPath!);
     }
   }
 

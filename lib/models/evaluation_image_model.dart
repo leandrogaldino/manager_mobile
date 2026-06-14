@@ -2,8 +2,8 @@ import 'dart:convert';
 
 class EvaluationImageModel {
   final int? id;
-  final String? localPath;
-  final String? cloudPath;
+  String? localPath;
+  String? cloudPath;
   EvaluationImageModel({
     this.id,
     this.localPath,
