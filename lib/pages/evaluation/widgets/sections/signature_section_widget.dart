@@ -37,28 +37,36 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
             child: ListenableBuilder(
                 listenable: controller,
                 builder: (context, child) {
-                  final signaturePath = controller.currentSignaturePath;
-                  final hasSignature = controller.hasSignature;
+                  final cloudPath = controller.evaluation!.signatureCloudPath;
+                  final localPath = controller.evaluation!.signatureLocalPath;
+                  final hasSignature = cloudPath != null || localPath != null;
+
                   return Container(
                       width: double.infinity,
                       height: 150,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                       ),
-                      child: !hasSignature
-                          ? Center(
+                      child: hasSignature
+                          ? localPath != null
+                              ? Image.file(
+                                  File(localPath),
+                                  fit: BoxFit.contain,
+                                )
+                              : Icon(
+                                  Icons.cloud_download,
+                                  color: Theme.of(context).colorScheme.primary.withAlpha(255),
+                                  size: 38,
+                                )
+                          : Center(
                               child: Text(
                                 'Toque para assinar',
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.onSecondary,
                                 ),
                               ),
-                            )
-                          : Image.file(
-                              File(signaturePath!),
-                              fit: BoxFit.contain,
                             ));
                 }),
           ),

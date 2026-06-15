@@ -41,7 +41,9 @@ class EvaluationModel {
   List<EvaluationTechnicianModel> technicians;
   List<EvaluationImageModel> photos;
   String? responsible;
-  EvaluationImageModel signature;
+  String? signatureTempPath;
+  String? signatureLocalPath;
+  String? signatureCloudPath;
   String? advice;
   DateTime? lastUpdate;
   EvaluationModel({
@@ -72,7 +74,9 @@ class EvaluationModel {
     required this.technicians,
     required this.photos,
     this.responsible,
-    required this.signature,
+    this.signatureTempPath,
+    this.signatureLocalPath,
+    this.signatureCloudPath,
     this.advice,
     this.lastUpdate,
   })  : creationDate = creationDate ?? DateTimeHelper.now(),
@@ -111,7 +115,9 @@ class EvaluationModel {
       technicians: [],
       photos: [],
       responsible: null,
-      signature: EvaluationImageModel(),
+      signatureTempPath: null,
+      signatureLocalPath: null,
+      signatureCloudPath: null,
       advice: null,
       lastUpdate: null,
     );
@@ -145,7 +151,9 @@ class EvaluationModel {
     List<EvaluationTechnicianModel>? technicians,
     List<EvaluationImageModel>? photos,
     String? responsible,
-    EvaluationImageModel? signature,
+    String? signatureTempPath,
+    String? signatureLocalPath,
+    String? signatureCloudPath,
     String? advice,
     DateTime? lastUpdate,
   }) {
@@ -177,7 +185,9 @@ class EvaluationModel {
       technicians: technicians ?? List.of(this.technicians),
       photos: photos ?? List.of(this.photos),
       responsible: responsible ?? this.responsible,
-      signature: signature ?? this.signature,
+      signatureTempPath: signatureTempPath ?? this.signatureTempPath,
+      signatureLocalPath: signatureLocalPath ?? this.signatureLocalPath,
+      signatureCloudPath: signatureCloudPath ?? this.signatureCloudPath,
       advice: advice ?? this.advice,
       lastUpdate: lastUpdate ?? this.lastUpdate,
     );
@@ -212,7 +222,9 @@ class EvaluationModel {
       'technicians': technicians.map((x) => x.toMap()).toList(),
       'photos': photos.map((x) => x.toMap()).toList(),
       'responsible': responsible,
-      'signature': signature.toMap(),
+      'signaturetemppath': signatureTempPath,
+      'signaturelocalpath': signatureLocalPath,
+      'signaturecloudpath': signatureCloudPath,
       'advice': advice,
       'lastupdate': lastUpdate?.millisecondsSinceEpoch,
     };
@@ -268,7 +280,9 @@ class EvaluationModel {
         ),
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,
-      signature: EvaluationImageModel.fromMap(map['signature'] as Map<String, dynamic>),
+      signatureTempPath: map['signaturetemppath'] != null ? map['signaturetemppath'] as String : null,
+      signatureLocalPath: map['signaturelocalpath'] != null ? map['signaturelocalpath'] as String : null,
+      signatureCloudPath: map['signaturecloudpath'] != null ? map['signaturecloudpath'] as String : null,
       lastUpdate: map['lastupdate'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['lastupdate'] ?? 0) as int) : null,
     );
   }
@@ -279,7 +293,7 @@ class EvaluationModel {
 
   @override
   String toString() {
-    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signaturePath: $signature, advice: $advice, lastUpdate: $lastUpdate)';
+    return 'EvaluationModel(id: $id, visible: $visible, importedId: $importedId, visitscheduleid: $visitscheduleid, existsInCloud: $existsInCloud, needProposal: $needProposal, callType: $callType, temperature: $temperature, pressure: $pressure, customer: $customer, compressor: $compressor, creationDate: $creationDate, startTime: $startTime, endTime: $endTime, horimeter: $horimeter, greasing: $greasing, oilType: $oilType, airFilter: $airFilter, oilFilter: $oilFilter, separator: $separator, oil: $oil, coalescents: $coalescents, replacedproducts: $replacedProducts, performedservices: $performedServices, technicians: $technicians, photos: $photos, responsible: $responsible, signatureTempPath: $signatureTempPath, signatureLocalPath: $signatureLocalPath, signatureCloudPath: $signatureCloudPath, advice: $advice, lastUpdate: $lastUpdate)';
   }
 
   @override
@@ -313,7 +327,9 @@ class EvaluationModel {
         listEquals(other.technicians, technicians) &&
         listEquals(other.photos, photos) &&
         other.responsible == responsible &&
-        other.signature == signature &&
+        other.signatureTempPath == signatureTempPath &&
+        other.signatureLocalPath == signatureLocalPath &&
+        other.signatureCloudPath == signatureCloudPath &&
         other.advice == advice &&
         other.lastUpdate == lastUpdate;
   }
@@ -347,7 +363,9 @@ class EvaluationModel {
         technicians.hashCode ^
         photos.hashCode ^
         responsible.hashCode ^
-        signature.hashCode ^
+        signatureTempPath.hashCode ^
+        signatureLocalPath.hashCode ^
+        signatureCloudPath.hashCode ^
         advice.hashCode ^
         lastUpdate.hashCode;
   }

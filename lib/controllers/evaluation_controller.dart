@@ -16,6 +16,7 @@ import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/services/evaluation_service.dart';
 import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/services/visit_schedule_service.dart';
+import 'package:path/path.dart' as path;
 
 class EvaluationController extends ChangeNotifier {
   final EvaluationService _evaluationService;
@@ -34,30 +35,32 @@ class EvaluationController extends ChangeNotifier {
   EvaluationModel? get evaluation => _evaluation;
   SourceTypes? _source;
   SourceTypes? get source => _source;
-
   EvaluationModel? shadow;
-
-  String? _tempSignature;
-
-  String? get tempSignature => _tempSignature;
-
-  String? get currentSignaturePath => source == SourceTypes.fromSavedWithSign ? tempSignature : evaluation!.signature.localPath;
-  bool get hasSignature => currentSignaturePath != null && File(currentSignaturePath!).existsSync();
 
   Future<void> setTempSignature({Uint8List? signatureBytes}) async {
     if (signatureBytes == null) {
-      _tempSignature = null;
+      evaluation!.signatureTempPath = null;
     } else {
-      _tempSignature = await _imageService.saveTemporary(ImageTypes.signature, signatureBytes);
+      evaluation!.signatureTempPath = await _imageService.saveTemporary(ImageTypes.signature, signatureBytes);
+      _evaluation!.signatureLocalPath = null;
     }
     notifyListeners();
   }
 
   Future<void> _setPermanentSignature() async {
-    if (_tempSignature != null && await File(_tempSignature!).exists()) {
-      final signaturePath = await _imageService.savePermanentFromPath(type: ImageTypes.signature, tempImagePath: _tempSignature!);
-      _evaluation!.signature.localPath = signaturePath;
+    if (evaluation!.signatureTempPath != null && await File(evaluation!.signatureTempPath!).exists()) {
+      final signaturePath = await _imageService.savePermanentFromPath(type: ImageTypes.signature, tempImagePath: evaluation!.signatureTempPath!);
+      _evaluation!.signatureLocalPath = signaturePath;
+      _evaluation!.signatureTempPath = null;
     }
+  }
+
+  Future<void> downloadPhoto({required int index, required String cloudPath}) async {
+    final imageData = await _evaluationService.downloadImage(cloudPath);
+    final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.photo, filename: path.basename(cloudPath), imageBytes: imageData);
+    evaluation!.photos[index].localPath = localPath;
+    await _evaluationService.updatePhotoWithLocalPath(evaluation!.id!, evaluation!.photos[index]);
+    notifyListeners();
   }
 
   void setEvaluation(EvaluationModel? evaluation, SourceTypes source) {
@@ -101,11 +104,11 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (_tempSignature != null) {
+      if (evaluation!.signatureTempPath != null) {
         await _setPermanentSignature();
       }
 
-      await _savePhotos(photosBytes: _photosBytes);
+      //await _savePhotos(photosBytes: _photosBytes);
 
       await _evaluationService.save(
         evaluation!.copyWith(),
@@ -289,7 +292,6 @@ class EvaluationController extends ChangeNotifier {
     _source = null;
     _selectedPhotoIndex = null;
     _isSaving = false;
-    _tempSignature = null;
     _uiMessage = null;
   }
 
@@ -300,7 +302,7 @@ class EvaluationController extends ChangeNotifier {
     for (var evaluation in allEvaluations) {
       if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: _retentionDays)))) {
         await _evaluationService.delete(evaluation.id);
-        await _evaluationService.deleteSignature(signaturePath: evaluation.signature.localPath);
+        await _evaluationService.deleteSignature(signaturePath: evaluation.signatureLocalPath);
         await _evaluationService.deletePhotos(photos: evaluation.photos);
         count += 1;
       }

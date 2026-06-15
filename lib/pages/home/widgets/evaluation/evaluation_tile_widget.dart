@@ -38,7 +38,7 @@ class EvaluationTileWidget extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: InkWell(
           onTap: () async {
-            SourceTypes source = evaluation.signature.localPath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
+            SourceTypes source = evaluation.signatureLocalPath != null || evaluation.signatureCloudPath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
             evaluationController.setEvaluation(evaluation, source);
             await Navigator.of(context).pushNamed(Routes.evaluation);
             await homeController.loadInitial();

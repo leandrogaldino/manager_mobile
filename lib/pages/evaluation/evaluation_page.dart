@@ -251,7 +251,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         listenable: _controller,
                         builder: (context, child) {
                           return Visibility(
-                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signature.localPath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            visible: _controller.evaluation!.compressor != null &&
+                                ((_controller.source == SourceTypes.fromSavedWithSign && (_controller.evaluation!.signatureLocalPath != null || _controller.evaluation!.signatureCloudPath != null)) || (_controller.source != SourceTypes.fromSavedWithSign)),
                             child: ExpandableSectionWidget(
                               key: _signatureKey,
                               initiallyExpanded: _controller.source == SourceTypes.fromSavedWithoutSign,
@@ -266,7 +267,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         listenable: _controller,
                         builder: (context, child) {
                           return Visibility(
-                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signature.localPath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
+                            visible: _controller.evaluation!.compressor != null && ((_controller.source == SourceTypes.fromSavedWithSign && _controller.evaluation!.signatureLocalPath != null) || (_controller.source != SourceTypes.fromSavedWithSign)),
                             child: SizedBox(height: 15),
                           );
                         },

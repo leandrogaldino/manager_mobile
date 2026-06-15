@@ -28,6 +28,7 @@ import 'package:manager_mobile/repositories/visit_schedule_repository.dart';
 import 'package:manager_mobile/repositories/service_repository.dart';
 import 'package:manager_mobile/core/data/firestore_database.dart';
 import 'package:manager_mobile/core/data/sqflite_database.dart';
+import 'package:manager_mobile/services/auth_service.dart';
 import 'package:manager_mobile/services/compressor_interface_service.dart';
 import 'package:manager_mobile/services/compressor_service.dart';
 import 'package:manager_mobile/services/compressor_unit_service.dart';
@@ -62,6 +63,12 @@ class Locator {
 
     _getIt.registerLazySingleton<LocalDatabase>(
       () => SqfliteDatabase(),
+    );
+
+    _getIt.registerLazySingleton(() => ImageService());
+
+    _getIt.registerLazySingleton<Auth>(
+      () => AuthService(),
     );
 
     _getIt.registerLazySingleton<LoginController>(
@@ -236,8 +243,6 @@ class Locator {
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
-
-    _getIt.registerLazySingleton(() => ImageService());
 
     _getIt.registerLazySingleton(
       () => EvaluationRepository(

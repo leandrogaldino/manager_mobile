@@ -38,6 +38,10 @@ class EvaluationService {
     return _evaluationRepository.maximumDate;
   }
 
+  Future<Uint8List> downloadImage(String path) async {
+    return await _evaluationRepository.downloadImage(path);
+  }
+
   Future<String> saveSignature({required Uint8List signatureBytes, required bool asTemporary}) async {
     try {
       final rootDirectory = asTemporary ? await getTemporaryDirectory() : await getApplicationDocumentsDirectory();
@@ -136,10 +140,6 @@ class EvaluationService {
     return EvaluationModel.fromMap(savedMap);
   }
 
-  // Future<void> updateSignature(String evaluationId, String signaturePath) async {
-  //   await _evaluationRepository.updateSignature(evaluationId, signaturePath);
-  // }
-
   Future<int> synchronize(int lastSync) async {
     return _evaluationRepository.synchronize(
       lastSync,
@@ -149,5 +149,9 @@ class EvaluationService {
         );
       },
     );
+  }
+
+  Future<void> updatePhotoWithLocalPath(String evaluationId, EvaluationImageModel model) async {
+    await _evaluationRepository.updatePhotoWithLocalPath(evaluationId, model.toMap());
   }
 }

@@ -4,10 +4,12 @@ class EvaluationImageModel {
   final int? id;
   String? localPath;
   String? cloudPath;
+  String? tempPath;
   EvaluationImageModel({
     this.id,
     this.localPath,
     this.cloudPath,
+    this.tempPath,
   });
 
   Map<String, dynamic> toMap() {
@@ -15,6 +17,7 @@ class EvaluationImageModel {
       'id': id,
       'localpath': localPath,
       'cloudpath': cloudPath,
+      'temppath': tempPath,
     };
   }
 
@@ -23,6 +26,7 @@ class EvaluationImageModel {
       id: map['id'] != null ? map['id'] as int : null,
       localPath: map['localpath'] != null ? map['localpath'] as String : null,
       cloudPath: map['cloudpath'] != null ? map['cloudpath'] as String : null,
+      tempPath: map['temppath'] != null ? map['temppath'] as String : null,
     );
   }
 
@@ -31,15 +35,15 @@ class EvaluationImageModel {
   factory EvaluationImageModel.fromJson(String source) => EvaluationImageModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'EvaluationImageModel(id: $id, localPath: $localPath, cloudPath: $cloudPath)';
+  String toString() => 'EvaluationImageModel(id: $id, localPath: $localPath, cloudPath: $cloudPath, tempPath: $tempPath)';
 
   @override
   bool operator ==(covariant EvaluationImageModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.localPath == localPath && other.cloudPath == cloudPath;
+    return other.id == id && other.localPath == localPath && other.cloudPath == cloudPath && other.tempPath == tempPath;
   }
 
   @override
-  int get hashCode => id.hashCode ^ localPath.hashCode ^ cloudPath.hashCode;
+  int get hashCode => id.hashCode ^ localPath.hashCode ^ cloudPath.hashCode ^ tempPath.hashCode;
 }

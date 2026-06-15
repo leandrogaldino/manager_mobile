@@ -504,15 +504,10 @@ class EvaluationRepository {
 
       // Fotos
       await _evaluationPhotoRepository.deleteByParentId(evaluationId);
-      for (var photo in evaluationMap['photos']) {
+      for (Map<String, dynamic> photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
-        //var photoData = await _storage.downloadFile(photo['path']);
-        //await WakelockPlus.enable();
-        //if (photoData != null) {
-        //photo['path'] = await _saveImage(photoData, photo['path'].toString().split('/').last);
-        //} else {
-        //photo['path'] = '';
-        //}
+        photo['cloudpath'] = photo['path'];
+        photo.remove('path');
         await _evaluationPhotoRepository.save(photo);
       }
 
@@ -540,7 +535,12 @@ class EvaluationRepository {
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
       evaluationMap.remove('info');
+      //DatabaseException(table evaluation has no column named signaturepath
 
+      evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
+      evaluationMap.remove('signaturepath');
+
+      // Salva
       await _localDatabase.insert('evaluation', evaluationMap);
       count++;
 
@@ -601,5 +601,30 @@ class EvaluationRepository {
     evaluationData['photos'] = photos;
 
     return evaluationData;
+  }
+
+  Future<Uint8List> downloadImage(String path) async {
+    var photoData = await _storage.downloadFile(path);
+    if (photoData != null) {
+      return photoData;
+    } else {
+      return Uint8List(0);
+    }
+  }
+
+  Future<void> updatePhotoWithLocalPath(String evaluationId, Map<String, Object?> photoData) async {
+    try {
+      photoData.remove('temppath');
+      photoData['evaluationid'] = evaluationId;
+      int id = await _localDatabase.update('evaluationphoto', photoData, where: 'id = ?', whereArgs: [photoData['id']]);
+      photoData['id'] = id;
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e, s) {
+      String code = 'EPH004';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
+    }
   }
 }

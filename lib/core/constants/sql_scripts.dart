@@ -200,7 +200,8 @@ class SQLScripts {
       separator INTEGER NOT NULL,
       oil INTEGER NOT NULL,
       responsible TEXT NOT NULL,      
-      signaturepath TEXT DEFAULT NULL,
+      signaturelocalpath TEXT,
+      signaturecloudpath TEXT,
       advice TEXT,
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (customerid) REFERENCES person (id) ON DELETE RESTRICT,
@@ -256,7 +257,8 @@ class SQLScripts {
   static const String createTableEvaluationPhoto = '''
     CREATE TABLE evaluationphoto (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      path TEXT NOT NULL,
+      localpath TEXT,
+      cloudpath TEXT,
       evaluationid TEXT NOT NULL,
       FOREIGN KEY (evaluationid) REFERENCES evaluation (id) ON DELETE CASCADE
     );
