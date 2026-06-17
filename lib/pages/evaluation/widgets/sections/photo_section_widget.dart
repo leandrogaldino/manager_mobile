@@ -44,6 +44,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
         ),
         itemBuilder: (context, index) {
           final photo = index < controller.evaluation!.photos.length ? controller.evaluation!.photos[index] : null;
+          final tempPath = photo?.tempPath;
           final localPath = photo?.localPath;
           final cloudPath = photo?.cloudPath;
           final bool isPhotoTaken = localPath != null || cloudPath != null;
@@ -85,11 +86,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 }
               } else if (localPath != null) {
                 controller.setSelectedPhotoIndex(index);
-
-                await Navigator.pushNamed(
-                  context,
-                  Routes.viewPhoto,
-                );
+                await Navigator.pushNamed(context, Routes.viewPhoto);
                 if (!mounted) return;
                 controller.setSelectedPhotoIndex(null);
               } else {
@@ -101,7 +98,9 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 if (file != null) {
                   controller.addPhoto(
                     EvaluationImageModel(
-                      localPath: file.path,
+                      tempPath: file.path,
+                      localPath: null,
+                      cloudPath: null,
                     ),
                   );
                 }
