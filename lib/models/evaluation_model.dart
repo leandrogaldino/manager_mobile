@@ -9,7 +9,7 @@ import 'package:manager_mobile/models/evaluation_replaced_product_model.dart';
 import 'package:manager_mobile/models/person_model.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/models/evaluation_coalescent_model.dart';
-import 'package:manager_mobile/models/evaluation_image_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/models/evaluation_technician_model.dart';
 import 'package:manager_mobile/models/visitschedule_model.dart';
 

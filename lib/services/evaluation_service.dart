@@ -5,7 +5,7 @@ import 'package:manager_mobile/core/exceptions/service_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/helper/string_helper.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
-import 'package:manager_mobile/models/evaluation_image_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/sync_event.dart';

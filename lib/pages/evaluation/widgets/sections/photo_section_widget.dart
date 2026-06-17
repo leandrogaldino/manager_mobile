@@ -5,7 +5,7 @@ import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/core/util/message.dart';
-import 'package:manager_mobile/models/evaluation_image_model.dart';
+import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 
 class PhotoSectionWidget extends StatefulWidget {

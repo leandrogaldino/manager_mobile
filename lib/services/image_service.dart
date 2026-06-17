@@ -8,23 +8,33 @@ import 'package:path/path.dart' as path;
 class ImageService {
   static const _tempFolder = 'temp';
 
-  Future<String> saveTemporary(ImageTypes type, Uint8List imageBytes) async {
-    final tempDir = await getApplicationDocumentsDirectory();
-    final finalDir = Directory('${tempDir.path}/$_tempFolder');
-    await finalDir.create(recursive: true);
+  Future<String> saveTemporaryFromBytes(ImageTypes type, Uint8List imageBytes) async {
+    final docDir = await getApplicationDocumentsDirectory();
+    final tempDir = Directory('${docDir.path}/$_tempFolder/${type.folderName}');
+    await tempDir.create(recursive: true);
     final filename = StringHelper.getUniqueString(suffix: type.extension);
-    final file = File('${finalDir.path}/$filename');
+    final file = File('${tempDir.path}/$filename');
     await file.writeAsBytes(imageBytes);
     return file.path;
   }
 
+  Future<String> saveTemporaryFromPath({required ImageTypes type, required String tempImagePath}) async {
+    final docDir = await getApplicationDocumentsDirectory();
+    final tempDir = Directory('${docDir.path}/$_tempFolder/${type.folderName}');
+    await tempDir.create(recursive: true);
+    final filename = StringHelper.getUniqueString(suffix: type.extension);
+    final file = File(tempImagePath);
+    final movedFile = await file.rename('${tempDir.path}/$filename');
+    return movedFile.path;
+  }
+
   Future<String> savePermanentFromPath({required ImageTypes type, required String tempImagePath}) async {
     final docDir = await getApplicationDocumentsDirectory();
-    final finalDir = Directory('${docDir.path}/${type.folderName}');
-    await finalDir.create(recursive: true);
+    final tempDir = Directory('${docDir.path}/${type.folderName}');
+    await tempDir.create(recursive: true);
     final filename = path.basename(tempImagePath);
     final file = File(tempImagePath);
-    final movedFile = await file.rename('${finalDir.path}/$filename');
+    final movedFile = await file.rename('${tempDir.path}/$filename');
     return movedFile.path;
   }
 

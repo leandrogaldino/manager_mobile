@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:manager_mobile/core/enums/image_types.dart';
+import 'package:manager_mobile/services/image_service.dart';
 
 class TakePhotoPage extends StatefulWidget {
   const TakePhotoPage({super.key});
@@ -37,8 +39,10 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
         return;
       }
 
-      final file = File(photo.path);
-
+      final ImageService ims = ImageService();
+      var tempPath = await ims.saveTemporaryFromPath(type: ImageTypes.photo, tempImagePath: photo.path);
+      final file = File(tempPath);
+      if (!mounted) return;
       Navigator.pop(context, file);
     } catch (e) {
       debugPrint('Erro ao abrir câmera: $e');
