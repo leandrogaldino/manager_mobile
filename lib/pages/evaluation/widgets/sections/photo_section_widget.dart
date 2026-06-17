@@ -50,7 +50,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
           final bool isPhotoTaken = localPath != null || cloudPath != null;
           return GestureDetector(
             onTap: () async {
-              if (cloudPath != null && localPath == null) {
+              if (cloudPath != null && localPath == null && tempPath == null) {
                 if (_downloadingPhotos.contains(cloudPath)) {
                   return;
                 }
