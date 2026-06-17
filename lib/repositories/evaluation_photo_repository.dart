@@ -5,10 +5,10 @@ import 'package:manager_mobile/core/exceptions/repository_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 
-class EvaluationImageRepository {
+class EvaluationPhotoRepository {
   final LocalDatabase _localDatabase;
 
-  EvaluationImageRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
+  EvaluationPhotoRepository({required LocalDatabase localDatabase}) : _localDatabase = localDatabase;
 
   Future<Map<String, Object?>> save(Map<String, Object?> data) async {
     try {

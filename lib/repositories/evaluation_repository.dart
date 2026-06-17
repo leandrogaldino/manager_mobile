@@ -11,7 +11,7 @@ import 'package:manager_mobile/repositories/evaluation_performed_service_reposit
 import 'package:manager_mobile/repositories/evaluation_replaced_product_repository.dart';
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_image_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
 import 'package:manager_mobile/interfaces/remote_database.dart';
@@ -37,7 +37,7 @@ class EvaluationRepository {
   final EvaluationReplacedProductRepository _evaluationReplacedProductRepository;
   final EvaluationPerformedServiceRepository _evaluationPerformedServiceRepository;
   final EvaluationTechnicianRepository _evaluationTechnicianRepository;
-  final EvaluationImageRepository _evaluationPhotoRepository;
+  final EvaluationPhotoRepository _evaluationPhotoRepository;
   EvaluationRepository({
     required RemoteDatabase remoteDatabase,
     required LocalDatabase localDatabase,
@@ -52,7 +52,7 @@ class EvaluationRepository {
     required EvaluationReplacedProductRepository evaluationReplacedProductRepository,
     required EvaluationPerformedServiceRepository evaluationPerformedServiceRepository,
     required EvaluationTechnicianRepository evaluationTechnicianRepository,
-    required EvaluationImageRepository evaluationPhotoRepository,
+    required EvaluationPhotoRepository evaluationPhotoRepository,
   })  : _remoteDatabase = remoteDatabase,
         _localDatabase = localDatabase,
         _storage = storage,

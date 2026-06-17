@@ -18,7 +18,7 @@ import 'package:manager_mobile/repositories/evaluation_replaced_product_reposito
 import 'package:manager_mobile/repositories/personcompressorcoalescent_repository.dart';
 import 'package:manager_mobile/repositories/personcompressor_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_coalescent_repository.dart';
-import 'package:manager_mobile/repositories/evaluation_image_repository.dart';
+import 'package:manager_mobile/repositories/evaluation_photo_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_repository.dart';
 import 'package:manager_mobile/repositories/evaluation_technician_repository.dart';
 import 'package:manager_mobile/repositories/person_repository.dart';
@@ -239,7 +239,7 @@ class Locator {
     );
 
     _getIt.registerLazySingleton(
-      () => EvaluationImageRepository(
+      () => EvaluationPhotoRepository(
         localDatabase: _getIt.get<LocalDatabase>(),
       ),
     );
@@ -259,7 +259,7 @@ class Locator {
         evaluationReplacedProductRepository: _getIt.get<EvaluationReplacedProductRepository>(),
         evaluationPerformedServiceRepository: _getIt.get<EvaluationPerformedServiceRepository>(),
         evaluationTechnicianRepository: _getIt.get<EvaluationTechnicianRepository>(),
-        evaluationPhotoRepository: _getIt.get<EvaluationImageRepository>(),
+        evaluationPhotoRepository: _getIt.get<EvaluationPhotoRepository>(),
       ),
     );
 
