@@ -2,13 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
+import 'package:manager_mobile/core/enums/photo_state.dart';
 import 'package:manager_mobile/core/helper/Pickers/yes_no_picker.dart';
 import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_photo_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
-import 'package:manager_mobile/pages/photos/photos_page.dart';
-import 'package:timezone/timezone.dart';
 
 class PhotoSectionWidget extends StatefulWidget {
   const PhotoSectionWidget({
@@ -49,54 +48,19 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
           final tempPath = photo?.tempPath;
           final localPath = photo?.localPath;
           final cloudPath = photo?.cloudPath;
-          final bool isPhotoTaken = localPath != null || cloudPath != null;
+          final bool isPhotoTaken = tempPath != null || localPath != null || cloudPath != null;
           final state = _getPhotoState(tempPath, localPath, cloudPath);
           return GestureDetector(
             onTap: () async {
-              if (state == PhotoState.downloading) return;
-                final hasInternet = await InternetConnectionStream.hasInternetNow();
-                if (!hasInternet) {
-                  if (!context.mounted) return;
-                  Message.showInfoSnackbar(context: context,message: 'Sem conexão com a internet');
+              switch (state) {
+                case PhotoState.downloading:
                   return;
-                }
-
-                setState(() {
-                  _downloadingPhotos.add(cloudPath);
-                });
-
-                try {
-                  await controller.downloadPhoto(
-                    index: index,
-                    cloudPath: cloudPath,
-                  );
-                } finally {
-                  if (mounted) {
-                    setState(() {
-                      _downloadingPhotos.remove(cloudPath);
-                    });
-                  }
-                }
-              } else if (localPath != null) {
-                controller.setSelectedPhotoIndex(index);
-                await Navigator.pushNamed(context, Routes.viewPhoto);
-                if (!mounted) return;
-                controller.setSelectedPhotoIndex(null);
-              } else {
-                final File? file = await Navigator.pushNamed<File?>(
-                  context,
-                  Routes.takePhoto,
-                );
-                if (!mounted) return;
-                if (file != null) {
-                  controller.addPhoto(
-                    EvaluationImageModel(
-                      tempPath: file.path,
-                      localPath: null,
-                      cloudPath: null,
-                    ),
-                  );
-                }
+                case PhotoState.cloud:
+                  _downloadPhoto(index, cloudPath!);
+                case PhotoState.temp || PhotoState.local:
+                  _viewPhoto(index);
+                case PhotoState.empty:
+                  _takePhoto();
               }
             },
             onLongPress: () async {
@@ -106,7 +70,6 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                       question: 'Deseja excluir essa foto?',
                     ) ??
                     false;
-
                 if (isYes) {
                   controller.removePhoto(controller.evaluation!.photos[index]);
                 }
@@ -118,18 +81,84 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
               ),
-              child: _downloadingPhotos.contains(cloudPath)
-                  ? _downloadingWidget()
-                  : isPhotoTaken
-                      ? localPath != null
-                          ? _viewLocalPhotoWidget(localPath)
-                          : _downloadPhotoWidget(context)
-                      : _emptyPhotoWidget(),
+              child: _buildPhotoContent(state: state, tempPath: tempPath, localPath: localPath),
             ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _takePhoto() async {
+    final controller = widget.evaluationController;
+    final File? file = await Navigator.pushNamed<File?>(
+      context,
+      Routes.takePhoto,
+    );
+    if (!mounted) return;
+    if (file != null) {
+      controller.addPhoto(
+        EvaluationImageModel(
+          tempPath: file.path,
+          localPath: null,
+          cloudPath: null,
+        ),
+      );
+    }
+  }
+
+  Widget _buildPhotoContent({required PhotoState state, String? tempPath, String? localPath}) {
+    switch (state) {
+      case PhotoState.downloading:
+        return _downloadingWidget();
+
+      case PhotoState.temp:
+        return _viewPhotoWidget(tempPath!);
+
+      case PhotoState.local:
+        return _viewPhotoWidget(localPath!);
+
+      case PhotoState.cloud:
+        return _downloadPhotoWidget();
+
+      case PhotoState.empty:
+        return const _EmptyPhotoWidget();
+    }
+  }
+
+  Future<void> _viewPhoto(int index) async {
+    final controller = widget.evaluationController;
+    controller.setSelectedPhotoIndex(index);
+    await Navigator.pushNamed(context, Routes.viewPhoto);
+    if (!mounted) return;
+    controller.setSelectedPhotoIndex(null);
+  }
+
+  Future<void> _downloadPhoto(int index, String cloudPath) async {
+    final hasInternet = await InternetConnectionStream.hasInternetNow();
+    final controller = widget.evaluationController;
+    if (!hasInternet) {
+      if (!mounted) return;
+      Message.showInfoSnackbar(context: context, message: 'Sem conexão com a internet');
+      return;
+    }
+
+    setState(() {
+      _downloadingPhotos.add(cloudPath);
+    });
+
+    try {
+      await controller.downloadPhoto(
+        index: index,
+        cloudPath: cloudPath,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _downloadingPhotos.remove(cloudPath);
+        });
+      }
+    }
   }
 
   PhotoState _getPhotoState(String? tempPath, String? localPath, String? cloudPath) {
@@ -140,7 +169,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     return PhotoState.empty;
   }
 
-  Icon _downloadPhotoWidget(BuildContext context) {
+  Icon _downloadPhotoWidget() {
     return Icon(
       Icons.cloud_download,
       color: Theme.of(context).colorScheme.primary,
@@ -148,11 +177,11 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     );
   }
 
-  ClipRRect _viewLocalPhotoWidget(String localPath) {
+  ClipRRect _viewPhotoWidget(String path) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Image.file(
-        File(localPath),
+        File(path),
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
@@ -179,10 +208,8 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
   }
 }
 
-class _emptyPhotoWidget extends StatelessWidget {
-  const _emptyPhotoWidget({
-    super.key,
-  });
+class _EmptyPhotoWidget extends StatelessWidget {
+  const _EmptyPhotoWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -206,12 +233,4 @@ class _emptyPhotoWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-enum PhotoState {
-  empty,
-  downloading,
-  cloud,
-  local,
-  temp,
 }

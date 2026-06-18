@@ -80,7 +80,7 @@ class _PhotosPageState extends State<PhotosPage> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    final file = File(photos[index].localPath!);
+                    final file = File(photos[index].localPath ?? photos[index].tempPath!);
 
                     return FutureBuilder<bool>(
                       future: _isLandscape(file),

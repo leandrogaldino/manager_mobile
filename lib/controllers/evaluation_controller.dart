@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/image_types.dart';
@@ -37,25 +35,20 @@ class EvaluationController extends ChangeNotifier {
   SourceTypes? get source => _source;
   EvaluationModel? shadow;
 
-  Future<void> setTempSignature({Uint8List? signatureBytes}) async {
-    if (signatureBytes == null) {
-      evaluation!.signatureTempPath = null;
-    } else {
-      evaluation!.signatureTempPath = await _imageService.saveTemporaryFromBytes(ImageTypes.signature, signatureBytes);
-      _evaluation!.signatureLocalPath = null;
-    }
+  Future<void> downloadSignature() async {
+    //TODO: TRY
+    final cloudPath = evaluation!.signatureCloudPath!;
+    final imageData = await _evaluationService.downloadImage(cloudPath);
+    final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.signature, filename: path.basename(cloudPath), imageBytes: imageData);
+    evaluation!.signatureTempPath = null;
+    evaluation!.signatureLocalPath = localPath;
+    //await _evaluationService.updateSignatureWithLocalPath(evaluation!.id!, localPath);
     notifyListeners();
   }
 
-  Future<void> _setPermanentSignature() async {
-    if (evaluation!.signatureTempPath != null && await File(evaluation!.signatureTempPath!).exists()) {
-      final signaturePath = await _imageService.savePermanentFromPath(type: ImageTypes.signature, tempImagePath: evaluation!.signatureTempPath!);
-      _evaluation!.signatureLocalPath = signaturePath;
-      _evaluation!.signatureTempPath = null;
-    }
-  }
-
   Future<void> downloadPhoto({required int index, required String cloudPath}) async {
+    //TODO: TRY
+    //TODO: JA TEM O INDEX, VER SE DA PRA FAZER SEM O PARAMETRO cloudPath
     final imageData = await _evaluationService.downloadImage(cloudPath);
     final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.photo, filename: path.basename(cloudPath), imageBytes: imageData);
     evaluation!.photos[index].localPath = localPath;
@@ -104,12 +97,6 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      if (evaluation!.signatureTempPath != null) {
-        await _setPermanentSignature();
-      }
-
-      //await _savePhotos(photosBytes: _photosBytes);
-
       await _evaluationService.save(
         evaluation!.copyWith(),
         schedule?.id,
