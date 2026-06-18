@@ -148,10 +148,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     });
 
     try {
-      await controller.downloadPhoto(
-        index: index,
-        cloudPath: cloudPath,
-      );
+      await controller.downloadPhoto(index: index);
     } finally {
       if (mounted) {
         setState(() {

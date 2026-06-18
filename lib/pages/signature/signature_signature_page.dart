@@ -57,6 +57,7 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
     final bytes = await _signatureController.toPngBytes();
 
     if (bytes == null) {
+      _evaluationController.evaluation!.signatureCloudPath = '';
       await _evaluationController.setTempSignature(signatureBytes: null);
     } else {
       await _evaluationController.setTempSignature(signatureBytes: bytes);

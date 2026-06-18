@@ -1,12 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/enums/image_types.dart';
 import 'package:manager_mobile/services/image_service.dart';
 
 class TakePhotoPage extends StatefulWidget {
-  const TakePhotoPage({super.key});
+  const TakePhotoPage({
+    super.key,
+    required this.evaluationController,
+  });
 
+  final EvaluationController evaluationController;
   @override
   State<TakePhotoPage> createState() => _TakePhotoPageState();
 }
@@ -37,7 +42,7 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
         Navigator.pop(context);
         return;
       }
-
+      //TODO: ISSO PRECISA ESTAR NO EVALUATIONCONTROLLER E VIR DO LOCATOR. DEPOIS FAZER A MESMA COISA NA ASSINATURA
       final ImageService ims = ImageService();
       var tempPath = await ims.saveTemporaryFromPath(type: ImageTypes.photo, tempImagePath: photo.path);
       final file = File(tempPath);
