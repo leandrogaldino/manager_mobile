@@ -119,10 +119,9 @@ class EvaluationRepository {
     data.remove('technicians');
     var photosMap = data['photos'] as List<Map<String, Object?>>;
     data.remove('photos');
+
     data['lastupdate'] = DateTimeHelper.now().millisecondsSinceEpoch;
-    var signatureMap = data['signature'] as Map<String, Object?>;
-    data.remove('signature');
-    data['signaturepath'] = signatureMap['localpath'] as String;
+    data.remove('signaturetemppath');
     try {
       String? id = data['id'] as String?;
       bool isInsert = (id == null || id == '');
@@ -165,6 +164,7 @@ class EvaluationRepository {
       await _evaluationPhotoRepository.deleteByParentId(id);
       for (var photoMap in photosMap) {
         photoMap['evaluationid'] = id;
+        photoMap.remove('temppath');
         photoMap = await _evaluationPhotoRepository.save(photoMap);
       }
       data['coalescents'] = coalescentsMap;
@@ -331,7 +331,7 @@ class EvaluationRepository {
     );
 
     for (var evaluationMap in localResult) {
-      if (evaluationMap['signaturepath'] == null) continue;
+      if (evaluationMap['signaturelocalpath'] == null) continue;
 
       var cloudResult = await _remoteDatabase.get(collection: 'evaluations', filters: [RemoteDatabaseFilter(field: 'id', operator: FilterOperator.isEqualTo, value: evaluationMap['id'])]);
       var existsInCloud = cloudResult.isNotEmpty;
@@ -363,22 +363,22 @@ class EvaluationRepository {
       String rootPath = '$customerDocument/$evaluationId';
 
       //Assinatura
-      String signFilename = path.basename(evaluationMap['signaturepath'].toString());
+      String signFilename = path.basename(evaluationMap['signaturelocalpath'].toString());
       String signPath = '$rootPath/signature/$signFilename';
-      Uint8List signData = await File(evaluationMap['signaturepath'].toString()).readAsBytes();
+      Uint8List signData = await File(evaluationMap['signaturelocalpath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
       await WakelockPlus.enable();
-      evaluationMap['signaturepath'] = signPath;
+      evaluationMap['signaturecloudpath'] = signPath;
 
       // Fotos
       var photosListMap = await _evaluationPhotoRepository.getByParentId(evaluationId);
       for (var photoMap in photosListMap) {
-        String photoFilename = path.basename(photoMap['path'].toString());
+        String photoFilename = path.basename(photoMap['localpath'].toString());
         String photoPath = '$rootPath/photo/$photoFilename';
-        Uint8List photoData = await File(photoMap['path'].toString()).readAsBytes();
+        Uint8List photoData = await File(photoMap['localpath'].toString()).readAsBytes();
         await _storage.uploadFile(photoPath, photoData);
         await WakelockPlus.enable();
-        photoMap['path'] = photoPath;
+        photoMap['cloudpath'] = photoPath;
       }
       for (final item in photosListMap) {
         item.remove('id');
@@ -506,8 +506,8 @@ class EvaluationRepository {
       await _evaluationPhotoRepository.deleteByParentId(evaluationId);
       for (Map<String, dynamic> photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
-        photo['cloudpath'] = photo['path'];
-        photo.remove('path');
+        //photo['cloudpath'] = photo['path'];
+        //photo.remove('path');
         await _evaluationPhotoRepository.save(photo);
       }
 
@@ -537,8 +537,8 @@ class EvaluationRepository {
       evaluationMap.remove('info');
       //DatabaseException(table evaluation has no column named signaturepath
 
-      evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
-      evaluationMap.remove('signaturepath');
+      //evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
+      //evaluationMap.remove('signaturepath');
 
       // Salva
       await _localDatabase.insert('evaluation', evaluationMap);
@@ -622,6 +622,19 @@ class EvaluationRepository {
       rethrow;
     } on Exception catch (e, s) {
       String code = 'EPH004';
+      String message = 'Erro ao salvar os dados';
+      log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
+      throw RepositoryException(code, message);
+    }
+  }
+
+  Future<void> updateSignatureWithLocalPath(String evaluationId, String localPath) async {
+    try {
+      await _localDatabase.update('evaluation', {'signaturelocalpath': localPath}, where: 'id = ?', whereArgs: [evaluationId]);
+    } on LocalDatabaseException {
+      rethrow;
+    } on Exception catch (e, s) {
+      String code = 'EPH005';
       String message = 'Erro ao salvar os dados';
       log('[$code] $message', time: DateTimeHelper.now(), error: e, stackTrace: s);
       throw RepositoryException(code, message);

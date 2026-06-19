@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -45,21 +46,35 @@ class EvaluationController extends ChangeNotifier {
     final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.signature, filename: path.basename(cloudPath), imageBytes: imageData);
     evaluation!.signatureTempPath = null;
     evaluation!.signatureLocalPath = localPath;
-    //await _evaluationService.updateSignatureWithLocalPath(evaluation!.id!, localPath);
+    await _evaluationService.updateSignatureWithLocalPath(evaluation!.id!, localPath);
     notifyListeners();
   }
 
-  Future<void> setTempSignature({Uint8List? signatureBytes}) async {
+  Future<String> saveTempPhoto({required String path}) async {
+    var tempPath = await _imageService.saveTemporaryFromPath(type: ImageTypes.photo, tempImagePath: path);
+    return tempPath;
+  }
+
+  Future<void> saveTempSignature({Uint8List? signatureBytes}) async {
     if (signatureBytes == null) {
       evaluation!.signatureTempPath = null;
     } else {
       evaluation!.signatureTempPath = await _imageService.saveTemporaryFromBytes(ImageTypes.signature, signatureBytes);
       _evaluation!.signatureLocalPath = null;
+      _evaluation!.signatureCloudPath = null;
     }
     notifyListeners();
   }
 
-  Future<void> _setPermanentSignature() async {
+  Future<void> _savePermanentPhoto(EvaluationPhotoModel photo) async {
+    if (photo.tempPath != null && await File(photo.tempPath!).exists()) {
+      final photoPath = await _imageService.savePermanentFromPath(type: ImageTypes.photo, tempImagePath: photo.tempPath!);
+      photo.localPath = photoPath;
+      photo.tempPath = null;
+    }
+  }
+
+  Future<void> _savePermanentSignature() async {
     if (evaluation!.signatureTempPath != null && await File(evaluation!.signatureTempPath!).exists()) {
       final signaturePath = await _imageService.savePermanentFromPath(type: ImageTypes.signature, tempImagePath: evaluation!.signatureTempPath!);
       _evaluation!.signatureLocalPath = signaturePath;
@@ -69,7 +84,6 @@ class EvaluationController extends ChangeNotifier {
 
   Future<void> downloadPhoto({required int index}) async {
     //TODO: TRY
-    //TODO: JA TEM O INDEX, VER SE DA PRA FAZER SEM O PARAMETRO cloudPath
     final cloudPath = evaluation!.photos[index].cloudPath!;
     final imageData = await _evaluationService.downloadImage(cloudPath);
     final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.photo, filename: path.basename(cloudPath), imageBytes: imageData);
@@ -121,7 +135,13 @@ class EvaluationController extends ChangeNotifier {
 
     try {
       if (evaluation!.signatureTempPath != null) {
-        await _setPermanentSignature();
+        await _savePermanentSignature();
+      }
+
+      for (var photo in evaluation!.photos) {
+        if (photo.tempPath != null) {
+          await _savePermanentPhoto(photo);
+        }
       }
 
       await _evaluationService.save(evaluation!.copyWith(), schedule?.id);
@@ -132,8 +152,9 @@ class EvaluationController extends ChangeNotifier {
           false,
         );
       }
-    } catch (e) {
+    } catch (e, s) {
       _uiMessage = 'Erro ao salvar avaliação';
+      log(e.toString(), stackTrace: s);
     } finally {
       _isSaving = false;
       notifyListeners();
@@ -148,12 +169,12 @@ class EvaluationController extends ChangeNotifier {
     return message;
   }
 
-  void addPhoto(EvaluationImageModel photo) {
+  void addPhoto(EvaluationPhotoModel photo) {
     _evaluation!.photos.add(photo);
     notifyListeners();
   }
 
-  void removePhoto(EvaluationImageModel photo) {
+  void removePhoto(EvaluationPhotoModel photo) {
     _evaluation!.photos.remove(photo);
     notifyListeners();
   }

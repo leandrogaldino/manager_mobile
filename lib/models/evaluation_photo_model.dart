@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-class EvaluationImageModel {
+class EvaluationPhotoModel {
   final int? id;
   String? localPath;
   String? cloudPath;
   String? tempPath;
-  EvaluationImageModel({
+  EvaluationPhotoModel({
     this.id,
     this.localPath,
     this.cloudPath,
@@ -21,8 +21,8 @@ class EvaluationImageModel {
     };
   }
 
-  factory EvaluationImageModel.fromMap(Map<String, dynamic> map) {
-    return EvaluationImageModel(
+  factory EvaluationPhotoModel.fromMap(Map<String, dynamic> map) {
+    return EvaluationPhotoModel(
       id: map['id'] != null ? map['id'] as int : null,
       localPath: map['localpath'] != null ? map['localpath'] as String : null,
       cloudPath: map['cloudpath'] != null ? map['cloudpath'] as String : null,
@@ -32,13 +32,13 @@ class EvaluationImageModel {
 
   String toJson() => json.encode(toMap());
 
-  factory EvaluationImageModel.fromJson(String source) => EvaluationImageModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory EvaluationPhotoModel.fromJson(String source) => EvaluationPhotoModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() => 'EvaluationImageModel(id: $id, localPath: $localPath, cloudPath: $cloudPath, tempPath: $tempPath)';
 
   @override
-  bool operator ==(covariant EvaluationImageModel other) {
+  bool operator ==(covariant EvaluationPhotoModel other) {
     if (identical(this, other)) return true;
 
     return other.id == id && other.localPath == localPath && other.cloudPath == cloudPath && other.tempPath == tempPath;

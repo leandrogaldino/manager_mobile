@@ -39,7 +39,7 @@ class EvaluationModel {
   List<EvaluationReplacedProductModel> replacedProducts;
   List<EvaluationPerformedServiceModel> performedServices;
   List<EvaluationTechnicianModel> technicians;
-  List<EvaluationImageModel> photos;
+  List<EvaluationPhotoModel> photos;
   String? responsible;
   String? signatureTempPath;
   String? signatureLocalPath;
@@ -149,7 +149,7 @@ class EvaluationModel {
     List<EvaluationReplacedProductModel>? replacedProducts,
     List<EvaluationPerformedServiceModel>? performedServices,
     List<EvaluationTechnicianModel>? technicians,
-    List<EvaluationImageModel>? photos,
+    List<EvaluationPhotoModel>? photos,
     String? responsible,
     String? signatureTempPath,
     String? signatureLocalPath,
@@ -274,9 +274,9 @@ class EvaluationModel {
           (x) => EvaluationTechnicianModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      photos: List<EvaluationImageModel>.from(
-        (map['photos'] as List<Map<String, Object?>>).map<EvaluationImageModel>(
-          (x) => EvaluationImageModel.fromMap(x as Map<String, dynamic>),
+      photos: List<EvaluationPhotoModel>.from(
+        (map['photos'] as List<Map<String, Object?>>).map<EvaluationPhotoModel>(
+          (x) => EvaluationPhotoModel.fromMap(x as Map<String, dynamic>),
         ),
       ),
       responsible: map['responsible'] != null ? map['responsible'] as String : null,

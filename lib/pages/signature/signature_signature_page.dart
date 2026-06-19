@@ -58,9 +58,9 @@ class _EvaluationSignaturePageState extends State<EvaluationSignaturePage> {
 
     if (bytes == null) {
       _evaluationController.evaluation!.signatureCloudPath = '';
-      await _evaluationController.setTempSignature(signatureBytes: null);
+      await _evaluationController.saveTempSignature(signatureBytes: null);
     } else {
-      await _evaluationController.setTempSignature(signatureBytes: bytes);
+      await _evaluationController.saveTempSignature(signatureBytes: bytes);
     }
 
     if (!mounted) return;

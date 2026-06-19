@@ -49,7 +49,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
           final localPath = photo?.localPath;
           final cloudPath = photo?.cloudPath;
           final bool isPhotoTaken = tempPath != null || localPath != null || cloudPath != null;
-          final state = _getPhotoState(tempPath, localPath, cloudPath);
+          final state = PhotoState.getPhotoState(tempPath, localPath, cloudPath, _downloadingPhotos);
           return GestureDetector(
             onTap: () async {
               switch (state) {
@@ -91,14 +91,11 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
 
   Future<void> _takePhoto() async {
     final controller = widget.evaluationController;
-    final File? file = await Navigator.pushNamed<File?>(
-      context,
-      Routes.takePhoto,
-    );
+    final File? file = await Navigator.pushNamed<File?>(context, Routes.takePhoto);
     if (!mounted) return;
     if (file != null) {
       controller.addPhoto(
-        EvaluationImageModel(
+        EvaluationPhotoModel(
           tempPath: file.path,
           localPath: null,
           cloudPath: null,
@@ -122,7 +119,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
         return _downloadPhotoWidget();
 
       case PhotoState.empty:
-        return const _EmptyPhotoWidget();
+        return _emptyPhotoWidget();
     }
   }
 
@@ -156,14 +153,6 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
         });
       }
     }
-  }
-
-  PhotoState _getPhotoState(String? tempPath, String? localPath, String? cloudPath) {
-    if (cloudPath != null && _downloadingPhotos.contains(cloudPath)) return PhotoState.downloading;
-    if (tempPath != null) return PhotoState.temp;
-    if (localPath != null) return PhotoState.local;
-    if (cloudPath != null) return PhotoState.cloud;
-    return PhotoState.empty;
   }
 
   Icon _downloadPhotoWidget() {
@@ -203,13 +192,8 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
       ),
     );
   }
-}
 
-class _EmptyPhotoWidget extends StatelessWidget {
-  const _EmptyPhotoWidget();
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _emptyPhotoWidget() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

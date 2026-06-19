@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:manager_mobile/controllers/evaluation_controller.dart';
-import 'package:manager_mobile/core/enums/image_types.dart';
-import 'package:manager_mobile/services/image_service.dart';
 import 'package:manager_mobile/core/locator.dart';
 
 class TakePhotoPage extends StatefulWidget {
@@ -40,9 +38,7 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
         Navigator.pop(context);
         return;
       }
-      //TODO: ISSO PRECISA ESTAR NO EVALUATIONCONTROLLER E VIR DO LOCATOR. DEPOIS FAZER A MESMA COISA NA ASSINATURA
-      final ImageService ims = ImageService();
-      var tempPath = await ims.saveTemporaryFromPath(type: ImageTypes.photo, tempImagePath: photo.path);
+      var tempPath = await _controller.saveTempPhoto(path: photo.path);
       final file = File(tempPath);
       if (!mounted) return;
       Navigator.pop(context, file);

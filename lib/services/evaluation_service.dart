@@ -67,14 +67,14 @@ class EvaluationService {
     _imageService.delete(signaturePath);
   }
 
-  Future<void> deletePhotos({required List<EvaluationImageModel> photos}) async {
+  Future<void> deletePhotos({required List<EvaluationPhotoModel> photos}) async {
     for (var photo in photos) {
       if (photo.localPath == null) continue;
       _imageService.delete(photo.localPath!);
     }
   }
 
-  Future<EvaluationImageModel> savePhoto({required Uint8List photoBytes}) async {
+  Future<EvaluationPhotoModel> savePhoto({required Uint8List photoBytes}) async {
     try {
       final rootDirectory = await getApplicationDocumentsDirectory();
       final photosDirectory = Directory('${rootDirectory.path}/photos');
@@ -111,7 +111,7 @@ class EvaluationService {
       final filePath = '${photosDirectory.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(resizedBytes);
-      return EvaluationImageModel(localPath: file.path);
+      return EvaluationPhotoModel(localPath: file.path);
     } catch (e, s) {
       String code = 'EVA010';
       String message = 'Erro ao salvar a imagem';
@@ -151,7 +151,11 @@ class EvaluationService {
     );
   }
 
-  Future<void> updatePhotoWithLocalPath(String evaluationId, EvaluationImageModel model) async {
+  Future<void> updatePhotoWithLocalPath(String evaluationId, EvaluationPhotoModel model) async {
     await _evaluationRepository.updatePhotoWithLocalPath(evaluationId, model.toMap());
+  }
+
+  Future<void> updateSignatureWithLocalPath(String evaluationId, String localPath) async {
+    await _evaluationRepository.updateSignatureWithLocalPath(evaluationId, localPath);
   }
 }

@@ -70,9 +70,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
           if (message != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
+              Message.showErrorSnackbar(context: context, message: message);
             });
           }
 
