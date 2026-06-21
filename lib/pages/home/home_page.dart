@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
     });
 
-    SynchronizeTimer.start();
+    //SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
       final user = await _loginController.currentLoggedUser;
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    SynchronizeTimer.stop();
+    //SynchronizeTimer.stop();
     _evaluationScrollController.dispose();
     _visitScheduleScrollController.dispose();
     _internetSub.cancel();
