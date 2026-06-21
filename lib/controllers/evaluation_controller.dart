@@ -40,7 +40,6 @@ class EvaluationController extends ChangeNotifier {
   EvaluationModel? shadow;
 
   Future<void> downloadSignature() async {
-    //TODO: TRY
     final cloudPath = evaluation!.signatureCloudPath!;
     final imageData = await _evaluationService.downloadImage(cloudPath);
     final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.signature, filename: path.basename(cloudPath), imageBytes: imageData);

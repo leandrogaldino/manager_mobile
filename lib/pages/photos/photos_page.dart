@@ -138,7 +138,7 @@ class _PhotosPageState extends State<PhotosPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.black.withValues(alpha: 125),
+                            color: Colors.black.withValues(alpha: 0.70),
                           ),
                           child: IconButton(
                             icon: Icon(
