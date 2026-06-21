@@ -56,7 +56,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
                 case PhotoState.downloading:
                   return;
                 case PhotoState.cloud:
-                  _downloadPhoto(index, cloudPath!);
+                  _downloadPhotos(index);
                 case PhotoState.temp || PhotoState.local:
                   _viewPhoto(index);
                 case PhotoState.empty:
@@ -131,7 +131,7 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     controller.setSelectedPhotoIndex(null);
   }
 
-  Future<void> _downloadPhoto(int index, String cloudPath) async {
+  Future<void> _downloadPhotos(int index) async {
     final hasInternet = await InternetConnectionStream.hasInternetNow();
     final controller = widget.evaluationController;
     if (!hasInternet) {
@@ -141,15 +141,21 @@ class _PhotoSectionWidgetState extends State<PhotoSectionWidget> {
     }
 
     setState(() {
-      _downloadingPhotos.add(cloudPath);
+      final photos = controller.evaluation!.photos;
+
+      for (var photo in photos) {
+        if (photo.cloudPath != null && photo.localPath == null) {
+          _downloadingPhotos.add(photo.cloudPath!);
+        }
+      }
     });
 
     try {
-      await controller.downloadPhoto(index: index);
+      await controller.downloadPhotos();
     } finally {
       if (mounted) {
         setState(() {
-          _downloadingPhotos.remove(cloudPath);
+          _downloadingPhotos.clear();
         });
       }
     }

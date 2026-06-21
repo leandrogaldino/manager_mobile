@@ -82,14 +82,31 @@ class EvaluationController extends ChangeNotifier {
     }
   }
 
-  Future<void> downloadPhoto({required int index}) async {
-    //TODO: TRY
-    final cloudPath = evaluation!.photos[index].cloudPath!;
-    final imageData = await _evaluationService.downloadImage(cloudPath);
-    final localPath = await _imageService.savePermanentFromBytes(type: ImageTypes.photo, filename: path.basename(cloudPath), imageBytes: imageData);
-    evaluation!.photos[index].localPath = localPath;
-    evaluation!.photos[index].tempPath = null;
-    await _evaluationService.updatePhotoWithLocalPath(evaluation!.id!, evaluation!.photos[index]);
+  Future<void> downloadPhotos() async {
+    final photos = evaluation!.photos;
+
+    final futures = photos.where((photo) => photo.cloudPath != null && photo.localPath == null).map((photo) async {
+      final imageData = await _evaluationService.downloadImage(
+        photo.cloudPath!,
+      );
+
+      final localPath = await _imageService.savePermanentFromBytes(
+        type: ImageTypes.photo,
+        filename: path.basename(photo.cloudPath!),
+        imageBytes: imageData,
+      );
+
+      photo.localPath = localPath;
+      photo.tempPath = null;
+
+      await _evaluationService.updatePhotoWithLocalPath(
+        evaluation!.id!,
+        photo,
+      );
+    });
+
+    await Future.wait(futures);
+
     notifyListeners();
   }
 
