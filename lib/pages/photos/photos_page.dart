@@ -52,8 +52,6 @@ class _PhotosPageState extends State<PhotosPage> {
 
   @override
   Widget build(BuildContext context) {
-    final photos = _evaluationController.evaluation!.photos;
-
     final theme = Theme.of(context).colorScheme;
 
     final orientation = MediaQuery.of(context).orientation;
@@ -68,6 +66,7 @@ class _PhotosPageState extends State<PhotosPage> {
       body: ListenableBuilder(
         listenable: _evaluationController,
         builder: (context, child) {
+          final photos = _evaluationController.evaluation!.photos;
           return Stack(
             children: [
               SizedBox.expand(
@@ -158,9 +157,21 @@ class _PhotosPageState extends State<PhotosPage> {
                                   _evaluationController.evaluation!.photos[_currentIndex],
                                 );
 
-                                if (_evaluationController.evaluation!.photos.isEmpty && context.mounted) {
-                                  Navigator.pop(context);
+                                final photos = _evaluationController.evaluation!.photos;
+
+                                if (photos.isEmpty) {
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                  return;
                                 }
+
+                                setState(() {
+                                  _currentIndex = _currentIndex.clamp(
+                                    0,
+                                    photos.length - 1,
+                                  );
+                                });
                               }
                             },
                           ),
