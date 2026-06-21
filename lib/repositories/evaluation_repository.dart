@@ -362,14 +362,14 @@ class EvaluationRepository {
 
       String rootPath = '$customerDocument/$evaluationId';
 
-      //Assinatura
       String signFilename = path.basename(evaluationMap['signaturelocalpath'].toString());
       String signPath = '$rootPath/signature/$signFilename';
       Uint8List signData = await File(evaluationMap['signaturelocalpath'].toString()).readAsBytes();
       await _storage.uploadFile(signPath, signData);
       await WakelockPlus.enable();
-      evaluationMap['signaturecloudpath'] = signPath;
-
+      evaluationMap['signaturepath'] = signPath;
+      evaluationMap.remove('signaturelocalpath');
+      evaluationMap.remove('signaturecloudpath');
       // Fotos
       var photosListMap = await _evaluationPhotoRepository.getByParentId(evaluationId);
       for (var photoMap in photosListMap) {
@@ -378,7 +378,9 @@ class EvaluationRepository {
         Uint8List photoData = await File(photoMap['localpath'].toString()).readAsBytes();
         await _storage.uploadFile(photoPath, photoData);
         await WakelockPlus.enable();
-        photoMap['cloudpath'] = photoPath;
+        photoMap['path'] = photoPath;
+        photoMap.remove('cloudpath');
+        photoMap.remove('localpath');
       }
       for (final item in photosListMap) {
         item.remove('id');
@@ -506,8 +508,8 @@ class EvaluationRepository {
       await _evaluationPhotoRepository.deleteByParentId(evaluationId);
       for (Map<String, dynamic> photo in evaluationMap['photos']) {
         photo['evaluationid'] = evaluationId;
-        //photo['cloudpath'] = photo['path'];
-        //photo.remove('path');
+        photo['cloudpath'] = photo['path'];
+        photo.remove('path');
         await _evaluationPhotoRepository.save(photo);
       }
 
@@ -537,8 +539,8 @@ class EvaluationRepository {
       evaluationMap.remove('info');
       //DatabaseException(table evaluation has no column named signaturepath
 
-      //evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
-      //evaluationMap.remove('signaturepath');
+      evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
+      evaluationMap.remove('signaturepath');
 
       // Salva
       await _localDatabase.insert('evaluation', evaluationMap);
