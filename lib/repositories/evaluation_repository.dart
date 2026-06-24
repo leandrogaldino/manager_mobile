@@ -513,19 +513,6 @@ class EvaluationRepository {
         await _evaluationPhotoRepository.save(photo);
       }
 
-      // ---- assinatura ----
-      //var signData = await _storage.downloadFile(evaluationMap['signaturepath']);
-      //await WakelockPlus.enable();
-      //if (signData != null) {
-      //evaluationMap['signaturepath'] = await _saveImage(
-      //signData,
-      //evaluationMap['signaturepath'].toString().split('/').last,
-      //);
-      //} else {
-      ///evaluationMap['signaturepath'] = '';
-      //}
-
-      //Info
       evaluationMap['existsincloud'] = 1;
       evaluationMap['importedid'] = evaluationMap['info']['importedid'];
 
@@ -537,7 +524,6 @@ class EvaluationRepository {
       evaluationMap.remove('coalescents');
       evaluationMap.remove('photos');
       evaluationMap.remove('info');
-      //DatabaseException(table evaluation has no column named signaturepath
 
       evaluationMap['signaturecloudpath'] = evaluationMap['signaturepath'];
       evaluationMap.remove('signaturepath');
