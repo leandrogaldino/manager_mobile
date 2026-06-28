@@ -326,8 +326,8 @@ class EvaluationRepository {
   }) async {
     final localResult = await _localDatabase.query(
       'evaluation',
-      where: 'lastupdate > ?',
-      whereArgs: [lastSync],
+      where: 'existsincloud = ?',
+      whereArgs: [0],
     );
 
     for (var evaluationMap in localResult) {

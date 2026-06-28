@@ -126,19 +126,20 @@ class SyncService {
       final int personsCount = await _personService.synchronize(lastSync);
       totalCount += personsCount;
 
-      // --- AGENDAMENTOS ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Agendamentos de Visita...', time: DateTimeHelper.now());
-      final int visitSchedulesCount = await _visitScheduleService.synchronize(lastSync);
-      totalCount += visitSchedulesCount;
+      if (!isAuto) {
+        // --- AGENDAMENTOS ---
+        log('Sincronizando Agendamentos de Visita...', time: DateTimeHelper.now());
+        final int visitSchedulesCount = await _visitScheduleService.synchronize(lastSync);
+        totalCount += visitSchedulesCount;
 
-      newVisitScheduleOrEvaluation = visitSchedulesCount > 0;
+        newVisitScheduleOrEvaluation = visitSchedulesCount > 0;
 
-      // --- AVALIAÇÕES ---
-      log('${isAuto ? "(Auto) " : ""}Sincronizando Avaliações...', time: DateTimeHelper.now());
-      final int evaluationsCount = await _evaluationService.synchronize(lastSync);
-      totalCount += evaluationsCount;
-
-      newVisitScheduleOrEvaluation |= (evaluationsCount > 0);
+        // --- AVALIAÇÕES ---
+        log('Sincronizando Avaliações...', time: DateTimeHelper.now());
+        final int evaluationsCount = await _evaluationService.synchronize(lastSync);
+        totalCount += evaluationsCount;
+        newVisitScheduleOrEvaluation |= (evaluationsCount > 0);
+      }
 
       log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTimeHelper.now());
 

@@ -6,6 +6,7 @@ import 'package:manager_mobile/core/helper/Pickers/compressor_picker.dart';
 import 'package:manager_mobile/models/personcompressor_model.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
 import 'package:manager_mobile/core/enums/part_types.dart';
+import 'package:manager_mobile/pages/evaluation/validation/double_input_formatter.dart';
 import 'package:manager_mobile/pages/evaluation/validation/evaluation_validators.dart';
 import 'package:validatorless/validatorless.dart';
 
@@ -93,25 +94,50 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     _adviceEC = TextEditingController();
     _responsibleEC = TextEditingController();
     _adviceFocusNode = FocusNode();
-    if (widget.evaluationController.source != SourceTypes.fromNew) _fillForm();
+    _syncControllers();
   }
 
-  void _fillForm() {
-    _customerEC.text = widget.evaluationController.evaluation!.compressor!.person.shortName;
-    _compressorEC.text = _compressorFullName;
-    _interfaceEC.text = widget.evaluationController.evaluation!.compressor!.interface.name;
-    _unitEC.text = widget.evaluationController.evaluation!.compressor!.unit.name;
-    _temperatureEC.text = widget.evaluationController.evaluation!.temperature == null ? '' : widget.evaluationController.evaluation!.temperature.toString();
-    _pressureEC.text = widget.evaluationController.evaluation!.pressure == null ? '' : widget.evaluationController.evaluation!.pressure.toString();
-    _oilTypeEC.text = widget.evaluationController.evaluation!.oilType.stringValue;
-    _horimeterEC.text = widget.evaluationController.evaluation!.horimeter == null ? '' : widget.evaluationController.evaluation!.horimeter.toString();
-    _greasingEC.text = widget.evaluationController.evaluation!.greasing == null ? 'N/A' : widget.evaluationController.evaluation!.greasing.toString();
-    _airFilterEC.text = widget.evaluationController.evaluation!.airFilter == null ? '' : widget.evaluationController.evaluation!.airFilter.toString();
-    _oilFilterEC.text = widget.evaluationController.evaluation!.oilFilter == null ? '' : widget.evaluationController.evaluation!.oilFilter.toString();
-    _separatorEC.text = widget.evaluationController.evaluation!.separator == null ? '' : widget.evaluationController.evaluation!.separator.toString();
-    _oilEC.text = widget.evaluationController.evaluation!.oil == null ? '' : widget.evaluationController.evaluation!.oil.toString();
-    _adviceEC.text = widget.evaluationController.evaluation!.advice ?? '';
-    _responsibleEC.text = widget.evaluationController.evaluation!.responsible ?? '';
+  void _setText(TextEditingController controller, String value) {
+    if (controller.text == value) return;
+
+    controller.value = controller.value.copyWith(
+      text: value,
+      selection: TextSelection.collapsed(offset: value.length),
+      composing: TextRange.empty,
+    );
+  }
+
+  void _syncControllers() {
+    final controller = widget.evaluationController;
+    final evaluation = controller.evaluation!;
+    final compressor = evaluation.compressor;
+    final fromSaved = controller.source == SourceTypes.fromSavedWithSign;
+
+    _setText(_customerEC, compressor?.person.shortName ?? '');
+    _setText(_compressorEC, _compressorFullName);
+    _setText(_interfaceEC, compressor?.interface.name ?? '');
+    _setText(_unitEC, compressor?.unit.name ?? '');
+    _setText(_oilTypeEC, fromSaved ? evaluation.oilType.stringValue : compressor?.oilType.stringValue ?? '');
+    _setText(_temperatureEC, evaluation.temperature?.toString() ?? '');
+
+    _setText(_pressureEC, evaluation.pressure?.toString().replaceAll('.', ',') ?? '');
+
+    _setText(_horimeterEC, evaluation.horimeter?.toString() ?? '');
+    if (fromSaved) {
+      _setText(_greasingEC, evaluation.greasing?.toString() ?? 'N/A');
+    } else {
+      if (compressor?.greasingCapacity != null) {
+        _setText(_greasingEC, evaluation.greasing?.toString() ?? '');
+      } else {
+        _setText(_greasingEC, compressor == null ? '' : 'N/A');
+      }
+    }
+    _setText(_airFilterEC, evaluation.airFilter?.toString() ?? '');
+    _setText(_oilFilterEC, evaluation.oilFilter?.toString() ?? '');
+    _setText(_separatorEC, evaluation.separator?.toString() ?? '');
+    _setText(_oilEC, evaluation.oil?.toString() ?? '');
+    _setText(_adviceEC, evaluation.advice ?? '');
+    _setText(_responsibleEC, evaluation.responsible ?? '');
   }
 
   String get _compressorFullName {
@@ -131,23 +157,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
     final evaluation = controller.evaluation!;
     final compressor = evaluation.compressor;
     final fromSaved = controller.source == SourceTypes.fromSavedWithSign;
-    _customerEC.text = compressor?.person.shortName ?? '';
-    _compressorEC.text = _compressorFullName;
-    _oilTypeEC.text = fromSaved ? evaluation.oilType.stringValue : compressor?.oilType.stringValue ?? '';
-    _interfaceEC.text = compressor?.interface.name ?? '';
-    _unitEC.text = compressor?.unit.name ?? '';
-    bool greasable;
-    if (fromSaved) {
-      greasable = evaluation.greasing != null;
-      _greasingEC.text = greasable ? evaluation.greasing.toString() : 'N/A';
-    } else {
-      greasable = compressor?.greasingCapacity != null;
-      if (greasable) {
-        _greasingEC.text = evaluation.greasing?.toString() ?? '';
-      } else {
-        _greasingEC.text = compressor == null ? '' : 'N/A';
-      }
-    }
+    final greasable = fromSaved ? evaluation.greasing != null : compressor?.greasingCapacity != null;
+
     final theme = Theme.of(context);
     return ListenableBuilder(
       listenable: controller,
@@ -167,8 +178,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       PersonCompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
                         controller.updateCompressor(compressor);
-                        controller.updateGreasing(null);
-                        controller.updateOilType(compressor.oilType);
+                        _syncControllers();
                       }
                     },
                     child: Text('Buscar Cliente/Compressor'),
@@ -254,7 +264,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                   Validatorless.required('Campo obrigatório'),
                                 ],
                               ),
-                              decoration: InputDecoration(labelText: 'Unidade', border: OutlineInputBorder()),
+                              decoration: InputDecoration(
+                                labelText: 'Unidade',
+                                border: OutlineInputBorder(),
+                              ),
                               style: TextStyle(color: theme.colorScheme.primary),
                             ),
                           ),
@@ -284,12 +297,13 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             ),
                           ),
                           Expanded(
+                            //TODO: PRESSURE TEXTFORMFIELD
                             child: TextFormField(
                               controller: _pressureEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,
                               textAlign: TextAlign.center,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9,]'))],
+                              inputFormatters: [DoubleInputFormatter()],
                               validator: Validatorless.multiple([
                                 Validatorless.required('Campo obrigatório'),
                               ]),
@@ -298,9 +312,14 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 border: OutlineInputBorder(),
                               ),
                               onChanged: (value) {
-                                // troca vírgula por ponto antes de fazer parse
-                                final raw = value.replaceAll(',', '.');
-                                controller.updatePresure(double.tryParse(raw) ?? 0);
+                                if (value.isEmpty) {
+                                  controller.updatePresure(null);
+                                  return;
+                                }
+                                final normalized = value.replaceAll(',', '.');
+                                final parsed = double.tryParse(normalized);
+                                if (parsed == null) return;
+                                controller.updatePresure(parsed);
                               },
                             ),
                           ),
@@ -360,14 +379,16 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Horímetro',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateHorimeter(int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                if (value.isEmpty) return;
+                                controller.updateHorimeter(int.tryParse(value) ?? 0);
+                              },
                             ),
                           ),
                           Expanded(
                             child: TextFormField(
                                 controller: _greasingEC,
                                 readOnly: controller.evaluation!.compressor?.greasingCapacity == null || controller.source == SourceTypes.fromSavedWithSign,
-                                //readOnly: false,
                                 textAlign: TextAlign.center,
                                 keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
@@ -385,7 +406,8 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 ),
                                 style: greasable ? TextStyle(color: theme.colorScheme.onSurface) : TextStyle(color: theme.colorScheme.primary),
                                 onChanged: (value) {
-                                  controller.updateGreasing(int.tryParse(value));
+                                  if (value == '-') return;
+                                  controller.updateGreasing(value.isEmpty ? null : int.tryParse(value));
                                 }),
                           ),
                         ],
@@ -414,7 +436,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Filtro de Ar',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateAirFilter(int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                if (value.isEmpty || value == '-') return;
+                                controller.updateAirFilter(int.tryParse(value) ?? 0);
+                              },
                             ),
                           ),
                           Expanded(
@@ -437,7 +462,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Filtro de Óleo',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateOilFilter(int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                if (value.isEmpty || value == '-') return;
+                                controller.updateOilFilter(int.tryParse(value) ?? 0);
+                              },
                             ),
                           ),
                         ],
@@ -466,7 +494,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Separador',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateSeparator(int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                if (value.isEmpty || value == '-') return;
+                                controller.updateSeparator(int.tryParse(value) ?? 0);
+                              },
                             ),
                           ),
                           Expanded(
@@ -489,7 +520,10 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                                 labelText: 'Óleo',
                                 border: OutlineInputBorder(),
                               ),
-                              onChanged: (value) => controller.updateOil(int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                if (value.isEmpty || value == '-') return;
+                                controller.updateOil(int.tryParse(value) ?? 0);
+                              },
                             ),
                           ),
                         ],

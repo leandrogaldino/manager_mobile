@@ -8,6 +8,7 @@ import 'package:manager_mobile/core/app_preferences.dart';
 import 'package:manager_mobile/core/constants/routes.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/core/locator.dart';
+import 'package:manager_mobile/core/timers/synchronize_timer.dart';
 import 'package:manager_mobile/core/util/internet_connection.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/models/evaluation_model.dart';
@@ -103,7 +104,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
     });
 
-    //SynchronizeTimer.start();
+    SynchronizeTimer.start();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _homeController.synchronize(showLoading: true);
       final user = await _loginController.currentLoggedUser;
@@ -117,7 +118,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    //SynchronizeTimer.stop();
+    SynchronizeTimer.stop();
     _evaluationScrollController.dispose();
     _visitScheduleScrollController.dispose();
     _internetSub.cancel();

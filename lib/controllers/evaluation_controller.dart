@@ -206,44 +206,49 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateTemperature(int temperature) {
+    _evaluation!.temperature = temperature;
+  }
+
+  void updatePresure(double? pressure) {
+    _evaluation!.pressure = pressure;
+  }
+
+  void updateHorimeter(int horimeter) {
+    _evaluation!.horimeter = horimeter;
+  }
+
+  void updateGreasing(int? greasing) {
+    _evaluation!.greasing = greasing;
+  }
+
+  void updateAirFilter(int airFilter) {
+    _evaluation!.airFilter = airFilter;
+  }
+
+  void updateOilFilter(int oilFilter) {
+    _evaluation!.oilFilter = oilFilter;
+  }
+
+  void updateSeparator(int separator) {
+    _evaluation!.separator = separator;
+  }
+
+  void updateOil(int oil) {
+    _evaluation!.oil = oil;
+  }
+
   void updateNeedProposal(bool needProposal) {
     _evaluation!.needProposal = needProposal;
     notifyListeners();
   }
 
-  void updateGreasing(int? greasing) {
-    _evaluation!.greasing = greasing;
-    notifyListeners();
-  }
-
   void updateResponsible(String responsible) {
     _evaluation!.responsible = responsible;
-    notifyListeners();
   }
 
   void updateAdvice(String advice) {
     _evaluation!.advice = advice;
-    notifyListeners();
-  }
-
-  void updateOil(int oil) {
-    _evaluation!.oil = oil;
-    notifyListeners();
-  }
-
-  void updateSeparator(int separator) {
-    _evaluation!.separator = separator;
-    notifyListeners();
-  }
-
-  void updateOilFilter(int oilFilter) {
-    _evaluation!.oilFilter = oilFilter;
-    notifyListeners();
-  }
-
-  void updateAirFilter(int airFilter) {
-    _evaluation!.airFilter = airFilter;
-    notifyListeners();
   }
 
   void updateOilType(OilTypes oilType) {
@@ -251,23 +256,8 @@ class EvaluationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTemperature(int temperature) {
-    _evaluation!.temperature = temperature;
-    notifyListeners();
-  }
-
-  void updatePresure(double pressure) {
-    _evaluation!.pressure = pressure;
-    notifyListeners();
-  }
-
   void updateCallType(CallTypes callType) {
     _evaluation!.callType = callType;
-    notifyListeners();
-  }
-
-  void updateHorimeter(int horimeter) {
-    _evaluation!.horimeter = horimeter;
     notifyListeners();
   }
 
