@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           child: UpdateBannerWidget(
                             onTap: () async {
                               _hasShownError = false;
-                              await _homeController.loadInitial();
+                              await _homeController.synchronize();
                               _homeController.hideUpdateBanner();
                             },
                           ),
@@ -245,7 +245,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             }
                             if (!context.mounted) return;
                             await Navigator.of(context).pushNamed(Routes.evaluation);
-                            await _homeController.loadInitial();
+                            //TODO: aqui tambem
+                            //await _homeController.loadInitial();
                           },
                           child: const Icon(Icons.add),
                         )

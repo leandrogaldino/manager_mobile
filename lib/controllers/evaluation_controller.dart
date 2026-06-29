@@ -324,13 +324,14 @@ class EvaluationController extends ChangeNotifier {
   }
 
   void clean() {
+    _evaluation = shadow!.copyWith();
     _evaluation = null;
-    shadow = null;
     _schedule = null;
     _source = null;
     _selectedPhotoIndex = null;
     _isSaving = false;
     _uiMessage = null;
+    shadow = null;
   }
 
   static const int _retentionDays = 30;

@@ -57,4 +57,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/json/sync_animation.json
+    - assets/json/upload_animation.json
     - assets/images/app_icon.png

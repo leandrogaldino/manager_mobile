@@ -57,7 +57,7 @@ class SyncService {
   bool _synchronizing = false;
   bool get synchronizing => _synchronizing;
 
-  Future<bool> runSync({bool isAuto = false}) async {
+  Future<void> runSync({bool isAuto = false}) async {
     _synchronizing = true;
 
     log('${isAuto ? "(Auto) " : ""}Iniciando sincronização.', time: DateTimeHelper.now());
@@ -65,7 +65,6 @@ class SyncService {
     final lastLock = await _appPreferences.syncLockTime;
     if (isSyncLocked(lastLock)) {
       log('${isAuto ? "(Auto) " : ""}Sincronização já está em andamento (lock ativo). Abortando.', time: DateTimeHelper.now());
-      return false;
     }
 
     // Ativa lock imediatamente
@@ -79,7 +78,6 @@ class SyncService {
       _appPreferences.setIgnoreLastSynchronize(false);
       final int lastSync = await _appPreferences.lastSynchronize;
       int totalCount = 0;
-      bool newVisitScheduleOrEvaluation = false;
 
       // --- PRODUTOS ---
       log('${isAuto ? "(Auto) " : ""}Sincronizando Produtos...', time: DateTimeHelper.now());
@@ -132,13 +130,10 @@ class SyncService {
         final int visitSchedulesCount = await _visitScheduleService.synchronize(lastSync);
         totalCount += visitSchedulesCount;
 
-        newVisitScheduleOrEvaluation = visitSchedulesCount > 0;
-
         // --- AVALIAÇÕES ---
         log('Sincronizando Avaliações...', time: DateTimeHelper.now());
         final int evaluationsCount = await _evaluationService.synchronize(lastSync);
         totalCount += evaluationsCount;
-        newVisitScheduleOrEvaluation |= (evaluationsCount > 0);
       }
 
       log('${isAuto ? "(Auto) " : ""}Sincronização concluída. Total atualizado: $totalCount', time: DateTimeHelper.now());
@@ -146,12 +141,12 @@ class SyncService {
       // Fim!
       if (await _appPreferences.ignoreLastSynchronize) {
         log('${isAuto ? "(Auto) " : ""}Ignorando atualização do timestamp de sincronização conforme preferência.', time: DateTimeHelper.now());
-        return newVisitScheduleOrEvaluation;
+        return;
       }
-      await _appPreferences.setLastSynchronize();
+      if (!isAuto) await _appPreferences.setLastSynchronize();
       await _appPreferences.setSyncCount((await _appPreferences.syncCount) + 1);
 
-      return newVisitScheduleOrEvaluation;
+      return;
     } catch (e, s) {
       log('${isAuto ? "(Auto) " : ""}Erro durante a sincronização: $e', error: e, stackTrace: s, time: DateTimeHelper.now());
       rethrow;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class UpdateBannerWidget extends StatefulWidget {
   final Future<void> Function() onTap;
@@ -17,9 +18,7 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
 
   Future<void> _handleTap() async {
     if (_loading) return;
-
     setState(() => _loading = true);
-
     try {
       await widget.onTap();
     } finally {
@@ -65,11 +64,16 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
                                 ),
                               ),
                             )
-                          : Text(
-                              'Há alterações disponíveis',
-                              key: const ValueKey('text'),
-                              style: textStyle,
-                              textAlign: TextAlign.center,
+                          : Column(
+                              children: [
+                                Lottie.asset(
+                                  'assets/json/upload_animation.json',
+                                  fit: BoxFit.fitWidth,
+                                  repeat: true,
+                                  height: 55,
+                                ),
+                                Text('Enviar', style: textStyle),
+                              ],
                             ),
                     ),
                   ),

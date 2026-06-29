@@ -297,7 +297,6 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                             ),
                           ),
                           Expanded(
-                            //TODO: PRESSURE TEXTFORMFIELD
                             child: TextFormField(
                               controller: _pressureEC,
                               readOnly: controller.source == SourceTypes.fromSavedWithSign,

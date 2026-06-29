@@ -25,13 +25,18 @@ class HomeController extends ChangeNotifier {
   }) : _syncService = syncService {
     evaluations = PagedListController<EvaluationModel>(
       (offset, limit) {
-        return evaluationService.searchVisibles(
+        var a = evaluationService.searchVisibles(
           offset: offset,
           limit: limit,
           search: filter.searchText,
           initialDate: filter.selectedDateRange?.start,
           finalDate: filter.selectedDateRange?.end,
         );
+
+        if (evaluations.items.any((e) => !e.existsInCloud && (e.signatureLocalPath != null || e.signatureTempPath != null))) {
+          showUpdateBanner();
+        }
+        return a;
       },
     );
 
@@ -81,6 +86,10 @@ class HomeController extends ChangeNotifier {
       visitSchedules.loadInitial(),
     ]);
 
+    if (evaluations.items.any((e) => !e.existsInCloud && (e.signatureLocalPath != null || e.signatureTempPath != null))) {
+      showUpdateBanner();
+    }
+
     _setState(
       HomeStateSuccess(
         visitSchedules,
@@ -113,11 +122,7 @@ class HomeController extends ChangeNotifier {
         return;
       }
 
-      final hasNewData = await _syncService.runSync(isAuto: isAuto);
-
-      if (isAuto && hasNewData) {
-        showUpdateBanner();
-      }
+      await _syncService.runSync(isAuto: isAuto);
     } catch (e) {
       _setState(HomeStateError(e.toString()));
     } finally {
