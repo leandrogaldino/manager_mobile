@@ -193,6 +193,41 @@ class EvaluationModel {
     );
   }
 
+  void copyFrom(EvaluationModel evaluation) {
+    id = evaluation.id;
+    visible = evaluation.visible;
+    importedId = evaluation.importedId;
+    visitscheduleid = evaluation.visitscheduleid;
+    existsInCloud = evaluation.existsInCloud;
+    needProposal = evaluation.needProposal;
+    callType = evaluation.callType;
+    temperature = evaluation.temperature;
+    pressure = evaluation.pressure;
+    customer = evaluation.customer;
+    compressor = evaluation.compressor;
+    creationDate = evaluation.creationDate;
+    startTime = evaluation.startTime;
+    endTime = evaluation.endTime;
+    horimeter = evaluation.horimeter;
+    greasing = evaluation.greasing;
+    oilType = evaluation.oilType;
+    airFilter = evaluation.airFilter;
+    oilFilter = evaluation.oilFilter;
+    separator = evaluation.separator;
+    oil = evaluation.oil;
+    coalescents = List.of(evaluation.coalescents);
+    replacedProducts = List.of(evaluation.replacedProducts);
+    performedServices = List.of(evaluation.performedServices);
+    technicians = List.of(evaluation.technicians);
+    photos = List.of(evaluation.photos);
+    responsible = evaluation.responsible;
+    signatureTempPath = evaluation.signatureTempPath;
+    signatureLocalPath = evaluation.signatureLocalPath;
+    signatureCloudPath = evaluation.signatureCloudPath;
+    advice = evaluation.advice;
+    lastUpdate = evaluation.lastUpdate;
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
