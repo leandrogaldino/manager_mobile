@@ -25,18 +25,13 @@ class HomeController extends ChangeNotifier {
   }) : _syncService = syncService {
     evaluations = PagedListController<EvaluationModel>(
       (offset, limit) {
-        var a = evaluationService.searchVisibles(
+        return evaluationService.searchVisibles(
           offset: offset,
           limit: limit,
           search: filter.searchText,
           initialDate: filter.selectedDateRange?.start,
           finalDate: filter.selectedDateRange?.end,
         );
-
-        if (evaluations.items.any((e) => !e.existsInCloud && (e.signatureLocalPath != null || e.signatureTempPath != null))) {
-          showUpdateBanner();
-        }
-        return a;
       },
     );
 
