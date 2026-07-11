@@ -23,7 +23,7 @@ class _SignatureSectionWidgetState extends State<SignatureSectionWidget> {
   void _takeSignature() {
     final controller = widget.evaluationController;
     if (controller.source == SourceTypes.fromSavedWithSign) return;
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
     Navigator.of(context).pushNamed(Routes.captureSignature);
   }
 

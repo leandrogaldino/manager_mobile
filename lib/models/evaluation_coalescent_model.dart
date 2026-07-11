@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/models/personcompressorcoalescent_model.dart';
 
@@ -47,6 +49,20 @@ class EvaluationCoalescentModel {
       coalescent: PersonCompressorCoalescentModel.fromMap(map['coalescent'] as Map<String, dynamic>),
       ignoreNextChange: map['ignorenextchange'] as bool,
       nextChange: map['nextchange'] != null ? DateTimeHelper.fromMillisecondsSinceEpoch((map['nextchange'] ?? 0) as int) : null,
+    );
+  }
+
+  EvaluationCoalescentModel copyWith({
+    int? id,
+    PersonCompressorCoalescentModel? coalescent,
+    bool? ignoreNextChange,
+    DateTime? nextChange,
+  }) {
+    return EvaluationCoalescentModel(
+      id: id ?? this.id,
+      coalescent: coalescent ?? this.coalescent,
+      ignoreNextChange: ignoreNextChange ?? this.ignoreNextChange,
+      nextChange: nextChange ?? this.nextChange,
     );
   }
 }

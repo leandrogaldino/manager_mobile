@@ -39,11 +39,16 @@ class EvaluationTileWidget extends StatelessWidget {
         child: InkWell(
           onTap: () async {
             SourceTypes source = evaluation.signatureLocalPath != null || evaluation.signatureCloudPath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
-            evaluationController.setEvaluation(evaluation, source);
-            await Navigator.of(context).pushNamed(Routes.evaluation);
-            //TODO: SEM A PROXIMA LINHA, QUANDO EDITO UMA AVALIACAO SEM ASSINATURA E VOLTO SEM SALVAR DE NOVO, AS ALTERACOES PERMANECEM
-            await homeController.loadInitial();
-            //evaluationController.clean();
+            var editingEvaluation = evaluation.copyWith();
+            evaluationController.setEvaluation(editingEvaluation, source);
+            var result = await Navigator.of(context).pushNamed(Routes.evaluation);
+
+            if (result == true) {
+              homeController.evaluations.updateItem(
+                (item) => item.id == evaluation.id,
+                (old) => old.copyFrom(editingEvaluation),
+              );
+            }
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

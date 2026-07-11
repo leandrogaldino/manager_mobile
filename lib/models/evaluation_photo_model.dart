@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class EvaluationPhotoModel {
@@ -46,4 +47,18 @@ class EvaluationPhotoModel {
 
   @override
   int get hashCode => id.hashCode ^ localPath.hashCode ^ cloudPath.hashCode ^ tempPath.hashCode;
+
+  EvaluationPhotoModel copyWith({
+    int? id,
+    String? localPath,
+    String? cloudPath,
+    String? tempPath,
+  }) {
+    return EvaluationPhotoModel(
+      id: id ?? this.id,
+      localPath: localPath ?? this.localPath,
+      cloudPath: cloudPath ?? this.cloudPath,
+      tempPath: tempPath ?? this.tempPath,
+    );
+  }
 }

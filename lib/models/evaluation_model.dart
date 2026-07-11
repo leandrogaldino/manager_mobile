@@ -123,6 +123,43 @@ class EvaluationModel {
     );
   }
 
+  EvaluationModel copyFrom(EvaluationModel other) {
+    return EvaluationModel(
+      id: other.id,
+      visible: other.visible,
+      importedId: other.importedId,
+      visitscheduleid: other.visitscheduleid,
+      existsInCloud: other.existsInCloud,
+      needProposal: other.needProposal,
+      callType: other.callType,
+      temperature: other.temperature,
+      pressure: other.pressure,
+      customer: other.customer?.copyWith(),
+      compressor: other.compressor?.copyWith(),
+      creationDate: other.creationDate,
+      startTime: other.startTime,
+      endTime: other.endTime,
+      horimeter: other.horimeter,
+      greasing: other.greasing,
+      oilType: other.oilType,
+      airFilter: other.airFilter,
+      oilFilter: other.oilFilter,
+      separator: other.separator,
+      oil: other.oil,
+      coalescents: other.coalescents.map((e) => e.copyWith()).toList(),
+      replacedProducts: other.replacedProducts.map((e) => e.copyWith()).toList(),
+      performedServices: other.performedServices.map((e) => e.copyWith()).toList(),
+      technicians: other.technicians.map((e) => e.copyWith()).toList(),
+      photos: other.photos.map((e) => e.copyWith()).toList(),
+      responsible: other.responsible,
+      signatureTempPath: other.signatureTempPath,
+      signatureLocalPath: other.signatureLocalPath,
+      signatureCloudPath: other.signatureCloudPath,
+      advice: other.advice,
+      lastUpdate: other.lastUpdate,
+    );
+  }
+
   EvaluationModel copyWith({
     String? id,
     bool? visible,
