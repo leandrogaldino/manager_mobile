@@ -14,6 +14,26 @@ class PagedListController<T> extends ChangeNotifier {
     this.limit = 15,
   });
 
+  bool addItem(
+    T item, {
+    bool atBeginning = true,
+    bool Function(T existing)? equals,
+  }) {
+    if (equals != null && items.any(equals)) {
+      return false;
+    }
+
+    if (atBeginning) {
+      items.insert(0, item);
+    } else {
+      items.add(item);
+    }
+
+    offset++;
+    notifyListeners();
+    return true;
+  }
+
   bool updateItem(
     bool Function(T item) where,
     T Function(T old) update,

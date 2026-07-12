@@ -31,7 +31,7 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+    final textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: colorScheme.onPrimary,
           fontWeight: FontWeight.bold,
         );
@@ -72,7 +72,7 @@ class _UpdateBannerWidgetState extends State<UpdateBannerWidget> {
                                   repeat: true,
                                   height: 55,
                                 ),
-                                Text('Enviar', style: textStyle),
+                                Text('Sincronizar Avaliações Pendentes', style: textStyle),
                               ],
                             ),
                     ),

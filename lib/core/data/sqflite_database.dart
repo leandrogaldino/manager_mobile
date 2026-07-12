@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:manager_mobile/core/data/database_migrations.dart';
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
@@ -12,24 +13,20 @@ class SqfliteDatabase implements LocalDatabase {
   @override
   Future<void> init({bool inMemory = false}) async {
     try {
-      const currentVersion = 4;
+      const currentVersion = 1;
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
-      final exists = await databaseExists(path);
-      if (exists && !inMemory) {
-        final tempDb = await openDatabase(path);
-        final oldVersion = await tempDb.getVersion();
-        await tempDb.close();
-        if (oldVersion < currentVersion) {
-          log('DELETANDO DB ANTIGO');
-          await deleteDatabase(path);
-        }
-      }
-
       _database = await openDatabase(
         path,
         version: currentVersion,
         onCreate: (db, version) async {
           await _createDatabase(db);
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          await DatabaseMigrations.migrate(
+            db,
+            oldVersion,
+            newVersion,
+          );
         },
       );
     } on DatabaseException catch (e, s) {

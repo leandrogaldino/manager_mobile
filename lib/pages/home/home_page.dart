@@ -162,7 +162,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             onTap: () async {
                               _hasShownError = false;
                               await _homeController.synchronize();
-                              _homeController.hideUpdateBanner();
+                              if (_homeController.evaluations.items.every(((e) => e.existsInCloud))) {
+                                _homeController.hideUpdateBanner();
+                              }
                             },
                           ),
                         )
@@ -173,7 +175,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         _hasShownError = false;
                         await _homeController.synchronize();
                         await _homeController.loadInitial();
-                        _homeController.hideUpdateBanner();
+                        if (_homeController.evaluations.items.every(((e) => e.existsInCloud))) {
+                          _homeController.hideUpdateBanner();
+                        }
                       },
                       child: _homeController.currentIndex == 0
                           ? ScheduleListWidget(
@@ -244,7 +248,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               );
                             }
                             if (!context.mounted) return;
-                            await Navigator.of(context).pushNamed(Routes.evaluation);
+                            var result = await Navigator.of(context).pushNamed(Routes.evaluation);
+                            if (result == true) {
+                              _homeController.evaluations.addItem(evaluation);
+                              if (!_homeController.showingUpdateBanner) _homeController.showUpdateBanner();
+                            }
                             //TODO: aqui tambem
                             //await _homeController.loadInitial();
                           },

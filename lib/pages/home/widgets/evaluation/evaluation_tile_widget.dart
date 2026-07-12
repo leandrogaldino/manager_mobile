@@ -42,7 +42,6 @@ class EvaluationTileWidget extends StatelessWidget {
             var editingEvaluation = evaluation.copyWith();
             evaluationController.setEvaluation(editingEvaluation, source);
             var result = await Navigator.of(context).pushNamed(Routes.evaluation);
-
             if (result == true) {
               homeController.evaluations.updateItem(
                 (item) => item.id == evaluation.id,
