@@ -162,11 +162,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             onTap: () async {
                               _hasShownError = false;
                               await _homeController.synchronize();
-                              if (_homeController.evaluations.items.any(
-                                (e) => !e.existsInCloud && e.signatureLocalPath == null && e.signatureTempPath == null,
-                              )) {
-                                _homeController.hideUpdateBanner();
-                              }
+                              await _homeController.loadInitial();
                             },
                           ),
                         )
@@ -177,11 +173,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         _hasShownError = false;
                         await _homeController.synchronize();
                         await _homeController.loadInitial();
-                        if (_homeController.evaluations.items.any(
-                          (e) => !e.existsInCloud && e.signatureLocalPath == null && e.signatureTempPath == null,
-                        )) {
-                          _homeController.hideUpdateBanner();
-                        }
                       },
                       child: _homeController.currentIndex == 0
                           ? ScheduleListWidget(
@@ -254,11 +245,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             if (!context.mounted) return;
                             var result = await Navigator.of(context).pushNamed(Routes.evaluation);
                             if (result == true) {
-                              _homeController.evaluations.addItem(evaluation);
-                              if (!_homeController.showingUpdateBanner) _homeController.showUpdateBanner();
+                              await _homeController.loadInitial();
                             }
-                            //TODO: aqui tambem
-                            //await _homeController.loadInitial();
                           },
                           child: const Icon(Icons.add),
                         )

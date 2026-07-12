@@ -39,14 +39,16 @@ class EvaluationTileWidget extends StatelessWidget {
         child: InkWell(
           onTap: () async {
             SourceTypes source = evaluation.signatureLocalPath != null || evaluation.signatureCloudPath != null ? SourceTypes.fromSavedWithSign : SourceTypes.fromSavedWithoutSign;
-            var editingEvaluation = evaluation.copyWith();
-            evaluationController.setEvaluation(editingEvaluation, source);
+            //var editingEvaluation = evaluation.copyWith();
+            //evaluationController.setEvaluation(editingEvaluation, source);
+            evaluationController.setEvaluation(evaluation, source);
             var result = await Navigator.of(context).pushNamed(Routes.evaluation);
             if (result == true) {
-              homeController.evaluations.updateItem(
-                (item) => item.id == evaluation.id,
-                (old) => old.copyFrom(editingEvaluation),
-              );
+              //homeController.evaluations.updateItem(
+              //(item) => item.id == evaluation.id,
+              //(old) => old.copyFrom(editingEvaluation),
+              //);
+              await homeController.loadInitial();
             }
           },
           child: Row(

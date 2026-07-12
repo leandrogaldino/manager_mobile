@@ -81,7 +81,9 @@ class HomeController extends ChangeNotifier {
       visitSchedules.loadInitial(),
     ]);
 
-    if (evaluations.items.any((e) => !e.existsInCloud && (e.signatureLocalPath != null || e.signatureTempPath != null))) {
+    if (evaluations.items.every((e) => e.existsInCloud || (e.signatureLocalPath == null && e.signatureTempPath == null))) {
+      hideUpdateBanner();
+    } else {
       showUpdateBanner();
     }
 
