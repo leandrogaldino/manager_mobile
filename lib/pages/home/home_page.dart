@@ -162,7 +162,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             onTap: () async {
                               _hasShownError = false;
                               await _homeController.synchronize();
-                              if (_homeController.evaluations.items.every(((e) => e.existsInCloud))) {
+                              if (_homeController.evaluations.items.any(
+                                (e) => !e.existsInCloud && e.signatureLocalPath == null && e.signatureTempPath == null,
+                              )) {
                                 _homeController.hideUpdateBanner();
                               }
                             },
@@ -175,7 +177,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         _hasShownError = false;
                         await _homeController.synchronize();
                         await _homeController.loadInitial();
-                        if (_homeController.evaluations.items.every(((e) => e.existsInCloud))) {
+                        if (_homeController.evaluations.items.any(
+                          (e) => !e.existsInCloud && e.signatureLocalPath == null && e.signatureTempPath == null,
+                        )) {
                           _homeController.hideUpdateBanner();
                         }
                       },
