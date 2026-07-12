@@ -3,7 +3,6 @@ import 'package:manager_mobile/controllers/evaluation_controller.dart';
 import 'package:manager_mobile/core/locator.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/core/enums/source_types.dart';
-import 'package:manager_mobile/models/evaluation_model.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/coalescent_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/expandable_section_widget.dart';
 import 'package:manager_mobile/pages/evaluation/widgets/sections/header_section_widget.dart';
