@@ -47,18 +47,18 @@ class _EvaluationPageState extends State<EvaluationPage> {
     super.dispose();
   }
 
-  void _scrollToKey(GlobalKey key) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final context = key.currentContext;
-      if (context != null) {
-        Scrollable.ensureVisible(
-          context,
-          duration: const Duration(milliseconds: 300),
-          alignment: 0.0,
-          curve: Curves.easeOut,
-        );
-      }
-    });
+  void _scrollToKey(GlobalKey key) async {
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    final context = key.currentContext;
+    if (context != null) {
+      await Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        alignment: 0,
+      );
+    }
   }
 
   @override
