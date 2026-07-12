@@ -22,9 +22,9 @@ class EvaluationPage extends StatefulWidget {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
-  late final GlobalKey<FormState> _readingKey;
   late final EvaluationController _controller;
   late final ScrollController _scrollController;
+  late final GlobalKey<FormState> _readingKey;
   final GlobalKey _coalescentKey = GlobalKey();
   final GlobalKey _replacedProductKey = GlobalKey();
   final GlobalKey _performedServiceKey = GlobalKey();
