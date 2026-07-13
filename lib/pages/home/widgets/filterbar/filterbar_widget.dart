@@ -81,7 +81,7 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                         );
                       },
                       decoration: InputDecoration(
-                        labelText: "Cliente/Compressor",
+                        labelText: "Cliente/Compressor/Técnico",
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(),
                       ),
