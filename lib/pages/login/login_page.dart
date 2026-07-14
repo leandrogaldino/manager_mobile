@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late final GlobalKey<FormState> _formKey;
-  late final TextEditingController _emailEC;
+  late final TextEditingController _usernameEC;
   late final TextEditingController _passwordEC;
   late final LoginController _loginController;
 
@@ -27,16 +27,15 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-
     _formKey = GlobalKey<FormState>();
-    _emailEC = TextEditingController();
+    _usernameEC = TextEditingController();
     _passwordEC = TextEditingController();
     _loginController = GetIt.I<LoginController>();
   }
 
   @override
   void dispose() {
-    _emailEC.dispose();
+    _usernameEC.dispose();
     _passwordEC.dispose();
     super.dispose();
   }
@@ -69,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           // Campo EMAIL
                           TextFormField(
-                            controller: _emailEC,
+                            controller: _usernameEC,
                             validator: Validatorless.required('Usuário obrigatório'),
                             textAlign: TextAlign.left,
                             decoration: InputDecoration(
@@ -140,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                                           }
                                           _hasShownError = false;
                                           await _loginController.signIn(
-                                            '${_emailEC.text}@manager.com',
+                                            '${_usernameEC.text.trim()}@manager.com',
                                             _passwordEC.text,
                                           );
                                         },
