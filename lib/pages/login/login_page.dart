@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:manager_mobile/controllers/login_controller.dart';
+import 'package:manager_mobile/core/app_info.dart';
 import 'package:manager_mobile/core/util/message.dart';
 import 'package:manager_mobile/pages/login/widgets/app_title_widget.dart';
 import 'package:manager_mobile/states/login_state.dart';
@@ -165,6 +166,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                Text(
+                  'Versão ${AppInfo.version}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           ),

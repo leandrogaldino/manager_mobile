@@ -72,8 +72,7 @@ class EvaluationRepository {
       SELECT COUNT(*) count
       FROM evaluation
       WHERE
-        signaturepath IS NULL OR 
-        signaturepath = '';
+        (signaturelocalpath IS NULL OR signaturelocalpath = '') AND (signaturecloudpath IS NULL OR signaturecloudpath = '');
       """);
     if (result.isEmpty) return false;
     if (result[0]['count'] as int > 0) return true;

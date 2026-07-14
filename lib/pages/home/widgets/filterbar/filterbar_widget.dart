@@ -95,22 +95,17 @@ class _FilterBarWidgetState extends State<FilterBarWidget> {
                           border: OutlineInputBorder(),
                         ),
                         onTap: () async {
-                          final ctx = context; // 👈 captura síncrona
-
+                          final ctx = context;
                           final min = await _homeController.filter.minimumDate;
                           final max = await _homeController.filter.maximumDate;
-
                           if (!ctx.mounted) return;
-
                           final DateTimeRange? picked = await showDateRangePicker(
                             context: ctx,
                             firstDate: min,
                             lastDate: max,
                             initialDateRange: _homeController.filter.selectedDateRange,
                           );
-
                           if (picked == null) return;
-
                           _homeController.filter.setDateRange(picked);
                           _dateControllerEC.text = _homeController.filter.selectedDateRangeText;
                         }),

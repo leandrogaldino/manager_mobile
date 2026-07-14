@@ -121,7 +121,7 @@ class EvaluationService {
   }
 
   Future<int> delete(dynamic id) async {
-    return await _evaluationRepository.delete(id as int);
+    return await _evaluationRepository.delete(id);
   }
 
   Future<List<EvaluationModel>> getAll() async {

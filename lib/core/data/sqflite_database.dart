@@ -21,13 +21,13 @@ class SqfliteDatabase implements LocalDatabase {
         onCreate: (db, version) async {
           await _createDatabase(db);
         },
-        onUpgrade: (db, oldVersion, newVersion) async {
+        /*onUpgrade: (db, oldVersion, newVersion) async {
           await DatabaseMigrations.migrate(
             db,
             oldVersion,
             newVersion,
           );
-        },
+        },*/
       );
     } on DatabaseException catch (e, s) {
       String code = 'LDB001';
