@@ -146,7 +146,7 @@ class SQLScripts {
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
       name TEXT NOT NULL,
-      productid INT NOT NULL,
+      productid INT,
       directionid INT NOT NULL,      
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
@@ -158,7 +158,7 @@ class SQLScripts {
       id INTEGER PRIMARY KEY,
       visible INTEGER NOT NULL,
       name TEXT NOT NULL,
-      productid INT NOT NULL,   
+      productid INT,   
       lastupdate INTEGER NOT NULL,
       FOREIGN KEY (productid) REFERENCES product (id) ON DELETE CASCADE
     );
