@@ -51,7 +51,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     await Future.delayed(const Duration(milliseconds: 250));
 
     final context = key.currentContext;
-    if (context != null) {
+    if (context != null && context.mounted) {
       await Scrollable.ensureVisible(
         context,
         duration: const Duration(milliseconds: 300),
