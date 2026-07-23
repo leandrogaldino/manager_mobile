@@ -22,8 +22,8 @@ class TechnicianPickerDialog extends StatelessWidget {
         width: double.maxFinite,
         height: 350,
         child: TechnicianPickerWidget(
-          onTechnicianSelected: (compressor) {
-            Navigator.pop(context, compressor);
+          onTechnicianSelected: (technician) {
+            Navigator.pop(context, technician);
           },
         ),
       ),

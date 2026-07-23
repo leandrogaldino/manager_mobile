@@ -11,10 +11,25 @@ class HeaderSectionWidget extends StatelessWidget {
   final EvaluationController evaluationController;
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Column(
       spacing: 10,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'ID CLOUD: ',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: evaluationController.evaluation!.id == null ? 'N/A' : evaluationController.evaluation!.id!.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -23,11 +38,11 @@ class HeaderSectionWidget extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'ID: ',
+                      text: 'ID LOCAL: ',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: evaluationController.evaluation!.importedId == null ? 'Não importada' : evaluationController.evaluation!.importedId!.toString(),
+                      text: evaluationController.evaluation!.importedId == null ? 'N/A' : evaluationController.evaluation!.importedId!.toString(),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],

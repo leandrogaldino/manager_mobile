@@ -178,6 +178,7 @@ class _ReadingSectionWidgetState extends State<ReadingSectionWidget> {
                       PersonCompressorModel? compressor = await CompressorPicker.pick(context: context);
                       if (compressor != null) {
                         controller.updateCompressor(compressor);
+                        controller.updateOilType(compressor.oilType);
                         _syncControllers();
                       }
                     },

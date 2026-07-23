@@ -334,7 +334,7 @@ class EvaluationController extends ChangeNotifier {
     shadow = null;
   }
 
-  static const int _retentionDays = 30;
+  static const int _retentionDays = 120;
   Future<int> periodicClean() async {
     int count = 0;
     var allEvaluations = await _evaluationService.getAll();

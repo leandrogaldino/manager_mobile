@@ -53,6 +53,7 @@ class PersonRepository {
         whereArgs.addAll(remove);
       }
       var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
+
       return persons;
     } on LocalDatabaseException {
       rethrow;
