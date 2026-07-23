@@ -1,8 +1,9 @@
 import 'dart:developer';
+import 'package:manager_mobile/core/data/database_migrations.dart';
+import 'package:manager_mobile/core/data/database_schema.dart';
 import 'package:manager_mobile/core/exceptions/local_database_exception.dart';
 import 'package:manager_mobile/core/helper/datetime_helper.dart';
 import 'package:manager_mobile/interfaces/local_database.dart';
-import 'package:manager_mobile/core/constants/sql_scripts.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -12,21 +13,21 @@ class SqfliteDatabase implements LocalDatabase {
   @override
   Future<void> init({bool inMemory = false}) async {
     try {
-      const currentVersion = 1;
+      const currentVersion = 2;
       final path = inMemory ? inMemoryDatabasePath : join(await getDatabasesPath(), 'data.db');
       _database = await openDatabase(
         path,
         version: currentVersion,
         onCreate: (db, version) async {
-          await _createDatabase(db);
+          await DatabaseSchema.create(db);
         },
-        /*onUpgrade: (db, oldVersion, newVersion) async {
+        onUpgrade: (db, oldVersion, newVersion) async {
           await DatabaseMigrations.migrate(
             db,
             oldVersion,
             newVersion,
           );
-        },*/
+        },
       );
     } on DatabaseException catch (e, s) {
       String code = 'LDB001';
@@ -43,32 +44,6 @@ class SqfliteDatabase implements LocalDatabase {
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<void> _createDatabase(Database db) async {
-    await db.execute(SQLScripts.createTablePreferences);
-    await db.execute(SQLScripts.createTablePerson);
-    await db.execute(SQLScripts.createTableCompressor);
-    await db.execute(SQLScripts.createTableCompressorInterface);
-    await db.execute(SQLScripts.createTableCompressorUnit);
-    await db.execute(SQLScripts.createTablePersonCompressor);
-    await db.execute(SQLScripts.createTableProduct);
-    await db.execute(SQLScripts.createTableProductCode);
-    await db.execute(SQLScripts.createTableService);
-    await db.execute(SQLScripts.createTablePersonCompressorCoalescent);
-    await db.execute(SQLScripts.createTableEvaluation);
-    await db.execute(SQLScripts.createTableEvaluationReplacedProduct);
-    await db.execute(SQLScripts.createTableEvaluationPerformedService);
-    await db.execute(SQLScripts.createTableEvaluationTechnician);
-    await db.execute(SQLScripts.createTableEvaluationCoalescent);
-    await db.execute(SQLScripts.createTableEvaluationPhoto);
-    await db.execute(SQLScripts.createTableVisitSchedule);
-    await db.execute(SQLScripts.insertThemePreference);
-    await db.execute(SQLScripts.insertLastSyncPreference);
-    await db.execute(SQLScripts.insertLoggedTechnicianIdPreference);
-    await db.execute(SQLScripts.insertIgnoreLastSynchronizePreference);
-    await db.execute(SQLScripts.insertSyncLockTimePreference);
-    await db.execute(SQLScripts.insertSyncCountPreference);
   }
 
   @override

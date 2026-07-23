@@ -1,6 +1,6 @@
 class SQLScripts {
   static const String createTablePreferences = '''
-    CREATE TABLE preferences (
+    CREATE TABLE IF NOT EXISTS preferences (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       key TEXT NOT NULL UNIQUE,
       value TEXT
@@ -8,7 +8,7 @@ class SQLScripts {
   ''';
 
   static const String insertThemePreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
@@ -18,7 +18,7 @@ class SQLScripts {
   ''';
 
   static const String insertLastSyncPreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
@@ -28,7 +28,7 @@ class SQLScripts {
   ''';
 
   static const String insertLoggedTechnicianIdPreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
@@ -38,7 +38,7 @@ class SQLScripts {
   ''';
 
   static const String insertIgnoreLastSynchronizePreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
@@ -48,7 +48,7 @@ class SQLScripts {
   ''';
 
   static const String insertSyncLockTimePreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
@@ -58,7 +58,7 @@ class SQLScripts {
   ''';
 
   static const String insertSyncCountPreference = '''
-    INSERT INTO preferences (
+    INSERT OR IGNORE INTO preferences (
       key,
       value
     ) VALUES (
