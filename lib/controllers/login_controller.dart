@@ -26,8 +26,8 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> canLoggout() async {
-    return !(await _evaluationService.hasPendingEvaluation);
+  Future<bool> hasPendingData() async {
+    return await _evaluationService.hasPendingEvaluation;
   }
 
   Future<PersonModel?> get currentLoggedUser async {

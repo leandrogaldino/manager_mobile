@@ -53,7 +53,7 @@ class PersonRepository {
         whereArgs.addAll(remove);
       }
       var persons = await _localDatabase.query('person', where: where, whereArgs: whereArgs, limit: limit, offset: offset);
-
+      persons.sort((a, b) => (a['shortname'] as String).compareTo(b['shortname'] as String));
       return persons;
     } on LocalDatabaseException {
       rethrow;

@@ -12,7 +12,6 @@ class PopupButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LoginController loginController = Locator.get<LoginController>();
-
     return PopupMenuButton(
       icon: const Icon(Icons.more_vert),
       itemBuilder: (_) => <PopupMenuEntry<dynamic>>[
@@ -87,9 +86,9 @@ class PopupButtonWidget extends StatelessWidget {
               );
 
               if (answer == true && context.mounted) {
-                var canLoggount = await loginController.canLoggout();
+                var hasPending = await loginController.hasPendingData();
 
-                if (canLoggount && context.mounted) {
+                if (!hasPending && context.mounted) {
                   Navigator.pop(context);
                   await loginController.signOut();
                 } else {

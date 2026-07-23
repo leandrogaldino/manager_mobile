@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:manager_mobile/core/enums/call_types.dart';
 import 'package:manager_mobile/core/enums/image_types.dart';
@@ -337,14 +336,15 @@ class EvaluationController extends ChangeNotifier {
   static const int _retentionDays = 120;
   Future<int> periodicClean() async {
     int count = 0;
+    final cutoffDate = DateTime.now().subtract(const Duration(days: _retentionDays));
     var allEvaluations = await _evaluationService.getAll();
     for (var evaluation in allEvaluations) {
-      if (evaluation.creationDate!.isBefore(DateTime.now().subtract(Duration(days: _retentionDays)))) {
-        await _evaluationService.delete(evaluation.id);
-        await _evaluationService.deleteSignature(signaturePath: evaluation.signatureLocalPath);
-        await _evaluationService.deletePhotos(photos: evaluation.photos);
-        count += 1;
-      }
+      if (!evaluation.existsInCloud) continue;
+      if (evaluation.creationDate!.isAfter(cutoffDate)) continue;
+      await _evaluationService.delete(evaluation.id);
+      await _evaluationService.deleteSignature(signaturePath: evaluation.signatureLocalPath);
+      await _evaluationService.deletePhotos(photos: evaluation.photos);
+      count += 1;
     }
 
     var allSchedules = await _visitScheduleService.getAll();
