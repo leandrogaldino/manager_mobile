@@ -196,7 +196,22 @@ class EvaluationRepository {
       List<Object?> whereArgs = [1];
 
       if (search != null && search.trim().isNotEmpty) {
-        where += ' AND (c.name LIKE ? OR p.shortname LIKE ? OR pc.serialnumber LIKE ? OR pc.patrimony LIKE ? OR pc.sector LIKE ? OR etp.shortname LIKE ?)';
+        where += '''
+          AND (
+            c.name LIKE ?
+            OR p.shortname LIKE ?
+            OR pc.serialnumber LIKE ?
+            OR pc.patrimony LIKE ?
+            OR pc.sector LIKE ?
+            OR EXISTS (
+              SELECT 1
+              FROM evaluationtechnician et
+              JOIN person etp ON etp.id = et.personid
+              WHERE et.evaluationid = e.id
+                AND etp.shortname LIKE ?
+            )
+          )
+        ''';
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
         whereArgs.add('%$search%');
@@ -234,8 +249,6 @@ class EvaluationRepository {
       JOIN person p ON p.id = e.customerid
       JOIN personcompressor pc ON pc.id = e.compressorid
       JOIN compressor c ON c.id = pc.compressorid
-      JOIN evaluationtechnician et ON et.evaluationid = e.id
-      JOIN person etp ON etp.id = et.personid
       WHERE $where
       ORDER BY e.creationdate DESC
       LIMIT ? OFFSET ?;

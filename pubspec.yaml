@@ -4,7 +4,7 @@ description: "Flutter application for managing evaluations, with support for pho
 
 publish_to: 'none'
 
-version: 1.2.0+24
+version: 1.2.1+25
 
 environment:
   sdk: ^3.6.0
